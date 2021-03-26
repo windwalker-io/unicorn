@@ -1,0 +1,31 @@
+{
+    "name": "windwalker/unicorn",
+    "description": "RAD Framework for Windwalker",
+    "homepage": "https://github.com/ventoviro/unicorn",
+    "type": "windwalker-package",
+    "license": "MIT",
+    "minimum-stability": "dev",
+    "authors": [
+        {
+            "name": "Simon Asika",
+            "email": "asika32764@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=8.0",
+        "windwalker/core": "4.x-dev"
+    },
+    "autoload": {
+        "psr-4": {
+            "Unicorn\\": "src/"
+        },
+        "files": [
+            "src/bootstrap.php"
+        ]
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0.0-dev"
+        }
+    }
+}
