@@ -44,6 +44,8 @@ class UnicornPackage extends AbstractPackage implements ServiceProviderInterface
     public function register(Container $container): void
     {
         // $container->registerByConfig(__DIR__ . '/../etc/unicorn.config.php');
+
+        $container->prepareSharedObject();
     }
 
     public function install(PackageInstaller $installer): void
