@@ -24,6 +24,11 @@
         ]
     },
     "extra": {
+        "windwalker": {
+            "packages": [
+                "Unicorn\\UnicornPackage"
+            ]
+        },
         "branch-alias": {
             "dev-master": "1.x-dev"
         }

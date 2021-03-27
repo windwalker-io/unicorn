@@ -12,18 +12,42 @@ declare(strict_types=1);
 namespace Unicorn;
 
 use Windwalker\Core\Package\AbstractPackage;
+use Windwalker\Core\Package\PackageInstaller;
+use Windwalker\DI\BootableProviderInterface;
+use Windwalker\DI\Container;
+use Windwalker\DI\ServiceProviderInterface;
+use Windwalker\Filesystem\Filesystem;
 
 /**
  * The UnicornPackage class.
  */
-class UnicornPackage extends AbstractPackage
+class UnicornPackage extends AbstractPackage implements ServiceProviderInterface, BootableProviderInterface
 {
-    public function boot(): void
+    /**
+     * boot
+     *
+     * @param  Container  $container
+     *
+     * @return  void
+     */
+    public function boot(Container $container): void
     {
-
     }
 
-    public function install(): void
+    /**
+     * Registers the service provider with a DI container.
+     *
+     * @param  Container  $container  The DI container.
+     *
+     * @return  void
+     */
+    public function register(Container $container): void
     {
+        // $container->registerByConfig(__DIR__ . '/../etc/unicorn.config.php');
+    }
+
+    public function install(PackageInstaller $installer): void
+    {
+        $installer->installConfig(__DIR__ . '/../etc/*.php', 'config');
     }
 }
