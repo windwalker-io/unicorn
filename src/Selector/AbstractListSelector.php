@@ -9,43 +9,49 @@
 
 declare(strict_types=1);
 
-namespace Unicorn\Repository;
+namespace Unicorn\Selector;
 
-use Traversable;
+use Unicorn\Repository\DatabaseRepositoryTrait;
 use Unicorn\Selector\Filter\FilterHelper;
 use Unicorn\Selector\Filter\SearchHelper;
 use Windwalker\Core\Pagination\Pagination;
 use Windwalker\Data\Collection;
-use Windwalker\Query\Query;
+use Windwalker\ORM\SelectorQuery;
 use Windwalker\Utilities\Cache\InstanceCacheTrait;
 
 /**
- * The ListRepository class.
+ * The AbstractSelector class.
  */
-abstract class AbstractListRepository implements ListRepositoryInterface, DatabaseRepositoryInterface
+abstract class AbstractListSelector
 {
     use InstanceCacheTrait;
 
     use DatabaseRepositoryTrait;
 
-    protected ?Query $query = null;
+    protected ?SelectorQuery $query = null;
 
     protected int $page = 1;
 
     protected int $limit = 1;
 
+    protected array $filters = [];
+
+    protected array $searches = [];
+
     protected ?FilterHelper $filterHelper = null;
 
     protected ?SearchHelper $searchHelper = null;
 
+    abstract public static function getEntityClass(): string;
+
     /**
      * createQuery
      *
-     * @return  Query
+     * @return  SelectorQuery
      *
      * @throws \ReflectionException
      */
-    public function createQuery(): Query
+    public function createQuery(): SelectorQuery
     {
         return $this->db->orm()->mapper(static::getEntityClass())->createSelectorQuery();
     }
@@ -57,7 +63,7 @@ abstract class AbstractListRepository implements ListRepositoryInterface, Databa
      * @param  string|null  $class
      * @param  array        $args
      *
-     * @return Traversable An instance of an object implementing <b>Iterator</b> or
+     * @return \Traversable An instance of an object implementing <b>Iterator</b> or
      * <b>Traversable</b>
      */
     public function getIterator(?string $class = null, array $args = []): \Traversable
@@ -68,7 +74,7 @@ abstract class AbstractListRepository implements ListRepositoryInterface, Databa
         );
     }
 
-    public function getQuery(): Query
+    public function getQuery(): SelectorQuery
     {
         return $this->query ??= $this->createQuery();
     }
@@ -136,6 +142,47 @@ abstract class AbstractListRepository implements ListRepositoryInterface, Databa
      */
     public function addFilter(string $key, mixed $value): static
     {
+        $this->filters[$key] = $value;
+
+        return $this;
+    }
+
+    /**
+     * hasFilter
+     *
+     * @param string $key
+     *
+     * @return  bool
+     *
+     * @since   1.6.7
+     */
+    public function hasFilter(string $key): bool
+    {
+        $v = $this->filters[$key];
+
+        if (is_array($v)) {
+            return $v !== [];
+        }
+
+        if (is_object($v)) {
+            return true;
+        }
+
+        return (string) $v !== '';
+    }
+
+    /**
+     * getFilter
+     *
+     * @param string $key
+     *
+     * @return  mixed
+     *
+     * @since  1.7.7
+     */
+    public function getFilter(string $key): mixed
+    {
+        return $this->filters[$key] ?? null;
     }
 
     /**
@@ -148,6 +195,37 @@ abstract class AbstractListRepository implements ListRepositoryInterface, Databa
      */
     public function addSearch(string $key, mixed $value): static
     {
+        $this->searches[$key] = $value;
+
+        return $this;
+    }
+
+    /**
+     * hasSearch
+     *
+     * @param string $key
+     *
+     * @return  bool
+     *
+     * @since  1.6.7
+     */
+    public function hasSearch(string $key): bool
+    {
+        return (string) ($this->searches[$key] ?? '') !== '';
+    }
+
+    /**
+     * getSearch
+     *
+     * @param string $key
+     *
+     * @return  mixed
+     *
+     * @since  1.7.7
+     */
+    public function getSearch(string $key): mixed
+    {
+        return $this->searches[$key] ?? null;
     }
 
     /**
