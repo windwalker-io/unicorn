@@ -12,27 +12,39 @@ declare(strict_types=1);
 namespace Unicorn\Selector;
 
 use Unicorn\Repository\DatabaseRepositoryTrait;
+use Unicorn\Selector\Event\AfterCompileQueryEvent;
+use Unicorn\Selector\Event\BeforeCompileQueryEvent;
+use Unicorn\Selector\Event\ConfigureQueryEvent;
 use Unicorn\Selector\Filter\FilterHelper;
 use Unicorn\Selector\Filter\SearchHelper;
 use Windwalker\Core\Pagination\Pagination;
+use Windwalker\Core\Pagination\PaginationFactory;
 use Windwalker\Data\Collection;
+use Windwalker\Database\DatabaseAdapter;
+use Windwalker\Event\EventAwareInterface;
+use Windwalker\Event\EventAwareTrait;
 use Windwalker\ORM\SelectorQuery;
+use Windwalker\Query\Query;
+use Windwalker\Utilities\Arr;
 use Windwalker\Utilities\Cache\InstanceCacheTrait;
+use Windwalker\Utilities\Classes\FlowControlTrait;
 
 /**
  * The AbstractSelector class.
  */
-abstract class AbstractListSelector
+class ListSelector implements EventAwareInterface
 {
+    use EventAwareTrait;
     use InstanceCacheTrait;
-
-    use DatabaseRepositoryTrait;
+    use FlowControlTrait;
 
     protected ?SelectorQuery $query = null;
 
     protected int $page = 1;
 
-    protected int $limit = 1;
+    protected ?int $limit = null;
+
+    protected array $allowFields = [];
 
     protected array $filters = [];
 
@@ -42,7 +54,15 @@ abstract class AbstractListSelector
 
     protected ?SearchHelper $searchHelper = null;
 
-    abstract public static function getEntityClass(): string;
+    /**
+     * ListSelector constructor.
+     *
+     * @param  DatabaseAdapter    $db
+     * @param  PaginationFactory  $paginationFactory
+     */
+    public function __construct(protected DatabaseAdapter $db, protected PaginationFactory $paginationFactory)
+    {
+    }
 
     /**
      * createQuery
@@ -53,8 +73,28 @@ abstract class AbstractListSelector
      */
     public function createQuery(): SelectorQuery
     {
-        return $this->db->orm()->mapper(static::getEntityClass())->createSelectorQuery();
+        $query = $this->db->orm()->select();
+
+        // $this->configureQuery($query);
+
+        $selector = $this;
+
+        $this->emit(
+            ConfigureQueryEvent::class,
+            compact('query', 'selector')
+        );
+
+        return $query;
     }
+
+    public function modifyQuery(callable $callback): static
+    {
+        $callback($this->getQuery());
+
+        return $this;
+    }
+
+    // abstract protected function configureQuery(SelectorQuery $query): void;
 
     /**
      * Retrieve an external iterator
@@ -69,7 +109,7 @@ abstract class AbstractListSelector
     public function getIterator(?string $class = null, array $args = []): \Traversable
     {
         return $this->getQuery()->getIterator(
-            $class ?? static::getEntityClass(),
+            $class ?? $this->entityClass,
             $args
         );
     }
@@ -79,25 +119,62 @@ abstract class AbstractListSelector
         return $this->query ??= $this->createQuery();
     }
 
+    public function compileQuery(): SelectorQuery
+    {
+        $query = clone $this->getQuery();
+        $selector = $this;
+
+        // $this->beforeCompileQuery($query);
+
+        $event = $this->emit(
+            BeforeCompileQueryEvent::class,
+            compact('query', 'selector')
+        );
+
+        $query = $this->processFilters($event->getQuery());
+        $query = $this->processSearches($query);
+
+        // $this->afterCompileQuery($query);
+
+        $event = $this->emit(
+            AfterCompileQueryEvent::class,
+            compact('query', 'selector')
+        );
+
+        return $event->getQuery();
+    }
+
+    // abstract protected function beforeCompileQuery(SelectorQuery $query): void;
+    //
+    // abstract protected function afterCompileQuery(SelectorQuery $query): void;
+
     public function all(?string $class = null, array $args = []): Collection
     {
-        return $this->getQuery()->all($class, $args);
+        return $this->compileQuery()->all($class, $args);
     }
 
     public function get(?string $class = null, array $args = []): object
     {
-        return $this->getQuery()->get($class, $args);
+        return $this->compileQuery()->get($class, $args);
     }
 
-    public function page(int $page): static
+    public function page(int|string $page): static
     {
+        if ($page < 1) {
+            $page = 1;
+        }
+
         $this->page = $page;
 
         return $this;
     }
 
-    public function limit(int $limit): static
+    public function limit(int|string|null $limit): static
     {
+        if ($limit !== null) {
+            $limit = (int) $limit;
+        }
+
         $this->limit = $limit;
 
         return $this;
@@ -105,7 +182,7 @@ abstract class AbstractListSelector
 
     public function count(): int
     {
-        return $this->cacheStorage['count'] ??= $this->getQuery()->count();
+        return $this->cacheStorage['count'] ??= $this->compileQuery()->count();
     }
 
     public function getOffset(): int
@@ -116,6 +193,18 @@ abstract class AbstractListSelector
     public function getPage(): int
     {
         return $this->page;
+    }
+
+    public function getAllowFields(?Query $query = null): array
+    {
+        // foreach ($query->getFrom() as $from) {
+        //     //
+        // }
+
+        return $this->cacheStorage['allow_fields'] ??= array_merge(
+            [],
+            $this->allowFields
+        );
     }
 
     public function addFilterHandler(string $key, callable $handler): static
@@ -132,6 +221,20 @@ abstract class AbstractListSelector
         return $this;
     }
 
+    protected function processFilters(SelectorQuery $query): SelectorQuery
+    {
+        $this->getFilterHelper()->process($query, $this->filters);
+
+        return $query;
+    }
+
+    protected function processSearches(SelectorQuery $query): SelectorQuery
+    {
+        $this->getSearchHelper()->process($query, $this->searches);
+
+        return $query;
+    }
+
     /**
      * addFilter
      *
@@ -143,6 +246,27 @@ abstract class AbstractListSelector
     public function addFilter(string $key, mixed $value): static
     {
         $this->filters[$key] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param  array  $filters
+     *
+     * @return  static  Return self to support chaining.
+     */
+    public function setFilters(array $filters): static
+    {
+        $this->filters = $filters;
+
+        return $this;
+    }
+
+    public function addFilters(mixed ...$filters): static
+    {
+        $filters = Arr::collapse($filters);
+
+        $this->filters = array_merge($this->filters, $filters);
 
         return $this;
     }
@@ -201,6 +325,27 @@ abstract class AbstractListSelector
     }
 
     /**
+     * @param  array  $searches
+     *
+     * @return  static  Return self to support chaining.
+     */
+    public function setSearches(array $searches): static
+    {
+        $this->searches = $searches;
+
+        return $this;
+    }
+
+    public function addSearches(mixed ...$searches): static
+    {
+        $searches = Arr::collapse($searches);
+
+        $this->searches = array_merge($this->searches, $searches);
+
+        return $this;
+    }
+
+    /**
      * hasSearch
      *
      * @param string $key
@@ -231,12 +376,19 @@ abstract class AbstractListSelector
     /**
      * getPagination
      *
-     * @param  int|null  $total
+     * @param  int|callable|null  $total
+     * @param  int|null           $neighbours
      *
      * @return Pagination
      */
-    public function getPagination(?int $total = null): Pagination
+    public function getPagination(int|callable|null $total = null, ?int $neighbours = null): Pagination
     {
+        return $this->paginationFactory->create(
+            $this->getPage(),
+            $this->limit,
+            $neighbours
+        )
+            ->total($total ?? fn () => $this->count());
     }
 
     /**
@@ -275,6 +427,18 @@ abstract class AbstractListSelector
     public function setSearchHelper(?SearchHelper $searchHelper): static
     {
         $this->searchHelper = $searchHelper;
+
+        return $this;
+    }
+
+    /**
+     * @param  array  $allowFields
+     *
+     * @return  static  Return self to support chaining.
+     */
+    public function setAllowFields(array $allowFields): static
+    {
+        $this->allowFields = $allowFields;
 
         return $this;
     }
