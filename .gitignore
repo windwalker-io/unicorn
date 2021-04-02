@@ -12,6 +12,8 @@
 /bower_components
 /yarn-error.log
 
+assets/node_modules
+
 # Remove above lines when you start a project
 composer.lock
 yarn.lock
