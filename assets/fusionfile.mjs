@@ -9,7 +9,7 @@ import fusion, { babel, webpack, parallel } from '@windwalker-io/fusion';
 
 export async function main() {
   // Watch start
-  fusion.watch('src/**/*.js');
+  fusion.watch('src/**/*.js', main);
   // Watch end
 
   // Compile Start
@@ -24,14 +24,14 @@ export async function main() {
 
 export async function js() {
   // Watch start
-  fusion.watch('src/**/*.js');
+  fusion.watch('src/**/*.js', js);
   // Watch end
 
   // Compile Start
   babel(
     ['src/**/*.js', '!src/unicorn/**/*'],
     'dist/',
-    { module: 'umd' }
+    { module: 'systemjs' }
   );
   // Compile end
 }

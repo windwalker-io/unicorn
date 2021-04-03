@@ -20,6 +20,7 @@ use Windwalker\DI\Container;
 use Windwalker\DI\ServiceProviderInterface;
 use Windwalker\Renderer\CompositeRenderer;
 use Windwalker\Session\Cookie\Cookies;
+use Windwalker\Utilities\Arr;
 
 /**
  * The UnicornPackage class.
@@ -49,16 +50,16 @@ class UnicornPackage extends AbstractPackage implements
      */
     public function bootDeferred(Container $container): void
     {
-        if ($container->getParam('unicorn.csrf.auto_set_cookie')) {
-            $name = $container->getParam('unicorn.csrf.cookie_name') ?? 'XSRF-TOKEN';
-            $csrf = $container->get(CsrfService::class);
-
-            if ($container->has(Cookies::class)) {
-                $container->get(Cookies::class)->set($name, $csrf->getToken());
-            } else {
-                setcookie($name, $csrf);
-            }
-        }
+        // if ($container->getParam('unicorn.csrf.auto_set_cookie')) {
+        //     $name = $container->getParam('unicorn.csrf.cookie_name') ?? 'XSRF-TOKEN';
+        //     $csrf = $container->get(CsrfService::class);
+        //
+        //     if ($container->has(Cookies::class)) {
+        //         $container->get(Cookies::class)->set($name, $csrf->getToken());
+        //     } else {
+        //         setcookie($name, $csrf);
+        //     }
+        // }
     }
 
     /**
@@ -77,6 +78,17 @@ class UnicornPackage extends AbstractPackage implements
 
                 return $renderer;
             }
+        );
+
+        $container->mergeParameters(
+            'asset.import_map.imports',
+            [
+                '@systemjs' => 'vendor/systemjs/dist/system.js',
+                '@unicorn/' => 'vendor/@windwalker-io/unicorn/dist/',
+                '@alpinejs' => 'vendor/alpinejs/dist/alpine.js',
+                '@axios' => 'vendor/axios/dist/axios.js',
+                '@awesome-checkbox' => 'vendor/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css'
+            ]
         );
     }
 

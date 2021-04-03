@@ -293,22 +293,14 @@ class UnicornGridElement {
    * Toggle all checkboxes.
    *
    * @param  {boolean}          value     Checked or unchecked.
-   * @param  {number|boolean}   duration  Duration to check all.
    */
-  toggleAll(value, duration = 0) {
-    const checkboxes = this.form.find('input.grid-checkbox[type=checkbox]');
-
-    $.each(checkboxes, function(i, e) {
-      if (duration) {
-        // A little pretty effect
-        setTimeout(function() {
-          e.checked = value;
-        }, (duration / checkboxes.length) * i);
+  toggleAll(value) {
+    this.app.selectMap(
+      this.element.querySelectorAll('input[data-role=grid-checkbox][type=checkbox]'),
+      (input) => {
+        input.checked = value;
       }
-      else {
-        e.checked = value;
-      }
-    });
+    );
 
     return this;
   }
@@ -328,16 +320,9 @@ class UnicornGridElement {
    * @returns {Element[]}
    */
   getChecked() {
-    const checkboxes = this.form.find('input.grid-checkbox[type=checkbox]'),
-      result = [];
-
-    $.each(checkboxes, function(i, e) {
-      if (e.checked) {
-        result.push(e);
-      }
-    });
-
-    return result;
+    return this.app.selectMap(
+      this.element.querySelectorAll('input[data-role=grid-checkbox][type=checkbox]')
+    );
   }
 
   /**
@@ -383,7 +368,7 @@ class UnicornGridElement {
       const originOrdering = origin.val().split(',');
       const inputs = this.form.find('.ordering-control input');
 
-      this.toggleAll(false);
+      this.toggleAll();
 
       inputs.each(function(i) {
         const $this = $(this);

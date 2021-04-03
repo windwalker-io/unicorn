@@ -6,8 +6,8 @@
     "build": "cross-env node_modules/.bin/gulp --gulpfile=fusionfile.mjs",
     "build:dev": "cross-env NODE_ENV=development node_modules/.bin/gulp --gulpfile=fusionfile.mjs",
     "build:prod": "cross-env NODE_ENV=production node_modules/.bin/gulp --gulpfile=fusionfile.mjs",
-    "watch": "cross-env NODE_ENV=development node_modules/.bin/gulp --gulpfile=fusionfile.mjs --watch",
-    "watch:reload": "cross-env NODE_ENV=development node_modules/.bin/gulp --gulpfile=fusionfile.mjs --watch --livereload"
+    "watch": "cross-env NODE_ENV=development node_modules/.bin/gulp --watch --gulpfile=fusionfile.mjs",
+    "watch:reload": "cross-env NODE_ENV=development node_modules/.bin/gulp --watch --livereload --gulpfile=fusionfile.mjs"
   },
   "repository": {
     "type": "git",
@@ -25,6 +25,7 @@
   "homepage": "https://github.com/ventoviro/unicorn#readme",
   "dependencies": {
     "alpinejs": "^2.8.2",
+    "awesome-bootstrap-checkbox": "^1.0.1",
     "axios": "^0.21.1",
     "gulp": "^4.0.2",
     "systemjs": "^6.8.3"

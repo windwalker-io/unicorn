@@ -53,9 +53,18 @@ export default class UnicornHelper extends Plugin {
    return prepareData(ele);
   }
 
-  selectMap(selector, callback) {
-    const resultSet = [].slice.call(document.querySelectorAll(selector))
-    return resultSet.map(callback);
+  selectMap(ele, callback) {
+    if (typeof ele === 'string') {
+      ele = document.querySelectorAll(ele);
+    }
+
+    const resultSet = [].slice.call(ele);
+
+    if (callback) {
+      return resultSet.map(callback);
+    }
+
+    return resultSet;
   }
 
   get(obj, path) {

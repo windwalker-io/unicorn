@@ -30,12 +30,6 @@ use Windwalker\Form\Form;
 $open ??= false;
 ?>
 
-@push('script')
-    <script type="module">
-        import('@alpinejs');
-    </script>
-@endpush
-
 <div class="c-filter-bar mb-4"
     x-data="{
         open: {{ (int) $open }},
