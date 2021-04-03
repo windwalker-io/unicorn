@@ -7,10 +7,14 @@
 
 import { EventMixin } from './events.js';
 import { mix } from './mixwith.js';
-import { merge } from 'lodash.merge';
-import { Plugin } from './plugin.js';
+import { merge } from 'lodash-es';
+import { installFor, Plugin } from './plugin.js';
 
 export default class UnicornCore extends mix(class {}).with(EventMixin) {
+  plugins = {};
+  _listeners = {};
+  waits = [];
+
   /**
    * Default options.
    * @returns {Object}
@@ -22,8 +26,6 @@ export default class UnicornCore extends mix(class {}).with(EventMixin) {
   constructor(options = {}) {
     super();
     this.options = merge({}, this.constructor.defaultOptions, options);
-    this._listeners = {};
-    this.waits = [];
 
     // Wait dom ready
     this.wait((resolve) => {
@@ -37,21 +39,7 @@ export default class UnicornCore extends mix(class {}).with(EventMixin) {
   }
 
   use(plugin) {
-    if (Array.isArray(plugin)) {
-      plugin.forEach(p => this.use(p));
-      return this;
-    }
-
-    if (plugin.is === undefined) {
-      throw new Error(`Plugin: ${plugin.name} must instance of : ${Plugin.name}`);
-    }
-
-    const instance = plugin.install(this);
-    instance.boot(this);
-
-    this.trigger('plugin.installed', instance);
-
-    return this;
+    return installFor(plugin, this);
   }
 
   detach(plugin) {
@@ -72,13 +60,13 @@ export default class UnicornCore extends mix(class {}).with(EventMixin) {
     return value;
   }
 
-  trigger(event, ...args) {
-    return this.tap(super.trigger(event, ...args), () => {
-      if ($(document).data('windwalker.debug')) {
-        console.debug(`[Unicorn Event] ${event}`, args, this.listeners(event));
-      }
-    });
-  }
+  // trigger(event, ...args) {
+  //   return this.tap(super.trigger(event, ...args), () => {
+  //     if (this.data('windwalker.debug')) {
+  //       console.debug(`[Unicorn Event] ${event}`, args, this.listeners(event));
+  //     }
+  //   });
+  // }
 
   data(name, value) {
     this.trigger('unicorn.data', name, value);
@@ -122,7 +110,7 @@ export default class UnicornCore extends mix(class {}).with(EventMixin) {
     const p = new Promise((resolve, reject) => {
       const promise = callback(resolve, reject);
 
-      if ('then' in promise) {
+      if (promise && 'then' in promise) {
         promise.then(resolve).catch(reject);
       }
     });

@@ -13,17 +13,21 @@ namespace Unicorn;
 
 use Windwalker\Core\Package\AbstractPackage;
 use Windwalker\Core\Package\PackageInstaller;
-use Windwalker\Core\Renderer\RendererService;
+use Windwalker\Core\Security\CsrfService;
+use Windwalker\DI\BootableDeferredProviderInterface;
 use Windwalker\DI\BootableProviderInterface;
 use Windwalker\DI\Container;
 use Windwalker\DI\ServiceProviderInterface;
-use Windwalker\Filesystem\Filesystem;
 use Windwalker\Renderer\CompositeRenderer;
+use Windwalker\Session\Cookie\Cookies;
 
 /**
  * The UnicornPackage class.
  */
-class UnicornPackage extends AbstractPackage implements ServiceProviderInterface, BootableProviderInterface
+class UnicornPackage extends AbstractPackage implements
+    ServiceProviderInterface,
+    BootableProviderInterface,
+    BootableDeferredProviderInterface
 {
     /**
      * boot
@@ -34,7 +38,27 @@ class UnicornPackage extends AbstractPackage implements ServiceProviderInterface
      */
     public function boot(Container $container): void
     {
+    }
 
+    /**
+     * boot
+     *
+     * @param  Container  $container
+     *
+     * @return  void
+     */
+    public function bootDeferred(Container $container): void
+    {
+        if ($container->getParam('unicorn.csrf.auto_set_cookie')) {
+            $name = $container->getParam('unicorn.csrf.cookie_name') ?? 'XSRF-TOKEN';
+            $csrf = $container->get(CsrfService::class);
+
+            if ($container->has(Cookies::class)) {
+                $container->get(Cookies::class)->set($name, $csrf->getToken());
+            } else {
+                setcookie($name, $csrf);
+            }
+        }
     }
 
     /**
@@ -46,10 +70,14 @@ class UnicornPackage extends AbstractPackage implements ServiceProviderInterface
      */
     public function register(Container $container): void
     {
-        $container->extend(CompositeRenderer::class, function (CompositeRenderer $renderer) {
-            $renderer->addPath(dirname(__DIR__) . '/views');
-            return $renderer;
-        });
+        $container->extend(
+            CompositeRenderer::class,
+            function (CompositeRenderer $renderer) {
+                $renderer->addPath(dirname(__DIR__) . '/views');
+
+                return $renderer;
+            }
+        );
     }
 
     public function install(PackageInstaller $installer): void

@@ -5,9 +5,9 @@
  * @license    __LICENSE__
  */
 
-export class Plugin {
-  name = '';
+import { merge } from 'lodash-es';
 
+export class Plugin {
   static get is() {
     throw new Error(`Please add "is" property to Unicorn Plugin: ${this.name}`);
   }
@@ -21,7 +21,7 @@ export class Plugin {
   }
 
   get options() {
-    return this.unicorn.options[this.constructor.is.toLowerCase()];
+    return this.app.options[this.constructor.is.toLowerCase()];
   }
 
   static install(unicorn) {
@@ -42,26 +42,27 @@ export class Plugin {
   }
 
   boot(unicorn) {
-    this.unicorn = unicorn;
+    this.unicorn = unicorn; // For B/C
+
+    this.app = unicorn;
 
     const name = this.constructor.is.toLowerCase();
 
     // Merge to global options
-    this.unicorn.options[name] = $.extend(
-      true,
+    this.app.options[name] = merge(
       {},
       this.constructor.defaultOptions,
-      this.unicorn.options[name],
+      this.app.options[name],
     );
 
     // Created hook
     this.created();
 
     // DOM Ready hook
-    $(() => this.ready());
+    window.addEventListener('DOMContentLoaded', () => this.ready());
 
     // Unicorn onload hook
-    this.unicorn.on('loaded', this.loaded);
+    this.app.on('loaded', this.loaded);
   }
 
   created() {
@@ -83,7 +84,7 @@ export class Plugin {
 
     this.resetProxies(unicorn, plugin);
 
-    unicorn[plugin.constructor.is] = plugin;
+    unicorn.plugins[plugin.constructor.is] = plugin;
 
     const { proxies } = plugin.constructor;
 
@@ -106,7 +107,7 @@ export class Plugin {
             return plugin[origin](...args);
           };
         } else {
-          Object.defineProperties(unicorn, name, {
+          Object.defineProperty(unicorn, name, {
             get: () => plugin[origin],
             set: (value) => {
               plugin[origin] = value;
@@ -122,8 +123,8 @@ export class Plugin {
   static resetProxies(unicorn, plugin) {
     const name = typeof plugin === 'string' ? plugin : plugin.constructor.is;
 
-    if (unicorn[name]) {
-      plugin = unicorn[name];
+    if (unicorn.plugins[name]) {
+      plugin = unicorn.plugins[name];
     }
 
     if (plugin.constructor.proxies === undefined) {
@@ -164,4 +165,27 @@ export class JQueryPlugin extends Plugin {
 
     return $(selector)[this.constructor.pluginName](options, this.unicorn, ...args);
   }
+}
+
+export function installFor(plugin, target) {
+  if (Array.isArray(plugin)) {
+    plugin.forEach(p => this.use(p));
+    return this;
+  }
+
+  // if (plugin.is === undefined) {
+  //   throw new Error(`Plugin: ${plugin.name} must instance of : ${Plugin.name}`);
+  // }
+
+  const instance = plugin.install(target);
+
+  if (instance && instance.boot) {
+    instance.boot(target);
+  }
+
+  if (target.trigger) {
+    target.trigger('plugin.installed', instance);
+  }
+
+  return target;
 }

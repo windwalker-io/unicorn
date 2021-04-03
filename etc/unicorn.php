@@ -13,6 +13,11 @@ return [
     'unicorn' => [
         'enabled' => true,
 
+        'csrf' => [
+            'auto_set_cookie' => true,
+            'cookie_name' => 'XSRF-TOKEN'
+        ],
+
         'listeners' => [
             //
         ],

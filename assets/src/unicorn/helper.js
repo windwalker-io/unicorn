@@ -5,13 +5,17 @@
  * @license    __LICENSE__
  */
 
+import { prepareData } from './utilities.js';
 import { Plugin } from './plugin.js';
+import { sprintf, vsprintf } from 'sprintf-js';
 
-class UnicornHelper extends Plugin {
-  static get is() { return 'Helper'; }
+export default class UnicornHelper extends Plugin {
+  static get is() { return 'helper'; }
 
   static get proxies() {
     return {
+      $: 'selectElement',
+      selectMap: 'selectMap',
       $get: 'get',
       $set: 'set',
       isDebug: 'isDebug',
@@ -20,8 +24,8 @@ class UnicornHelper extends Plugin {
       stopKeepAlive: 'stopKeepAlive',
       isNullDate: 'isNullDate',
       getNullDate: 'getNullDate',
-      loadScript: 'loadScript',
-      notify: 'notify',
+      // loadScript: 'loadScript',
+      // notify: 'notify',
       numberFormat: 'numberFormat',
       sprintf: 'sprintf',
       vsprintf: 'vsprintf',
@@ -36,6 +40,22 @@ class UnicornHelper extends Plugin {
     super();
 
     this.aliveHandle = null;
+  }
+
+  sprintf = sprintf
+  vsprintf = vsprintf
+
+  selectElement(ele) {
+   if (typeof ele === 'string') {
+     ele = document.querySelector(ele);
+   }
+
+   return prepareData(ele);
+  }
+
+  selectMap(selector, callback) {
+    const resultSet = [].slice.call(document.querySelectorAll(selector))
+    return resultSet.map(callback);
   }
 
   get(obj, path) {
@@ -61,7 +81,7 @@ class UnicornHelper extends Plugin {
 
     for (i = 0; i < keys.length - 1; i++) {
       const key = keys[i];
-      console.log(obj.hasOwnProperty(key), key);
+
       if (!obj.hasOwnProperty(key)) {
         obj[key] = {};
       }
@@ -75,87 +95,70 @@ class UnicornHelper extends Plugin {
   }
 
   isDebug() {
-    return Boolean(this.unicorn.data('windwalker.debug'));
+    return Boolean(this.app.data('windwalker.debug'));
   }
 
   /**
    * Confirm popup.
    *
    * @param {string}   message
-   * @param {Function} callback
-   * @param {Function} falseCallback
+   *
+   * @return {Promise}
    */
-  confirm(message, callback, falseCallback = null) {
+  confirm(message) {
     message = message || 'Are you sure?';
 
-    const d = $.Deferred();
-    const when = $.when(d);
-
-    if (callback) {
-      when.done(callback);
-    }
-
-    if (falseCallback) {
-      when.catch(callback);
-    }
-
-    const confirmed = confirm(message);
-
-    if (confirmed) {
-      d.resolve(confirmed);
-    } else {
-      d.reject(confirmed);
-    }
-
-    return when;
-  }
-
-  loadScript(urls, autoConvert = true) {
-    if (typeof urls === 'string') {
-      urls = [urls];
-    }
-
-    const promises = [];
-    const data = {};
-    const endsWith = (str, suffix) => str.indexOf(suffix, str.length - suffix.length) >= 0;
-    data[this.unicorn.asset('version')] = '1';
-
-    urls.forEach(url => {
-      const ext = url.split('.').pop();
-      let loadUri = url;
-
-      if (autoConvert) {
-        let assetFile, assetMinFile;
-
-        if (endsWith(url, '.min.' + ext)) {
-          assetMinFile = url;
-          assetFile = url.slice(0, -`.min.${ext}`.length) + '.' + ext;
-        } else {
-          assetFile = url;
-          assetMinFile = url.slice(0, -`.${ext}`.length) + '.min.' + ext;
-        }
-
-        loadUri = this.unicorn.data('windwalker.debug') ? assetFile : assetMinFile;
-      }
-
-      promises.push(
-        $.getScript({
-          url: this.addUriBase(loadUri),
-          cache: true,
-          data
-        })
-      );
+    return new Promise((resolve) => {
+      resolve(confirm(message));
     });
-
-    return $.when(...promises);
   }
+
+  // loadScript(urls, autoConvert = true) {
+  //   if (typeof urls === 'string') {
+  //     urls = [urls];
+  //   }
+  //
+  //   const promises = [];
+  //   const data = {};
+  //   const endsWith = (str, suffix) => str.indexOf(suffix, str.length - suffix.length) >= 0;
+  //   data[this.app.asset('version')] = '1';
+  //
+  //   urls.forEach(url => {
+  //     const ext = url.split('.').pop();
+  //     let loadUri = url;
+  //
+  //     if (autoConvert) {
+  //       let assetFile, assetMinFile;
+  //
+  //       if (endsWith(url, '.min.' + ext)) {
+  //         assetMinFile = url;
+  //         assetFile = url.slice(0, -`.min.${ext}`.length) + '.' + ext;
+  //       } else {
+  //         assetFile = url;
+  //         assetMinFile = url.slice(0, -`.${ext}`.length) + '.min.' + ext;
+  //       }
+  //
+  //       loadUri = this.app.data('windwalker.debug') ? assetFile : assetMinFile;
+  //     }
+  //
+  //     promises.push(
+  //       $.getScript({
+  //         url: this.addUriBase(loadUri),
+  //         cache: true,
+  //         data
+  //       })
+  //     );
+  //   });
+  //
+  //   return $.when(...promises);
+  // }
 
   addUriBase(uri, type = 'path') {
-    if (uri.substr(0, 2) === '//' || uri.substr(0, 4) === 'http') {
+    if (uri.substr(0, 2) === '/\/' || uri.substr(0, 4) === 'http') {
       return uri;
     }
 
-    return this.unicorn.asset(type) + '/' + uri;
+    return this.app.asset(type) + '/' + uri;
   }
 
   /**
@@ -164,9 +167,9 @@ class UnicornHelper extends Plugin {
    * @param {string}       type
    * @returns {*}
    */
-  notify(message, type = 'info') {
-    return this.unicorn.addMessage(message, type);
-  }
+  // notify(message, type = 'info') {
+  //   return this.app.addMessage(message, type);
+  // }
 
   /**
    * Keep alive.
@@ -177,7 +180,7 @@ class UnicornHelper extends Plugin {
    * @return {number}
    */
   keepAlive(url, time = 60000) {
-    return this.aliveHandle = window.setInterval(() => $.get(url), time);
+    return this.aliveHandle = window.setInterval(() => fetch(url), time);
   }
 
   /**
@@ -206,7 +209,7 @@ class UnicornHelper extends Plugin {
    * @returns {string}
    */
   getNullDate() {
-    return this.unicorn.data('unicorn.date')['empty'];
+    return this.app.data('unicorn.date')['empty'];
   }
 
   /**

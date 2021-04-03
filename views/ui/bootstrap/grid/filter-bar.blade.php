@@ -27,6 +27,7 @@ use Windwalker\Form\Form;
  * @var Form $form
  */
 
+$open ??= false;
 ?>
 
 @push('script')
@@ -35,15 +36,23 @@ use Windwalker\Form\Form;
     </script>
 @endpush
 
-<div class="c-filter-bar mb-4" x-data="{ open: false }" x-id="filter-bar">
+<div class="c-filter-bar mb-4"
+    x-data="{
+        open: {{ (int) $open }},
+        form: () => gridState.form,
+        grid: () => gridState.grid
+    }"
+    x-id="filter-bar" x-ref="filterbar">
     <div class="c-filter-bar-top d-flex">
         <div class="c-filter-bar__top-start d-flex">
             <div class="input-group">
                 {!! $form->getField('search/content')->renderInput() !!}
 
                 <button class="btn btn-outline-secondary"
-                    data-search-button>
-                    Search
+                    data-search-button
+                    data-bs-toggle="tooltip" title="Search"
+                >
+                    <span class="fa fa-search"></span>
                 </button>
             </div>
 
@@ -51,15 +60,17 @@ use Windwalker\Form\Form;
                 <button type="button" class="btn text-nowrap"
                     data-filter-toggle-button
                     :class="[ open ? 'btn-dark' : 'btn-outline-secondary' ]"
-                    @@click="open = !open"
+                    @click="open = !open"
                 >
                     Filters
                     <span class="filter-button-icon fa"
-                        x-bind:class="[ open ? 'fa-angle-up' : 'fa-angle-down' ]"
+                        :class="[ open ? 'fa-angle-up' : 'fa-angle-down' ]"
                     ></span>
                 </button>
                 <button type="button" class="btn btn-outline-secondary"
                     data-filter-clear-button
+                    {{--@click="gridState.uniform.clearAll($refs.filterbar)"--}}
+                    @click="grid().clearFilters($refs.filterbar)"
                 >
                     <span class="fa fa-times"></span>
                 </button>

@@ -5,7 +5,7 @@
  * @license    MIT
  */
 
-import fusion, { babel, webpack } from '@windwalker-io/fusion';
+import fusion, { babel, webpack, parallel } from '@windwalker-io/fusion';
 
 export async function main() {
   // Watch start
@@ -19,6 +19,20 @@ export async function main() {
       options.output.libraryTarget = 'umd';
     }
   });
+  // Compile end
+}
+
+export async function js() {
+  // Watch start
+  fusion.watch('src/**/*.js');
+  // Watch end
+
+  // Compile Start
+  babel(
+    ['src/**/*.js', '!src/unicorn/**/*'],
+    'dist/',
+    { module: 'umd' }
+  );
   // Compile end
 }
 

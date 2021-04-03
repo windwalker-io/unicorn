@@ -25,6 +25,7 @@
   "homepage": "https://github.com/ventoviro/unicorn#readme",
   "dependencies": {
     "alpinejs": "^2.8.2",
+    "axios": "^0.21.1",
     "gulp": "^4.0.2",
     "systemjs": "^6.8.3"
   },
@@ -37,7 +38,8 @@
     "@windwalker-io/fusion": "^1.0.0-beta.4",
     "babel-loader": "^8.2.2",
     "gulp-babel": "^8.0.0",
-    "lodash.merge": "^4.6.2",
+    "lodash-es": "^4.17.21",
+    "sprintf-js": "^1.1.2",
     "vinyl-named-with-path": "^1.0.0",
     "webpack-comment-remover-loader": "^0.0.3",
     "webpack-stream": "^6.1.2"
