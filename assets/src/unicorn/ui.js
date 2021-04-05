@@ -21,7 +21,8 @@ export default class UnicornUI extends Plugin {
   static get proxies() {
     return {
       addMessage: 'renderMessage',
-      ui: 'ui'
+      ui: 'ui',
+      initAlpine: 'initAlpine',
     };
   }
 
@@ -45,5 +46,9 @@ export default class UnicornUI extends Plugin {
 
   renderMessage(messages, type = 'info') {
     //
+  }
+
+  initAlpine() {
+    return this.app.import('@alpinejs');
   }
 }

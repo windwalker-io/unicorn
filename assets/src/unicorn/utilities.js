@@ -23,6 +23,10 @@ export function defData(element, name, defCallback) {
 }
 
 export function prepareData(element) {
+  if (!element) {
+    return element;
+  }
+
   element.__unicorn = element.__unicorn || {};
   return element;
 }

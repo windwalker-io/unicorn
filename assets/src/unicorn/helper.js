@@ -16,6 +16,7 @@ export default class UnicornHelper extends Plugin {
     return {
       $: 'selectElement',
       selectMap: 'selectMap',
+      h: 'h',
       $get: 'get',
       $set: 'set',
       isDebug: 'isDebug',
@@ -65,6 +66,22 @@ export default class UnicornHelper extends Plugin {
     }
 
     return resultSet;
+  }
+
+  h(element, attrs = {}, content = null) {
+    const ele = document.createElement(element);
+
+    for (let i in attrs) {
+      const v = attrs[i];
+
+      ele.setAttribute(i, v);
+    }
+
+    if (content !== null) {
+      ele.innerHTML = content;
+    }
+
+    return ele;
   }
 
   get(obj, path) {

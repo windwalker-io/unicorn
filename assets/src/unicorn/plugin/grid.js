@@ -111,7 +111,7 @@ class UnicornGridElement {
   }
 
   sendFilter() {
-    this.form.patch();
+    this.form.put();
   }
 
   clearFilters(element) {
@@ -131,26 +131,26 @@ class UnicornGridElement {
    * @returns {boolean}
    */
   sort(ordering, direction) {
-    let orderingInput = this.form.find('input[name=list_ordering]');
+    let orderingInput = this.app.$('input[name=list_ordering]');
 
-    if (!orderingInput.length) {
-      orderingInput = $('<input name="list_ordering" type="hidden" value="" />');
+    if (!orderingInput) {
+      orderingInput = this.app.h('input', { name: 'list_ordering', type: 'hidden', value: '' });
 
-      this.form.append(orderingInput);
+      this.element.appendChild(orderingInput);
     }
 
-    let directionInput = this.form.find('input[name=list_direction]');
+    let directionInput = this.app.$('input[name=list_direction]');
 
-    if (!directionInput.length) {
-      directionInput = $('<input name="list_direction" type="hidden" value="">');
+    if (!directionInput) {
+      directionInput = this.app.h('input', { name: 'list_direction', type: 'hidden', value: ''  })
 
-      this.form.append(directionInput);
+      this.element.appendChild(directionInput);
     }
 
-    orderingInput.val(ordering);
-    directionInput.val(direction);
+    orderingInput.value = ordering;
+    directionInput.value = direction;
 
-    return this.core.put();
+    return this.form.put();
   }
 
   /**

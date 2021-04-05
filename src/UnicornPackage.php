@@ -90,6 +90,15 @@ class UnicornPackage extends AbstractPackage implements
                 '@awesome-checkbox' => 'vendor/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css'
             ]
         );
+
+        $container->mergeParameters(
+            'renderer.aliases',
+            [
+                '@theme' => 'ui.bootstrap5',
+                '@filter-bar' => '@theme.grid.filter-bar',
+                '@sort' => '@theme.grid.sort',
+            ]
+        );
     }
 
     public function install(PackageInstaller $installer): void
