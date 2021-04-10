@@ -6,8 +6,8 @@
  */
 
 export default class UnicornLoader {
-  static install(unicorn) {
-    unicorn.import = this.import;
+  static install(app) {
+    app.import = this.import;
   }
 
   static import(src) {

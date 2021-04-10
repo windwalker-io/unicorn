@@ -87,7 +87,8 @@ class UnicornPackage extends AbstractPackage implements
                 '@unicorn/' => 'vendor/@windwalker-io/unicorn/dist/',
                 '@alpinejs' => 'vendor/alpinejs/dist/alpine.js',
                 '@axios' => 'vendor/axios/dist/axios.js',
-                '@awesome-checkbox' => 'vendor/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css'
+                '@awesome-checkbox' => 'vendor/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css',
+                '@regenerator-runtime' => 'vendor/regenerator-runtime/runtime.js',
             ]
         );
 

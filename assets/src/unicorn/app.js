@@ -8,9 +8,8 @@
 import { EventMixin } from './events.js';
 import { mix } from './mixwith.js';
 import { merge } from 'lodash-es';
-import { installFor, Plugin } from './plugin.js';
 
-export default class UnicornCore extends mix(class {}).with(EventMixin) {
+export default class UnicornApp extends mix(class {}).with(EventMixin) {
   plugins = {};
   _listeners = {};
   waits = [];
@@ -38,16 +37,27 @@ export default class UnicornCore extends mix(class {}).with(EventMixin) {
     });
   }
 
-  use(plugin) {
-    return installFor(plugin, this);
+  use(plugin, options = {}) {
+    if (Array.isArray(plugin)) {
+      plugin.forEach(p => this.use(p));
+      return this;
+    }
+
+    // if (plugin.is === undefined) {
+    //   throw new Error(`Plugin: ${plugin.name} must instance of : ${Plugin.name}`);
+    // }
+
+    plugin.install(this, options);
+
+    this.trigger('plugin.installed', plugin);
+
+    return this;
   }
 
   detach(plugin) {
-    if (!(plugin instanceof Plugin)) {
-      throw new Error(`Plugin must instance of : ${Plugin.name}`);
+    if (plugin.uninstall) {
+      plugin.uninstall(this);
     }
-
-    plugin.uninstall(this);
 
     this.trigger('plugin.uninstalled', plugin);
 

@@ -5,11 +5,11 @@
  * @license    MIT
  */
 
-import fusion, { babel, webpack, parallel } from '@windwalker-io/fusion';
+import fusion, { babel, webpack, parallel, series } from '@windwalker-io/fusion';
 
 export async function main() {
   // Watch start
-  fusion.watch('src/**/*.js', main);
+  fusion.watch('src/unicorn/**/*.js');
   // Watch end
 
   // Compile Start
@@ -24,15 +24,22 @@ export async function main() {
 
 export async function js() {
   // Watch start
-  fusion.watch('src/**/*.js', js);
+  fusion.watch('src/js/**/*.js');
   // Watch end
 
   // Compile Start
-  babel(
-    ['src/**/*.js', '!src/unicorn/**/*'],
-    'dist/',
-    { module: 'systemjs' }
-  );
+  babel('src/js/**/*.js', 'dist/');
+  // Compile end
+}
+
+export async function modules() {
+  // Watch start
+  fusion.watch('src/modules/**/*.js');
+  // Watch end
+
+  // Compile Start
+  babel('src/modules/**/*.js', 'dist/', { module: 'systemjs' });
+  babel('src/modules/**/*.js', 'dist/', { module: 'systemjs' });
   // Compile end
 }
 

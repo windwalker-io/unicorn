@@ -4,38 +4,26 @@
  * @copyright  Copyright (C) 2021 __ORGANIZATION__.
  * @license    __LICENSE__
  */
+
 import { defData } from '../utilities.js';
-import { Plugin } from '../plugin.js';
 import { each } from 'lodash-es';
 
-export default class UnicornForm extends Plugin {
+export default class UnicornForm {
   static get is() {
     return 'form';
   }
 
-  static get proxies() {
-    return {
-      form: 'getInstance'
+  static install(app, options = {}) {
+    app.form = (ele, options = {}) => {
+      const selector = typeof ele === 'string' ? ele : null;
+      ele = app.$(ele);
+
+      return defData(
+        ele,
+        'form.plugin',
+        () => new UnicornFormElement(selector, ele, options, app)
+      );
     };
-  }
-
-  getInstance(ele, options = {}) {
-    const selector = typeof ele === 'string' ? ele : null;
-    ele = this.app.$(ele);
-
-    return defData(
-      ele,
-      'form.plugin',
-      () => new UnicornFormElement(selector, ele, options, this.app)
-    );
-  }
-
-  /**
-   * Default options.
-   * @returns {Object}
-   */
-  static get defaultOptions() {
-    return {};
   }
 }
 
@@ -45,9 +33,9 @@ class UnicornFormElement {
    * @param {string}      selector
    * @param {HTMLElement} $form
    * @param {Object}      options
-   * @param {UnicornCore} unicorn
+   * @param {UnicornCore} app
    */
-  constructor(selector, $form, options, unicorn) {
+  constructor(selector, $form, options, app) {
     // If form not found, create one
     if (!$form) {
       $form = document.createElement('form');
@@ -60,11 +48,11 @@ class UnicornFormElement {
       $form.setAttribute('action', 'post');
       $form.setAttribute('enctype', 'multipart/form-data');
       $form.setAttribute('novalidate', 'true');
-      $form.setAttribute('action', unicorn.data('unicorn.uri')['full']);
+      $form.setAttribute('action', app.data('unicorn.uri')['full']);
       $form.setAttribute('display', 'none');
 
       const csrf = document.createElement('input');
-      csrf.setAttribute('name', unicorn.data('csrf-token'));
+      csrf.setAttribute('name', app.data('csrf-token'));
 
       $form.appendChild(csrf);
       document.body.appendChild($form);

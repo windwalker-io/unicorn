@@ -5,38 +5,26 @@
  * @license    GNU General Public License version 2 or later.
  */
 
+import { merge } from 'lodash-es';
 import { defData } from '../utilities.js';
-import { Plugin } from '../plugin.js';
 
 /**
  * UnicornGrid
  */
-export default class UnicornGrid extends Plugin {
+export default class UnicornGrid {
   static get is() { return 'grid'; }
 
-  static get proxies() {
-    return {
-      grid: 'getInstance'
+  static install(app, options = {}) {
+    app.grid = (ele, options = {}) => {
+      const selector = typeof ele === 'string' ? ele : null;
+      ele = app.$(ele);
+
+      return defData(
+        ele,
+        'grid.plugin',
+        () => new UnicornGridElement(selector, ele, options, app)
+      );
     };
-  }
-
-  getInstance(ele, options = {}) {
-    const selector = typeof ele === 'string' ? ele : null;
-    ele = this.app.$(ele);
-
-    return defData(
-      ele,
-      'grid.plugin',
-      () => new UnicornGridElement(selector, ele, options, this.app)
-    );
-  }
-
-  /**
-   * Default options.
-   * @returns {Object}
-   */
-  static get defaultOptions() {
-    return {};
   }
 }
 
@@ -108,6 +96,17 @@ class UnicornGridElement {
     // this.sortButtons.click(event => {
     //   self.sort(event.currentTarget, event);
     // });
+  }
+
+  useState(custom = {}) {
+    return merge(
+      {
+        grid: this,
+        form: this.form,
+        ordering: ''
+      },
+      custom
+    );
   }
 
   sendFilter() {

@@ -6,8 +6,8 @@
  */
 
 export class UIBootstrap5 {
-  static install(unicorn) {
-    unicorn.ui.bootstrap = new this(unicorn.ui);
+  static install(app) {
+    app.$ui.bootstrap = new this(app.$ui);
   }
 
   constructor(ui) {

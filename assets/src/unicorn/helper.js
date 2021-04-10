@@ -6,45 +6,34 @@
  */
 
 import { prepareData } from './utilities.js';
-import { Plugin } from './plugin.js';
 import { sprintf, vsprintf } from 'sprintf-js';
 
-export default class UnicornHelper extends Plugin {
+export default class UnicornHelper {
   static get is() { return 'helper'; }
 
-  static get proxies() {
-    return {
-      $: 'selectElement',
-      selectMap: 'selectMap',
-      h: 'h',
-      $get: 'get',
-      $set: 'set',
-      isDebug: 'isDebug',
-      confirm: 'confirm',
-      keepAlive: 'keepAlive',
-      stopKeepAlive: 'stopKeepAlive',
-      isNullDate: 'isNullDate',
-      getNullDate: 'getNullDate',
-      // loadScript: 'loadScript',
-      // notify: 'notify',
-      numberFormat: 'numberFormat',
-      sprintf: 'sprintf',
-      vsprintf: 'vsprintf',
-    };
+  static install(app, options = {}) {
+    const helper = app.$helper = new this(app);
+
+    app.$ = helper.selectElement.bind(helper);
+    app.selectMap = helper.selectMap;
+    app.h = helper.h;
+    app.$get = helper.$get;
+    app.$set = helper.$set;
+    app.isDebug = helper.isDebug.bind(helper);
+    app.confirm = helper.confirm.bind(helper);
+    app.keepAlive = helper.keepAlive.bind(helper);
+    app.stopKeepAlive = helper.stopKeepAlive;
+    app.isNullDate = helper.isNullDate.bind(helper);
+    app.getNullDate = helper.getNullDate.bind(helper);
+    app.numberFormat = helper.numberFormat;
+    app.sprintf = sprintf;
+    app.vsprintf = vsprintf;
   }
 
-  static get defaultOptions() {
-    return {}
-  }
-
-  constructor() {
-    super();
-
+  constructor(app) {
+    this.app = app;
     this.aliveHandle = null;
   }
-
-  sprintf = sprintf
-  vsprintf = vsprintf
 
   selectElement(ele) {
    if (typeof ele === 'string') {

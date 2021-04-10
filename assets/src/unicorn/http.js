@@ -5,26 +5,18 @@
  * @license    GNU General Public License version 2 or later.
  */
 
-import { Plugin } from './plugin.js';
-
-export default class UnicornHttp extends Plugin {
+export default class UnicornHttp {
   globalAxios;
   axios;
 
   static get is() { return 'http'; }
 
-  static get proxies() {
-    return {
-      '$http': 'getSelf'
-    };
+  static install(app, options) {
+    app.$http = new this(app);
   }
 
-  static get defaultOptions() {
-    return {};
-  }
-
-  constructor() {
-    super();
+  constructor(app) {
+    this.app = app;
 
     this.config = {
       customMethod: false,

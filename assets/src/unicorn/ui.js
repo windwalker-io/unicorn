@@ -5,12 +5,27 @@
  * @license    __LICENSE__
  */
 
-import { Plugin } from './plugin.js';
-
-export default class UnicornUI extends Plugin {
+export default class UnicornUI {
   theme;
 
   static get is() { return 'ui'; }
+
+  static install(app, options = {}) {
+    // Disable Alpine auto load.
+    window.deferLoadingAlpine = () => {};
+
+    const ui = app.$ui = new this(app);
+    app.addMessage = ui.renderMessage;
+
+    app.loadAlpine = () => app.import('@alpinejs');
+
+    app.initAlpine = (selector) => {
+      return app.loadAlpine().then(() => {
+        const element = app.$(selector);
+        Alpine.initializeComponent(element);
+      });
+    };
+  }
 
   static get defaultOptions() {
     return {
@@ -18,37 +33,16 @@ export default class UnicornUI extends Plugin {
     };
   }
 
-  static get proxies() {
-    return {
-      addMessage: 'renderMessage',
-      ui: 'ui',
-      initAlpine: 'initAlpine',
-    };
-  }
-
-  get ui() {
-    return this;
-  }
-
   installTheme(theme) {
     this.theme = theme;
   }
 
-  constructor() {
-    super();
-
+  constructor(app) {
+    this.app = app;
     this.aliveHandle = null;
-  }
-
-  ready() {
-    super.ready();
   }
 
   renderMessage(messages, type = 'info') {
     //
-  }
-
-  initAlpine() {
-    return this.app.import('@alpinejs');
   }
 }
