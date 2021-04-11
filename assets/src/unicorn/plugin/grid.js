@@ -103,7 +103,11 @@ class UnicornGridElement {
       {
         grid: this,
         form: this.form,
-        ordering: ''
+        ordering: '',
+        init($el) {
+          this.ordering = $el.dataset.ordering;
+        },
+        isSortActive
       },
       custom
     );
@@ -408,4 +412,17 @@ class UnicornGridElement {
 
     return this.doTask('reorder', row, url, queries);
   }
+}
+
+function isSortActive($el) {
+  let field = $el.dataset.field;
+  let desc = $el.dataset.desc;
+  let asc = $el.dataset.asc;
+  
+  desc = desc || `${field} DESC`;
+  asc = asc || `${field} ASC`;
+
+  const ordering = this.grid.element.dataset.ordering;
+  console.log(ordering, asc, desc);
+  return ordering === asc || ordering === desc;
 }

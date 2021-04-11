@@ -11,13 +11,10 @@ declare(strict_types=1);
 
 namespace Unicorn\Repository;
 
-use phpDocumentor\Reflection\ProjectFactory;
 use Unicorn\Selector\ListSelector;
-use Windwalker\Attributes\AttributesAccessor;
 use Windwalker\Core\Pagination\PaginationFactory;
 use Windwalker\Database\DatabaseAdapter;
 use Windwalker\DI\Attributes\Inject;
-use Windwalker\ORM\Attributes\Table;
 use Windwalker\ORM\SelectorQuery;
 
 /**

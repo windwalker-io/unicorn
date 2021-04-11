@@ -29,6 +29,8 @@ use Windwalker\Utilities\Arr;
 use Windwalker\Utilities\Cache\InstanceCacheTrait;
 use Windwalker\Utilities\Classes\FlowControlTrait;
 
+use function Windwalker\raw;
+
 /**
  * The AbstractSelector class.
  */
@@ -108,8 +110,8 @@ class ListSelector implements EventAwareInterface
      */
     public function getIterator(?string $class = null, array $args = []): \Traversable
     {
-        return $this->getQuery()->getIterator(
-            $class ?? $this->entityClass,
+        return $this->compileQuery()->getIterator(
+            $class,
             $args
         );
     }
@@ -183,6 +185,36 @@ class ListSelector implements EventAwareInterface
     public function count(): int
     {
         return $this->cacheStorage['count'] ??= $this->compileQuery()->count();
+    }
+
+    public function ordering(mixed $order, ?string $dir = null): static
+    {
+        if (is_string($order)) {
+            $order = Arr::explodeAndClear(',', $order);
+        }
+
+        foreach ($order as $i => $orderItem) {
+            if (is_string($orderItem)) {
+                $orderItem = Arr::explodeAndClear(' ', $orderItem);
+
+                if ($dir !== null) {
+                    $orderItem[1] = $dir;
+                }
+
+                $orderItem[1] ??= 'ASC';
+                $orderItem[1] = strtoupper($orderItem[1]);
+
+                if (str_ends_with($orderItem[1], '()')) {
+                    $orderItem[1] = raw($orderItem[1]);
+                }
+
+                $order[$i] = $orderItem;
+            }
+        }
+
+        $this->getQuery()->order($order);
+
+        return $this;
     }
 
     public function getOffset(): int

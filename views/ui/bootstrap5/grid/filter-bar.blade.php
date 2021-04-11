@@ -36,6 +36,7 @@ $open ??= false;
         form: () => gridState.form,
         grid: () => gridState.grid
     }"
+    x-cloak
     x-id="filter-bar" x-ref="filterbar">
     <div class="c-filter-bar-top d-flex">
         <div class="c-filter-bar__top-start d-flex">
@@ -79,7 +80,7 @@ $open ??= false;
     <div class="c-filter-bar__filters mt-3" x-show="open"
         x-transition:enter="fadeIn"
         x-transition:leave="fadeOut"
-        style="animation-duration: .3s"
+        style="animation-duration: .3s; display: none;"
     >
         @php($fields = iterator_to_array($form->getFields(\Windwalker\Utilities\Symbol::none(), 'filter')))
 

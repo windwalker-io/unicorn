@@ -25,12 +25,16 @@ use Windwalker\Core\Router\SystemUri;
 ?>
 
 <a href="javascript: void(0);"
+    x-data="gridState"
+    data-field="{{ $field }}"
+    data-asc="{{ $asc ?? '' }}"
+    data-desc="{{ $desc ?? '' }}"
     @click="grid.sort('{{ $field }}', $refs.gridForm.dataset.direction === 'ASC' ? 'DESC' : 'ASC')"
     data-bs-toggle="tooltip"
     title="@lang('phoenix.grid.sort.button')">
     {!! $slot ?? "- Sort: $field -" !!}
 
-    <template x-if="$refs.gridForm.dataset.ordering === '{{ $field }}'">
+    <template x-if="isSortActive($el)">
         <small
             class="fa"
             :class="[ $refs.gridForm.dataset.direction === 'ASC' ? 'fa-caret-down' : 'fa-caret-up' ]"
