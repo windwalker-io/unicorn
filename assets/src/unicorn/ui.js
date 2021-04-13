@@ -18,9 +18,38 @@ export default class UnicornUI {
     app.addMessage = ui.renderMessage;
 
     app.loadAlpine = () => app.import('@alpinejs');
+    app.loadSpruce = () => {
+      return Promise.all([
+        app.loadAlpine(),
+        app.import('@spruce')
+      ]);
+    };
 
     app.initAlpine = (selector) => {
       return app.loadAlpine().then(() => {
+        const element = app.$(selector);
+        Alpine.initializeComponent(element);
+      });
+    };
+
+    app.startAlpine = () => {
+      return app.loadAlpine().then(() => {
+        if (Spruce) {
+          Spruce.start();
+        }
+
+        Alpine.start();
+      });
+    };
+
+    app.startAlpineSpruce = () => {
+      return app.loadSpruce().then(() => {
+        Alpine.start();
+      });
+    };
+
+    app.initAlpineSpruce = (selector) => {
+      return app.loadSpruce().then(() => {
         const element = app.$(selector);
         Alpine.initializeComponent(element);
       });

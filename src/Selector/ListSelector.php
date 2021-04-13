@@ -377,6 +377,19 @@ class ListSelector implements EventAwareInterface
         return $this;
     }
 
+    public function searchFor(?string $q, array $fields = []): static
+    {
+        if ((string) $q === '') {
+            return $this;
+        }
+
+        foreach ($fields as $field) {
+            $this->searches[$field] = $q;
+        }
+
+        return $this;
+    }
+
     /**
      * hasSearch
      *

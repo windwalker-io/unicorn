@@ -1,1 +1,0 @@
-{"version":3,"sources":["ui/foo.js"],"names":["Foo"],"mappings":";;;;;;;AAAA;AACA;AACA;AACA;AACA;AACA;qBAEaA,G,GAAM,G","sourcesContent":["/**\n * Part of starter project.\n *\n * @copyright  Copyright (C) 2021 __ORGANIZATION__.\n * @license    __LICENSE__\n */\n\nexport const Foo = 123;\n"],"file":"foo.js"}

@@ -86,6 +86,8 @@ class UnicornPackage extends AbstractPackage implements
                 '@systemjs' => 'vendor/systemjs/dist/system.js',
                 '@unicorn/' => 'vendor/@windwalker-io/unicorn/dist/',
                 '@alpinejs' => 'vendor/alpinejs/dist/alpine.js',
+                '@alpinejs-ie11' => 'vendor/alpinejs/dist/alpine-ie11.js',
+                '@spruce' => 'vendor/@ryangjchandler/spruce/dist/spruce.umd.js',
                 '@axios' => 'vendor/axios/dist/axios.js',
                 '@awesome-checkbox' => 'vendor/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css',
                 '@regenerator-runtime' => 'vendor/regenerator-runtime/runtime.js',
@@ -96,8 +98,10 @@ class UnicornPackage extends AbstractPackage implements
             'renderer.aliases',
             [
                 '@theme' => 'ui.bootstrap5',
+                '@title-bar' => '@theme.form.title-bar',
                 '@filter-bar' => '@theme.grid.filter-bar',
                 '@sort' => '@theme.grid.sort',
+                '@card' => '@theme.card',
             ]
         );
     }

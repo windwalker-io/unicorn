@@ -36,6 +36,7 @@
     "@babel/plugin-proposal-decorators": "^7.13.5",
     "@babel/plugin-proposal-optional-chaining": "^7.13.12",
     "@babel/preset-env": "^7.13.12",
+    "@ryangjchandler/spruce": "^2.6.3",
     "@windwalker-io/fusion": "^1.0.0-beta.4",
     "babel-loader": "^8.2.2",
     "gulp-babel": "^8.0.0",

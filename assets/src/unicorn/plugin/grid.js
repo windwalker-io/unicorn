@@ -29,6 +29,8 @@ export default class UnicornGrid {
 }
 
 class UnicornGridElement {
+  ordering = '';
+
   static get defaultOptions() {
     return {
       mainSelector: '',
@@ -98,22 +100,38 @@ class UnicornGridElement {
     // });
   }
 
+  registerCustomElements() {
+    return app.import('@unicorn/ui/grid-components.js');
+  }
+
+  initComponent(store = 'grid', custom = {}) {
+    this.ordering = this.element.dataset.ordering;
+
+    if (!this.ordering.toLowerCase().endsWith(' asc')
+      && !this.ordering.toLowerCase().endsWith(' desc')) {
+      this.ordering += ' ASC';
+    }
+
+    return this.app.loadSpruce()
+      .then(() => {
+        Spruce.store(store, this.useState(custom));
+        // this.registerCustomElements();
+        this.app.startAlpine();
+      });
+  }
+
   useState(custom = {}) {
     return merge(
-      {
-        grid: this,
-        form: this.form,
-        ordering: '',
-        init($el) {
-          this.ordering = $el.dataset.ordering;
-        },
-        isSortActive
-      },
+      this,
       custom
     );
   }
 
-  sendFilter() {
+  sendFilter($event) {
+    if ($event) {
+      $event.preventDefault();
+    }
+
     this.form.put();
   }
 
@@ -122,19 +140,37 @@ class UnicornGridElement {
       ele.value = '';
     });
 
-    this.form.submit();
+    this.form.put();
+  }
+
+  sort($el) {
+    const dir = this.getDirection($el);
+
+    const field = $el.dataset.field;
+    let asc = $el.dataset.asc;
+    let desc = $el.dataset.desc;
+
+    if (field) {
+      asc = field + ' ASC';
+      desc = field + ' DESC';
+    }
+
+    if (dir === 'ASC') {
+      return this.sortBy(desc);
+    }
+
+    return this.sortBy(asc);
   }
 
   /**
    * Sort two items.
    *
    * @param {string} ordering
-   * @param {string} direction
    *
    * @returns {boolean}
    */
-  sort(ordering, direction) {
-    let orderingInput = this.app.$('input[name=list_ordering]');
+  sortBy(ordering) {
+    let orderingInput = this.element.querySelector('input[name=list_ordering]');
 
     if (!orderingInput) {
       orderingInput = this.app.h('input', { name: 'list_ordering', type: 'hidden', value: '' });
@@ -142,18 +178,39 @@ class UnicornGridElement {
       this.element.appendChild(orderingInput);
     }
 
-    let directionInput = this.app.$('input[name=list_direction]');
-
-    if (!directionInput) {
-      directionInput = this.app.h('input', { name: 'list_direction', type: 'hidden', value: ''  })
-
-      this.element.appendChild(directionInput);
-    }
-
     orderingInput.value = ordering;
-    directionInput.value = direction;
 
     return this.form.put();
+  }
+
+  isSortActive($el) {
+    return this.getDirection($el) != null;
+  }
+
+  getDirection($el) {
+    const field = $el.dataset.field;
+    let asc = $el.dataset.asc;
+    let desc = $el.dataset.desc;
+
+    if (field) {
+      asc = field + ' ASC';
+      desc = field + ' DESC';
+    }
+
+    if (this.orderingEquals(asc, this.ordering)) {
+      return 'ASC';
+    } else if (this.orderingEquals(desc, this.ordering)) {
+      return 'DESC';
+    }
+
+    return null;
+  }
+
+  orderingEquals(a, b) {
+    a = a.replace(/\s+/g, ' ').trim().toLowerCase();
+    b = b.replace(/\s+/g, ' ').trim().toLowerCase();
+
+    return a === b;
   }
 
   /**

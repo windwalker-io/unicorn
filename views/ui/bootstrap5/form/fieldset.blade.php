@@ -4,7 +4,7 @@
  * Global variables
  * --------------------------------------------------------------
  * @var $app       AppContext      Application context.
- * @var $view      ViewModel       The view modal object.
+ * @var $vm        object          The view model object.
  * @var $uri       SystemUri       System Uri information.
  * @var $chronos   ChronosService  The chronos datetime service.
  * @var $nav       Navigator       Navigator object to build route.
@@ -16,32 +16,21 @@ declare(strict_types=1);
 
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Asset\AssetService;
-use Windwalker\Core\Attributes\ViewModel;
 use Windwalker\Core\DateTime\ChronosService;
 use Windwalker\Core\Language\LangService;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\SystemUri;
+use Windwalker\Form\Form;
 
-$store ??= 'grid';
+/**
+ * @var Form   $form
+ * @var string $name
+ */
+$fieldset = $form->getFieldset($name);
 ?>
 
-<a href="javascript: void(0);"
-    x-data="{ grid: $store.{{ $store }} }"
-    data-field="{{ $field ?? '' }}"
-    data-asc="{{ $asc ?? '' }}"
-    data-desc="{{ $desc ?? '' }}"
-    @click="grid.sort($el)"
-    data-bs-toggle="tooltip"
-    title="@lang('phoenix.grid.sort.button')">
-    {!! $slot ?? "- Sort: $field -" !!}
+@component('@card')
 
-    <template x-if="grid.isSortActive($el)">
-        <small
-            class="fa"
-            :class="{
-                'fa-caret-down': grid.getDirection($el) === 'ASC',
-                'fa-caret-up': grid.getDirection($el) === 'DESC'
-            }"
-        ></small>
-    </template>
-</a>
+
+
+@endcomponent

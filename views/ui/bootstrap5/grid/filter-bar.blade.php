@@ -28,48 +28,61 @@ use Windwalker\Form\Form;
  */
 
 $open ??= false;
+$searchInput ??= 'search/*';
+
+$searchBlock ??= null;
+$filterBlock ??= null;
 ?>
 
 <div class="c-filter-bar mb-4"
-    x-data="{
-        open: {{ (int) $open }},
-        form: () => gridState.form,
-        grid: () => gridState.grid
-    }"
+    x-data="{ open: $el.dataset.open === '1' }"
+    data-open="{{ (int) $open }}"
     x-cloak
-    x-id="filter-bar" x-ref="filterbar">
+    x-id="filter-bar"
+    x-ref="filterbar"
+>
     <div class="c-filter-bar-top d-flex">
         <div class="c-filter-bar__top-start d-flex">
-            <div class="input-group">
-                {!! $form->getField('search/content')->renderInput() !!}
+            @if ($searchBlock !== false)
+                @if ($searchBlock === null)
+                    <div class="input-group">
+                        {!! $form->getField($searchInput)->renderInput() !!}
 
-                <button class="btn btn-outline-secondary"
-                    data-search-button
-                    data-bs-toggle="tooltip" title="Search"
-                >
-                    <span class="fa fa-search"></span>
-                </button>
-            </div>
+                        <button type="button" class="btn btn-outline-secondary"
+                            data-search-button
+                            data-bs-toggle="tooltip"
+                            title="Search"
+                            @click="$store.grid.sendFilter()"
+                        >
+                            <span class="fa fa-search"></span>
+                        </button>
+                    </div>
+                @else
+                    {!! $searchBlock ?? '' !!}
+                @endif
+            @endif
 
-            <div class="btn-group ms-3">
-                <button type="button" class="btn text-nowrap"
-                    data-filter-toggle-button
-                    :class="[ open ? 'btn-dark' : 'btn-outline-secondary' ]"
-                    @click="open = !open"
-                >
-                    Filters
-                    <span class="filter-button-icon fa"
-                        :class="[ open ? 'fa-angle-up' : 'fa-angle-down' ]"
-                    ></span>
-                </button>
-                <button type="button" class="btn btn-outline-secondary"
-                    data-filter-clear-button
-                    {{--@click="gridState.uniform.clearAll($refs.filterbar)"--}}
-                    @click="grid().clearFilters($refs.filterbar)"
-                >
-                    <span class="fa fa-times"></span>
-                </button>
-            </div>
+            @if ($filterBlock !== false)
+                <div class="btn-group ms-3">
+                    <button type="button" class="btn text-nowrap"
+                        data-filter-toggle-button
+                        :class="[ open ? 'btn-dark' : 'btn-outline-secondary' ]"
+                        @click="open = !open"
+                    >
+                        Filters
+                        <span class="filter-button-icon fa"
+                            :class="[ open ? 'fa-angle-up' : 'fa-angle-down' ]"
+                        ></span>
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary"
+                        data-filter-clear-button
+                        {{--@click="gridState.uniform.clearAll($refs.filterbar)"--}}
+                        @click="$store.grid.clearFilters($refs.filterbar)"
+                    >
+                        <span class="fa fa-times"></span>
+                    </button>
+                </div>
+            @endif
         </div>
 
         <div class="c-filter-bar__top-end ms-auto">
@@ -77,6 +90,7 @@ $open ??= false;
         </div>
     </div>
 
+    @if ($filterBlock !== false)
     <div class="c-filter-bar__filters mt-3" x-show="open"
         x-transition:enter="fadeIn"
         x-transition:leave="fadeOut"
@@ -112,4 +126,5 @@ $open ??= false;
             @endif
         @endforeach
     </div>
+    @endif
 </div>
