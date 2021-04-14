@@ -86,7 +86,7 @@ $filterBlock ??= null;
         </div>
 
         <div class="c-filter-bar__top-end ms-auto">
-            {!! $topEnd ?? '' !!}
+            {!! $end ?? '' !!}
         </div>
     </div>
 

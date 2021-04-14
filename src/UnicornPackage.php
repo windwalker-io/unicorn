@@ -104,6 +104,16 @@ class UnicornPackage extends AbstractPackage implements
                 '@card' => '@theme.card',
             ]
         );
+
+        $container->mergeParameters(
+            'renderer.edge.components',
+            [
+                'title-bar' => '@title-bar',
+                'filter-bar' => '@filter-bar',
+                'sort' => '@sort',
+                'card' => '@card',
+            ]
+        );
     }
 
     public function install(PackageInstaller $installer): void
