@@ -27,13 +27,23 @@ use Windwalker\Form\Field\AbstractField;
 /**
  * @var AbstractField $field
  * @var \Windwalker\DOM\DOMElement $input
- * @var FormRenderer $renderer
  * @var array $options
+ * @var \Windwalker\Edge\Component\ComponentAttributes $attributes
  */
+
+$input ??= $field->getPreparedInput();
+$options = array_merge($field->getStates(), $options ?? []);
 
 $inputElement = $field->buildInput($input, $options);
 
 if ($inputElement instanceof \Windwalker\DOM\DOMElement) {
+    if ($attributes ?? null) {
+        $attributes = $attributes->exceptProps(['field', 'options']);
+
+        $attributes = $attributes->merge($inputElement->getAttributes(true));
+        $inputElement->setAttributes($attributes->getAttributes());
+    }
+
     $inputElement->addClass(
         match ($inputElement->getName()) {
             'select' => 'form-select',
@@ -43,4 +53,6 @@ if ($inputElement instanceof \Windwalker\DOM\DOMElement) {
 }
 ?>
 
+<uni-validate class="position-relative d-block">
 {!! $inputElement !!}
+</uni-validate>

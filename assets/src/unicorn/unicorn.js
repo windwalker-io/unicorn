@@ -8,6 +8,7 @@
 export * from './events.js';
 export * from './mixwith.js';
 
+import UnicornValidation from './plugin/validation.js';
 import UnicornUI from './ui.js';
 import UnicornGrid from './plugin/grid.js';
 import UnicornForm from './plugin/form.js';
@@ -34,8 +35,9 @@ const u = createApp();
 u.use(UnicornLoader);
 u.use(UnicornHelper);
 u.use(UnicornHttp);
+u.use(UnicornUI);
 u.use(UnicornForm);
 u.use(UnicornGrid);
-u.use(UnicornUI);
+u.use(UnicornValidation);
 
 window.u = u;

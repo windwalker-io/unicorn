@@ -27,7 +27,7 @@ export default class UnicornUI {
 
     app.initAlpine = (selector) => {
       return app.loadAlpine().then(() => {
-        const element = app.$(selector);
+        const element = app.selectOne(selector);
         Alpine.initializeComponent(element);
       });
     };
@@ -50,7 +50,7 @@ export default class UnicornUI {
 
     app.initAlpineSpruce = (selector) => {
       return app.loadSpruce().then(() => {
-        const element = app.$(selector);
+        const element = app.selectOne(selector);
         Alpine.initializeComponent(element);
       });
     };

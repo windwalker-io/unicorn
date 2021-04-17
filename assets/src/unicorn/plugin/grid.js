@@ -17,7 +17,7 @@ export default class UnicornGrid {
   static install(app, options = {}) {
     app.grid = (ele, options = {}) => {
       const selector = typeof ele === 'string' ? ele : null;
-      ele = app.$(ele);
+      ele = app.selectOne(ele);
 
       return defData(
         ele,
@@ -355,12 +355,12 @@ class UnicornGridElement {
    * @param  {boolean}          value     Checked or unchecked.
    */
   toggleAll(value) {
-    this.app.selectMap(
-      this.element.querySelectorAll('input[data-role=grid-checkbox][type=checkbox]'),
-      (input) => {
+    this.app.selectAll(
+      this.element.querySelectorAll('input[data-role=grid-checkbox][type=checkbox]')
+    )
+      .map((input) => {
         input.checked = value;
-      }
-    );
+      });
 
     return this;
   }
@@ -380,7 +380,7 @@ class UnicornGridElement {
    * @returns {Element[]}
    */
   getChecked() {
-    return this.app.selectMap(
+    return this.app.selectAll(
       this.element.querySelectorAll('input[data-role=grid-checkbox][type=checkbox]')
     );
   }

@@ -16,7 +16,7 @@ export default class UnicornForm {
   static install(app, options = {}) {
     app.form = (ele, options = {}) => {
       const selector = typeof ele === 'string' ? ele : null;
-      ele = app.$(ele);
+      ele = app.selectOne(ele);
 
       return defData(
         ele,

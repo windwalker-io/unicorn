@@ -30,7 +30,21 @@ use Windwalker\Form\Field\AbstractField;
  * @var FormRenderer $renderer
  */
 
+$label ??= $field->getPreparedLabel();
+$options = array_merge($field->getStates(), $options ?? []);
+
 $label->addClass('form-label');
+
+$labelElement = $field->buildLabel($label, $options);
+
+if ($labelElement instanceof \Windwalker\DOM\DOMElement) {
+    if ($attributes ?? null) {
+        $attributes = $attributes->exceptProps(['field', 'options']);
+
+        $attributes = $attributes->merge($labelElement->getAttributes(true));
+        $labelElement->setAttributes($attributes->getAttributes());
+    }
+}
 ?>
 
-{!! $field->buildLabel($label, $options) !!}
+{!! $labelElement !!}

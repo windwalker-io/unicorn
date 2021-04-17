@@ -14,8 +14,8 @@ export default class UnicornHelper {
   static install(app, options = {}) {
     const helper = app.$helper = new this(app);
 
-    app.$ = helper.selectElement.bind(helper);
-    app.selectMap = helper.selectMap;
+    app.selectOne = helper.selectOne.bind(helper);
+    app.selectAll = helper.selectAll;
     app.h = helper.h;
     app.$get = helper.$get;
     app.$set = helper.$set;
@@ -35,7 +35,7 @@ export default class UnicornHelper {
     this.aliveHandle = null;
   }
 
-  selectElement(ele) {
+  selectOne(ele) {
    if (typeof ele === 'string') {
      ele = document.querySelector(ele);
    }
@@ -43,7 +43,7 @@ export default class UnicornHelper {
    return prepareData(ele);
   }
 
-  selectMap(ele, callback) {
+  selectAll(ele, callback) {
     if (typeof ele === 'string') {
       ele = document.querySelectorAll(ele);
     }

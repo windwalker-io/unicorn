@@ -112,6 +112,9 @@ class UnicornPackage extends AbstractPackage implements
                 'filter-bar' => '@filter-bar',
                 'sort' => '@sort',
                 'card' => '@card',
+                'field' => '@theme.form.field-wrapper',
+                'input' => '@theme.form.input',
+                'label' => '@theme.form.label',
             ]
         );
     }
