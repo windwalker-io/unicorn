@@ -23,6 +23,7 @@ use Windwalker\Core\Language\LangService;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\SystemUri;
 use Windwalker\Form\Field\AbstractField;
+use Windwalker\Utilities\Str;
 
 /**
  * @var AbstractField $field
@@ -38,8 +39,9 @@ $wrapper->addClass('form-group');
 // Attributes
 $attrs = $wrapper->getAttributes(true);
 
-$inputAttrs = [];
-$labelAttrs = [];
+$inputAttrs ??= [];
+$labelAttrs ??= [];
+$validateAttrs ??= [];
 
 if ($attributes ?? null) {
     $attributes = $attributes->exceptProps(['field', 'options']);
@@ -48,24 +50,37 @@ if ($attributes ?? null) {
 
     foreach ($attrs as $name => $value) {
         if (str_starts_with($name, 'input-')) {
-            $newName = \Windwalker\Utilities\Str::removeLeft($name, 'input-');
+            $newName = Str::removeLeft($name, 'input-');
             $inputAttrs[$newName] = $value;
 
             unset($attrs[$name]);
-        }
-        if (str_starts_with($name, 'label-')) {
-            $newName = \Windwalker\Utilities\Str::removeLeft($name, 'label-');
+        } elseif (str_starts_with($name, 'label-')) {
+            $newName = Str::removeLeft($name, 'label-');
             $labelAttrs[$newName] = $value;
+
+            unset($attrs[$name]);
+        } elseif (str_starts_with($name, 'validate-')) {
+            $inputAttrs[$name] = $value;
 
             unset($attrs[$name]);
         }
     }
 }
+
+$noLabel ??= $options['no_label'] ?? false;
 ?>
 
 <div {!! \Windwalker\DOM\HTMLElement::buildAttributes($attrs) !!}>
-    <x-label :field="$field" :options="$options" :="$labelAttrs"></x-label>
-    <div data-input-container class="{{ $inputContainerClass ?? '' }}">
+    @if (!$noLabel)
+        @if ($label ?? null)
+            {!! $label(field: $field, options: $options) !!}
+        @else
+            <x-label :field="$field" :options="$options" :="$labelAttrs"></x-label>
+        @endif
+    @endif
+    @if ($defaultSlot ?? null)
+        {!! $defaultSlot(field: $field, options: $options) !!}
+    @else
         <x-input :field="$field" :options="$options" :="$inputAttrs"></x-input>
-    </div>
+    @endif
 </div>

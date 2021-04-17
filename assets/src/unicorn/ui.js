@@ -17,43 +17,12 @@ export default class UnicornUI {
     const ui = app.$ui = new this(app);
     app.addMessage = ui.renderMessage;
 
-    app.loadAlpine = () => app.import('@alpinejs');
-    app.loadSpruce = () => {
-      return Promise.all([
-        app.loadAlpine(),
-        app.import('@spruce')
-      ]);
-    };
-
-    app.initAlpine = (selector) => {
-      return app.loadAlpine().then(() => {
-        const element = app.selectOne(selector);
-        Alpine.initializeComponent(element);
-      });
-    };
-
-    app.startAlpine = () => {
-      return app.loadAlpine().then(() => {
-        if (Spruce) {
-          Spruce.start();
-        }
-
-        Alpine.start();
-      });
-    };
-
-    app.startAlpineSpruce = () => {
-      return app.loadSpruce().then(() => {
-        Alpine.start();
-      });
-    };
-
-    app.initAlpineSpruce = (selector) => {
-      return app.loadSpruce().then(() => {
-        const element = app.selectOne(selector);
-        Alpine.initializeComponent(element);
-      });
-    };
+    app.loadAlpine = ui.loadAlpine.bind(ui);
+    app.loadSpruce = ui.loadSpruce.bind(ui);
+    app.initAlpine = ui.initAlpine.bind(ui);
+    app.startAlpine = ui.startAlpine.bind(ui);
+    app.startAlpineSpruce = ui.startAlpineSpruce.bind(ui);
+    app.initAlpineSpruce = ui.initAlpineSpruce.bind(ui);
   }
 
   static get defaultOptions() {
@@ -73,5 +42,46 @@ export default class UnicornUI {
 
   renderMessage(messages, type = 'info') {
     //
+  }
+
+  loadAlpine() {
+    return this.app.import('@alpinejs');
+  }
+
+  loadSpruce() {
+    return Promise.all([
+      this.loadAlpine(),
+      this.app.import('@spruce')
+    ]);
+  }
+
+  initAlpine(selector) {
+    return this.loadAlpine().then(() => {
+      const element = this.app.selectOne(selector);
+      Alpine.initializeComponent(element);
+    });
+  }
+
+  startAlpine() {
+    return this.loadAlpine().then(() => {
+      if (Spruce) {
+        Spruce.start();
+      }
+
+      Alpine.start();
+    });
+  }
+
+  startAlpineSpruce() {
+    return this.loadSpruce().then(() => {
+      Alpine.start();
+    });
+  }
+
+  initAlpineSpruce(selector) {
+    return this.loadSpruce().then(() => {
+      const element = this.app.selectOne(selector);
+      Alpine.initializeComponent(element);
+    });
   }
 }

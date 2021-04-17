@@ -22,7 +22,10 @@ use Windwalker\Core\Form\FormRenderer;
 use Windwalker\Core\Language\LangService;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\SystemUri;
+use Windwalker\DOM\DOMFactory;
 use Windwalker\Form\Field\AbstractField;
+
+use function Windwalker\DOM\h;
 
 /**
  * @var AbstractField $field
@@ -34,6 +37,16 @@ $label ??= $field->getPreparedLabel();
 $options = array_merge($field->getStates(), $options ?? []);
 
 $label->addClass('form-label');
+$label->setAttribute('data-bs-toggle', 'tooltip');
+
+if ($desc = $field->get('description')) {
+    $label->setAttribute('title', $field->get('description'));
+
+    $label->append(
+        DOMFactory::document()->createTextNode(' '),
+        h('span', ['class' => 'fa fa-question-circle small'])
+    );
+}
 
 $labelElement = $field->buildLabel($label, $options);
 

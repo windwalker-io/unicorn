@@ -22,19 +22,36 @@ use Windwalker\Core\Form\FormRenderer;
 use Windwalker\Core\Language\LangService;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\SystemUri;
+use Windwalker\Edge\Component\ComponentAttributes;
 use Windwalker\Form\Field\AbstractField;
+use Windwalker\Utilities\Str;
 
 /**
  * @var AbstractField $field
  * @var \Windwalker\DOM\DOMElement $input
  * @var array $options
- * @var \Windwalker\Edge\Component\ComponentAttributes $attributes
+ * @var ComponentAttributes $attributes
  */
 
 $input ??= $field->getPreparedInput();
 $options = array_merge($field->getStates(), $options ?? []);
 
 $inputElement = $field->buildInput($input, $options);
+
+$validateAttrs ??= [];
+
+if ($attributes ?? null) {
+    $attributes = $attributes->exceptProps(['field', 'options']);
+
+    foreach ($attributes->getAttributes() as $name => $value) {
+        if (str_starts_with($name, 'validate-')) {
+            $newName = Str::removeLeft($name, 'validate-');
+            $validateAttrs[$newName] = $value;
+
+            unset($attributes[$name]);
+        }
+    }
+}
 
 if ($inputElement instanceof \Windwalker\DOM\DOMElement) {
     if ($attributes ?? null) {
@@ -51,8 +68,17 @@ if ($inputElement instanceof \Windwalker\DOM\DOMElement) {
         }
     );
 }
+
+$validateAttributes = new ComponentAttributes($validateAttrs ?? []);
+$validateAttributes['class'] .= ' d-block';
+
+$invalidContainer = 'tooltip';
 ?>
 
-<uni-validate class="position-relative d-block">
+<uni-field-validate {!! $validateAttributes !!}>
 {!! $inputElement !!}
-</uni-validate>
+</uni-field-validate>
+
+@if ($help = $field->get('help'))
+    <div class="small text-muted mt-2">{!! $help !!}</div>
+@endif

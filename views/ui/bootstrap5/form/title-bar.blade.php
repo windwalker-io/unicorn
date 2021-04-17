@@ -12,9 +12,7 @@ $slot ??= \Windwalker\nope();
     <div class="col-md-8">
         @if ($title = $form->getField($titleField))
              <x-field :field="$title" class="mb-3 row" input-class="input-lg form-control-lg"
-                 label-class="col-md-3"
-                 input-container-class="col"
-            ></x-field>
+             ></x-field>
         @endif
 
         @if ($alias = $form->getField($aliasField))
