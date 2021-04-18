@@ -27,10 +27,46 @@ use Windwalker\Form\Form;
  * @var string $name
  */
 $fieldset = $form->getFieldset($name);
+$ns ??= '';
+
+$is ??= 'card';
+$title ??= $fieldset->getTitle();
 ?>
 
-@component('@card')
+<x-component :is="$is" {{ $attributes }}>
+    @if ($header ?? null)
+        <x-slot name="header">
+            {!! $header(title: $title, fieldset: $fieldset) !!}
+        </x-slot>
+    @elseif ($title)
+        <x-slot name="title">
+            {{ $title }}
+        </x-slot>
+    @endif
 
+    @foreach ($form->getFields($name, $ns) as $field)
+        @php($fieldName = \Windwalker\Utilities\StrNormalise::toKebabCase($field->getNamespaceName()))
+        @php($slotName = $fieldName . 'Slot')
+        @php($startSlot = $fieldName . 'StartSlot')
+        @php($endSlot = $fieldName . 'EndSlot')
 
+        @if ($$startSlot ?? null)
+            {!! $$startSlot(field: $field) !!}
+        @endif
 
-@endcomponent
+        @if ($$slotName ?? null)
+            {!! $$slotName(field: $field) !!}
+        @else
+            <x-field :field="$field" class="mb-3">
+                @if ($fieldSlot ?? null)
+                    @scope($field)
+                    {!! $fieldSlot(field: $field) !!}
+                @endif
+            </x-field>
+        @endif
+
+        @if ($$endSlot ?? null)
+            {!! $$endSlot(field: $field) !!}
+        @endif
+    @endforeach
+</x-component>

@@ -71,12 +71,16 @@ if ($inputElement instanceof \Windwalker\DOM\DOMElement) {
 
 $validateAttributes = new ComponentAttributes($validateAttrs ?? []);
 $validateAttributes['class'] .= ' d-block';
-
-$invalidContainer = 'tooltip';
 ?>
 
 <uni-field-validate {!! $validateAttributes !!}>
 {!! $inputElement !!}
+
+@if ($error ?? null)
+    {!! $error(field: $field, input: $inputElement) !!}
+@else
+    <div data-field-error class="{{ $attributes['error-class'] ?? 'invalid-tooltip' }}"></div>
+@endif
 </uni-field-validate>
 
 @if ($help = $field->get('help'))

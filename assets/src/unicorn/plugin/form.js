@@ -6,7 +6,7 @@
  */
 
 import { defData } from '../utilities.js';
-import { each } from 'lodash-es';
+import { each, merge } from 'lodash-es';
 
 export default class UnicornForm {
   static get is() {
@@ -33,9 +33,11 @@ class UnicornFormElement {
    * @param {string}      selector
    * @param {HTMLElement} $form
    * @param {Object}      options
-   * @param {UnicornCore} app
+   * @param {UnicornApp}  app
    */
   constructor(selector, $form, options, app) {
+    this.app = app;
+
     // If form not found, create one
     if (!$form) {
       $form = document.createElement('form');
@@ -45,7 +47,7 @@ class UnicornFormElement {
         $form.setAttribute('name', selector.substr(1));
       }
 
-      $form.setAttribute('action', 'post');
+      $form.setAttribute('method', 'post');
       $form.setAttribute('enctype', 'multipart/form-data');
       $form.setAttribute('novalidate', 'true');
       $form.setAttribute('action', app.data('unicorn.uri')['full']);
@@ -60,7 +62,7 @@ class UnicornFormElement {
 
     options = Object.assign( {}, this.constructor.defaultOptions, options);
 
-    this.form = $form;
+    this.element = $form;
     this.options = options;
 
     this.bindEvents();
@@ -84,6 +86,22 @@ class UnicornFormElement {
     // });
   }
 
+  initComponent(store = 'form', custom = {}) {
+    return this.app.loadSpruce()
+      .then(() => {
+        Spruce.store(store, this.useState(custom));
+        // this.registerCustomElements();
+        this.app.startAlpine();
+      });
+  }
+
+  useState(custom = {}) {
+    return merge(
+      this,
+      custom
+    );
+  }
+
   /**
    * Make a request.
    *
@@ -95,7 +113,7 @@ class UnicornFormElement {
    * @returns {boolean}
    */
   submit(url, queries, method, customMethod) {
-    const form = this.form;
+    const form = this.element;
 
     if (customMethod) {
       let methodInput = form.querySelector('input[name="_method"]');

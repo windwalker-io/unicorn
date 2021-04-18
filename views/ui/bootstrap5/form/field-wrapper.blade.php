@@ -34,7 +34,12 @@ use Windwalker\Utilities\Str;
 $wrapper ??= $field->getPreparedWrapper();
 $options = array_merge($field->getStates(), $options ?? []);
 
-$wrapper->addClass('form-group');
+$wrapper->addClass('form-group row');
+
+if ($field instanceof \Windwalker\Form\Field\HiddenFieldInterface) {
+    $wrapper->addClass('d-none');
+    $noLabel = true;
+}
 
 // Attributes
 $attrs = $wrapper->getAttributes(true);
@@ -65,6 +70,20 @@ if ($attributes ?? null) {
             unset($attrs[$name]);
         }
     }
+
+    // Count cols
+    $inputCols = $attributes['input-cols'] ?? null;
+    $labelCols = $attributes['label-cols'] ?? null;
+
+    if ($inputCols === null && $labelCols !== null) {
+        $inputCols = 12 - $labelCols;
+    }
+
+    if ($inputCols !== null && $labelCols === null) {
+        $labelCols = 12 - $inputCols;
+    }
+
+    $labelAttrs['class'] = ($labelAttrs['class'] ?? '') . ' col-md-' . ($labelCols ?? 12);
 }
 
 $noLabel ??= $options['no_label'] ?? false;
@@ -78,9 +97,11 @@ $noLabel ??= $options['no_label'] ?? false;
             <x-label :field="$field" :options="$options" :="$labelAttrs"></x-label>
         @endif
     @endif
-    @if ($defaultSlot ?? null)
-        {!! $defaultSlot(field: $field, options: $options) !!}
-    @else
-        <x-input :field="$field" :options="$options" :="$inputAttrs"></x-input>
-    @endif
+    <div data-input-continer class="col-md-{{ $inputCols ?? 12 }}">
+        @if ($defaultSlot ?? null)
+            {!! $defaultSlot(field: $field, options: $options) !!}
+        @else
+            <x-input :field="$field" :options="$options" :="$inputAttrs"></x-input>
+        @endif
+    </div>
 </div>

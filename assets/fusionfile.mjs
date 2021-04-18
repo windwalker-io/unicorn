@@ -19,6 +19,11 @@ export async function main() {
       options.output.libraryTarget = 'umd';
     }
   });
+  webpack('./src/unicorn/ui/validation-components.js', './dist/ui/', {
+    override: (options) => {
+      options.output.libraryTarget = 'umd';
+    }
+  });
   // Compile end
 }
 

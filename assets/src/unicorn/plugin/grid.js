@@ -33,21 +33,7 @@ class UnicornGridElement {
 
   static get defaultOptions() {
     return {
-      mainSelector: '',
-      // selector: {
-      //   search: {
-      //     container: '.search-container',
-      //     button: '.search-button',
-      //     clearButton: '.search-clear-button'
-      //   },
-      //   filter: {
-      //     container: '.filter-container',
-      //     button: '.filter-toggle-button'
-      //   },
-      //   sort: {
-      //     button: 'a[data-sort-button]'
-      //   }
-      // }
+      //
     }
   }
 
@@ -56,24 +42,10 @@ class UnicornGridElement {
     this.options = Object.assign({}, this.constructor.defaultOptions, options);
     this.app = app;
     this.form = app.form(selector || element);
-    // this.ui = app.UI;
 
     if (!this.form) {
       throw new Error('UnicornGrid is dependent on UnicornForm');
     }
-
-    // if (!this.ui) {
-    //   throw new Error('UnicornGrid is dependent on UnicornUI');
-    // }
-
-    // const selector = this.options.selector;
-
-    // this.searchContainer = this.form.find(selector.search.container);
-    //this.searchButton = this.form.find(selector.search.button);
-    // this.searchClearButton = this.form.find(selector.search.clearButton);
-    // this.filterContainer = this.form.find(selector.filter.container);
-    // this.filterButton = this.form.find(selector.filter.button);
-    // this.sortButtons = this.form.find(selector.sort.button);
 
     this.registerEvents();
   }
@@ -100,9 +72,9 @@ class UnicornGridElement {
     // });
   }
 
-  registerCustomElements() {
-    return app.import('@unicorn/ui/grid-components.js');
-  }
+  // registerCustomElements() {
+  //   return app.import('@unicorn/ui/grid-components.js');
+  // }
 
   initComponent(store = 'grid', custom = {}) {
     this.ordering = this.element.dataset.ordering;

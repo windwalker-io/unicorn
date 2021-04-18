@@ -102,6 +102,7 @@ class UnicornPackage extends AbstractPackage implements
                 '@filter-bar' => '@theme.grid.filter-bar',
                 '@sort' => '@theme.grid.sort',
                 '@card' => '@theme.card',
+                '@fieldset' => '@theme.form.fieldset',
             ]
         );
 
@@ -115,6 +116,7 @@ class UnicornPackage extends AbstractPackage implements
                 'field' => '@theme.form.field-wrapper',
                 'input' => '@theme.form.input',
                 'label' => '@theme.form.label',
+                'fieldset' => '@fieldset',
             ]
         );
     }
