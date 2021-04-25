@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace Unicorn;
 
+use Unicorn\Script\UnicornScript;
 use Windwalker\Core\Package\AbstractPackage;
 use Windwalker\Core\Package\PackageInstaller;
 use Windwalker\Core\Security\CsrfService;
@@ -71,6 +72,7 @@ class UnicornPackage extends AbstractPackage implements
      */
     public function register(Container $container): void
     {
+        $container->prepareSharedObject(UnicornScript::class);
         $container->extend(
             CompositeRenderer::class,
             function (CompositeRenderer $renderer) {
@@ -91,6 +93,7 @@ class UnicornPackage extends AbstractPackage implements
                 '@axios' => 'vendor/axios/dist/axios.js',
                 '@awesome-checkbox' => 'vendor/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css',
                 '@regenerator-runtime' => 'vendor/regenerator-runtime/runtime.js',
+                '@flatpickr/' => 'vendor/flatpickr/dist/'
             ]
         );
 

@@ -137,9 +137,9 @@ class UnicornFormElement {
 
       each(flatted, (value, key) => {
         const fieldName = this.constructor.buildFieldName(key);
-        input = form.find('input[name="' + fieldName + '"]');
+        input = form.querySelector(`input[name="${fieldName}"]`);
 
-        if (!input.length) {
+        if (!input) {
           input = document.createElement('input');
           input.setAttribute('name', fieldName);
           input.setAttribute('type', 'hidden');
@@ -159,7 +159,17 @@ class UnicornFormElement {
       form.setAttribute('method', method);
     }
 
-    form.submit();
+    // Create a submit button that can fire `submit` event
+    let submitButton = form.querySelector(`button[type=submit][data-submit]`);
+
+    if (!submitButton) {
+      submitButton = this.app.h('button', { type: 'submit' }, 'GO');
+      submitButton.dataset.submit = true;
+      submitButton.style.display = 'none';
+      form.appendChild(submitButton);
+    }
+
+    submitButton.click();
 
     return true;
   }

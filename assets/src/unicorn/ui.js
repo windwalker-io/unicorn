@@ -84,4 +84,8 @@ export default class UnicornUI {
       Alpine.initializeComponent(element);
     });
   }
+
+  flatpickr() {
+    return this.app.import('@unicorn/ui/flatpickr-components.js');
+  }
 }

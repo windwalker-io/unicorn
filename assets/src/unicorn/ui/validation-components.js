@@ -31,7 +31,7 @@ export class UnicornFormValidateElement extends HTMLElement {
   get scrollEnabled() {
     const scroll = this.getAttribute('scroll');
 
-    return scroll && scroll !== 'false';
+    return scroll != null && scroll !== 'false';
   }
 
   get scrollOffset() {
@@ -48,10 +48,9 @@ export class UnicornFormValidateElement extends HTMLElement {
 
   connectedCallback() {
     this.$form = this.querySelector('form');
-
+    
     if (this.$form) {
       this.$form.setAttribute('novalidate', true);
-
       this.$form.addEventListener('submit', (event) => {
         if (!this.validateAll()) {
           event.stopImmediatePropagation(); // Stop following events
@@ -62,7 +61,7 @@ export class UnicornFormValidateElement extends HTMLElement {
         }
 
         return true;
-      });
+      }, false);
     }
   }
 

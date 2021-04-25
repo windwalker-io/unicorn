@@ -58,6 +58,8 @@ if ($labelElement instanceof \Windwalker\DOM\DOMElement) {
         $labelElement->setAttributes($attributes->getAttributes());
     }
 }
+
+$label = $field->buildLabel($label, $options);
 ?>
 
 {!! $labelElement !!}

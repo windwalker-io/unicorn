@@ -11,10 +11,14 @@ declare(strict_types=1);
 
 namespace Unicorn\Repository;
 
+use Unicorn\Attributes\Repository;
 use Unicorn\Selector\ListSelector;
+use Windwalker\Attributes\AttributesAccessor;
+use Windwalker\Core\Form\FormFactory;
 use Windwalker\Core\Pagination\PaginationFactory;
 use Windwalker\Database\DatabaseAdapter;
 use Windwalker\DI\Attributes\Inject;
+use Windwalker\ORM\EntityMapper;
 use Windwalker\ORM\SelectorQuery;
 
 /**
@@ -28,19 +32,44 @@ trait DatabaseRepositoryTrait
     #[Inject]
     protected PaginationFactory $paginationFactory;
 
-    // protected static ?string $entityClass = null;
-    //
-    // public static function getEntityClass(): string
-    // {
-    //     $class = static::$entityClass
-    //         ??= AttributesAccessor::getFirstAttributeInstance(static::class, Table::class)->getName();
-    //
-    //     if ($class === null) {
-    //         throw new \LogicException('No entity class set of : ' . static::class);
-    //     }
-    //
-    //     return $class;
-    // }
+    #[Inject]
+    protected FormFactory $formFactory;
+
+    protected ?Repository $metaAttribute = null;
+
+    /**
+     * getTable
+     *
+     * @return  string
+     */
+    public function getTable(): string
+    {
+        return $this->getMetaAttribute()->getTableAttribute()->getName();
+    }
+
+    /**
+     * getEntityClass
+     *
+     * @return  string
+     */
+    public function getEntityClass(): string
+    {
+        return $this->getMetaAttribute()->getEntityClass();
+    }
+
+    protected function getMetaAttribute(): Repository
+    {
+        return $this->metaAttribute ??= AttributesAccessor::getFirstAttributeInstance(
+            static::class,
+            Repository::class,
+            \ReflectionAttribute::IS_INSTANCEOF
+        );
+    }
+
+    public function getEntityMapper(): EntityMapper
+    {
+        return $this->db->orm()->mapper($this->getEntityClass());
+    }
 
     public function getListSelector(): ListSelector
     {

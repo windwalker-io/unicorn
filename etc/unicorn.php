@@ -19,11 +19,13 @@ return [
         ],
 
         'listeners' => [
-            //
+            \Windwalker\Core\Asset\AssetService::class => [
+                \Unicorn\Listener\UnicornAssetListener::class
+            ]
         ],
 
         'providers' => [
             \Unicorn\UnicornPackage::class
-        ]
+        ],
     ]
 ];

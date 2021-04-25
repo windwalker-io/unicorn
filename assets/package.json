@@ -39,6 +39,7 @@
     "@ryangjchandler/spruce": "^2.6.3",
     "@windwalker-io/fusion": "^1.0.0-beta.4",
     "babel-loader": "^8.2.2",
+    "flatpickr": "^4.6.9",
     "gulp-babel": "^8.0.0",
     "lodash-es": "^4.17.21",
     "regenerator-runtime": "^0.13.7",

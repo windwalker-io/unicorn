@@ -33,10 +33,8 @@ use Windwalker\Utilities\Str;
  * @var ComponentAttributes $attributes
  */
 
-$input ??= $field->getPreparedInput();
+$inputElement ??= $field->getPreparedInput();
 $options = array_merge($field->getStates(), $options ?? []);
-
-$inputElement = $field->buildInput($input, $options);
 
 $validateAttrs ??= [];
 
@@ -62,8 +60,9 @@ if ($inputElement instanceof \Windwalker\DOM\DOMElement) {
     }
 
     $inputElement->addClass(
-        match ($inputElement->getName()) {
-            'select' => 'form-select',
+        match (true) {
+            $inputElement->getAttribute('type') === 'checkbox' => 'form-input-check',
+            $inputElement->getName() === 'select' => 'form-select',
             default => 'form-control'
         }
     );
@@ -71,6 +70,8 @@ if ($inputElement instanceof \Windwalker\DOM\DOMElement) {
 
 $validateAttributes = new ComponentAttributes($validateAttrs ?? []);
 $validateAttributes['class'] .= ' d-block';
+
+$inputElement = $field->buildInput($inputElement, $options);
 ?>
 
 <uni-field-validate {!! $validateAttributes !!}>

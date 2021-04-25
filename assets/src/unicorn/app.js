@@ -83,6 +83,10 @@ export default class UnicornApp extends mix(class {}).with(EventMixin) {
 
     document.__unicorn = document.__unicorn || {};
 
+    if (name === undefined) {
+      return document.__unicorn;
+    }
+
     if (value === undefined) {
       const res = document.__unicorn[name];
 

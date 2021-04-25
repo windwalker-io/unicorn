@@ -5,7 +5,8 @@
  * @license    MIT
  */
 
-import fusion, { babel, webpack, parallel, series } from '@windwalker-io/fusion';
+import fusion, { babel, webpack, sass, parallel, series } from '@windwalker-io/fusion';
+import { babelBasicOptions } from '@windwalker-io/fusion/src/utilities/babel.js';
 
 export async function main() {
   // Watch start
@@ -45,6 +46,58 @@ export async function modules() {
   // Compile Start
   babel('src/modules/**/*.js', 'dist/', { module: 'systemjs' });
   babel('src/modules/**/*.js', 'dist/', { module: 'systemjs' });
+  // Compile end
+}
+
+export async function css() {
+  // Watch start
+  fusion.watch('scss/**/*.scss');
+  // Watch end
+
+  // Compile Start
+  sass('scss/switcher.scss', 'dist/');
+  // Compile end
+}
+
+export async function wc() {
+  // Watch start
+  fusion.watch([
+    'asset/ws/**/*.js'
+  ]);
+  // Watch end
+
+  // Compile Start
+  webpack('src/wc/**/*.js', 'dist/ui/', {
+    // override() {
+    //   return {
+    //     mode: process.env.NODE_ENV || 'development',
+    //     output: {
+    //       filename: '[name].js',
+    //       sourceMapFilename: '[name].js.map'
+    //     },
+    //     stats: {
+    //       all: false,
+    //       errors: true,
+    //       warnings: true,
+    //       version: false,
+    //     },
+    //     module: {
+    //       rules: [
+    //         {
+    //           test: /\.m?js$/,
+    //           // Fis LitElement issue, @see https://github.com/Polymer/lit-element/issues/54#issuecomment-439824447
+    //           exclude: /node_modules\/(?!(lit-html|@polymer)\/).*/,
+    //           use: [{
+    //             loader: 'babel-loader',
+    //             options: babelBasicOptions().get()
+    //           }, 'webpack-comment-remover-loader']
+    //         }
+    //       ]
+    //     },
+    //     plugins: []
+    //   };
+    // }
+  });
   // Compile end
 }
 

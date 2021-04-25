@@ -1,0 +1,135 @@
+/* The switch - the box around the slider */
+// @see https://www.w3schools.com/howto/howto_css_switch.asp
+.unicorn-switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+  margin-bottom: 0;
+
+  /* Hide default HTML checkbox */
+  input {
+    width: 0;
+    height: 0;
+    position: relative;
+    left: 30px;
+
+    &:focus {
+      box-shadow: none !important;
+    }
+  }
+
+  /* The slider */
+  .switch-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    -webkit-transition: .4s;
+    transition: .4s;
+  }
+
+  input:focus + .switch-slider {
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  }
+
+  .switch-slider.bg-default {
+    background-color: #ccc;
+  }
+
+  .switch-slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .25s;
+  }
+
+  input:checked + .switch-slider:before {
+    transform: translateX(26px);
+  }
+
+  input:not(:checked) + .switch-slider {
+    background-color: #ccc !important;
+
+    &:hover {
+      background-color: #aaa !important;
+    }
+  }
+
+  input[disabled] + .switch-slider,
+  input[readonly] + .switch-slider {
+    opacity: .65;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  /* Rounded sliders */
+  .switch-slider.slider-round {
+    border-radius: .25rem;
+  }
+
+  .switch-slider.slider-round:before {
+    border-radius: .18rem;
+  }
+
+  // Circle sliders
+  .switch-slider.slider-circle {
+    border-radius: 50px;
+  }
+
+  .switch-slider.slider-circle:before {
+    border-radius: 100px;
+  }
+
+  // Size
+  &.switch-sm {
+    width: 46px;
+    height: 24px;
+
+    .switch-slider:before {
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+    }
+
+    input:checked + .switch-slider:before {
+      transform: translateX(22px);
+    }
+
+    //.switch-slider.slider-round {
+    //  border-radius: .2rem;
+    //}
+    //
+    //.switch-slider.slider-round:before {
+    //  border-radius: .15rem;
+    //}
+  }
+
+  &.switch-lg {
+    width: 100px;
+    height: 34px;
+
+    .switch-slider:before {
+      height: 26px;
+      width: 45px;
+      left: 4px;
+      bottom: 4px;
+    }
+
+    input:checked + .switch-slider:before {
+      transform: translateX(47px);
+    }
+  }
+}
+
+.has-invalid .unicorn-switch .switch-slider {
+  border: 1px solid #dc3545;
+}
