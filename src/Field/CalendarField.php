@@ -79,14 +79,14 @@ class CalendarField extends TextField
         return $input;
     }
 
-    public function buildInput(DOMElement $input, array $options = []): string|DOMElement
+    public function buildFieldElement(DOMElement $input, array $options = []): string|DOMElement
     {
         $input->setAttribute('data-input', true);
 
         return $this->renderLayout(
             $this->getLayout(),
             [
-                'input' => parent::buildInput($input, $options),
+                'input' => parent::buildFieldElement($input, $options),
                 'field' => $this,
                 'options' => Arr::mergeRecursive(
                     $this->getDefaultOptions(),

@@ -62,7 +62,7 @@ class SwitcherField extends CheckboxField
         return $this->renderLayout(
             $this->getLayout(),
             [
-                'input' => parent::buildInput($input, $options),
+                'input' => parent::buildFieldElement($input, $options),
                 'field' => $this
             ]
         );

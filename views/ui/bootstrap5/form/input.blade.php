@@ -71,11 +71,11 @@ if ($inputElement instanceof \Windwalker\DOM\DOMElement) {
 $validateAttributes = new ComponentAttributes($validateAttrs ?? []);
 $validateAttributes['class'] .= ' d-block';
 
-$inputElement = $field->buildInput($inputElement, $options);
+$fieldElement = $field->buildFieldElement($inputElement, $options);
 ?>
 
 <uni-field-validate {!! $validateAttributes !!}>
-{!! $inputElement !!}
+{!! $fieldElement !!}
 
 @if ($error ?? null)
     {!! $error(field: $field, input: $inputElement) !!}

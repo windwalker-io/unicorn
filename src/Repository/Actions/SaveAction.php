@@ -148,8 +148,7 @@ class SaveAction extends AbstractDatabaseAction
             $resultSet = $form->validate($data);
 
             if ($resultSet->isFailure()) {
-                $results = $resultSet->getResults();
-                $first   = array_pop($results);
+                $first = $resultSet->getFirstFailure();
 
                 if ($first) {
                     throw new ValidateFailException(
