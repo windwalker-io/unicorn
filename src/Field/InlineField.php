@@ -31,6 +31,8 @@ class InlineField extends AbstractField implements CompositeFieldInterface
 
     protected array $widths = [];
 
+    protected ?string $group = null;
+
     public function getDefaultLayout(): string
     {
         return '@theme.field.inline';
@@ -41,6 +43,17 @@ class InlineField extends AbstractField implements CompositeFieldInterface
         return $input;
     }
 
+    public function prepareForm(): Form
+    {
+        $form = $this->getSubForm();
+
+        if ($this->group) {
+            $form->appendNamespace($this->group);
+        }
+
+        return $form;
+    }
+
     public function buildFieldElement(DOMElement $input, array $options = []): string|DOMElement
     {
         return $this->renderLayout(
@@ -49,7 +62,7 @@ class InlineField extends AbstractField implements CompositeFieldInterface
                 'field' => $this,
                 'input' => $input,
                 'options' => $options,
-                'form' => $this->getSubForm()
+                'form' => $this->prepareForm()
             ]
         );
     }
@@ -63,13 +76,7 @@ class InlineField extends AbstractField implements CompositeFieldInterface
 
     public function validate(mixed $value): ValidateResult
     {
-        $selfNS = $this->getNamespace();
-
-        $subValue = $selfNS
-            ? Arr::get($value, $selfNS, '/')
-            : $value;
-
-        $results = $this->getSubForm()->validate((array) $subValue);
+        $results = $this->prepareForm()->validate((array) $value);
 
         if (!$failResult = $results->getFirstFailure()) {
             return new ValidateResult(ValidateResult::STATUS_SUCCESS, $this);
@@ -77,22 +84,10 @@ class InlineField extends AbstractField implements CompositeFieldInterface
 
         return $failResult;
     }
-    //
+
     public function filter(mixed $value): mixed
     {
-        $selfNS = $this->getNamespace();
-
-        if ($selfNS && !Arr::has($value, $selfNS, '/')) {
-            return $value;
-        }
-    
-        $subValue = $selfNS
-            ? Arr::get($value, $selfNS, '/')
-            : $value;
-
-        $subValue = $this->getSubForm()->filter($subValue);
-
-        return Arr::set($value, $selfNS, $subValue);
+        return $this->prepareForm()->filter($value);
     }
 
     /**
@@ -111,9 +106,17 @@ class InlineField extends AbstractField implements CompositeFieldInterface
             $group = null;
         }
 
-        $this->getForm()->setNamespace($group);
+        $this->group = $group;
 
         return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getGroup(): ?string
+    {
+        return $this->group;
     }
 
     /**

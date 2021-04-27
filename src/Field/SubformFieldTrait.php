@@ -24,18 +24,22 @@ trait SubformFieldTrait
     {
         $form = $this->subform ??= $this->createSubForm();
 
-        $parent = $this->getForm();
-
-        if ($parent) {
-            $form->setNamespace($parent->getNamespace());
-        }
+        $form->setNamespace($this->getNamespace(true));
 
         return $form;
     }
 
     public function createSubForm(): Form
     {
-        return new Form();
+        $form = new Form();
+
+        $parent = $this->getForm();
+
+        if ($parent) {
+            $form->setRenderer($parent->getRenderer());
+        }
+
+        return $form;
     }
 
     public function configureForm(callable $handler): static
