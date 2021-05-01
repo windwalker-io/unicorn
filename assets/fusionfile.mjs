@@ -5,7 +5,7 @@
  * @license    MIT
  */
 
-import fusion, { babel, webpack, sass, parallel, series } from '@windwalker-io/fusion';
+import fusion, { babel, webpack, rollup, sass, parallel, series } from '@windwalker-io/fusion';
 import { babelBasicOptions } from '@windwalker-io/fusion/src/utilities/babel.js';
 
 export async function main() {
@@ -14,15 +14,16 @@ export async function main() {
   // Watch end
 
   // Compile Start
-  webpack('./src/unicorn/unicorn.js', './dist/', {
+  rollup('./src/unicorn/unicorn.js', './dist/', {
     override: (options) => {
-      options.output.library = 'Unicorn';
-      options.output.libraryTarget = 'umd';
+      options.output.name = 'Unicorn';
+      options.output.format = 'umd';
     }
   });
-  webpack('./src/unicorn/ui/validation-components.js', './dist/ui/', {
+  rollup('./src/unicorn/ui/validation-components.js', './dist/ui/', {
     override: (options) => {
-      options.output.libraryTarget = 'umd';
+      options.output.name = 'UVC';
+      options.output.format = 'umd';
     }
   });
   // Compile end
