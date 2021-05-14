@@ -17,4 +17,8 @@ function hookSystemJS(version) {
     });
   };
 }
+
+if (document.currentScript) {
+  hookSystemJS(document.currentScript.dataset.version);
+}
 //# sourceMappingURL=system-hooks.js.map

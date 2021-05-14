@@ -5,7 +5,15 @@
  * @license    MIT
  */
 
-import fusion, { babel, webpack, rollup, sass, parallel, series } from '@windwalker-io/fusion';
+import fusion, {
+  babel,
+  webpack,
+  rollup,
+  sass,
+  parallel,
+  series,
+  module
+} from '@windwalker-io/fusion';
 import { babelBasicOptions } from '@windwalker-io/fusion/src/utilities/babel.js';
 
 export async function main() {
@@ -23,6 +31,12 @@ export async function main() {
   rollup('./src/unicorn/ui/validation-components.js', './dist/ui/', {
     override: (options) => {
       options.output.name = 'UVC';
+      options.output.format = 'umd';
+    }
+  });
+  rollup('./src/unicorn/ui/list-dependent.js', './dist/ui/', {
+    override: (options) => {
+      options.output.name = 'ListDependent';
       options.output.format = 'umd';
     }
   });
@@ -102,7 +116,13 @@ export async function wc() {
   // Compile end
 }
 
-export default main;
+export default parallel(
+  main,
+  js,
+  css,
+  modules,
+  wc,
+);
 
 /*
  * APIs

@@ -11,7 +11,7 @@ use Windwalker\Core\Application\AppContext;
  * @var AppContext $app
  */
 
-$app->service(UnicornScript::class)->switcher();
+$app->service(\Unicorn\Script\FormScript::class)->switcher();
 $size = $field->getSize();
 $color = $field->getColor();
 ?>

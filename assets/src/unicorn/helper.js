@@ -6,7 +6,7 @@
  */
 
 import { prepareData } from './utilities.js';
-import { sprintf, vsprintf } from 'sprintf-js';
+import 'sprintf-js';
 
 export default class UnicornHelper {
   static get is() { return 'helper'; }

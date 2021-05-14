@@ -88,4 +88,8 @@ export default class UnicornUI {
   flatpickr() {
     return this.app.import('@unicorn/ui/flatpickr-components.js');
   }
+
+  listDependent() {
+    return this.app.import('@unicorn/ui/list-dependent.js');
+  }
 }

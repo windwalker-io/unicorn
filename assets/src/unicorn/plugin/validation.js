@@ -7,7 +7,7 @@
 
 export default class UnicornValidation {
   static install(app, options = {}) {
-    app.validation = (selector = 'uni-form-validate') => {
+    app.formValidation = (selector = 'uni-form-validate') => {
       app.import('@unicorn/ui/validation-components.js');
 
       return app.selectOne(selector);

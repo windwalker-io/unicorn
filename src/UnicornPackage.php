@@ -87,6 +87,8 @@ class UnicornPackage extends AbstractPackage implements
             [
                 '@systemjs' => 'vendor/systemjs/dist/system.js',
                 '@unicorn/' => 'vendor/@windwalker-io/unicorn/dist/',
+                '@unicorn' => 'vendor/@windwalker-io/unicorn/dist/unicorn.js',
+                '@main' => 'vendor/@windwalker-io/unicorn/dist/unicorn.js',
                 '@alpinejs' => 'vendor/alpinejs/dist/alpine.js',
                 '@alpinejs-ie11' => 'vendor/alpinejs/dist/alpine-ie11.js',
                 '@spruce' => 'vendor/@ryangjchandler/spruce/dist/spruce.umd.js',

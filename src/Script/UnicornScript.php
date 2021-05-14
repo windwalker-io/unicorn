@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace Unicorn\Script;
 
 use Windwalker\Core\Asset\AbstractScript;
+use Windwalker\Core\Http\Browser;
 
 /**
  * The UnicornScript class.
@@ -22,16 +23,51 @@ class UnicornScript extends AbstractScript
 
     public array $initialise = [];
 
-    public function switcher(): void
+    /**
+     * UnicornScript constructor.
+     */
+    public function __construct(protected Browser $browser)
     {
-        if (!$this->available()) {
-            $this->css('@unicorn/switcher.css');
+    }
+
+    public function systemJS(): void
+    {
+        if ($this->available()) {
+            $version = $this->asset->getVersion();
+
+            $attrs = [];
+
+            if ($this->browser->isIE()) {
+                $attrs['onload'] = "hookSystemJS('$version')";
+            } else {
+                $attrs['data-version'] = $version;
+            }
+
+            $this->js('@systemjs', [], ['onload' => 'window.S = System']);
+            $this->js('@unicorn/system-hooks.js', [], $attrs);
         }
+    }
+
+    public function main(): void
+    {
+        $this->importScript('@main');
     }
 
     public function importScript(string $uri): static
     {
-        $this->internalJS("u.import('$uri');");
+        $this->internalJS("System.import('$uri');");
+
+        return $this;
+    }
+
+    public function importThen(string $uri, string $code): static
+    {
+        $this->internalJS(<<<JS
+System.import('$uri').then(function (module) {
+  $code
+});
+JS
+);
 
         return $this;
     }

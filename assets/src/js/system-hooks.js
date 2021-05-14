@@ -15,3 +15,7 @@ function hookSystemJS(version) {
     return Object.assign(document.createElement('script'), { src: url });
   }
 }
+
+if (document.currentScript) {
+  hookSystemJS(document.currentScript.dataset.version);
+}

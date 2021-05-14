@@ -57,7 +57,7 @@ class SwitcherField extends CheckboxField
         return parent::prepareInput($input);
     }
 
-    public function buildInput(DOMElement $input, array $options = []): string|DOMElement
+    public function buildFieldElement(DOMElement $input, array $options = []): string|DOMElement
     {
         return $this->renderLayout(
             $this->getLayout(),

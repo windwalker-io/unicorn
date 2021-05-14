@@ -39,11 +39,14 @@ class UnicornAssetListener
 
             $script = $this->app->service(UnicornScript::class);
             $asset = $event->getAssetService();
+            $scripts = $asset->getInternalScripts();
 
             if ($script->getData() !== []) {
                 $store = json_encode($script->getData(), $this->app->isDebug() ? JSON_PRETTY_PRINT : 0);
 
-                $asset->internalJS("document.__unicorn = $store;");
+                array_unshift($scripts, "document.__unicorn = $store;");
+
+                $asset->setInternalScripts($scripts);
             }
         }
 
