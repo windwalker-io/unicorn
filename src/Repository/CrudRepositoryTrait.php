@@ -25,9 +25,10 @@ trait CrudRepositoryTrait
     #[Inject]
     protected ActionsFactory $actionsFactory;
 
-    public function createSaveAction(): SaveAction
+    public function createSaveAction($actionClass = SaveAction::class): SaveAction
     {
-        $action = $this->actionsFactory->create(SaveAction::class, $this);
+        /** @var SaveAction $action */
+        $action = $this->actionsFactory->create($actionClass, $this);
 
         $this->configureSaveAction($action);
 
