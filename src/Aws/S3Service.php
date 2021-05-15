@@ -6,9 +6,8 @@
  * @license    LGPL-2.0-or-later
  */
 
-namespace Unicorn\S3;
+namespace Unicorn\Aws;
 
-use Aws\CommandInterface;
 use Aws\Result;
 use Aws\S3\S3Client;
 use Psr\Http\Message\UriInterface;
@@ -39,29 +38,15 @@ class S3Service
     public const SSE_AES256 = 'AES256';
 
     /**
-     * Property s3.
-     *
-     * @var  S3Client
-     */
-    protected $client;
-
-    /**
-     * Property config.
-     *
-     * @var  Config
-     */
-    protected $config;
-
-    /**
      * S3Service constructor.
      *
-     * @param S3Client $s3
-     * @param Config   $config
+     * @param  S3Client  $client
+     * @param  array     $options
      */
-    public function __construct(S3Client $s3, Config $config)
-    {
-        $this->client = $s3;
-        $this->config = $config;
+    public function __construct(
+        protected S3Client $client,
+        protected array $options = []
+    ) {
     }
 
     /**
@@ -102,7 +87,7 @@ class S3Service
      * @param string $expires  Use DateTime syntax, example: `+300seconds`
      * @param array  $args     Arguments.
      *
-     * @return  \Psr\Http\Message\UriInterface
+     * @return  UriInterface
      *
      * @since  1.5.1
      */
@@ -137,7 +122,7 @@ class S3Service
         $args['Key'] = $this->getPathFromFullUrl($path);
         $args['ResponseContentDisposition'] = sprintf(
             "attachment; filename*=UTF-8''%s",
-            rawurlencode(File::makeUtf8Safe($filename))
+            rawurlencode(Path::makeUtf8Safe($filename))
         );
 
         $cmd = $this->client->getCommand('GetObject', $args);
@@ -253,7 +238,7 @@ class S3Service
 
         $filePath = explode('/', $filePath);
 
-        if (strpos($path, 'https://s3.amazonaws.com') === 0) {
+        if (str_starts_with($path, 'https://s3.amazonaws.com')) {
             array_shift($filePath);
         }
 
@@ -277,19 +262,19 @@ class S3Service
      */
     public function getPathFromFullUrl(string $url): string
     {
-        if (strpos($url, 'http') !== 0) {
+        if (!str_starts_with($url, 'http')) {
             return $url;
         }
 
         $host = $this->getHost(true, false)->__toString();
         
-        if (strpos($url, $host) === 0) {
+        if (str_starts_with($url, $host)) {
             return ltrim(substr($url, strlen($host)), '/');
         }
 
         $host = $this->getHost(true, true)->__toString();
 
-        if (strpos($url, $host) === 0) {
+        if (str_starts_with($url, $host)) {
             return ltrim(substr($url, strlen($host)), '/');
         }
         
@@ -322,7 +307,7 @@ class S3Service
      */
     public function getKey(): string
     {
-        return $this->config->get('unidev.amazon.key');
+        return $this->options['access_key'] ?? '';
     }
 
     /**
@@ -334,7 +319,7 @@ class S3Service
      */
     public function getSecret(): string
     {
-        return $this->config->get('unidev.amazon.secret');
+        return $this->options['secret'] ?? '';
     }
 
     /**
@@ -344,7 +329,7 @@ class S3Service
      */
     public function getBucketName(): string
     {
-        $bucket = $this->config->get('unidev.amazon.bucket');
+        $bucket = $this->options['bucket'] ?? '';
 
         if (!$bucket) {
             throw new \UnexpectedValueException('Please enter bucket first.');
@@ -362,7 +347,7 @@ class S3Service
      */
     public function getSubfolder(): string
     {
-        return (string) $this->config->get('unidev.amazon.subfolder');
+        return (string) ($this->options['subfolder'] ?? '');
     }
 
     /**
@@ -379,12 +364,12 @@ class S3Service
 
         $bucket = $this->getBucketName();
 
-        if ($pathStyle || ($uri->getScheme() === 'https' && strpos($bucket, '.') !== false)) {
+        if ($pathStyle || ($uri->getScheme() === 'https' && str_contains($bucket, '.'))) {
             // Use path-style URLs
             $uri = $uri->withPath('/' . $bucket);
         } else {
             // Use virtual-style URLs if haven't been set up already
-            if (strpos($uri->getHost(), $bucket . '.') !== 0) {
+            if (!str_starts_with($uri->getHost(), $bucket . '.')) {
                 $uri = $uri->withHost($bucket . '.' . $uri->getHost());
             }
         }
@@ -419,7 +404,7 @@ class S3Service
      *
      * @since  1.4
      */
-    public function setClient($client): self
+    public function setClient(S3Client $client): self
     {
         $this->client = $client;
 

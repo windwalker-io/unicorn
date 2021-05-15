@@ -15,6 +15,14 @@
         "php": ">=8.0",
         "windwalker/core": "4.x-dev"
     },
+    "require-dev": {
+        "league/flysystem": "^2.0",
+        "league/flysystem-aws-s3-v3": "^2.0"
+    },
+    "suggest": {
+        "league/flysystem": "Install ^2.0 to support flysystem storage",
+        "league/flysystem-aws-s3-v3": "^2.0"
+    },
     "autoload": {
         "psr-4": {
             "Unicorn\\": "src/"
