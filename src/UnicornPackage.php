@@ -11,10 +11,12 @@ declare(strict_types=1);
 
 namespace Unicorn;
 
+use Unicorn\Attributes\StateMachine;
 use Unicorn\Script\UnicornScript;
 use Windwalker\Core\Package\AbstractPackage;
 use Windwalker\Core\Package\PackageInstaller;
 use Windwalker\Core\Security\CsrfService;
+use Windwalker\DI\Attributes\AttributeType;
 use Windwalker\DI\BootableDeferredProviderInterface;
 use Windwalker\DI\BootableProviderInterface;
 use Windwalker\DI\Container;
@@ -124,6 +126,9 @@ class UnicornPackage extends AbstractPackage implements
                 'fieldset' => '@fieldset',
             ]
         );
+
+        $container->getAttributesResolver()
+            ->registerAttribute(StateMachine::class, AttributeType::CLASSES);
     }
 
     public function install(PackageInstaller $installer): void
