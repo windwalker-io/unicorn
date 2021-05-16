@@ -20,6 +20,8 @@ use League\Flysystem\Filesystem;
 use Unicorn\Aws\S3Service;
 use Unicorn\Storage\Adapter\LocalStorage;
 use Unicorn\Storage\Adapter\S3Storage;
+use Windwalker\Core\Application\ApplicationInterface;
+use Windwalker\Core\Application\PathResolver;
 use Windwalker\DI\Container;
 use Windwalker\Filesystem\Path;
 
@@ -37,7 +39,10 @@ class StorageFactory
 
     public function localStorage(array $options = []): LocalStorage
     {
-        return new LocalStorage($options);
+        return new LocalStorage(
+            $this->container->get(ApplicationInterface::class),
+            $options
+        );
     }
 
     public function s3Storage(array $options = []): S3Storage
@@ -45,7 +50,7 @@ class StorageFactory
         return new S3Storage($this->s3Service($options));
     }
 
-    public function s3Service(array $options = []) {
+    public function s3Service(array $options = []): S3Service {
         $s3Client = $this->s3Client($options);
 
         return new S3Service($s3Client, $options);
@@ -68,13 +73,15 @@ class StorageFactory
         $s3->getHandlerList()->appendInit(
             Middleware::mapCommand(
                 static function (CommandInterface $command) use ($options) {
+                    $args = $options['args'] ?? [];
+
                     if (!isset($command['Bucket'])) {
                         $command['Bucket'] = $options['bucket'];
                     }
 
-                    if (isset($command['Key'])) {
-                        $subfolder = $options['subfolder'] ?? '';
+                    $subfolder = $options['subfolder'] ?? '';
 
+                    if (isset($command['Key'])) {
                         $command['Key'] = ltrim(
                             Path::clean(
                                 $subfolder . '/' . $command['Key'],
@@ -82,6 +89,18 @@ class StorageFactory
                             ),
                             '/'
                         );
+                    }
+
+                    $command['Prefix'] = ltrim(
+                        Path::clean(
+                            $subfolder . '/' . $command['Prefix'],
+                            '/'
+                        ),
+                        '/'
+                    );
+
+                    foreach ($args as $k => $v) {
+                        $command[$k] = $v;
                     }
 
                     return $command;

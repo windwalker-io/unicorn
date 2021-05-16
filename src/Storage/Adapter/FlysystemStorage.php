@@ -14,12 +14,16 @@ namespace Unicorn\Storage\Adapter;
 use League\Flysystem\Filesystem;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
+use Unicorn\Storage\GetResult;
 use Unicorn\Storage\PutResult;
+use Unicorn\Storage\Result;
 use Unicorn\Storage\StorageInterface;
 use Windwalker\Filesystem\FileObject;
 
 /**
  * The FlysystemStorage class.
+ *
+ * // todo: implement Flysystem storage
  */
 class FlysystemStorage implements StorageInterface
 {
@@ -42,7 +46,7 @@ class FlysystemStorage implements StorageInterface
     {
     }
 
-    public function delete(string $path, array $options = []): bool
+    public function delete(string $path, array $options = []): Result
     {
     }
 
@@ -50,7 +54,7 @@ class FlysystemStorage implements StorageInterface
     {
     }
 
-    public function get(string $path, array $options = []): FileObject
+    public function get(string $path, array $options = []): GetResult
     {
     }
 

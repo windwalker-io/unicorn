@@ -14,6 +14,7 @@ use Psr\Http\Message\UriInterface;
 use Windwalker\Filesystem\Path;
 use Windwalker\Stream\Stream;
 use Windwalker\Uri\Uri;
+use Windwalker\Utilities\Str;
 
 /**
  * The S3Service class.
@@ -251,6 +252,27 @@ class S3Service
         return $this->getClient()->deleteObject($args);
     }
 
+    public function listObjects(string $path, array $args = []): \Iterator
+    {
+        $args['Prefix'] = $path;
+
+        foreach ($this->client->getIterator('ListObjects', $args) as $k => $item) {
+            $item['Key'] = Str::removeLeft($item['Key'], $this->getSubfolder());
+            $item['Uri'] = $this->getUri($item['Key']);
+
+            yield $k => $item;
+        }
+    }
+
+    public function exists(string $path, array $args = []): bool
+    {
+        return $this->client->doesObjectExist(
+            $this->getBucketName(),
+            $path,
+            $args
+        );
+    }
+
     /**
      * getPathFromFullUrl
      *
@@ -381,6 +403,13 @@ class S3Service
         }
 
         return $uri;
+    }
+
+    public function getUri(string $path, bool $pathStyle = false): Uri
+    {
+        return new Uri(
+            $this->getHost(true, $pathStyle) . '/' . ltrim($path, '/')
+        );
     }
 
     /**

@@ -35,16 +35,24 @@ interface StorageInterface
      */
     public function putStream(mixed $src, string $path, array $options = []): PutResult;
 
-    public function delete(string $path, array $options = []): bool;
+    public function delete(string $path, array $options = []): Result;
 
     public function getUri(string $path, array $options = []): UriInterface;
 
-    public function get(string $path, array $options = []): FileObject;
+    public function get(string $path, array $options = []): GetResult;
 
     public function read(string $path, array $options = []): string;
 
     public function readStream(string $path, array $options = []): StreamInterface;
 
+    /**
+     * listContents
+     *
+     * @param  string  $path
+     * @param  bool    $recursive
+     *
+     * @return  iterable<GetResult>
+     */
     public function listContents(string $path, bool $recursive = false): iterable;
 
     public function exists(string $path): bool;
