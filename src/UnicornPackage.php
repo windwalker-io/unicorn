@@ -97,7 +97,8 @@ class UnicornPackage extends AbstractPackage implements
                 '@axios' => 'vendor/axios/dist/axios.js',
                 '@awesome-checkbox' => 'vendor/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css',
                 '@regenerator-runtime' => 'vendor/regenerator-runtime/runtime.js',
-                '@flatpickr/' => 'vendor/flatpickr/dist/'
+                '@flatpickr/' => 'vendor/flatpickr/dist/',
+                '@tinymce' => 'vendor/tinymce/tinymce.js',
             ]
         );
 

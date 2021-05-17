@@ -12,6 +12,7 @@ import UnicornValidation from './plugin/validation.js';
 import UnicornUI from './ui.js';
 import UnicornGrid from './plugin/grid.js';
 import UnicornForm from './plugin/form.js';
+import UnicornTinymce from './plugin/tinymce.js';
 import UnicornLoader from './loader.js';
 import UnicornHelper from './helper.js';
 import UnicornHttp from './http.js';
@@ -39,5 +40,6 @@ u.use(UnicornUI);
 u.use(UnicornForm);
 u.use(UnicornGrid);
 u.use(UnicornValidation);
+u.use(UnicornTinymce);
 
 window.u = u;
