@@ -27,5 +27,27 @@ return [
         'providers' => [
             \Unicorn\UnicornPackage::class
         ],
+
+        'file_upload' => [
+            'default' => 'default',
+            'profiles' => [
+                'default' => [
+                    'storage' => 'default',
+                    'accept' => null,
+                ],
+                'image' => [
+                    'storage' => 'default',
+                    'accept' => 'image/*',
+                    'resize' => [
+                        'enabled' => true,
+                        'width' => 1200,
+                        'height' => 1200,
+                        'crop' => false,
+                        'quality' => 85,
+                        'output_format' => null
+                    ],
+                ]
+            ]
+        ]
     ]
 ];

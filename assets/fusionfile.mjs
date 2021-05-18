@@ -71,6 +71,7 @@ export async function css() {
 
   // Compile Start
   sass('scss/switcher.scss', 'dist/');
+  sass('scss/editor.scss', 'dist/');
   // Compile end
 }
 

@@ -13,6 +13,7 @@ namespace Unicorn;
 
 use Unicorn\Attributes\StateMachine;
 use Unicorn\Script\UnicornScript;
+use Unicorn\Upload\FileUploadManager;
 use Windwalker\Core\Package\AbstractPackage;
 use Windwalker\Core\Package\PackageInstaller;
 use Windwalker\Core\Security\CsrfService;
@@ -75,6 +76,7 @@ class UnicornPackage extends AbstractPackage implements
     public function register(Container $container): void
     {
         $container->prepareSharedObject(UnicornScript::class);
+        $container->prepareSharedObject(FileUploadManager::class);
         $container->extend(
             CompositeRenderer::class,
             function (CompositeRenderer $renderer) {
