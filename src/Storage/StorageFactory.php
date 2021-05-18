@@ -17,6 +17,7 @@ use Aws\Middleware;
 use Aws\S3\S3Client;
 use Composer\CaBundle\CaBundle;
 use League\Flysystem\Filesystem;
+use Symfony\Component\Mime\MimeTypesInterface;
 use Unicorn\Aws\S3Service;
 use Unicorn\Storage\Adapter\LocalStorage;
 use Unicorn\Storage\Adapter\S3Storage;
@@ -47,7 +48,10 @@ class StorageFactory
 
     public function s3Storage(array $options = []): S3Storage
     {
-        return new S3Storage($this->s3Service($options));
+        return new S3Storage(
+            $this->s3Service($options),
+            $this->container->get(MimeTypesInterface::class)
+        );
     }
 
     public function s3Service(array $options = []): S3Service {

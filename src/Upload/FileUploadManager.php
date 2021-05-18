@@ -15,6 +15,8 @@ use Windwalker\Core\Manager\AbstractManager;
 
 /**
  * The FileUploadManager class.
+ *
+ * @method FileUploadService get(?string $name = null, ...$args)
  */
 class FileUploadManager extends AbstractManager
 {
@@ -29,7 +31,7 @@ class FileUploadManager extends AbstractManager
      * @param  string|null  $name
      * @param  mixed        ...$args
      *
-     * @return  object
+     * @return  FileUploadService
      */
     public function create(?string $name = null, ...$args): object
     {
@@ -39,7 +41,7 @@ class FileUploadManager extends AbstractManager
             throw new \InvalidArgumentException('Empty definition name.');
         }
 
-        $options = $this->config->getDeep($name);
+        $options = $this->config->getDeep('profiles.' . $name);
 
         return $this->container->newInstance(
             FileUploadService::class,

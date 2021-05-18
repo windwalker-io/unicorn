@@ -13,15 +13,18 @@
     ],
     "require": {
         "php": ">=8.0",
-        "windwalker/core": "4.x-dev"
+        "windwalker/core": "4.x-dev",
+        "intervention/image": "^2.5"
     },
     "require-dev": {
+        "aws/aws-sdk-php": "^3.181",
         "league/flysystem": "^2.0",
         "league/flysystem-aws-s3-v3": "^2.0"
     },
     "suggest": {
         "league/flysystem": "Install ^2.0 to support flysystem storage",
-        "league/flysystem-aws-s3-v3": "^2.0"
+        "league/flysystem-aws-s3-v3": "^2.0",
+        "aws/aws-sdk-php": "^3.181"
     },
     "autoload": {
         "psr-4": {

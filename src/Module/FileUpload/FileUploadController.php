@@ -11,9 +11,11 @@ declare(strict_types=1);
 
 namespace Unicorn\Module\FileUpload;
 
+use Unicorn\Upload\FileUploadManager;
 use Unicorn\Upload\FileUploadService;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Attributes\Controller;
+use Windwalker\Core\Attributes\Json;
 use Windwalker\Core\Attributes\TaskMapping;
 use Windwalker\Core\Http\AppRequest;
 use Windwalker\Http\Helper\UploadedFileHelper;
@@ -29,13 +31,14 @@ use Windwalker\Http\Helper\UploadedFileHelper;
 )]
 class FileUploadController
 {
-    public function handle(FileUploadService $fileUploadService, AppRequest $request, AppContext $app)
+    public function handle(FileUploadManager $fileUploadManager, AppRequest $request, AppContext $app)
     {
-        [$folder, $path, $resize, $format] = $request->input(
-            'folder',
+        [$dir, $path, $resize, $format, $profile] = $request->input(
+            'dir',
             'path',
             'resize',
-            'format'
+            'format',
+            'profile'
         )
             ->values()
             ->dump();
@@ -52,6 +55,20 @@ class FileUploadController
             throw new \RuntimeException($msg, 400);
         }
 
-        $fileUploadService->handleFile($file);
+        $uploadService = $fileUploadManager->get($profile);
+
+        if (!$uploadService) {
+            throw new \DomainException('Unable to find profile: ' . get_debug_type($profile), 400);
+        }
+
+        if ($dir) {
+            $uploadService->setOption('dir', $dir);
+        }
+
+        $result = $uploadService->handleFile($file, $path);
+
+        return [
+            'url' => (string) $result->getUri()
+        ];
     }
 }

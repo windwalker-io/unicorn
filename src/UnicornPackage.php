@@ -11,6 +11,8 @@ declare(strict_types=1);
 
 namespace Unicorn;
 
+use Symfony\Component\Mime\MimeTypes;
+use Symfony\Component\Mime\MimeTypesInterface;
 use Unicorn\Attributes\StateMachine;
 use Unicorn\Script\UnicornScript;
 use Unicorn\Upload\FileUploadManager;
@@ -77,6 +79,8 @@ class UnicornPackage extends AbstractPackage implements
     {
         $container->prepareSharedObject(UnicornScript::class);
         $container->prepareSharedObject(FileUploadManager::class);
+        $container->prepareSharedObject(MimeTypes::class)
+            ->alias(MimeTypesInterface::class, MimeTypes::class);
         $container->extend(
             CompositeRenderer::class,
             function (CompositeRenderer $renderer) {

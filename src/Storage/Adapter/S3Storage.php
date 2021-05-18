@@ -12,14 +12,17 @@ declare(strict_types=1);
 namespace Unicorn\Storage\Adapter;
 
 use Aws\Result as AwsResult;
+use GuzzleHttp\Psr7\MimeType;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
+use Symfony\Component\Mime\MimeTypesInterface;
 use Unicorn\Aws\S3Service;
 use Unicorn\Storage\GetResult;
 use Unicorn\Storage\PutResult;
 use Unicorn\Storage\Result;
 use Unicorn\Storage\StorageInterface;
+use Windwalker\Filesystem\Path;
 use Windwalker\Http\Response\Response;
 use Windwalker\Uri\Uri;
 use Windwalker\Utilities\Str;
@@ -32,12 +35,15 @@ class S3Storage implements StorageInterface
     /**
      * S3Storage constructor.
      */
-    public function __construct(protected S3Service $s3)
+    public function __construct(protected S3Service $s3, protected MimeTypesInterface $mimeTypes)
     {
     }
 
     public function put(string $data, string $path, array $options = []): PutResult
     {
+        $options['ContentType'] = $options['mime_type'] ?? $this->guessMimeType($path);
+        $options['ContentLength'] = strlen($data);
+
         $result = $this->s3->uploadFileData(
             $data,
             $path,
@@ -49,6 +55,9 @@ class S3Storage implements StorageInterface
 
     public function putFile(string $src, string $path, array $options = []): PutResult
     {
+        $options['ContentType'] = $options['mime_type'] ?? $this->guessMimeType($src);
+        $options['ContentLength'] = filesize($src);
+
         $result = $this->s3->uploadFile(
             $src,
             $path,
@@ -80,6 +89,16 @@ class S3Storage implements StorageInterface
 
     public function putStream(mixed $src, string $path, array $options = []): PutResult
     {
+        $options['ContentType'] = $options['mime_type'] ?? $this->guessMimeType($path);
+
+        if ($src instanceof StreamInterface) {
+            $options['ContentLength'] = $src->getSize();
+        } elseif (is_resource($src)) {
+            $stats = fstat($src);
+
+            $options['ContentLength'] = $stats['size'] ?? null;
+        }
+
         $result = $this->s3->uploadFileData(
             $src,
             $path,
@@ -160,5 +179,10 @@ class S3Storage implements StorageInterface
     public function getS3Service(): S3Service
     {
         return $this->s3;
+    }
+
+    protected function guessMimeType(string $path): ?string
+    {
+        return $this->mimeTypes->getMimeTypes(Path::getExtension($path))[0] ?? null;
     }
 }
