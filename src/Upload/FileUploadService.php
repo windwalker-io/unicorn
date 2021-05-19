@@ -20,6 +20,7 @@ use Psr\Http\Message\UploadedFileInterface;
 use Symfony\Component\Mime\MimeTypeGuesserInterface;
 use Symfony\Component\Mime\MimeTypesInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Unicorn\Flysystem\Base64DataUri;
 use Unicorn\Storage\PutResult;
 use Unicorn\Storage\StorageInterface;
 use Unicorn\Storage\StorageManager;
@@ -80,9 +81,36 @@ class FileUploadService
             ->default('local');
     }
 
+    public function setResizeConfig(array $resizeConfig): static
+    {
+        $this->options['resize'] = array_merge(
+            $this->options['resize'],
+            $resizeConfig
+        );
+
+        return $this;
+    }
+
     public function getStorage(): StorageInterface
     {
         return $this->storageManager->get($this->options['storage']);
+    }
+
+    public function handleBase64(string $file, ?string $dest = null): PutResult
+    {
+        $storage = $this->getStorage();
+        $stream = Base64DataUri::toStream($file, $mime);
+
+        if (str_starts_with($mime, 'image/')) {
+            $stream = $this->resizeImage($stream);
+        }
+
+        $dest ??= $this->getUploadPath(
+            $dest,
+            $this->mimeTypes->getExtensions($mime)[0] ?? null
+        );
+
+        return $storage->putStream($stream, $dest);
     }
 
     public function handleFile(UploadedFileInterface $file, ?string $dest = null): PutResult
@@ -171,8 +199,12 @@ class FileUploadService
     {
         $type = null;
 
-        if (is_string($src) && strlen($src) < PHP_MAXPATHLEN && is_file($src)) {
-            $type = $this->mimeTypes->getMimeTypes(Path::getExtension($src))[0] ?? null;
+        if (is_string($src)) {
+            if (Base64DataUri::isDataUri($src)) {
+                $type = Base64DataUri::getMimeType($src);
+            } elseif (strlen($src) < PHP_MAXPATHLEN && is_file($src)) {
+                $type = $this->mimeTypes->getMimeTypes(Path::getExtension($src))[0] ?? null;
+            }
         } elseif ($src instanceof UploadedFileInterface) {
             $type = $src->getClientMediaType();
         }

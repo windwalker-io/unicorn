@@ -200,8 +200,7 @@ function registerDragPlugin() {
       editor.on('dragover', e => {
         e.preventDefault();
         tinyMCE.activeEditor.contentAreaContainer.style.transition = 'all .3s';
-        tinyMCE.activeEditor.contentAreaContainer.style.borderStyle = 'dashed';
-        tinyMCE.activeEditor.contentAreaContainer.style.borderWidth = '5px';
+        tinyMCE.activeEditor.contentAreaContainer.style.border = '3px dashed rgba(0, 0, 0, .35)';
 
         return false;
       });

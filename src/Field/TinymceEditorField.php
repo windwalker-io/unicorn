@@ -33,6 +33,8 @@ use Windwalker\Utilities\Arr;
  */
 class TinymceEditorField extends AbstractEditorField
 {
+    use FileUploadFieldTrait;
+
     public const TOOLBAR_SIMPLE = 'simple';
 
     public const TOOLBAR_FULL = 'full';
@@ -42,9 +44,6 @@ class TinymceEditorField extends AbstractEditorField
 
     #[Inject]
     protected EditorScript $editorScript;
-
-    #[Inject]
-    protected Navigator $nav;
 
     #[Inject]
     protected AssetService $assetService;
@@ -154,8 +153,7 @@ class TinymceEditorField extends AbstractEditorField
     public function getImageUploadUrl(?string $profile): string
     {
         return $this->get('imageUploadUrl')
-            ?? (string) $this->nav->to('file_upload')
-                ->var('profile', $profile ?? 'image');
+            ?? (string) $this->getBuiltInUploadUrl($profile ?? 'image');
     }
 
     /**

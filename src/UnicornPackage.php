@@ -18,15 +18,12 @@ use Unicorn\Script\UnicornScript;
 use Unicorn\Upload\FileUploadManager;
 use Windwalker\Core\Package\AbstractPackage;
 use Windwalker\Core\Package\PackageInstaller;
-use Windwalker\Core\Security\CsrfService;
 use Windwalker\DI\Attributes\AttributeType;
 use Windwalker\DI\BootableDeferredProviderInterface;
 use Windwalker\DI\BootableProviderInterface;
 use Windwalker\DI\Container;
 use Windwalker\DI\ServiceProviderInterface;
 use Windwalker\Renderer\CompositeRenderer;
-use Windwalker\Session\Cookie\Cookies;
-use Windwalker\Utilities\Arr;
 
 /**
  * The UnicornPackage class.
@@ -81,6 +78,7 @@ class UnicornPackage extends AbstractPackage implements
         $container->prepareSharedObject(FileUploadManager::class);
         $container->prepareSharedObject(MimeTypes::class)
             ->alias(MimeTypesInterface::class, MimeTypes::class);
+
         $container->extend(
             CompositeRenderer::class,
             function (CompositeRenderer $renderer) {
@@ -141,5 +139,6 @@ class UnicornPackage extends AbstractPackage implements
     public function install(PackageInstaller $installer): void
     {
         $installer->installConfig(__DIR__ . '/../etc/*.php', 'config');
+        $installer->installRoutes(__DIR__ . '/../routes/*.php', 'routes');
     }
 }
