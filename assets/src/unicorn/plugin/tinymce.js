@@ -20,7 +20,10 @@ export default class UnicornTinymce {
   }
 
   loadTinymce() {
-    return this.app.import('@tinymce');
+    return this.app.import('@tinymce')
+      .then((tinymce) => {
+        return registerDragPlugin().then(() => tinymce);
+      });
   }
 
   init(selector, options = {}) {
@@ -67,13 +70,23 @@ export class TinymceEditor {
       defaults.images_upload_handler = (...args) => this.imageUploadHandler(...args);
     }
 
+    // defaults.file_picker_callback = (...args) => this.filePickerCallback(...args);
+
+    defaults.plugins = defaults.plugins || [];
+    
     defaults.setup = (editor) => {
       editor.on('change', () => {
         tinymce.triggerSave();
       });
     };
 
-    return defaultsDeep({}, options, defaults);
+    options = defaultsDeep({}, options, defaults);
+
+    if (options.plugins.indexOf('unicorndragdrop') === -1) {
+      options.plugins.push('unicorndragdrop');
+    }
+
+    return options;
   }
 
   insert(text) {
@@ -88,7 +101,39 @@ export class TinymceEditor {
     return this.editor.setContent(text);
   }
 
-  imageUploadHandler(blobInfo, success, failure) {
+  // filePickerCallback(callback, value, meta) {
+  //   const input = document.createElement('input');
+  //   input.setAttribute('type', 'file');
+  //   input.style.display = 'none';
+  //
+  //   if (meta.filetype === 'image') {
+  //     input.setAttribute('accept', `image/\*`);
+  //   }
+  //
+  //   document.body.appendChild(input);
+  //
+  //   input.onchange = function () {
+  //     const file = this.files[0];
+  //
+  //     const reader = new FileReader();
+  //     reader.onload = function () {
+  //       const id = 'blobid' + (new Date()).getTime();
+  //       const blobCache =  tinymce.activeEditor.editorUpload.blobCache;
+  //       const base64 = reader.result.split(',')[1];
+  //       const blobInfo = blobCache.create(id, file, base64);
+  //       blobCache.add(blobInfo);
+  //
+  //       /* call the callback and populate the Title field with the file name */
+  //       callback(blobInfo.blobUri(), { title: file.name, text: file.name });
+  //     };
+  //     reader.readAsDataURL(file);
+  //     input.remove();
+  //   };
+  //
+  //   input.click();
+  // }
+
+  imageUploadHandler(blobInfo, success, failure, progress) {
     const element = this.element;
 
     element.dispatchEvent(new CustomEvent('upload-start'));
@@ -96,11 +141,16 @@ export class TinymceEditor {
     const xhr = new XMLHttpRequest();
     xhr.withCredentials = false;
     xhr.open('POST', this.options.images_upload_url);
+
+    xhr.upload.onprogress = function (e) {
+      progress(e.loaded / e.total * 100);
+    };
+
     xhr.addEventListener('load', () => {
       element.dispatchEvent(new CustomEvent('upload-complete'));
 
       if (xhr.status !== 200 && xhr.status !== 204) {
-        failure('HTTP Error: ' + decodeURIComponent(xhr.statusText));
+        failure('HTTP Error: ' + decodeURIComponent(xhr.statusText), { remove: true });
         element.dispatchEvent(new CustomEvent('upload-error'));
         return;
       }
@@ -108,7 +158,7 @@ export class TinymceEditor {
       const json = JSON.parse(xhr.responseText);
 
       if (!json || typeof json.data.url !== 'string') {
-        failure('Invalid JSON: ' + xhr.responseText);
+        failure('Invalid JSON: ' + xhr.responseText, { remove: true });
         console.error('Invalid JSON: ' + xhr.responseText);
         element.dispatchEvent(new CustomEvent('upload-error'));
         return;
@@ -124,4 +174,44 @@ export class TinymceEditor {
 
     xhr.send(formData);
   }
+}
+
+function registerDragPlugin() {
+  tinymce.PluginManager.add('unicorndragdrop', function(editor) {
+    // Reset the drop area border
+    tinyMCE.DOM.bind(document, 'dragleave', function(e) {
+      e.stopPropagation();
+      e.preventDefault();
+      tinyMCE.activeEditor.contentAreaContainer.style.transition = 'all .3s';
+      tinyMCE.activeEditor.contentAreaContainer.style.borderWidth = '';
+
+      return false;
+    });
+
+    if (typeof FormData !== 'undefined') {
+
+      // Fix for Chrome
+      editor.on('dragenter', e => {
+        e.stopPropagation();
+        return false;
+      });
+
+      // Notify user when file is over the drop area
+      editor.on('dragover', e => {
+        e.preventDefault();
+        tinyMCE.activeEditor.contentAreaContainer.style.transition = 'all .3s';
+        tinyMCE.activeEditor.contentAreaContainer.style.borderStyle = 'dashed';
+        tinyMCE.activeEditor.contentAreaContainer.style.borderWidth = '5px';
+
+        return false;
+      });
+
+      editor.on('drop', e => {
+        editor.contentAreaContainer.style.borderWidth = '';
+        editor.contentAreaContainer.style.borderWidth = '';
+      });
+    }
+  });
+
+  return Promise.resolve();
 }

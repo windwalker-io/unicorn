@@ -22,22 +22,40 @@ export async function main() {
   // Watch end
 
   // Compile Start
-  rollup('./src/unicorn/unicorn.js', './dist/', {
+  // rollup('./src/unicorn/unicorn.js', './dist/', {
+  //   override: (options) => {
+  //     options.output.name = 'Unicorn';
+  //     options.output.format = 'umd';
+  //   }
+  // });
+  // rollup('./src/unicorn/ui/validation-components.js', './dist/ui/', {
+  //   override: (options) => {
+  //     options.output.name = 'UVC';
+  //     options.output.format = 'umd';
+  //   }
+  // });
+  // rollup('./src/unicorn/ui/list-dependent.js', './dist/ui/', {
+  //   override: (options) => {
+  //     options.output.name = 'ListDependent';
+  //     options.output.format = 'umd';
+  //   }
+  // });
+
+  webpack('./src/unicorn/unicorn.js', './dist/', {
     override: (options) => {
-      options.output.name = 'Unicorn';
-      options.output.format = 'umd';
+      options.output.library = 'Unicorn';
+      options.output.libraryTarget = 'umd';
     }
   });
-  rollup('./src/unicorn/ui/validation-components.js', './dist/ui/', {
+  webpack('./src/unicorn/ui/validation-components.js', './dist/ui/', {
     override: (options) => {
-      options.output.name = 'UVC';
-      options.output.format = 'umd';
+      options.output.libraryTarget = 'umd';
     }
   });
-  rollup('./src/unicorn/ui/list-dependent.js', './dist/ui/', {
+  webpack('./src/unicorn/ui/list-dependent.js', './dist/ui/', {
     override: (options) => {
-      options.output.name = 'ListDependent';
-      options.output.format = 'umd';
+      options.output.library = 'ListDependent';
+      options.output.libraryTarget = 'umd';
     }
   });
   // Compile end
@@ -70,8 +88,8 @@ export async function css() {
   // Watch end
 
   // Compile Start
-  sass('scss/switcher.scss', 'dist/');
-  sass('scss/editor.scss', 'dist/');
+  sass('scss/switcher.scss', 'dist/', { minify: 'separate_file' });
+  sass('scss/editor.scss', 'dist/', { minify: 'separate_file' });
   // Compile end
 }
 

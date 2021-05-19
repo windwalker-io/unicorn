@@ -58,9 +58,12 @@ textarea {
   display: initial !important; }
 
 .mce-content-body {
-  font-size: 14px;
+  font-size: 16px;
   color: #828282;
   padding: 0 25px 25px; }
+
+.mce-content-body a {
+  color: #007bff; }
 
 .mce-content-body h1,
 .mce-content-body h2,
@@ -149,6 +152,7 @@ textarea {
   color: #999; }
 
 .mce-content-body img {
-  max-width: 100%; }
+  max-width: 100%;
+  height: auto !important; }
 
 /*# sourceMappingURL=editor.css.map */

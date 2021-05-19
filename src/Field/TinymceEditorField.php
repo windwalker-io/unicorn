@@ -12,13 +12,11 @@ declare(strict_types=1);
 namespace Unicorn\Field;
 
 use Unicorn\Script\EditorScript;
-use Windwalker\Core\Asset\Asset;
 use Windwalker\Core\Asset\AssetService;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\SystemUri;
 use Windwalker\DI\Attributes\Inject;
 use Windwalker\DOM\DOMElement;
-use Windwalker\Form\Field\TextareaField;
 use Windwalker\Uri\UriNormalizer;
 use Windwalker\Utilities\Arr;
 
@@ -29,7 +27,7 @@ use Windwalker\Utilities\Arr;
  * @method  array  getContentCss()
  * @method  $this  langFolder(string $value = null)
  * @method  mixed  getLangFolder()
- * @method  $this  enableImageUpload(bool $value = null)
+ * @method  $this  enableImageUpload(bool|string $value = null)
  * @method  mixed  getEnableImageUpload()
  * @method  $this  imageUploadUrl(string $value = null)
  */
@@ -58,7 +56,8 @@ class TinymceEditorField extends AbstractEditorField
      */
     protected static array $defaultOptions = [
         'height' => 450,
-        'convert_urls' => false,
+        'convert_urls' => true,
+        'fontsize_formats' => '12px 13px 14px 15px 16px 18px 20px 24px 28px 32px'
     ];
 
     /**
@@ -113,7 +112,7 @@ class TinymceEditorField extends AbstractEditorField
                 'advlist autolink lists link image charmap print preview hr anchor pagebreak',
                 'searchreplace wordcount visualblocks visualchars code fullscreen',
                 'insertdatetime media nonbreaking save table directionality',
-                'emoticons template paste textpattern imagetools textcolor contextmenu colorpicker',
+                'emoticons template paste textpattern imagetools',
             ];
 
             $defaultOptions['toolbar1'] = 'insertfile undo redo | styleselect formatselect fontsizeselect ' .
@@ -125,10 +124,11 @@ class TinymceEditorField extends AbstractEditorField
         }
 
         if ($this->getEnableImageUpload() ?? true) {
-            $defaultOptions['images_upload_url'] = (string) $this->getImageUploadUrl();
+            $profile = is_string($profile = $this->getEnableImageUpload()) ? $profile : null;
+            $defaultOptions['images_upload_url'] = (string) $this->getImageUploadUrl($profile);
         }
 
-        $defaultOptions['readonly'] = (bool) ($this->get('readonly') || $this->get('disabled'));
+        $defaultOptions['readonly'] = (bool) ($this->isReadonly() || $this->isDisabled());
 
         $options = Arr::mergeRecursive($defaultOptions, static::$defaultOptions, $options);
 
@@ -151,11 +151,11 @@ class TinymceEditorField extends AbstractEditorField
         );
     }
 
-    public function getImageUploadUrl(): string
+    public function getImageUploadUrl(?string $profile): string
     {
         return $this->get('imageUploadUrl')
             ?? (string) $this->nav->to('file_upload')
-                ->var('profile', 'image');
+                ->var('profile', $profile ?? 'image');
     }
 
     /**
