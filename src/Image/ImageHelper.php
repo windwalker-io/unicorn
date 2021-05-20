@@ -29,4 +29,9 @@ class ImageHelper
     {
         return $this->asset->handleUri('@unicorn/images/default-img.png');
     }
+
+    public function ajaxLoader(): string
+    {
+        return $this->asset->handleUri('@unicorn/images/ajax-loader.gif');
+    }
 }
