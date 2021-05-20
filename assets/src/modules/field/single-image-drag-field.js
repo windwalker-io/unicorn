@@ -1,5 +1,3 @@
-<?php
-
 /**
  * Part of starter project.
  *
@@ -7,4 +5,3 @@
  * @license    __LICENSE__
  */
 
-declare(strict_types=1);
