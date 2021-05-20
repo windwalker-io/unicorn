@@ -5,3 +5,5 @@
  * @license    __LICENSE__
  */
 
+import Cropper from 'cropperjs';
+
