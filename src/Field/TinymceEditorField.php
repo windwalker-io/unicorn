@@ -100,6 +100,7 @@ class TinymceEditorField extends AbstractEditorField
     {
         $options = $this->getEditorOptions() ?? [];
         $defaultOptions = [
+            'relative_urls' => true,
             'document_base_url' => UriNormalizer::ensureDir($this->systemUri->root),
         ];
 
