@@ -2,8 +2,7 @@
   /*
    * If the slider or anything else is covered by the background image,
    * use relative or absolute position on it
-   */
-  /* Limit the background image by adding overflow: hidden */ }
+   */ }
   .c-sid-default__left-col {
     float: left;
     width: 30%;
@@ -12,7 +11,7 @@
     max-height: 250px; }
   .c-sid-default__right-col {
     overflow: hidden; }
-  .c-sid-default .filedrag {
+  .c-sid-default__dragarea {
     font-weight: bold;
     text-align: center;
     padding: 9% 0;
@@ -20,21 +19,15 @@
     border: 2px dashed #ccc;
     border-radius: 7px;
     cursor: default; }
-  .c-sid-default .filedrag.hover {
-    color: #333;
-    border-color: #333;
-    background-color: #f9f9f9; }
-  .c-sid-default .cropit-image-background {
-    opacity: .2; }
+    .c-sid-default__dragarea.hover {
+      color: #333;
+      border-color: #333;
+      background-color: #f9f9f9; }
   .c-sid-default__size-info {
     margin-top: 5px;
     font-size: 13px; }
-  .c-sid-default__delete-image {
+  .c-sid-default__remove {
     margin-left: -17px; }
-  .c-sid-default input.cropit-image-zoom-input {
-    position: relative; }
-  .c-sid-default #image-cropper {
-    overflow: hidden; }
   .c-sid-default__modal .btn {
     position: relative; }
 

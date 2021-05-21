@@ -15,7 +15,7 @@ class SingleImageDrag extends HTMLElement {
   }
 
   connectedCallback() {
-
+    this.style.visibility = '';
   }
 }
 
