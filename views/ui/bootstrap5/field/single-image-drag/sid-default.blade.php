@@ -28,7 +28,7 @@ use Windwalker\Core\Router\SystemUri;
  */
 
 $inputElement = $field->getPreparedInput();
-$inputElement->addClass('c-sid');
+$inputElement->addClass('c-sid-default');
 $imageHelper = $app->service(\Unicorn\Image\ImageHelper::class);
 
 $image = $field->getValue() ?: $imageHelper->placeholder();
@@ -41,20 +41,20 @@ $minHeight = $field->getMinHeight();
 ?>
 <div {!! $inputElement::buildAttributes($inputElement) !!}>
     <div class="d-flex">
-        <div class="c-sid__left-col d-flex align-items-start">
-            <img class="c-sid__preview img-responsive img-fluid"
+        <div class="c-sid-default__left-col d-flex align-items-start">
+            <img class="c-sid-default__preview img-responsive img-fluid"
                 {{-- TextField has escaped value, so we don't need to escape again --}}
                 src="{{ $image }}"
                 alt="Preview">
             <img src="{{ $imageHelper->ajaxLoader() }}"
-                id="{{ $field->getId('__ajax-loader') }}" class="c-sid__img-loader mx-auto align-self-center"
+                id="{{ $field->getId('__ajax-loader') }}" class="c-sid-default__img-loader mx-auto align-self-center"
                 alt="Lading"
                 style="display: none;">
         </div>
         @if (!$field->isReadonly() && !$field->isDisabled())
-            <div class="c-sid__right-col flex-grow-1">
-                <div class="c-sid__dragarea">
-                    <div class="c-sid__upload-actions">
+            <div class="c-sid-default__right-col flex-grow-1">
+                <div class="c-sid-default__dragarea">
+                    <div class="c-sid-default__upload-actions">
                         <button class="btn btn-success btn-sm btn-xs sid-file-select-button" type="button">
                             <span class="fa fa-picture-o"></span>
                             @lang('unicorn.field.sid.button.select')
@@ -65,16 +65,16 @@ $minHeight = $field->getMinHeight();
                             <span class="fa fa-paste"></span>
                         </button>
                     </div>
-                    <div class="c-sid__upload-desc">
+                    <div class="c-sid-default__upload-desc">
                         @lang('unicorn.field.sid.drop.desc')
                     </div>
                     @if ($field->get('show_size_notice', false))
                         @if ($options['crop'])
-                            <div class="c-sid__size-info">
+                            <div class="c-sid-default__size-info">
                                 @lang('unicorn.field.sid.crop.size.desc', $options['width'], $options['height'])
                             </div>
                         @elseif ($maxHeight || $maxWidth || $minWidth || $minHeight)
-                            <div class="c-sid__size-info">
+                            <div class="c-sid-default__size-info">
                                 @if ($minWidth || $maxHeight)
                                     <div class="max-size">
                                         @if ($maxWidth !== null && $maxHeight !== null)
@@ -102,13 +102,13 @@ $minHeight = $field->getMinHeight();
                         @endif
                     @endif
                     <img src="{{ $imageHelper->ajaxLoader() }}"
-                        id="{{ $field->getId('__loader') }}" class="c-sid__loader" alt="Lading" style="display: none;">
+                        id="{{ $field->getId('__loader') }}" class="c-sid-default__loader" alt="Lading" style="display: none;">
                 </div>
 
                 @if (!$field->isRequired())
                     <div class="checkbox checkbox-primary mt-2" style="">
                         <input type="checkbox" id="{{ $field->getId('__remove') }}"
-                            class="c-sid__remove"/>
+                            class="c-sid-default__remove"/>
                         <label for="{{ $field->getId('__remove') }}">
                             @lang('unicorn.field.sid.delete')
                         </label>

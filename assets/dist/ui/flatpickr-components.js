@@ -98,7 +98,7 @@ var FlatpickrElement = /*#__PURE__*/function (_HTMLElement) {
     key: "handleOptions",
     value: function handleOptions(options) {
       if (options.monthSelect) {
-        return Promise.all([System["import"]('@flatpickr/plugins/monthSelect/index.js?c1c4c3dc6c132d44bb054e5f'), System["import"]('@flatpickr/plugins/monthSelect/style.css')]).then(function (modules) {
+        return Promise.all([System["import"]('@flatpickr/plugins/monthSelect/index.js?aa8eb1acd98cf0ee73af4d2a'), System["import"]('@flatpickr/plugins/monthSelect/style.css')]).then(function (modules) {
           var styleSheet = modules[1]["default"]; // A CSSStyleSheet object
 
           document.adoptedStyleSheets = [].concat(_toConsumableArray(document.adoptedStyleSheets), [styleSheet]);
@@ -134,7 +134,7 @@ var FlatpickrElement = /*#__PURE__*/function (_HTMLElement) {
   return FlatpickrElement;
 }( /*#__PURE__*/_wrapNativeSuper(HTMLElement));
 
-Promise.all([System["import"]('@flatpickr/flatpickr.js?c1c4c3dc6c132d44bb054e5f'), System["import"]('@flatpickr/flatpickr.css')]).then(function (modules) {
+Promise.all([System["import"]('@flatpickr/flatpickr.js?aa8eb1acd98cf0ee73af4d2a'), System["import"]('@flatpickr/flatpickr.css')]).then(function (modules) {
   var styleSheet = modules[1]["default"]; // A CSSStyleSheet object
 
   document.adoptedStyleSheets = [].concat(_toConsumableArray(document.adoptedStyleSheets), [styleSheet]);
