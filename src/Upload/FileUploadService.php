@@ -26,6 +26,7 @@ use Unicorn\Storage\StorageInterface;
 use Unicorn\Storage\StorageManager;
 use Windwalker\Filesystem\Filesystem;
 use Windwalker\Filesystem\Path;
+use Windwalker\Http\Helper\UploadedFileHelper;
 use Windwalker\Utilities\Options\OptionsResolverTrait;
 
 use function Windwalker\uid;
@@ -127,6 +128,15 @@ class FileUploadService
         $dest ??= $this->getUploadPath($dest, Path::getExtension($file->getClientFilename()));
 
         return $storage->putStream($stream, $dest);
+    }
+
+    public function handleFileIfSuccess(?UploadedFileInterface $file, ?string $dest = null): ?PutResult
+    {
+        if (!$file || $file->getError()) {
+            return null;
+        }
+
+        return $this->handleFile($file, $dest);
     }
 
     public function getUploadPath(?string $path, string $ext = '', ?string $dir = null): string

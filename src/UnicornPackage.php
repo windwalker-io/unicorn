@@ -102,6 +102,7 @@ class UnicornPackage extends AbstractPackage implements
                 '@awesome-checkbox' => 'vendor/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css',
                 '@regenerator-runtime' => 'vendor/regenerator-runtime/runtime.js',
                 '@flatpickr/' => 'vendor/flatpickr/dist/',
+                '@cropperjs/' => 'vendor/cropperjs/dist/',
                 '@tinymce' => 'vendor/tinymce/tinymce.js',
             ]
         );

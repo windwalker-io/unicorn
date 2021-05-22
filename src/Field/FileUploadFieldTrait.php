@@ -23,7 +23,7 @@ trait FileUploadFieldTrait
     #[Inject]
     protected Navigator $nav;
 
-    protected string $uploadProfile = 'default';
+    protected ?string $uploadProfile = null;
 
     public function getBuiltInUploadUrl(string $profile): RouteUri
     {
@@ -31,19 +31,19 @@ trait FileUploadFieldTrait
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getUploadProfile(): string
+    public function getUploadProfile(): ?string
     {
         return $this->uploadProfile;
     }
 
     /**
-     * @param  string  $uploadProfile
+     * @param  string|null  $uploadProfile
      *
      * @return  static  Return self to support chaining.
      */
-    public function uploadProfile(string $uploadProfile): static
+    public function uploadProfile(?string $uploadProfile): static
     {
         $this->uploadProfile = $uploadProfile;
 

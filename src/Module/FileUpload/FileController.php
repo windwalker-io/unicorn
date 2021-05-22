@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace Unicorn\Module\FileUpload;
 
+use Unicorn\Flysystem\Base64DataUri;
 use Unicorn\Upload\FileUploadManager;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Attributes\Controller;
@@ -61,7 +62,11 @@ class FileController
         $file = $request->file('file');
 
         if ($data !== null) {
+            if (!Base64DataUri::isDataUri((string) $data)) {
+                throw new \RuntimeException('Invalid file data', 400);
+            }
 
+            $result = $uploadService->handleBase64($data, $path);
         } else {
             if (!$file || $file->getError()) {
                 $msg = 'Upload fail';

@@ -15,7 +15,8 @@
   },
   "keywords": [
     "windwalker",
-    "unicorn"
+    "unicorn",
+    "windwalker-libs"
   ],
   "author": "Simon Asika",
   "license": "MIT",
@@ -52,5 +53,20 @@
     "vinyl-named-with-path": "^1.0.0",
     "webpack-comment-remover-loader": "^0.0.3",
     "webpack-stream": "^6.1.2"
+  },
+  "windwalker": {
+    "vendors": [
+      "@fortawesome/fontawesome-free",
+      "@ryangjchandler/spruce",
+      "@windwalker-io/unicorn",
+      "alpinejs",
+      "awesome-bootstrap-checkbox",
+      "axios",
+      "cropperjs",
+      "flatpickr",
+      "regenerator-runtime",
+      "systemjs",
+      "tinymce"
+    ]
   }
 }

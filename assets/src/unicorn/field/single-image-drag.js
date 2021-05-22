@@ -5,8 +5,6 @@
  * @license    __LICENSE__
  */
 
-import Cropper from 'cropperjs';
-import 'cropperjs/dist/cropper.css';
 import '../../../scss/field/single-image-drag.scss';
 
 class SingleImageDrag extends HTMLElement {
@@ -416,4 +414,13 @@ class SingleImageDrag extends HTMLElement {
   }
 }
 
-customElements.define(SingleImageDrag.is, SingleImageDrag);
+Promise.all([
+  u.import('@cropperjs/cropper.min.js'),
+  u.import('@cropperjs/cropper.css')
+])
+  .then((modules) => {
+    const styleSheet = modules[1].default;
+    document.adoptedStyleSheets = [...document.adoptedStyleSheets, styleSheet];
+
+    customElements.define(SingleImageDrag.is, SingleImageDrag);
+  });

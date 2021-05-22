@@ -77,7 +77,7 @@ $options['modalTarget'] = '#' . $field->getId('__modal');
                         <div class="c-sid-default__upload-desc">
                             @lang('unicorn.field.sid.drop.desc')
                         </div>
-                        @if ($field->get('show_size_notice', false))
+                        @if ($field->isShowSizeNotice())
                             @if ($options['crop'])
                                 <div class="c-sid-default__size-info">
                                     @lang('unicorn.field.sid.crop.size.desc', $options['width'], $options['height'])
@@ -158,19 +158,19 @@ $options['modalTarget'] = '#' . $field->getId('__modal');
                         <img id="image" src="" alt="Picture" data-sid="cropper" style="height: 400px; visibility: hidden">
                     </div>
 
-                    <div class="mt-3 d-flex justify-content-between w-100">
+                    <div class="mt-3 d-flex justify-content-between align-items-center w-100">
                         <div>
                             <span class="fa fa-fw fa-search-plus"></span>
                             Scroll to zoom in/out
                         </div>
                         <div class="">
                             <button class="btn btn-sm btn-secondary"
-                                data-sid-toolbar="zoom-in">
-                                <span class="fa fa-fw fa-search-plus"></span>
-                            </button>
-                            <button class="btn btn-sm btn-secondary"
                                 data-sid-toolbar="zoom-out">
                                 <span class="fa fa-fw fa-search-minus"></span>
+                            </button>
+                            <button class="btn btn-sm btn-secondary"
+                                data-sid-toolbar="zoom-in">
+                                <span class="fa fa-fw fa-search-plus"></span>
                             </button>
                             <button class="btn btn-sm btn-secondary"
                                 data-sid-toolbar="rotate-left">
