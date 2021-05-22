@@ -1,0 +1,59 @@
+// Part of starter file.
+
+.c-sid-default {
+  &__left-col {
+    float: left;
+    width: 30%;
+    margin-right: 15px;
+  }
+
+  &__left-col img {
+    max-height: 250px;
+  }
+
+  &__right-col {
+    overflow: hidden;
+  }
+
+  &__dragarea {
+    font-weight: bold;
+    text-align: center;
+    padding: 9% 0;
+    color: #ccc;
+    border: 2px dashed #ccc;
+    border-radius: 7px;
+    cursor: default;
+
+    &.hover {
+      color: #333;
+      border-color: #333;
+      background-color: #f9f9f9;
+    }
+  }
+
+  &__size-info {
+    margin-top: 5px;
+    font-size: 13px;
+  }
+
+  &__remove {
+    margin-left: -17px;
+  }
+
+  /*
+   * If the slider or anything else is covered by the background image,
+   * use relative or absolute position on it
+   */
+  //input.cropit-image-zoom-input {
+  //  position: relative;
+  //}
+  //
+  ///* Limit the background image by adding overflow: hidden */
+  //#image-cropper {
+  //  overflow: hidden;
+  //}
+
+  &__modal .btn {
+    position: relative;
+  }
+}

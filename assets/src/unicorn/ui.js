@@ -5,6 +5,8 @@
  * @license    __LICENSE__
  */
 
+import { defData } from './utilities.js';
+
 export default class UnicornUI {
   theme;
 
@@ -91,5 +93,9 @@ export default class UnicornUI {
 
   listDependent() {
     return this.app.import('@unicorn/ui/list-dependent.js');
+  }
+
+  sid() {
+    return this.app.import('@unicorn/field/single-image-drag.js');
   }
 }

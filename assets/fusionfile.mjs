@@ -58,6 +58,11 @@ export async function main() {
       options.output.libraryTarget = 'umd';
     }
   });
+  webpack('./src/unicorn/field/single-image-drag.js', './dist/field/', {
+    override: (options) => {
+      options.output.libraryTarget = 'umd';
+    }
+  });
   // Compile end
 }
 
@@ -78,7 +83,7 @@ export async function modules() {
 
   // Compile Start
   babel('src/modules/**/*.js', 'dist/', { module: 'systemjs' });
-  babel('src/modules/**/*.js', 'dist/', { module: 'systemjs' });
+  // babel('src/modules/**/*.js', 'dist/', { module: 'systemjs' });
   // Compile end
 }
 
@@ -90,6 +95,7 @@ export async function css() {
   // Compile Start
   sass('scss/switcher.scss', 'dist/', { minify: 'separate_file' });
   sass('scss/editor.scss', 'dist/', { minify: 'separate_file' });
+  sass('scss/field/single-image-drag.scss', 'dist/field/', { minify: 'separate_file' });
   // Compile end
 }
 

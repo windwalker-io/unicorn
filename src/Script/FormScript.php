@@ -41,4 +41,14 @@ class FormScript extends AbstractScript
             $this->css('@unicorn/switcher.css');
         }
     }
+
+    public function singleImageDrag(): void
+    {
+        if ($this->available()) {
+            $this->unicornScript->importThen(
+                '@main',
+                "u.\$ui.sid()"
+            );
+        }
+    }
 }

@@ -12,6 +12,8 @@ declare(strict_types=1);
 namespace Unicorn\Field;
 
 use Lyrasoft\Luna\Helper\LunaHelper;
+use Unicorn\Script\FormScript;
+use Windwalker\DI\Attributes\Inject;
 use Windwalker\DOM\DOMElement;
 use Windwalker\Form\Field\TextareaField;
 
@@ -48,13 +50,18 @@ class SingleImageDragField extends TextareaField
     use FileUploadFieldTrait;
     use LayoutFieldTrait;
 
+    #[Inject]
+    protected FormScript $formScript;
+
     public function getDefaultLayout(): string
     {
-        return '@theme.field.single-drag-image';
+        return '@theme.field.single-image-drag.sid-default';
     }
 
     public function buildFieldElement(DOMElement $input, array $options = []): string|DOMElement
     {
+        $this->formScript->singleImageDrag();
+
         if ($ajax = $this->getAjax()) {
             if (is_bool($ajax)) {
                 $options['ajax_url'] = $this->getBuiltInUploadUrl('image')->var('resize', 0);

@@ -40,6 +40,7 @@
     "@windwalker-io/fusion": "^1.0.0-beta.4",
     "babel-loader": "^8.2.2",
     "core-js": "3",
+    "cropperjs": "^1.5.11",
     "flatpickr": "^4.6.9",
     "gulp-babel": "^8.0.0",
     "lodash-es": "^4.17.21",
