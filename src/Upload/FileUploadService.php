@@ -24,6 +24,7 @@ use Unicorn\Flysystem\Base64DataUri;
 use Unicorn\Storage\PutResult;
 use Unicorn\Storage\StorageInterface;
 use Unicorn\Storage\StorageManager;
+use Windwalker\Filesystem\Filesystem;
 use Windwalker\Filesystem\Path;
 use Windwalker\Utilities\Options\OptionsResolverTrait;
 
@@ -117,10 +118,10 @@ class FileUploadService
     {
         $storage = $this->getStorage();
 
-        $stream = $file->getStream();
-
         if ($this->isImage($file)) {
-            $stream = $this->resizeImage($stream);
+            $stream = $this->resizeImage($file);
+        } else {
+            $stream = $file->getStream();
         }
 
         $dest ??= $this->getUploadPath($dest, Path::getExtension($file->getClientFilename()));
@@ -162,12 +163,24 @@ class FileUploadService
         return $type !== null && str_starts_with($type, 'image/');
     }
 
-    public function resizeImage(StreamInterface $src): StreamInterface
+    public function resizeImage(StreamInterface|UploadedFileInterface $src): StreamInterface
     {
+        // Must sve image to temp file to support image exif.
+        // @see https://github.com/Intervention/image/issues/745
+        if ($src instanceof UploadedFileInterface) {
+            $tmp = Filesystem::createTemp(WINDWALKER_TEMP . '/unicorn/upload');
+
+            register_shutdown_function(fn () => Filesystem::delete($tmp->getPathname()));
+
+            $src->moveTo($tmp->getPathname());
+            $src = $tmp->getPathname();
+        }
+
         $resizeConfig = $this->options['resize'];
 
         $manager = new ImageManager();
         $image = $manager->make($src);
+        $image->orientate();
 
         $width = $resizeConfig['width'];
         $height = $resizeConfig['height'];

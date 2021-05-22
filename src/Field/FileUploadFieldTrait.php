@@ -23,8 +23,30 @@ trait FileUploadFieldTrait
     #[Inject]
     protected Navigator $nav;
 
+    protected string $uploadProfile = 'default';
+
     public function getBuiltInUploadUrl(string $profile): RouteUri
     {
         return $this->nav->to('file_upload')->var('profile', $profile);
+    }
+
+    /**
+     * @return string
+     */
+    public function getUploadProfile(): string
+    {
+        return $this->uploadProfile;
+    }
+
+    /**
+     * @param  string  $uploadProfile
+     *
+     * @return  static  Return self to support chaining.
+     */
+    public function uploadProfile(string $uploadProfile): static
+    {
+        $this->uploadProfile = $uploadProfile;
+
+        return $this;
     }
 }

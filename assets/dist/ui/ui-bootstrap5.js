@@ -39,8 +39,16 @@ System.register([], function (_export, _context) {
             var selector = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '[data-bs-toggle="tooltip"]';
             var config = arguments.length > 1 ? arguments[1] : undefined;
             var tooltipTriggerList = [].slice.call(document.querySelectorAll(selector));
-            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return tooltipTriggerList.map(function (tooltipTriggerEl) {
               return new bootstrap.Tooltip(tooltipTriggerEl, config);
+            });
+          }
+        }, {
+          key: "modal",
+          value: function modal(selector) {
+            var config = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+            return this.app.getBoundedInstance(selector, 'bs.modal', function (element) {
+              return new bootstrap.Modal(element, config);
             });
           }
         }], [{

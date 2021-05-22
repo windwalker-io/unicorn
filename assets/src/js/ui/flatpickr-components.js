@@ -20,6 +20,7 @@ class FlatpickrElement extends HTMLElement {
     return this.getAttribute('selector') || 'input';
   }
 
+  // todo: Currently not support single option attributes
   getOptions() {
     const options = {};
     const ignore = [

@@ -47,6 +47,7 @@
     "regenerator-runtime": "^0.13.7",
     "rollup-plugin-terser": "^7.0.2",
     "sprintf-js": "^1.1.2",
+    "style-loader": "^2.0.0",
     "tinymce": "^5.8.0",
     "vinyl-named-with-path": "^1.0.0",
     "webpack-comment-remover-loader": "^0.0.3",

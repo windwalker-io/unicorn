@@ -5,8 +5,6 @@
  * @license    __LICENSE__
  */
 
-import { defData } from './utilities.js';
-
 export default class UnicornUI {
   theme;
 

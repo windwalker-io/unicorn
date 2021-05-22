@@ -23,8 +23,16 @@ export class UIBootstrap5 {
    */
   tooltip(selector = '[data-bs-toggle="tooltip"]', config) {
     const tooltipTriggerList = [].slice.call(document.querySelectorAll(selector))
-    const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return tooltipTriggerList.map(function (tooltipTriggerEl) {
       return new bootstrap.Tooltip(tooltipTriggerEl, config);
     });
+  }
+
+  modal(selector, config = {}) {
+    return this.app.getBoundedInstance(
+      selector,
+      'bs.modal',
+      (element) => new bootstrap.Modal(element, config)
+    );
   }
 }

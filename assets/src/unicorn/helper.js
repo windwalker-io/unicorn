@@ -15,7 +15,8 @@ export default class UnicornHelper {
     const helper = app.$helper = new this(app);
 
     app.selectOne = helper.selectOne.bind(helper);
-    app.selectAll = helper.selectAll;
+    app.selectAll = helper.selectAll.bind(helper);
+    app.getBoundedInstance = helper.getBoundedInstance.bind(helper);
     app.h = helper.h;
     app.$get = helper.$get;
     app.$set = helper.$set;
@@ -55,6 +56,16 @@ export default class UnicornHelper {
     }
 
     return resultSet;
+  }
+
+  getBoundedInstance(selector, name, callback) {
+    const element = this.selectOne(selector);
+
+    if (!element) {
+      return null;
+    }
+
+    return element.__unicorn[name] = element.__unicorn[name] || callback(element);
   }
 
   h(element, attrs = {}, content = null) {

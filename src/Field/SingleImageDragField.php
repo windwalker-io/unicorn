@@ -16,10 +16,13 @@ use Unicorn\Script\FormScript;
 use Windwalker\DI\Attributes\Inject;
 use Windwalker\DOM\DOMElement;
 use Windwalker\Form\Field\TextareaField;
+use Windwalker\Form\Field\TextField;
 
 /**
  * The SingleImageDragField class.
  *
+ * @method  $this  accept(string|array $value)
+ * @method  mixed  getAccept()
  * @method  $this  width(int $value)
  * @method  mixed  getWidth()
  * @method  $this  height(int $value)
@@ -45,7 +48,7 @@ use Windwalker\Form\Field\TextareaField;
  * @method  $this  previewHandler(callable $value = null)
  * @method  mixed  getPreviewHandler()
  */
-class SingleImageDragField extends TextareaField
+class SingleImageDragField extends TextField
 {
     use FileUploadFieldTrait;
     use LayoutFieldTrait;
@@ -64,7 +67,7 @@ class SingleImageDragField extends TextareaField
 
         if ($ajax = $this->getAjax()) {
             if (is_bool($ajax)) {
-                $options['ajax_url'] = $this->getBuiltInUploadUrl('image')->var('resize', 0);
+                $options['ajax_url'] = (string) $this->getBuiltInUploadUrl($this->getUploadProfile() ?? 'image')->var('resize', 0);
             } else {
                 $options['ajax_url'] = (string) $this->ajax();
             }
@@ -75,7 +78,7 @@ class SingleImageDragField extends TextareaField
             [
                 'field' => $this,
                 'input' => $input,
-                'options' => $options
+                'options' => $options,
             ]
         );
     }
@@ -92,6 +95,7 @@ class SingleImageDragField extends TextareaField
         return array_merge(
             parent::getAccessors(),
             [
+                'accept',
                 'crop',
                 'defaultImage',
                 'exportZoom',
@@ -106,7 +110,7 @@ class SingleImageDragField extends TextareaField
                 'version',
                 'width',
                 'layout',
-                'ajax',
+                'ajax'
             ]
         );
     }
