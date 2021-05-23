@@ -280,16 +280,22 @@ class UnicornGridElement {
    * @returns {boolean}
    */
   deleteList(message, url, queries) {
+    try {
+      this.validateChecked();
+    } catch (e) {
+      return false;
+    }
+
     message = message == null ? this.app.__('unicorn.message.delete.confirm') : message;
 
     if (message !== false) {
-      this.app.confirm(message, isConfirm => {
+      this.app.confirm(message).then(isConfirm => {
         if (isConfirm) {
-          this.core['delete'](url, queries);
+          this.form.delete(url, queries);
         }
       });
     } else {
-      this.core['delete'](url, queries);
+      this.form.delete(url, queries);
     }
 
     return true;
@@ -353,7 +359,7 @@ class UnicornGridElement {
    */
   getChecked() {
     return this.app.selectAll(
-      this.element.querySelectorAll('input[data-role=grid-checkbox][type=checkbox]')
+      this.element.querySelectorAll('input[data-role=grid-checkbox][type=checkbox]:checked')
     );
   }
 
@@ -365,10 +371,10 @@ class UnicornGridElement {
    *
    * @returns {UnicornGridElement}
    */
-  hasChecked(msg, event) {
-    msg = msg || Unicorn.Translator.translate('unicorn.message.grid.checked');
+  validateChecked(msg, event= null) {
+    msg = msg || this.app.__('unicorn.message.grid.checked');
 
-    if (!this.countChecked()) {
+    if (!this.hasChecked()) {
       alert(msg);
 
       // If you send event object as second argument, we will stop all actions.
@@ -381,6 +387,13 @@ class UnicornGridElement {
     }
 
     return this;
+  }
+
+  /**
+   * @return {boolean}
+   */
+  hasChecked() {
+    return this.countChecked() > 0;
   }
 
   /**

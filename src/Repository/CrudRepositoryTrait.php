@@ -39,4 +39,37 @@ trait CrudRepositoryTrait
     {
         //
     }
+
+    public function save(object|array $item, bool $updateNulls = false): object
+    {
+        return $this->createSaveAction()->save($item, null, $updateNulls);
+    }
+
+    public function processDataAndSave(object|array $item, mixed $form = null, array $args = []): object
+    {
+        return $this->createSaveAction()->processDataAndSave($item, $form, $args);
+    }
+
+    /**
+     * getItem
+     *
+     * @param  array        $conditions
+     * @param  string|null  $className
+     *
+     * @return  object
+     *
+     * @psalm-template T
+     * @psalm-param T $className
+     * @psalm-return T
+     */
+    public function getItem(array $conditions = [], ?string $className = null): object
+    {
+        return $this->getEntityMapper()
+            ->findOne($conditions, $className);
+    }
+
+    public function delete(array $conditions = []): array
+    {
+        return $this->getEntityMapper()->deleteWhere($conditions);
+    }
 }
