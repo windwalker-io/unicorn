@@ -192,13 +192,13 @@ class UnicornGridElement {
    * @param {boolean} value
    */
   checkRow(row, value = true) {
-    const ch = this.form.find('input.grid-checkbox[data-row-number=' + row + ']');
+    const ch = this.form.element.querySelector(`input[data-role=grid-checkbox][data-row-number="${row}"]`);
 
-    if (!ch.length) {
+    if (!ch) {
       throw new Error('Checkbox of row: ' + row + ' not found.');
     }
 
-    ch[0].checked = value;
+    ch.checked = value;
   }
 
   /**
@@ -215,7 +215,7 @@ class UnicornGridElement {
 
     this.checkRow(row);
 
-    return this.core.patch(url, queries);
+    return this.form.patch(url, queries);
   }
 
   /**
@@ -453,6 +453,14 @@ class UnicornGridElement {
     queries.delta = delta;
 
     return this.doTask('reorder', row, url, queries);
+  }
+
+  moveUp(row, url, queries) {
+    return this.reorder(row, -1, url, queries);
+  }
+
+  moveDown(row, url, queries) {
+    return this.reorder(row, 1, url, queries);
   }
 }
 
