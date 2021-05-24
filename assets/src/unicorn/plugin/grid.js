@@ -210,10 +210,12 @@ class UnicornGridElement {
    *
    * @returns {boolean}
    */
-  updateRow(row, url, queries) {
+  updateRow(id, url, queries) {
     this.toggleAll(false);
 
-    this.checkRow(row);
+    this.disableAllCheckboxes();
+
+    this.form.injectInput('id[]', id);
 
     return this.form.patch(url, queries);
   }
@@ -228,12 +230,12 @@ class UnicornGridElement {
    *
    * @returns {boolean}
    */
-  doTask(task, row, url, queries) {
+  doTask(task, id, url, queries) {
     queries = queries || {};
 
     queries.task = task;
 
-    return this.updateRow(row, url, queries);
+    return this.updateRow(id, url, queries);
   }
 
   /**
@@ -343,6 +345,15 @@ class UnicornGridElement {
     return this;
   }
 
+  disableAllCheckboxes() {
+    this.app.selectAll(
+      this.element.querySelectorAll('input[data-role=grid-checkbox][type=checkbox]'),
+      (input) => {
+        input.disabled = true;
+      }
+    );
+  }
+
   /**
    * Count checked checkboxes.
    *
@@ -441,26 +452,26 @@ class UnicornGridElement {
   /**
    * Reorder items.
    *
-   * @param  {int}     row
+   * @param  {int}     id
    * @param  {int}     delta
    * @param  {string}  url
    * @param  {Object}  queries
    *
    * @returns {boolean}
    */
-  reorder(row, delta, url, queries) {
+  moveRow(id, delta, url, queries) {
     queries = queries || {};
     queries.delta = delta;
 
-    return this.doTask('reorder', row, url, queries);
+    return this.doTask('move', id, url, queries);
   }
 
-  moveUp(row, url, queries) {
-    return this.reorder(row, -1, url, queries);
+  moveUp(id, url, queries) {
+    return this.moveRow(id, -1, url, queries);
   }
 
-  moveDown(row, url, queries) {
-    return this.reorder(row, 1, url, queries);
+  moveDown(id, url, queries) {
+    return this.moveRow(id, 1, url, queries);
   }
 }
 

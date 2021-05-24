@@ -131,23 +131,11 @@ class UnicornFormElement {
 
     // Set queries into form.
     if (queries) {
-      let input;
-
       const flatted = this.constructor.flattenObject(queries);
 
       each(flatted, (value, key) => {
         const fieldName = this.constructor.buildFieldName(key);
-        input = form.querySelector(`input[name="${fieldName}"]`);
-
-        if (!input) {
-          input = document.createElement('input');
-          input.setAttribute('name', fieldName);
-          input.setAttribute('type', 'hidden');
-
-          form.appendChild(input);
-        }
-
-        input.value = value;
+        this.injectInput(fieldName, value);
       });
     }
 
@@ -172,6 +160,22 @@ class UnicornFormElement {
     submitButton.click();
 
     return true;
+  }
+
+  injectInput(name, value) {
+    let input = this.element.querySelector(`input[name="${name}"]`);
+
+    if (!input) {
+      input = document.createElement('input');
+      input.setAttribute('name', name);
+      input.setAttribute('type', 'hidden');
+      input.setAttribute('data-role', 'temp-input');
+
+      this.element.appendChild(input);
+    }
+
+    input.value = value;
+    return input;
   }
 
   /**

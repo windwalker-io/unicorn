@@ -135,6 +135,11 @@ class ListSelector implements EventAwareInterface
 
         $query = $this->processFilters($event->getQuery());
         $query = $this->processSearches($query);
+        $query->limit($this->limit);
+
+        if ($this->limit) {
+            $query->offset($this->getOffset());
+        }
 
         // $this->afterCompileQuery($query);
 
@@ -219,7 +224,7 @@ class ListSelector implements EventAwareInterface
 
     public function getOffset(): int
     {
-        return ($this->page = 1) * $this->limit;
+        return ($this->page - 1) * $this->limit;
     }
 
     public function getPage(): int

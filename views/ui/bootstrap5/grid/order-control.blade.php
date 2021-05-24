@@ -40,12 +40,12 @@ $enabled ?? false;
             name="ordering[{{ $id }}]" value="{{ $value }}"
             onkeydown="if(event.keyCode == 13) return false;" />
         <button type="button" class="btn btn-default btn-outline-secondary btn-sm has-tooltip"
-            @click="grid.moveUp({{ $row }});"
+            @click="grid.moveUp({{ $id }});"
             title="@lang('unicorn.grid.ordering.moveup')">
             <span class="fa fa-chevron-up"></span>
         </button>
         <button type="button" class="btn btn-default btn-outline-secondary btn-sm has-tooltip"
-            @click="grid.moveDown({{ $row }});"
+            @click="grid.moveDown({{ $id }});"
             title="@lang('unicorn.grid.ordering.movedown')">
             <span class="fa fa-chevron-down"></span>
         </button>
