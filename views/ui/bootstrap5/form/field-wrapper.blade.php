@@ -34,7 +34,7 @@ use Windwalker\Utilities\Str;
 $wrapper ??= $field->getPreparedWrapper();
 $options = array_merge($field->getStates(), $options ?? []);
 
-$wrapper->addClass('form-group row');
+$wrapper->addClass('form-group');
 
 if ($field instanceof \Windwalker\Form\Field\HiddenFieldInterface) {
     $wrapper->addClass('d-none');
@@ -42,6 +42,14 @@ if ($field instanceof \Windwalker\Form\Field\HiddenFieldInterface) {
 }
 
 // Attributes
+$floating = $attributes['floating'] ?? false;
+
+if ($floating) {
+    $wrapper->addClass('form-floating');
+} else {
+    $wrapper->addClass('row');
+}
+
 $attrs = $wrapper->getAttributes(true);
 
 $inputAttrs ??= [];
@@ -90,18 +98,30 @@ $noLabel ??= $options['no_label'] ?? false;
 ?>
 
 <div {!! \Windwalker\DOM\HTMLElement::buildAttributes($attrs) !!}>
-    @if (!$noLabel)
-        @if ($label ?? null)
-            {!! $label(field: $field, options: $options) !!}
-        @else
-            <x-label :field="$field" :options="$options" :="$labelAttrs"></x-label>
-        @endif
-    @endif
-    <div data-input-continer class="col-md-{{ $inputCols ?? 12 }}">
+    @if ($floating)
         @if ($defaultSlot ?? null)
             {!! $defaultSlot(field: $field, options: $options) !!}
         @else
-            <x-input :field="$field" :options="$options" :="$inputAttrs"></x-input>
+            <x-input :field="$field" :options="$options" :="$inputAttrs" floating>
+                <x-slot name="end">
+                    <x-label :field="$field" :options="$options" :="$labelAttrs"></x-label>
+                </x-slot>
+            </x-input>
         @endif
-    </div>
+    @else
+        @if (!$noLabel)
+            @if ($label ?? null)
+                {!! $label(field: $field, options: $options) !!}
+            @else
+                <x-label :field="$field" :options="$options" :="$labelAttrs"></x-label>
+            @endif
+        @endif
+        <div data-input-continer class="col-md-{{ $inputCols ?? 12 }}">
+            @if ($defaultSlot ?? null)
+                {!! $defaultSlot(field: $field, options: $options) !!}
+            @else
+                <x-input :field="$field" :options="$options" :="$inputAttrs"></x-input>
+            @endif
+        </div>
+    @endif
 </div>

@@ -36,6 +36,8 @@ use Windwalker\Utilities\Str;
 $inputElement ??= $field->getPreparedInput();
 $options = array_merge($field->getStates(), $options ?? []);
 
+$floating = $attributes['floating'];
+
 $validateAttrs ??= [];
 
 if ($attributes ?? null) {
@@ -71,11 +73,20 @@ if ($inputElement instanceof \Windwalker\DOM\DOMElement) {
 $validateAttributes = new ComponentAttributes($validateAttrs ?? []);
 $validateAttributes['class'] .= ' d-block';
 
+if ($floating) {
+    $validateAttributes['class'] .= ' form-floating';
+    $inputElement['placeholder'] ??= $field->getLabelName();
+}
+
 $fieldElement = $field->buildFieldElement($inputElement, $options);
 ?>
 
 <uni-field-validate {!! $validateAttributes !!}>
 {!! $fieldElement !!}
+
+@if ($end ?? null)
+    {!! $end(field: $field, input: $inputElement) !!}
+@endif
 
 @if ($error ?? null)
     {!! $error(field: $field, input: $inputElement) !!}
