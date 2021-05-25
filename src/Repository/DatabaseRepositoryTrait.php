@@ -71,22 +71,6 @@ trait DatabaseRepositoryTrait
         return $this->db->orm()->mapper($this->getEntityClass());
     }
 
-    public function getListSelector(): ListSelector
-    {
-        return $this->createSelector();
-    }
-
-    public function createSelector(): ListSelector
-    {
-        $selector = new ListSelector($this->db, $this->paginationFactory);
-
-        $this->configureSelector($selector->getQuery(), $selector);
-
-        return $selector;
-    }
-
-    abstract protected function configureSelector(SelectorQuery $query, ListSelector $selector): void;
-
     /**
      * @return DatabaseAdapter
      */

@@ -18,6 +18,10 @@ use Windwalker\DI\Container;
  */
 class ActionsFactory
 {
+    public const IS_INSTANCE_OF = 1;
+
+    protected array $configures = [];
+
     /**
      * ActionsFactory constructor.
      */
@@ -38,13 +42,44 @@ class ActionsFactory
      *
      * @psalm-return T
      */
-    public function create(string $class, object $repository): object
+    public function create(string $class, object $repository, ...$args): object
     {
-        return $this->container->newInstance(
-            $class,
-            [
-                'repository' => $repository,
-            ]
-        );
+        $args['repository'] = $repository;
+
+        $instance = $this->container->newInstance($class, $args);
+
+        $this->runConfigure($instance);
+
+        return $instance;
+    }
+
+    protected function runConfigure(object $instance): object
+    {
+        foreach ($this->configures as $configure) {
+            [$className, $handler, $flags] = $configure;
+
+            if ($flags & static::IS_INSTANCE_OF) {
+                if (is_a($instance, $className, true)) {
+                    return $handler($instance, $this->container);
+                }
+            } else {
+                if ($instance::class === trim($className, '\\')) {
+                    return $handler($instance, $this->container);
+                }
+            }
+        }
+
+        return $instance;
+    }
+
+    public function configure(string $className, callable $handler, int $flags = 0): static
+    {
+        $this->configures[] = [
+            $className,
+            $handler,
+            $flags
+        ];
+
+        return $this;
     }
 }

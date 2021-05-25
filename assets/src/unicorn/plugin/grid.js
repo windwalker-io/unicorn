@@ -252,7 +252,7 @@ class UnicornGridElement {
 
     queries.task = task;
 
-    return this.core.patch(url, queries);
+    return this.form.patch(url, queries);
   }
 
   /**
@@ -269,7 +269,7 @@ class UnicornGridElement {
 
     this.checkRow(row);
 
-    return this.core.post(url, queries);
+    return this.form.post(url, queries);
   }
 
   /**
@@ -416,36 +416,6 @@ class UnicornGridElement {
    * @returns {boolean}
    */
   reorderAll(url, queries) {
-    const self = this;
-    const origin = this.form.find('input[name=origin_ordering]');
-
-    // If origin exists, we diff them and only send changed group.
-    if (origin.length) {
-      const originOrdering = origin.val().split(',');
-      const inputs = this.form.find('.ordering-control input');
-
-      this.toggleAll();
-
-      inputs.each(function(i) {
-        const $this = $(this);
-
-        if ($this.val() !== originOrdering[i]) {
-          // Check self
-          self.checkRow($this.attr('data-order-row'));
-
-          const tr = $this.parents('tr');
-          const group = tr.attr('data-order-group');
-
-          // Check same group boxes
-          if (group !== '') {
-            tr.siblings('[data-order-group=' + group + ']')
-              .find('input.grid-checkbox')
-              .prop('checked', true);
-          }
-        }
-      });
-    }
-
     return this.batch('reorder', url, queries);
   }
 
@@ -472,6 +442,10 @@ class UnicornGridElement {
 
   moveDown(id, url, queries) {
     return this.moveRow(id, 1, url, queries);
+  }
+
+  getId(suffix = '') {
+    return this.form.element.id + suffix;
   }
 }
 

@@ -34,7 +34,7 @@ use function Windwalker\raw;
 /**
  * The AbstractSelector class.
  */
-class ListSelector implements EventAwareInterface
+class ListSelector implements EventAwareInterface, \IteratorAggregate
 {
     use EventAwareTrait;
     use InstanceCacheTrait;
@@ -111,7 +111,7 @@ class ListSelector implements EventAwareInterface
     public function getIterator(?string $class = null, array $args = []): \Traversable
     {
         return $this->compileQuery()->getIterator(
-            $class,
+            $class ?? Collection::class,
             $args
         );
     }
@@ -135,11 +135,13 @@ class ListSelector implements EventAwareInterface
 
         $query = $this->processFilters($event->getQuery());
         $query = $this->processSearches($query);
-        $query->limit($this->limit);
 
         if ($this->limit) {
+            $query->limit($this->limit);
             $query->offset($this->getOffset());
         }
+
+        $query->groupByJoins('.');
 
         // $this->afterCompileQuery($query);
 

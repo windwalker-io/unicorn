@@ -117,6 +117,7 @@ class UnicornPackage extends AbstractPackage implements
                 '@toggle-all' => '@theme.grid.toggle-all',
                 '@row-checkbox' => '@theme.grid.row-checkbox',
                 '@order-control' => '@theme.grid.order-control',
+                '@save-order' => '@theme.grid.save-order',
                 '@card' => '@theme.card',
                 '@fieldset' => '@theme.form.fieldset',
             ]
@@ -131,6 +132,7 @@ class UnicornPackage extends AbstractPackage implements
                 'toggle-all' => '@toggle-all',
                 'row-checkbox' => '@row-checkbox',
                 'order-control' => '@order-control',
+                'save-order' => '@save-order',
                 'card' => '@card',
                 'field' => '@theme.form.field-wrapper',
                 'input' => '@theme.form.input',

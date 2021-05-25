@@ -24,7 +24,7 @@ class ReorderAction extends AbstractDatabaseAction
     /**
      * @var \Closure|array
      */
-    protected \Closure|array $reorderGroupHandler;
+    protected \Closure|array|null $reorderGroupHandler = null;
 
     public function move(array $ids, int $delta, ?string $orderField = null): bool
     {
@@ -65,7 +65,7 @@ class ReorderAction extends AbstractDatabaseAction
             if (!$neighbor) {
                 continue;
             }
-
+            
             // Switch with target item
             $mapper->updateBatch(
                 [$orderField => (int) $neighbor->$orderField],
@@ -77,36 +77,65 @@ class ReorderAction extends AbstractDatabaseAction
                 [$key => $neighbor->$key]
             );
 
-            $this->reorderAll($query, $orderField);
+            // $this->reorderAll($query, $orderField);
         }
 
         return true;
     }
 
-    public function reorder(array $orders = [], ?string $orderField = null)
+    public function reorder(array $orders = [], ?string $orderField = null): bool
     {
         if ($orders === []) {
             return true;
         }
 
-        $conditions = [];
+        $cache = [];
         $mapper = $this->getEntityMapper();
         $orderField ??= $this->getOrderField();
         $key = $mapper->getMainKey();
 
         foreach ($orders as $id => $orderNumber) {
-            $mapper->updateBatch(
-                [$orderField => $orderNumber],
-                [$key => $id]
-            );
+            $item = $mapper->findOne($id, Collection::class);
 
+            if (!$item) {
+                continue;
+            }
+            
+            $item->$orderField = $orderNumber;
+            
+            $mapper->updateOne($item);
 
+            $query = $mapper->select();
+            
+            $this->groupConditions($query, $item);
+
+            $hash = md5($query->render(true));
+
+            $cache[$hash] ??= [$item->$key, $query];
         }
+
+        foreach ($cache as [$id, $query]) {
+            $this->reorderByQuery($query, $orderField);
+        }
+
+        return true;
     }
 
-    public function reorderAll(Query $query, ?string $orderField = null)
+    public function reorderByQuery(Query $query, ?string $orderField = null): bool
     {
+        $orderField ??= $this->getOrderField();
 
+        $mapper = $this->getEntityMapper();
+        $query = clone $query;
+        $query->order($orderField, 'ASC');
+
+        foreach ($query->getIterator(Collection::class) as $i => $item) {
+            $item->$orderField = $i + 1;
+
+            $mapper->updateOne($item);
+        }
+
+        return true;
     }
 
     /**
@@ -133,6 +162,10 @@ class ReorderAction extends AbstractDatabaseAction
     {
         $handler = $this->getReorderGroupHandler();
 
+        if ($handler === null) {
+            return $query;
+        }
+
         if (is_array($handler)) {
             $conditions = [];
 
@@ -155,17 +188,22 @@ class ReorderAction extends AbstractDatabaseAction
     /**
      * @return \Closure|array
      */
-    public function getReorderGroupHandler(): \Closure|array
+    public function getReorderGroupHandler(): \Closure|array|null
     {
         return $this->reorderGroupHandler;
     }
 
     /**
+     * Can be:
+     * - Array: [...fields]
+     * - Callback: function ($query, $entity)
+     *     Return: Everything Query::where(columns) params format.
+     *
      * @param  \Closure|array  $reorderGroupHandler
      *
      * @return  static  Return self to support chaining.
      */
-    public function setReorderGroupHandler(\Closure|array $reorderGroupHandler): static
+    public function setReorderGroupHandler(\Closure|array|null $reorderGroupHandler): static
     {
         $this->reorderGroupHandler = $reorderGroupHandler;
 
