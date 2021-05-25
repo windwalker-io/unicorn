@@ -44,7 +44,7 @@ trait CrudRepositoryTrait
 
     public function createSaveAction(string $actionClass = SaveAction::class): SaveAction
     {
-        return $this->actionsFactory->create($actionClass, $this);
+        return $this->createAction($actionClass, $this);
     }
 
     public function save(object|array $item, bool $updateNulls = false): object
@@ -60,7 +60,7 @@ trait CrudRepositoryTrait
     public function createReorderAction(string $actionClass = ReorderAction::class): ReorderAction
     {
         /** @var ReorderAction $action */
-        return $this->actionsFactory->create($actionClass, $this);
+        return $this->createAction($actionClass, $this);
     }
 
     /**

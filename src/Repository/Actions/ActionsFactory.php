@@ -60,11 +60,11 @@ class ActionsFactory
 
             if ($flags & static::IS_INSTANCE_OF) {
                 if (is_a($instance, $className, true)) {
-                    return $handler($instance, $this->container);
+                    return $handler($instance, $this->container) ?? $instance;
                 }
             } else {
                 if ($instance::class === trim($className, '\\')) {
-                    return $handler($instance, $this->container);
+                    return $handler($instance, $this->container) ?? $instance;
                 }
             }
         }

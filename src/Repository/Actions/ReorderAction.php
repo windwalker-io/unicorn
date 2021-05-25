@@ -77,7 +77,7 @@ class ReorderAction extends AbstractDatabaseAction
                 [$key => $neighbor->$key]
             );
 
-            // $this->reorderAll($query, $orderField);
+            $this->reorderByQuery($query, $orderField);
         }
 
         return true;

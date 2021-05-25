@@ -26,7 +26,7 @@ $store ??= 'grid';
 ?>
 
 <a href="javascript: void(0);"
-    x-id="sort-{{ $field }}"
+    x-id="sort"
     x-data="{ grid: $store.{{ $store }} }"
     data-field="{{ $field ?? '' }}"
     data-asc="{{ $asc ?? '' }}"

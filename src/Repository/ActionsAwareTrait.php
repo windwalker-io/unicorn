@@ -24,9 +24,21 @@ trait ActionsAwareTrait
 
     protected bool $actionsConfigured = false;
 
+    /**
+     * createAction
+     *
+     * @param  string  $className
+     * @param  mixed   ...$args
+     *
+     * @return  object
+     *
+     * @psalm-template T
+     * @psalm-param T $className
+     * @psalm-return T
+     */
     public function createAction(string $className, ...$args): object
     {
-        return $this->actionsFactory->create($className, $this, ...$args);
+        return $this->getActionsFactory()->create($className, $this, ...$args);
     }
 
     public function configureAction(string $className, callable $handler, int $flags = 0): static
