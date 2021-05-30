@@ -118,6 +118,7 @@ class UnicornPackage extends AbstractPackage implements
                 '@row-checkbox' => '@theme.grid.row-checkbox',
                 '@order-control' => '@theme.grid.order-control',
                 '@save-order' => '@theme.grid.save-order',
+                '@batch-modal' => '@theme.grid.batch-modal',
                 '@card' => '@theme.card',
                 '@fieldset' => '@theme.form.fieldset',
             ]
@@ -133,6 +134,7 @@ class UnicornPackage extends AbstractPackage implements
                 'row-checkbox' => '@row-checkbox',
                 'order-control' => '@order-control',
                 'save-order' => '@save-order',
+                'batch-modal' => '@batch-modal',
                 'card' => '@card',
                 'field' => '@theme.form.field-wrapper',
                 'input' => '@theme.form.input',

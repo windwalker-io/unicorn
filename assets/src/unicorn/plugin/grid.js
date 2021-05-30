@@ -115,6 +115,14 @@ class UnicornGridElement {
     this.form.put();
   }
 
+  toggleFilters(open, filterForm) {
+    if (open) {
+      this.app.$ui.slideDown(filterForm);
+    } else {
+      this.app.$ui.slideUp(filterForm);
+    }
+  }
+
   sort($el) {
     const dir = this.getDirection($el);
 
@@ -224,7 +232,7 @@ class UnicornGridElement {
    * Update a row with batch task.
    *
    * @param  {string} task
-   * @param  {number} row
+   * @param  {string} id
    * @param  {string} url
    * @param  {Object} queries
    *
@@ -377,24 +385,22 @@ class UnicornGridElement {
   /**
    * Validate there has one or more checked boxes.
    *
-   * @param   {string}  msg
-   * @param   {Event}   event
+   * @param   {string}    msg
+   * @param   {Function}  callback
    *
    * @returns {UnicornGridElement}
    */
-  validateChecked(msg, event= null) {
+  validateChecked(msg = null, callback = null) {
     msg = msg || this.app.__('unicorn.message.grid.checked');
 
     if (!this.hasChecked()) {
       alert(msg);
 
-      // If you send event object as second argument, we will stop all actions.
-      if (event) {
-        event.stopPropagation();
-        event.preventDefault();
-      }
-
       throw new Error(msg);
+    }
+
+    if (callback) {
+      callback(this);
     }
 
     return this;

@@ -50,4 +50,6 @@ $enabled ?? false;
             <span class="fa fa-chevron-down"></span>
         </button>
     </div>
+@else
+    {{ $value }}
 @endif

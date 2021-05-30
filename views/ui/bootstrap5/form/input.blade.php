@@ -36,7 +36,7 @@ use Windwalker\Utilities\Str;
 $inputElement ??= $field->getPreparedInput();
 $options = array_merge($field->getStates(), $options ?? []);
 
-$floating = $attributes['floating'];
+$floating = $field->get('floating') ?? $attributes['floating'] ?? null;
 
 $validateAttrs ??= [];
 

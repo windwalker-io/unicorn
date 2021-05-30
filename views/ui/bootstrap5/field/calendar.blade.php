@@ -22,7 +22,6 @@ use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\SystemUri;
 
 $app->service(\Unicorn\Script\FormScript::class)->flatpickr();
-
 ?>
 
 <uni-flatpickr options="{{ json_encode($options ?? []) }}"

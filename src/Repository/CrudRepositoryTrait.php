@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace Unicorn\Repository;
 
 use Unicorn\Repository\Actions\ActionsFactory;
+use Unicorn\Repository\Actions\BatchAction;
 use Unicorn\Repository\Actions\ReorderAction;
 use Unicorn\Repository\Actions\SaveAction;
 use Unicorn\Selector\ListSelector;
@@ -26,22 +27,6 @@ trait CrudRepositoryTrait
     use DatabaseRepositoryTrait;
     use ActionsAwareTrait;
 
-    public function getListSelector(): ListSelector
-    {
-        return $this->createSelector();
-    }
-
-    public function createSelector(): ListSelector
-    {
-        $selector = new ListSelector($this->db, $this->paginationFactory);
-
-        $this->configureSelector($selector->getQuery(), $selector);
-
-        return $selector;
-    }
-
-    abstract protected function configureSelector(SelectorQuery $query, ListSelector $selector): void;
-
     public function createSaveAction(string $actionClass = SaveAction::class): SaveAction
     {
         return $this->createAction($actionClass, $this);
@@ -55,12 +40,6 @@ trait CrudRepositoryTrait
     public function processDataAndSave(object|array $item, mixed $form = null, array $args = []): object
     {
         return $this->createSaveAction()->processDataAndSave($item, $form, $args);
-    }
-
-    public function createReorderAction(string $actionClass = ReorderAction::class): ReorderAction
-    {
-        /** @var ReorderAction $action */
-        return $this->createAction($actionClass, $this);
     }
 
     /**

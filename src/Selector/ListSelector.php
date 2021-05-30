@@ -46,11 +46,15 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate
 
     protected ?int $limit = null;
 
-    protected array $allowFields = [];
+    protected ?array $allowFields = null;
+    
+    protected array $customAllowFields = [];
 
     protected array $filters = [];
 
     protected array $searches = [];
+
+    protected array $fieldAlias = [];
 
     protected ?FilterHelper $filterHelper = null;
 
@@ -132,7 +136,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate
             BeforeCompileQueryEvent::class,
             compact('query', 'selector')
         );
-
+        
         $query = $this->processFilters($event->getQuery());
         $query = $this->processSearches($query);
 
@@ -224,6 +228,17 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate
         return $this;
     }
 
+    public function getOrdering(): ?string
+    {
+        $order = $this->getQuery()->getOrder();
+
+        if (!$order) {
+            return null;
+        }
+
+        return (string) $order;
+    }
+
     public function getOffset(): int
     {
         return ($this->page - 1) * $this->limit;
@@ -234,16 +249,24 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate
         return $this->page;
     }
 
-    public function getAllowFields(?Query $query = null): array
+    public function getAllowFields(): array
     {
-        // foreach ($query->getFrom() as $from) {
-        //     //
-        // }
+        return $this->once('allow.fields', function () {
+            $allowFields = $this->allowFields ??= $this->getDatabaseAllowFields();
 
-        return $this->cacheStorage['allow_fields'] ??= array_merge(
-            [],
-            $this->allowFields
-        );
+            return array_merge(
+                $allowFields,
+                $this->customAllowFields
+            );
+        });
+    }
+
+    protected function getDatabaseAllowFields(): array
+    {
+        $query = clone $this->getQuery();
+        $query->autoSelections('.', $columns);
+
+        return $columns;
     }
 
     public function addFilterHandler(string $key, callable $handler): static
@@ -262,14 +285,34 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate
 
     protected function processFilters(SelectorQuery $query): SelectorQuery
     {
-        $this->getFilterHelper()->process($query, $this->filters);
+        $filters = [];
+
+        foreach ($this->filters as $field => $value) {
+            $field = $this->resolveFieldAlias((string) $field);
+
+            if ($this->isFieldAllow($field)) {
+                $filters[$field] = $value;
+            }
+        }
+
+        $this->getFilterHelper()->process($query, $filters);
 
         return $query;
     }
 
     protected function processSearches(SelectorQuery $query): SelectorQuery
     {
-        $this->getSearchHelper()->process($query, $this->searches);
+        $searches = [];
+
+        foreach ($this->searches as $field => $value) {
+            $field = $this->resolveFieldAlias($field);
+
+            if ($this->isFieldAllow($field)) {
+                $searches[$field] = $value;
+            }
+        }
+
+        $this->getSearchHelper()->process($query, $searches);
 
         return $query;
     }
@@ -490,7 +533,48 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate
      */
     public function setAllowFields(array $allowFields): static
     {
-        $this->allowFields = $allowFields;
+        $this->customAllowFields = $allowFields;
+
+        return $this;
+    }
+
+    public function isFieldAllow(string $field): bool
+    {
+        return in_array($field, $this->getAllowFields(), true);
+    }
+
+    public function resolveFieldAlias(string $field): string
+    {
+        while (isset($this->fieldAlias[$field])) {
+            $field = $this->fieldAlias[$field];
+        }
+
+        return $field;
+    }
+
+    /**
+     * @return array
+     */
+    public function getFieldAlias(): array
+    {
+        return $this->fieldAlias;
+    }
+
+    /**
+     * @param  array  $fieldAlias
+     *
+     * @return  static  Return self to support chaining.
+     */
+    public function setFieldAlias(array $fieldAlias): static
+    {
+        $this->fieldAlias = $fieldAlias;
+
+        return $this;
+    }
+
+    public function fieldAlias(string $alias, string $field): static
+    {
+        $this->fieldAlias[$alias] = $field;
 
         return $this;
     }

@@ -31,6 +31,7 @@ $ns ??= '';
 
 $is ??= 'card';
 $title ??= $fieldset->getTitle();
+$floating ??= false;
 ?>
 
 <x-component :is="$is" {{ $attributes }}>
@@ -57,7 +58,7 @@ $title ??= $fieldset->getTitle();
         @if ($$slotName ?? null)
             {!! $$slotName(field: $field) !!}
         @else
-            <x-field :field="$field" class="mb-3">
+            <x-field :field="$field" class="mb-3" :floating="$floating">
                 @if ($fieldSlot ?? null)
                     @scope($field)
                     {!! $fieldSlot(field: $field) !!}

@@ -35,11 +35,17 @@ $filterBlock ??= null;
 ?>
 
 <div class="c-filter-bar mb-4"
-    x-data="{ open: $el.dataset.open === '1' }"
     data-open="{{ (int) $open }}"
     x-cloak
     x-id="filter-bar"
     x-ref="filterbar"
+    x-data="{ open: $el.dataset.open === '1', grid: $store.{{ $store ?? 'grid' }} }"
+    x-init="
+    $watch('open', function (open) {
+        grid.toggleFilters(open, $refs.filterForm);
+    });
+    grid.toggleFilters(open, $refs.filterForm);
+    "
 >
     <div class="c-filter-bar-top d-flex">
         <div class="c-filter-bar__top-start d-flex">
@@ -54,7 +60,7 @@ $filterBlock ??= null;
                             title="Search"
                             @click="$store.grid.sendFilter()"
                         >
-                            <span class="fa fa-search"></span>
+                            <i class="fa fa-magnifying-glass"></i>
                         </button>
                     </div>
                 @else
@@ -91,40 +97,38 @@ $filterBlock ??= null;
     </div>
 
     @if ($filterBlock !== false)
-    <div class="c-filter-bar__filters mt-3" x-show="open"
-        x-transition:enter="fadeIn"
-        x-transition:leave="fadeOut"
-        style="animation-duration: .3s; display: none;"
-    >
-        @php($fields = iterator_to_array($form->getFields(\Windwalker\Utilities\Symbol::none(), 'filter')))
-
-        @if (count($fields))
-            <div class="row c-filter-bar__filter-group">
-                @foreach ($fields as $field)
-                    <div class="col-lg-3 col-md-6">
-                        {!! $field->renderInput() !!}
-                    </div>
-                @endforeach
-            </div>
-        @endif
-
-        @foreach ($form->getFieldsets() as $fieldset)
-            @php($fields = iterator_to_array($form->getFields($fieldset->getName(), 'filter')))
+    <div class="c-filter-bar__filters" x-ref="filterForm" style="display: none;">
+        <div class="pt-3">
+            @php($fields = iterator_to_array($form->getFields(\Windwalker\Utilities\Symbol::none(), 'filter')))
 
             @if (count($fields))
-                <div class="mt-3">
-                    <h4>{{ $fieldset->getTitle() }}</h4>
-
-                    <div class="row c-filter-bar__filter-group">
-                        @foreach ($fields as $field)
-                            <div class="col-lg-3 col-md-6">
-                                {!! $field->renderInput() !!}
-                            </div>
-                        @endforeach
-                    </div>
+                <div class="row c-filter-bar__filter-group">
+                    @foreach ($fields as $field)
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <x-field :field="$field" floating></x-field>
+                        </div>
+                    @endforeach
                 </div>
             @endif
-        @endforeach
+
+            @foreach ($form->getFieldsets() as $fieldset)
+                @php($fields = iterator_to_array($form->getFields($fieldset->getName(), 'filter')))
+
+                @if (count($fields))
+                    <div class="mt-3">
+                        <h4>{{ $fieldset->getTitle() }}</h4>
+
+                        <div class="row c-filter-bar__filter-group">
+                            @foreach ($fields as $field)
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <x-field :field="$field" floating></x-field>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+            @endforeach
+        </div>
     </div>
     @endif
 </div>

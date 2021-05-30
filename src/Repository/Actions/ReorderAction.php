@@ -121,6 +121,18 @@ class ReorderAction extends AbstractDatabaseAction
         return true;
     }
 
+    public function getMaxOrdering(Collection|array $item, ?string $orderField = null): ?string
+    {
+        $orderField ??= $this->getOrderField();
+
+        $mapper = $this->getEntityMapper();
+        $query = $mapper->select();
+
+        $this->groupConditions($query, Collection::wrap($item));
+
+        return $query->selectRaw('MAX(%n) AS max_ordering', $orderField)->result();
+    }
+
     public function reorderByQuery(Query $query, ?string $orderField = null): bool
     {
         $orderField ??= $this->getOrderField();
@@ -175,7 +187,7 @@ class ReorderAction extends AbstractDatabaseAction
 
             $query->where($conditions);
         } else {
-            $result = $handler($query, $entity = $this->getEntityMapper()->toEntity($item));
+            $result = $handler($query, $this->getEntityMapper()->toEntity($item));
 
             if ($result !== null) {
                 $query->where($result);

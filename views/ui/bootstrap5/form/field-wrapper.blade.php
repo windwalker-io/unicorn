@@ -42,10 +42,11 @@ if ($field instanceof \Windwalker\Form\Field\HiddenFieldInterface) {
 }
 
 // Attributes
-$floating = $attributes['floating'] ?? false;
+$floating = $field->get('floating') ?? $attributes['floating'] ?? false;
 
 if ($floating) {
     $wrapper->addClass('form-floating');
+    $field->set('floating', true);
 } else {
     $wrapper->addClass('row');
 }
