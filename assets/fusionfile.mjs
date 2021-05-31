@@ -78,6 +78,11 @@ export async function modules() {
       options.output.libraryTarget = 'umd';
     }
   });
+  webpack('./src/modules/ui/flatpickr-components.js', './dist/ui/', {
+    override: (options) => {
+      options.output.libraryTarget = 'umd';
+    }
+  });
   webpack('./src/modules/ui/list-dependent.js', './dist/ui/', {
     override: (options) => {
       options.output.library = 'ListDependent';

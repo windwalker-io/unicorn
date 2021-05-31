@@ -35,6 +35,8 @@ export function noConflict() {
 
 const u = createApp();
 
+window.u = u;
+
 u.use(UnicornLoader);
 u.use(UnicornHelper);
 u.use(UnicornLang);
@@ -45,5 +47,3 @@ u.use(UnicornForm);
 u.use(UnicornGrid);
 u.use(UnicornValidation);
 u.use(UnicornTinymce);
-
-window.u = u;

@@ -52,8 +52,8 @@ class FlatpickrElement extends HTMLElement {
   handleOptions(options) {
     if (options.monthSelect) {
       return Promise.all([
-          System.import('@flatpickr/plugins/monthSelect/index.js'),
-          System.import('@flatpickr/plugins/monthSelect/style.css'),
+          u.import('@flatpickr/plugins/monthSelect/index.js'),
+          u.import('@flatpickr/plugins/monthSelect/style.css'),
         ])
         .then((modules) => {
           const styleSheet = modules[1].default; // A CSSStyleSheet object
@@ -86,11 +86,11 @@ class FlatpickrElement extends HTMLElement {
 }
 
 Promise.all([
-  System.import('@flatpickr/flatpickr.js'),
-  System.import('@flatpickr/flatpickr.css')
+  u.import('@flatpickr/flatpickr.js'),
+  u.import('@flatpickr/flatpickr.css')
 ]).then((modules) => {
   const styleSheet = modules[1].default; // A CSSStyleSheet object
   document.adoptedStyleSheets = [...document.adoptedStyleSheets, styleSheet];
-  
+
   customElements.define(FlatpickrElement.is, FlatpickrElement);
 });
