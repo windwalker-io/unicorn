@@ -100,6 +100,14 @@ export default class UnicornUI {
     return this.app.import('@unicorn/field/single-image-drag.js');
   }
 
+  fileDrag() {
+    return this.app.import('@unicorn/field/file-drag.js');
+  }
+
+  iframeModal() {
+    return this.app.import('@unicorn/ui/iframe-modal.js');
+  }
+
   /**
    * @see https://dev.to/bmsvieira/vanilla-js-slidedown-up-4dkn
    * @param target

@@ -45,9 +45,23 @@ class FormScript extends AbstractScript
     public function singleImageDrag(): void
     {
         if ($this->available()) {
+            $this->unicornScript->translate('unicorn.field.sid.*');
+
             $this->unicornScript->importThen(
                 '@main',
                 "u.\$ui.sid()"
+            );
+        }
+    }
+
+    public function fileDrag(): void
+    {
+        if ($this->available()) {
+            $this->unicornScript->translate('unicorn.field.file.drag.*');
+
+            $this->unicornScript->importThen(
+                '@main',
+                "u.\$ui.fileDrag()"
             );
         }
     }

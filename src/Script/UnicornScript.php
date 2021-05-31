@@ -13,6 +13,9 @@ namespace Unicorn\Script;
 
 use Windwalker\Core\Asset\AbstractScript;
 use Windwalker\Core\Http\Browser;
+use Windwalker\Core\Language\LangService;
+use Windwalker\Core\Language\Translator;
+use Windwalker\String\Str;
 
 /**
  * The UnicornScript class.
@@ -26,7 +29,7 @@ class UnicornScript extends AbstractScript
     /**
      * UnicornScript constructor.
      */
-    public function __construct(protected Browser $browser)
+    public function __construct(protected Browser $browser, protected LangService $langService)
     {
     }
 
@@ -102,5 +105,55 @@ JS
     public function getData(): array
     {
         return $this->data;
+    }
+
+    public function translate(array|string $key): static
+    {
+        if (is_array($key)) {
+            foreach ($key as $keyName) {
+                $this->translate($keyName);
+            }
+
+            return $this;
+        }
+
+        $normalize = $this->langService->getNormalizeHandler();
+        $trans = [];
+
+        if (str_ends_with($key, '*')) {
+            $key = substr($key, 0, -1);
+            $key = $normalize($key);
+
+            $locale = $this->langService->getLocale();
+            $fallback = $this->langService->getFallback();
+
+            $strings = $this->langService->getStrings();
+
+            foreach ($strings[$fallback] ?? [] as $k => $string) {
+                $k = $normalize($k);
+
+                if (str_starts_with($k, $key)) {
+                    $trans[$k] = $this->langService->trans($k);
+                }
+            }
+
+            if ($locale !== $fallback) {
+                foreach ($strings[$locale] ?? [] as $k => $string) {
+                    $k = $normalize($k);
+
+                    if (str_starts_with($k, $key)) {
+                        $trans[$k] = $this->langService->trans($k);
+                    }
+                }
+            }
+        } else {
+            $key = $normalize($key);
+
+            $trans[$key] = $this->langService->trans($key);
+        }
+
+        $this->data('unicorn.languages', $trans, true);
+
+        return $this;
     }
 }

@@ -14,6 +14,7 @@ export default class UnicornLang {
     const $lang = app.$lang = new this(app);
 
     app.__ = $lang.__.bind($lang);
+    app.trans = $lang.trans.bind($lang);
   }
 
   constructor(app) {
@@ -34,13 +35,13 @@ export default class UnicornLang {
   trans(text, ...args) {
     const key = this.normalize(text);
 
+    let translated = this.find(key) || '';
+
     if (args.length) {
-      return this.sprintf(text, ...args);
+      translated = this.sprintf(translated, ...args);
     }
 
-    const translated = this.find(key);
-
-    return translated !== null ? translated : this.wrapDebug(text, false);
+    return translated !== '' ? translated : this.wrapDebug(text, false);
   }
 
   /**
@@ -49,7 +50,7 @@ export default class UnicornLang {
    * @param {Array} args
    */
   sprintf(text, ...args) {
-    return this.app.vsprintf(this.find(text), args);
+    return this.app.vsprintf(text, args);
   }
 
   /**

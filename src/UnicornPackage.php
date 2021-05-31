@@ -16,6 +16,7 @@ use Symfony\Component\Mime\MimeTypesInterface;
 use Unicorn\Attributes\StateMachine;
 use Unicorn\Script\UnicornScript;
 use Unicorn\Upload\FileUploadManager;
+use Windwalker\Core\Language\LangService;
 use Windwalker\Core\Package\AbstractPackage;
 use Windwalker\Core\Package\PackageInstaller;
 use Windwalker\DI\Attributes\AttributeType;
@@ -71,6 +72,7 @@ class UnicornPackage extends AbstractPackage implements
      * @param  Container  $container  The DI container.
      *
      * @return  void
+     * @throws \Windwalker\DI\Exception\DefinitionException
      */
     public function register(Container $container): void
     {
@@ -85,6 +87,15 @@ class UnicornPackage extends AbstractPackage implements
                 $renderer->addPath(dirname(__DIR__) . '/views');
 
                 return $renderer;
+            }
+        );
+
+        $container->extend(
+            LangService::class,
+            function (LangService $lang) {
+                return $lang->addPath(__DIR__ . '/../resources/languages')
+                    ->loadFile('unicorn', 'ini')
+                    ->loadFile('unicorn', 'php');
             }
         );
 
@@ -151,5 +162,6 @@ class UnicornPackage extends AbstractPackage implements
     {
         $installer->installConfig(__DIR__ . '/../etc/*.php', 'config');
         $installer->installRoutes(__DIR__ . '/../routes/*.php', 'routes');
+        $installer->installLanguages(__DIR__ . '/../resources/languages/*.php', 'lang');
     }
 }

@@ -47,22 +47,6 @@ export async function main() {
       options.output.libraryTarget = 'umd';
     }
   });
-  webpack('./src/unicorn/ui/validation-components.js', './dist/ui/', {
-    override: (options) => {
-      options.output.libraryTarget = 'umd';
-    }
-  });
-  webpack('./src/unicorn/ui/list-dependent.js', './dist/ui/', {
-    override: (options) => {
-      options.output.library = 'ListDependent';
-      options.output.libraryTarget = 'umd';
-    }
-  });
-  webpack('./src/unicorn/field/single-image-drag.js', './dist/field/', {
-    override: (options) => {
-      options.output.libraryTarget = 'umd';
-    }
-  });
   // Compile end
 }
 
@@ -78,12 +62,43 @@ export async function js() {
 
 export async function modules() {
   // Watch start
-  fusion.watch('src/modules/**/*.js');
+  fusion.watch(
+    ['src/modules/**/*.js', 'scss/**/*.scss']
+  );
   // Watch end
 
   // Compile Start
-  babel('src/modules/**/*.js', 'dist/', { module: 'systemjs' });
-  // babel('src/modules/**/*.js', 'dist/', { module: 'systemjs' });
+  webpack('./src/modules/ui/ui-bootstrap5.js', './dist/ui/', {
+    override: (options) => {
+      options.output.libraryTarget = 'system';
+    }
+  });
+  webpack('./src/modules/ui/validation-components.js', './dist/ui/', {
+    override: (options) => {
+      options.output.libraryTarget = 'umd';
+    }
+  });
+  webpack('./src/modules/ui/list-dependent.js', './dist/ui/', {
+    override: (options) => {
+      options.output.library = 'ListDependent';
+      options.output.libraryTarget = 'umd';
+    }
+  });
+  webpack('./src/modules/field/single-image-drag.js', './dist/field/', {
+    override: (options) => {
+      options.output.libraryTarget = 'umd';
+    }
+  });
+  webpack('./src/modules/field/file-drag.js', './dist/field/', {
+    override: (options) => {
+      options.output.libraryTarget = 'umd';
+    }
+  });
+  webpack('./src/modules/ui/iframe-modal.js', './dist/ui/', {
+    override: (options) => {
+      options.output.libraryTarget = 'umd';
+    }
+  });
   // Compile end
 }
 
