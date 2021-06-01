@@ -8,6 +8,7 @@
 export * from './events.js';
 export * from './mixwith.js';
 
+import UnicornAnimate from './animate.js';
 import UnicornDirective from './directive.js';
 import UnicornLang from './lang.js';
 import UnicornValidation from './plugin/validation.js';
@@ -42,6 +43,7 @@ u.use(UnicornHelper);
 u.use(UnicornLang);
 u.use(UnicornHttp);
 u.use(UnicornDirective);
+u.use(UnicornAnimate);
 u.use(UnicornUI);
 u.use(UnicornForm);
 u.use(UnicornGrid);

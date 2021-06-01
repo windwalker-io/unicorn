@@ -115,155 +115,89 @@ export default class UnicornUI {
   }
 
   /**
-   * @see https://dev.to/bmsvieira/vanilla-js-slidedown-up-4dkn
    * @param target
    * @param duration
    */
-  slideUp(target, duration = 500) {
+  slideUp(target, duration = 300) {
     target = this.app.selectOne(target);
 
-    if (target._clearSlider) {
-      clearInterval(target._clearSlider);
-      target._clearSlider = null;
-    }
-
-    target.style.transitionProperty = 'height, margin, padding';
-    target.style.transitionDuration = duration + 'ms';
-    target.style.boxSizing = 'border-box';
-    target.style.height = target.offsetHeight + 'px';
-    target.offsetHeight;
     target.style.overflow = 'hidden';
-    target.style.height = 0;
-    target.style.paddingTop = 0;
-    target.style.paddingBottom = 0;
-    target.style.marginTop = 0;
-    target.style.marginBottom = 0;
-    target._clearSlider = window.setTimeout(() => {
+
+    const animation = u.animate(
+      target,
+      { height: 0, paddingTop: 0, paddingBottom: 0 },
+      { duration, easing: 'ease-out' }
+    );
+
+    return animation.finished.then(() => {
       target.style.display = 'none';
-      target.style.removeProperty('height');
-      target.style.removeProperty('padding-top');
-      target.style.removeProperty('padding-bottom');
-      target.style.removeProperty('margin-top');
-      target.style.removeProperty('margin-bottom');
-      target.style.removeProperty('overflow');
-      target.style.removeProperty('transition-duration');
-      target.style.removeProperty('transition-property');
-    }, duration);
+    });
   }
 
-  slideDown(target, duration = 500) {
+  slideDown(target, duration = 300, display = 'block') {
     target = this.app.selectOne(target);
 
-    if (target._clearSlider) {
-      clearInterval(target._clearSlider);
-      target._clearSlider = null;
-    }
-
-    target.style.removeProperty('display');
-    let display = window.getComputedStyle(target).display;
-    if (display === 'none') {
-      display = 'block';
-    }
     target.style.display = display;
-    let height = target.offsetHeight;
-    target.style.overflow = 'hidden';
-    target.style.height = 0;
-    target.style.paddingTop = 0;
-    target.style.paddingBottom = 0;
-    target.style.marginTop = 0;
-    target.style.marginBottom = 0;
-    target.offsetHeight;
-    target.style.boxSizing = 'border-box';
-    target.style.transitionProperty = 'height, margin, padding';
-    target.style.transitionDuration = duration + 'ms';
-    target.style.height = height + 'px';
-    target.style.removeProperty('padding-top');
-    target.style.removeProperty('padding-bottom');
-    target.style.removeProperty('margin-top');
-    target.style.removeProperty('margin-bottom');
-    target._clearSlider = window.setTimeout(() => {
-      target.style.removeProperty('height');
-      target.style.removeProperty('overflow');
-      target.style.removeProperty('transition-duration');
-      target.style.removeProperty('transition-property');
-    }, duration);
+    const animation = u.animate(
+      target,
+      {
+        height: [
+          0,
+          target.scrollHeight + 'px'
+        ]
+      },
+      { duration, easing: 'ease-out' }
+    );
+
+    return animation.finished;
   }
 
-  slideToggle(target, duration = 500) {
+  slideToggle(target, duration = 500, display = 'block') {
     target = this.app.selectOne(target);
 
     if (window.getComputedStyle(target).display === 'none') {
-      return this.slideDown(target, duration);
+      return this.slideDown(target, duration, display);
     } else {
       return this.slideUp(target, duration);
     }
   }
 
   /**
-   * @see https://dev.to/bmsvieira/vanilla-js-fadein-out-2a6o
    * @param el
    */
-  fadeOut(el) {
+  fadeOut(el, duration = 500) {
     el = this.app.selectOne(el);
 
-    el.style.opacity = 1;
-    (function fade() {
-      if ((el.style.opacity -= .1) < 0) {
-        el.style.display = 'none';
-      } else {
-        requestAnimationFrame(fade);
-      }
-    })();
+    const animation = u.animate(el, { opacity: 0 }, { duration, easing: 'ease-out' });
+
+    return animation.finished.then(() => {
+      el.style.display = 'none';
+    });
   };
 
-  fadeIn(el, display) {
+  fadeIn(el, duration = 500, display = 'block') {
     el = this.app.selectOne(el);
-    el.style.opacity = 0;
-    el.style.display = display || 'block';
-    (function fade() {
-      var val = parseFloat(el.style.opacity);
-      if (!((val += .1) > 1)) {
-        el.style.opacity = val;
-        requestAnimationFrame(fade);
-      }
-    })();
+
+    el.style.display = display;
+
+    const animation = u.animate(el, { opacity: 1 }, { duration, easing: 'ease-out' });
+
+    return animation.finished;
   };
 
-  highlight(element, color = '#ffff99', duration = 1000) {
+  highlight(element, color = '#ffff99', duration = 600) {
     element = this.app.selectOne(element);
 
-    element.style.setProperty('--uni-highlight-color', color);
-    element.style.setProperty('--uni-highlight-origin-color', window.getComputedStyle(element).backgroundColor);
-    element.style.setProperty('--uni-highlight-duration', `${duration / 1000}s`);
+    duration /= 2;
+    const bg = window.getComputedStyle(element).backgroundColor;
+    const animation = u.animate(element, { backgroundColor: color }, { duration });
 
-    element.classList.add('unicorn-highlight');
-
-    setTimeout(() => {
-      element.classList.remove('unicorn-highlight');
-    }, duration);
+    return animation.finished.then(() => {
+      return u.animate(element, { backgroundColor: bg }, { duration });
+    });
   }
 
   static prepareInpageCSS() {
-    const styleSheet = new CSSStyleSheet();
-
-    styleSheet.replace(`
-@keyframes unicornHighlight {
-    0% {
-        background: var(--uni-highlight-origin-color, inherit);
-    }
-    50% {
-        background: var(--uni-highlight-color, #ffff99);
-    }
-    100% {
-        background: var(--uni-highlight-origin-color, inherit);;
-    }
-}
-
-.unicorn-highlight {
-  animation: unicornHighlight var(--uni-highlight-duration, 1s) linear;
-}
-    `);
-
-    document.adoptedStyleSheets = [...document.adoptedStyleSheets, styleSheet];
+    //
   }
 }

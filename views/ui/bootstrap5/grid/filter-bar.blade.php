@@ -104,7 +104,7 @@ $filterBlock ??= null;
             @if (count($fields))
                 <div class="row c-filter-bar__filter-group">
                     @foreach ($fields as $field)
-                        <div class="col-lg-3 col-md-6 mb-3">
+                        <div class="col-lg-3 col-sm-6 mb-3">
                             <x-field :field="$field" floating></x-field>
                         </div>
                     @endforeach
@@ -120,7 +120,7 @@ $filterBlock ??= null;
 
                         <div class="row c-filter-bar__filter-group">
                             @foreach ($fields as $field)
-                                <div class="col-lg-3 col-md-6 mb-3">
+                                <div class="col-lg-3 col-sm-6 mb-3">
                                     <x-field :field="$field" floating></x-field>
                                 </div>
                             @endforeach

@@ -116,11 +116,10 @@ class ModalList extends HTMLElement {
 
     itemHtml.dataset.value = item.value;
     itemHtml.querySelector('[data-role=remove]').addEventListener('click', () => {
-      u.$ui.slideUp(itemHtml);
-      setTimeout(() => {
+      u.$ui.slideUp(itemHtml).then(() => {
         itemHtml.remove();
         this.toggleRequired();
-      }, 500);
+      });
     });
 
     this.listContainer.appendChild(itemHtml);
@@ -146,7 +145,7 @@ class ModalList extends HTMLElement {
     const max = this.options.max;
 
     if (!max) {
-      this.modal.open(event.target.href);
+      this.modal.open(event.target.href, { size: 'modal-xl' });
       return;
     }
 
@@ -158,7 +157,7 @@ class ModalList extends HTMLElement {
       return;
     }
 
-    this.modal.open(event.target.href);
+    this.modal.open(event.target.href, { size: 'modal-xl' });
   }
 }
 
