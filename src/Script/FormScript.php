@@ -65,4 +65,22 @@ class FormScript extends AbstractScript
             );
         }
     }
+
+    public function modalField(
+        string $type,
+        string $selector,
+        string $modalSelector,
+        string $callbackName
+    ): void {
+        if ($this->available($callbackName)) {
+            $this->unicornScript->importThen(
+                '@main',
+                <<<JS
+                u.\$ui.modalField().then(function () {
+                    window.$callbackName = u.\$modalField.createCallback('$type', '$selector', '$modalSelector');
+                });
+                JS
+            );
+        }
+    }
 }

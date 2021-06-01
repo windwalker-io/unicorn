@@ -18,6 +18,7 @@ export default class UnicornHelper {
     app.selectAll = helper.selectAll.bind(helper);
     app.getBoundedInstance = helper.getBoundedInstance.bind(helper);
     app.h = helper.h;
+    app.html = helper.html;
     app.$get = helper.$get;
     app.$set = helper.$set;
     app.isDebug = helper.isDebug.bind(helper);
@@ -82,6 +83,12 @@ export default class UnicornHelper {
     }
 
     return ele;
+  }
+
+  html(text) {
+    const div = document.createElement('div');
+    div.innerHTML = text;
+    return div.children[0];
   }
 
   get(obj, path) {

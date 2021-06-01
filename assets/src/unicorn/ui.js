@@ -26,6 +26,8 @@ export default class UnicornUI {
     app.startAlpine = ui.startAlpine.bind(ui);
     app.startAlpineSpruce = ui.startAlpineSpruce.bind(ui);
     app.initAlpineSpruce = ui.initAlpineSpruce.bind(ui);
+
+    this.prepareInpageCSS();
   }
 
   static get defaultOptions() {
@@ -106,6 +108,10 @@ export default class UnicornUI {
 
   iframeModal() {
     return this.app.import('@unicorn/ui/iframe-modal.js');
+  }
+
+  modalField() {
+    return this.app.import('@unicorn/field/modal-field.js');
   }
 
   /**
@@ -222,4 +228,42 @@ export default class UnicornUI {
       }
     })();
   };
+
+  highlight(element, color = '#ffff99', duration = 1000) {
+    element = this.app.selectOne(element);
+
+    element.style.setProperty('--uni-highlight-color', color);
+    element.style.setProperty('--uni-highlight-origin-color', window.getComputedStyle(element).backgroundColor);
+    element.style.setProperty('--uni-highlight-duration', `${duration / 1000}s`);
+
+    element.classList.add('unicorn-highlight');
+
+    setTimeout(() => {
+      element.classList.remove('unicorn-highlight');
+    }, duration);
+  }
+
+  static prepareInpageCSS() {
+    const styleSheet = new CSSStyleSheet();
+
+    styleSheet.replace(`
+@keyframes unicornHighlight {
+    0% {
+        background: var(--uni-highlight-origin-color, inherit);
+    }
+    50% {
+        background: var(--uni-highlight-color, #ffff99);
+    }
+    100% {
+        background: var(--uni-highlight-origin-color, inherit);;
+    }
+}
+
+.unicorn-highlight {
+  animation: unicornHighlight var(--uni-highlight-duration, 1s) linear;
+}
+    `);
+
+    document.adoptedStyleSheets = [...document.adoptedStyleSheets, styleSheet];
+  }
 }

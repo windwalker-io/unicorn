@@ -221,6 +221,10 @@ export class UnicornFieldValidateElement extends HTMLElement {
   }
 
   bindEvents() {
+    if (!this.$input) {
+      return;
+    }
+
     this.$input.addEventListener('invalid', (e) => {
       this.showInvalidResponse();
     });

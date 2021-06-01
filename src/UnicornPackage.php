@@ -115,6 +115,7 @@ class UnicornPackage extends AbstractPackage implements
                 '@flatpickr/' => 'vendor/flatpickr/dist/',
                 '@cropperjs/' => 'vendor/cropperjs/dist/',
                 '@tinymce' => 'vendor/tinymce/tinymce.js',
+                '@sortablejs' => 'vendor/sortablejs/Sortable.min.js',
             ]
         );
 

@@ -104,6 +104,11 @@ export async function modules() {
       options.output.libraryTarget = 'umd';
     }
   });
+  webpack('./src/modules/field/modal-field.js', './dist/field/', {
+    override: (options) => {
+      options.output.libraryTarget = 'umd';
+    }
+  });
   // Compile end
 }
 

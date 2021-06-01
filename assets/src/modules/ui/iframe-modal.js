@@ -112,6 +112,8 @@ u.directive('modal-link', {
 
     const target = binding.value;
 
+    el.style.pointerEvents = null;
+
     el.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();

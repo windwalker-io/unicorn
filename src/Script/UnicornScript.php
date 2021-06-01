@@ -14,8 +14,6 @@ namespace Unicorn\Script;
 use Windwalker\Core\Asset\AbstractScript;
 use Windwalker\Core\Http\Browser;
 use Windwalker\Core\Language\LangService;
-use Windwalker\Core\Language\Translator;
-use Windwalker\String\Str;
 
 /**
  * The UnicornScript class.

@@ -23,89 +23,28 @@ use Windwalker\Query\Query;
 /**
  * The SqlListField class.
  *
- * @method $this table(mixed $value = null)
- * @method string getTable()
  * @method $this textField(mixed $value = null)
  * @method string getTextField()
  * @method $this valueField(mixed $value = null)
  * @method string getValueField()
  * @method $this optionAttrs(array $value = null)
  * @method array getOptionAttrs()
- * @method $this connection(string $value = null)
- * @method string getConnection()
  */
 class SqlListField extends ListField
 {
-    #[Inject]
-    protected DatabaseManager $dbManager;
-
-    protected ?string $table = null;
+    use DatabaseAwareTrait;
 
     protected ?string $textField = 'title';
 
     protected ?string $valueField = 'id';
 
-    protected ?Query $query = null;
-
-    public function getDb(): DatabaseAdapter
+    protected function prepareQuery(Query $query): void
     {
-        $connection = $this->getConnection();
-
-        if ($connection instanceof DatabaseAdapter) {
-            return $connection;
-        }
-
-        return $this->dbManager->get($connection);
-    }
-
-    public function configureQuery(callable $handler): static
-    {
-        $query = $handler($this->getQuery());
-
-        if ($query !== null) {
-            $this->setQuery($query);
-        }
-
-        return $this;
-    }
-
-    public function createQuery(): SelectorQuery
-    {
-        $query = $this->getDb()->orm()->select();
-
-        return $query->from($this->getTable() ?? $this->table);
-    }
-
-    /**
-     * @return Query
-     */
-    public function getQuery(): Query
-    {
-        return $this->query ??= $this->createQuery();
-    }
-
-    /**
-     * @param  Query|null  $query
-     *
-     * @return  static  Return self to support chaining.
-     */
-    public function setQuery(?Query $query): static
-    {
-        $this->query = $query;
-
-        return $this;
     }
 
     public function getItems(): iterable
     {
-        $this->prepareQuery($query = $this->getQuery());
-
-        return $query;
-    }
-
-    protected function prepareQuery(Query $query): void
-    {
-        //
+        return $this->compileQuery();
     }
 
     protected function prepareOptions(): array
@@ -155,8 +94,7 @@ class SqlListField extends ListField
             'table',
             'textField',
             'valueField',
-            'optionAttrs',
-            'connection',
+            'optionAttrs'
         ]);
     }
 }
