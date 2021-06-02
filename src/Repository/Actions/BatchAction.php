@@ -11,6 +11,10 @@ declare(strict_types=1);
 
 namespace Unicorn\Repository\Actions;
 
+use Windwalker\Core\Form\Exception\ValidateFailException;
+use Windwalker\Core\Language\LangService;
+use Windwalker\DI\Attributes\Inject;
+use Windwalker\Utilities\Exception\MultiMessagesExceptionTrait;
 use Windwalker\Utilities\Symbol;
 
 /**
@@ -21,6 +25,9 @@ class BatchAction extends AbstractDatabaseAction
     use FormAwareActionTrait;
 
     protected ?Symbol $emptySymbol = null;
+
+    #[Inject]
+    protected LangService $lang;
 
     /**
      * update
@@ -45,8 +52,16 @@ class BatchAction extends AbstractDatabaseAction
         $items = [];
 
         foreach ($ids as $id) {
-            $data[$key] = $id;
-            $items[] = $mapper->updateOne($data);
+            $item = $data;
+
+            if ($data === []) {
+                throw new ValidateFailException(
+                    $this->lang->trans('unicorn.message.batch.data.empty')
+                );
+            }
+
+            $item[$key] = $id;
+            $items[] = $mapper->updateOne($item);
         }
 
         return $items;
@@ -65,6 +80,12 @@ class BatchAction extends AbstractDatabaseAction
         $items = [];
 
         foreach ($ids as $id) {
+            if ($data === []) {
+                throw new ValidateFailException(
+                    $this->lang->trans('unicorn.message.batch.data.empty')
+                );
+            }
+
             $items[] = $mapper->copy(
                 [$key => $id],
                 fn(array $item) => array_merge($item, $data)

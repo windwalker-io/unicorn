@@ -22,48 +22,104 @@ use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\SystemUri;
 
 /**
- * @var \Unicorn\Html\State\StateButton $state
- * @var string $value
- * @var \Unicorn\Html\State\StateButton|array $states
- * @var \Unicorn\Workflow\AbstractWorkflow|\Unicorn\Workflow\WorkflowController $workflow
+ * @var \Unicorn\Html\State\StateButton                                         $state
+ * @var string                                                                  $value
+ * @var \Unicorn\Html\State\StateButton|array                                   $states
+ * @var \Unicorn\Workflow\AbstractWorkflow $workflow
+ * @var \Unicorn\Workflow\WorkflowController $workflowCtrl
  */
-
-if ($workflow instanceof \Unicorn\Workflow\AbstractWorkflow) {
-    $workflow = $workflow->getWorkflowController();
-}
 
 // show($workflow->getEnabledTransitions($value));
 
-$store ??= 'grid';
+$batch   ??= false;
+$disabled ??= false;
+$useStates ??= false;
+$store   ??= 'grid';
 $colorOn ??= 'button';
-$size ??= 'sm';
+$size    ??= 'sm';
 
-$currentState = $workflow->getState($value) ?? new \Unicorn\Workflow\State($value);
+$attributes = $attributes->exceptProps(
+    [
+        'states',
+        'workflow',
+        'id',
+        'colorOn',
+        'size',
+        'store',
+        'value',
+        'textColor',
+        'buttonStyle',
+        'useStates',
+        'disabled',
+        'batch'
+    ]
+);
+
+$workflowCtrl = $workflow->getWorkflowController();
+
+if ($useStates) {
+    $states ??= $workflow->getStateButton();
+    $currentState = $workflowCtrl?->getState($value) ?? $states->getState($value);
+} else {
+    $transitions = $workflowCtrl->getEnabledTransitions($value);
+    $disabled = $disabled || !count($transitions);
+
+    $currentState = $workflowCtrl->getState($value) ?? new \Unicorn\Workflow\State($value);
+}
 
 if ($colorOn === 'button') {
-    $btnColor = 'btn-' . $currentState->getColor();
-    $textColor = '';
+    $buttonColor = 'btn-' . $currentState->getColor();
+    $textColor   = '';
 } elseif ($colorOn === 'text') {
-    $btnColor = $btnColor ??= 'btn-light';
-    $textColor = 'text-' . $currentState->getColor();
+    $buttonColor = $buttonColor ??= 'btn-light';
+    $textColor   = 'text-' . $currentState->getColor();
 }
+
+$buttonId ??= 'c-state-dropdown-' . $workflowCtrl->getField() . '-' . $id;
 ?>
 
-<div class="dropdown c-state-dropdown">
-    <button class="btn {{ $btnColor }} btn-{{ $size }} {{ $textColor }} dropdown-toggle c-state-dropdown__toggle"
-        type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+<div class="dropdown c-state-dropdown" {!! $attributes !!}>
+    <button class="btn {{ $buttonColor }} btn-{{ $size }} {{ $textColor }} dropdown-toggle c-state-dropdown__toggle"
+        type="button"
+        id="{{ $buttonId }}"
+        data-bs-toggle="dropdown"
+        aria-expanded="false"
+        style="{{ $buttonStyle ?? '' }}"
+        @attr('disabled', $disabled)
+    >
         <i class="{{ $currentState->getIcon() }}"></i>
         {{ $currentState->getTitle() }}
     </button>
-    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-        @foreach ($workflow->getEnabledTransitions($value) as $transition)
-            <li>
-                <a class="dropdown-item" href="javascript://"
-                    @click="$store.{{ $store }}.doTask('{{ $transition->getName() }}', '{{ $id }}')">
-                    <i class="{{ $transition->getIcon() }}"></i>
-                    {{ $transition->getTitle() ?? $transition->getName() }}
-                </a>
-            </li>
-        @endforeach
+    <ul class="dropdown-menu" aria-labelledby="{{ $buttonId }}">
+        @if ($useStates)
+            @foreach ($states->getStates() as $state)
+                <li>
+                    <a class="dropdown-item" href="javascript://"
+                        @if ($batch)
+                        @click="$store.{{ $store }}.patch(null, { batch: { '{{ $workflowCtrl->getField() }}': '{{ $state->getValue() }}' } })">
+                        @else
+                        @click="$store.{{ $store }}.updateRow('{{ $id }}', null, { batch: { '{{ $workflowCtrl->getField() }}': '{{ $state->getValue() }}' } })">
+                        @endif
+                        <i class="{{ $state->getIcon() }} text-{{ $state->getColor() }}"></i>
+                        {{ $state->getTitle() ?? $state->getName() }}
+                    </a>
+                </li>
+            @endforeach
+        @else
+            @foreach ($transitions as $transition)
+                <li>
+                    <a class="dropdown-item" href="javascript://"
+                        @if ($batch)
+                        @click="$store.{{ $store }}.batch('{{ $transition->getName() }}', null, { batch: { '{{ $workflowCtrl->getField() }}': '{{ $state->getValue() }}' } })">
+                        @else
+                        @click="$store.{{ $store }}.doTask('{{ $transition->getName() }}', '{{ $id }}')"
+                        @endif
+                    >
+                        <i class="{{ $transition->getIcon() }} text-{{ $state->getColor() }}"></i>
+                        {{ $transition->getTitle() ?? $transition->getName() }}
+                    </a>
+                </li>
+            @endforeach
+        @endif
     </ul>
 </div>

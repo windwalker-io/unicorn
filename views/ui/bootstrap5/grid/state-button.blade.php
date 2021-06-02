@@ -25,6 +25,7 @@ use Windwalker\Core\Router\SystemUri;
  * @var \Unicorn\Html\State\StateButton $state
  * @var string $value
  * @var \Unicorn\Html\State\StateButton|array $states
+ * @var \Windwalker\Edge\Component\ComponentAttributes $attributes
  */
 if ($states instanceof \Unicorn\Html\State\StateButton) {
     $state = $states->getCompiledState($value);
@@ -35,18 +36,22 @@ if ($states instanceof \Unicorn\Html\State\StateButton) {
 
 $store ??= 'grid';
 $size ??= 'sm';
+
+$attributes = $attributes->exceptProps(['states']);
 ?>
 
 @if ($state->isOnlyIcon())
     <span class="{{ $state->getIcon() }} c-state-button c-state-button--icon"
         data-bs-toggle="tooltip"
         title="{{ $state->getHelp() }}"
+        {!! $attributes !!}
     ></span>
 @else
     <button type="button"
         class="c-state-button grid-boolean-icon disable-on-submit c-state-button--{{ $value ?? '' }} {{ $state->getButtonClass() }} btn-{{ $size }}"
         data-bs-toggle="tooltip"
         title="{{ $state->getHelp() }}"
+        {!! $attributes !!}
         @attr('disabled', $state->isDisabled())
 
         @if (!empty($state->getOnclick()))

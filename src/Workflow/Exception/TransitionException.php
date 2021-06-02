@@ -11,10 +11,12 @@ declare(strict_types=1);
 
 namespace Unicorn\Workflow\Exception;
 
+use Windwalker\Core\Form\Exception\ValidateFailException;
+
 /**
  * The TransitionNotExistsException class.
  */
-class TransitionException extends \RuntimeException
+class TransitionException extends ValidateFailException
 {
 
 }

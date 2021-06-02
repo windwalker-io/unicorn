@@ -212,7 +212,7 @@ class UnicornGridElement {
   /**
    * Update a row.
    *
-   * @param  {number} row
+   * @param  {number} id
    * @param  {string} url
    * @param  {Object} queries
    *
