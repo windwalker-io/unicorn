@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace Unicorn\Workflow;
 
+use Unicorn\Html\State\StateButton;
 use Unicorn\Workflow\Exception\TransitionException;
 use Windwalker\DOM\DOMElement;
 use Windwalker\ORM\Event\AfterSaveEvent;
@@ -124,5 +125,19 @@ abstract class AbstractWorkflow
         }
 
         return $options;
+    }
+
+    public function getStateButton(): StateButton
+    {
+        $button = new StateButton();
+
+        foreach ($this->getStates() as $value => $state) {
+            $button->addState((string) $value)
+                ->icon($state->getIcon())
+                ->color($state->getColor())
+                ->title($state->getTitle());
+        }
+
+        return $button;
     }
 }

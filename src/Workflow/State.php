@@ -16,6 +16,10 @@ namespace Unicorn\Workflow;
  */
 class State
 {
+    protected string $color = 'dark';
+
+    protected string $icon = '';
+
     /**
      * State constructor.
      */
@@ -59,7 +63,7 @@ class State
      *
      * @return  static  Return self to support chaining.
      */
-    public function setTitle(?string $title): static
+    public function title(?string $title): static
     {
         $this->title = $title;
 
@@ -82,6 +86,46 @@ class State
     public function setIsInitial(bool $isInitial): static
     {
         $this->isInitial = $isInitial;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getColor(): string
+    {
+        return $this->color;
+    }
+
+    /**
+     * @param  string  $color
+     *
+     * @return  static  Return self to support chaining.
+     */
+    public function color(string $color): static
+    {
+        $this->color = $color;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getIcon(): string
+    {
+        return $this->icon;
+    }
+
+    /**
+     * @param  string  $icon
+     *
+     * @return  static  Return self to support chaining.
+     */
+    public function icon(string $icon): static
+    {
+        $this->icon = $icon;
 
         return $this;
     }

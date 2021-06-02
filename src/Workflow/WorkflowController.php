@@ -77,6 +77,13 @@ class WorkflowController implements EventAwareInterface
         );
     }
 
+    /**
+     * getEnabledTransitions
+     *
+     * @param  array|string  $froms
+     *
+     * @return  array<Transition>
+     */
     public function getEnabledTransitions(array|string $froms): array
     {
         if ($this->isAllowFreeTransitions()) {
@@ -147,7 +154,7 @@ class WorkflowController implements EventAwareInterface
         mixed $froms = null,
         mixed $tos = null,
         bool $enabled = true,
-    ): static {
+    ): Transition {
         if (!$transition instanceof Transition) {
             if ($froms instanceof \Stringable) {
                 $froms = (string) $froms;
@@ -160,9 +167,7 @@ class WorkflowController implements EventAwareInterface
             $transition = new Transition($transition, $froms, $tos, $enabled);
         }
 
-        $this->transitions[$transition->getName()] = $transition;
-
-        return $this;
+        return $this->transitions[$transition->getName()] = $transition;
     }
 
     protected function validateTransition(Transition $transition)
@@ -245,15 +250,23 @@ class WorkflowController implements EventAwareInterface
     public function setStateTitles(array $titles): static
     {
         foreach ($titles as $state => $title) {
-            $this->getState((string) $state)?->setTitle($title);
+            $this->getState((string) $state)?->title($title);
         }
 
         return $this;
     }
 
-    public function setStateTitle(mixed $value, string $title): static
+    public function setStateMeta(mixed $value, string $title = '', string $icon = '', string $color = ''): static
     {
-        $this->getState((string) $value)?->setTitle($title);
+        $state = $this->getState((string) $value);
+
+        if (!$state) {
+            return $this;
+        }
+
+        $state->title($title);
+        $state->icon($icon);
+        $state->color($color);
 
         return $this;
     }

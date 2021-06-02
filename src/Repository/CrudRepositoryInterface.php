@@ -16,7 +16,10 @@ use Unicorn\Repository\Actions\SaveAction;
 /**
  * Interface CrudRepositoryInterface
  */
-interface CrudRepositoryInterface extends ActionAwareInterface
+interface CrudRepositoryInterface extends
+    ActionAwareInterface,
+    DatabaseRepositoryInterface,
+    StateControlRepositoryInterface
 {
     public function createSaveAction(string $actionClass = SaveAction::class): SaveAction;
 
@@ -29,7 +32,7 @@ interface CrudRepositoryInterface extends ActionAwareInterface
      * @return  object
      *
      * @psalm-template T
-     * @psalm-param T $className
+     * @psalm-param T       $className
      * @psalm-return T
      */
     public function getItem(array $conditions = [], ?string $className = null): object;

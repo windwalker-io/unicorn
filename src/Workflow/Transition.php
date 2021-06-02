@@ -16,6 +16,12 @@ namespace Unicorn\Workflow;
  */
 class Transition
 {
+    protected string $icon = '';
+
+    protected string $title = '';
+
+    protected string $description = '';
+
     /**
      * Transition constructor.
      */
@@ -105,5 +111,72 @@ class Transition
         $this->enabled = $enabled;
 
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getIcon(): string
+    {
+        return $this->icon;
+    }
+
+    /**
+     * @param  string  $icon
+     *
+     * @return  static  Return self to support chaining.
+     */
+    public function icon(string $icon): static
+    {
+        $this->icon = $icon;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTitle(): string
+    {
+        return $this->title;
+    }
+
+    /**
+     * @param  string  $title
+     *
+     * @return  static  Return self to support chaining.
+     */
+    public function title(string $title): static
+    {
+        $this->title = $title;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDescription(): string
+    {
+        return $this->description;
+    }
+
+    /**
+     * @param  string  $description
+     *
+     * @return  static  Return self to support chaining.
+     */
+    public function description(string $description): static
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    public function button(string $icon = '', string $title = '', string $description = ''): static
+    {
+        return $this->icon($icon)
+            ->title($title)
+            ->description($description);
     }
 }

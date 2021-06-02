@@ -50,12 +50,15 @@ $copyButtonText ??= 'Duplicate';
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title" id="batch-modal-label">
-                    Batch
+                    @lang('unicorn.batch.modal.title')
                 </h4>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
                 </button>
             </div>
             <div class="modal-body c-batch-modal__body">
+                <p class="c-batch-modal__desc">
+                    @lang('unicorn.batch.modal.desc')
+                </p>
                 <div class="c-batch-modal__form">
                     @foreach ($form->getFields(null, $namespace) as $field)
                         <x-field :field="$field" floating class="mb-3"></x-field>
@@ -65,7 +68,7 @@ $copyButtonText ??= 'Duplicate';
             <div class="modal-footer d-flex justify-content-end">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                     <span class="fa fa-times"></span>
-                    @translate('phoenix.core.close')
+                    @translate('unicorn.core.close')
                 </button>
                 @if ($update)
                     <button type="button" class="btn btn-primary ml-2"

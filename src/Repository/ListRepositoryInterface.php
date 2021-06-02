@@ -16,7 +16,7 @@ use Unicorn\Selector\ListSelector;
 /**
  * Interface ListRepositoryInterface
  */
-interface ListRepositoryInterface
+interface ListRepositoryInterface extends StateControlRepositoryInterface
 {
     public function getListSelector(): ListSelector;
 }

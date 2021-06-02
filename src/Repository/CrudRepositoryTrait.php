@@ -26,6 +26,7 @@ trait CrudRepositoryTrait
 {
     use DatabaseRepositoryTrait;
     use ActionsAwareTrait;
+    use StateControlRepositoryTrait;
 
     public function createSaveAction(string $actionClass = SaveAction::class): SaveAction
     {

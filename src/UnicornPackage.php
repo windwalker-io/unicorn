@@ -14,6 +14,8 @@ namespace Unicorn;
 use Symfony\Component\Mime\MimeTypes;
 use Symfony\Component\Mime\MimeTypesInterface;
 use Unicorn\Attributes\StateMachine;
+use Unicorn\Controller\CrudController;
+use Unicorn\Controller\GridController;
 use Unicorn\Script\UnicornScript;
 use Unicorn\Upload\FileUploadManager;
 use Windwalker\Core\Language\LangService;
@@ -81,6 +83,10 @@ class UnicornPackage extends AbstractPackage implements
         $container->prepareSharedObject(MimeTypes::class)
             ->alias(MimeTypesInterface::class, MimeTypes::class);
 
+        // MVC
+        $container->prepareSharedObject(CrudController::class);
+        $container->prepareSharedObject(GridController::class);
+
         $container->extend(
             CompositeRenderer::class,
             function (CompositeRenderer $renderer) {
@@ -130,6 +136,8 @@ class UnicornPackage extends AbstractPackage implements
                 '@row-checkbox' => '@theme.grid.row-checkbox',
                 '@order-control' => '@theme.grid.order-control',
                 '@save-order' => '@theme.grid.save-order',
+                '@state-button' => '@theme.grid.state-button',
+                '@state-dropdown' => '@theme.grid.state-dropdown',
                 '@batch-modal' => '@theme.grid.batch-modal',
                 '@card' => '@theme.card',
                 '@fieldset' => '@theme.form.fieldset',
@@ -146,6 +154,8 @@ class UnicornPackage extends AbstractPackage implements
                 'row-checkbox' => '@row-checkbox',
                 'order-control' => '@order-control',
                 'save-order' => '@save-order',
+                'state-button' => '@state-button',
+                'state-dropdown' => '@state-dropdown',
                 'batch-modal' => '@batch-modal',
                 'card' => '@card',
                 'field' => '@theme.form.field-wrapper',
