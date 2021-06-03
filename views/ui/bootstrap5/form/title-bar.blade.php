@@ -1,5 +1,10 @@
 {{-- Part of earth project. --}}
 <?php
+
+/**
+ * @var \Windwalker\Form\Form $form
+ */
+
 $titleField = $titleField ?? 'title';
 $aliasField = $aliasField ?? 'alias';
 
