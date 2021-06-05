@@ -14,7 +14,7 @@ namespace Unicorn\Repository;
 use Windwalker\Core\State\AppState;
 use Windwalker\DI\Attributes\Inject;
 use Windwalker\Utilities\Str;
-use Windwalker\Utilities\StrNormalise;
+use Windwalker\Utilities\StrNormalize;
 
 /**
  * Trait StateControlRepositoryTrait

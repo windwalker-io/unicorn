@@ -46,7 +46,7 @@ $floating ??= false;
     @endif
 
     @foreach ($form->getFields($name, $ns) as $field)
-        @php($fieldName = \Windwalker\Utilities\StrNormalise::toKebabCase($field->getNamespaceName()))
+        @php($fieldName = \Windwalker\Utilities\StrNormalize::toKebabCase($field->getNamespaceName()))
         @php($slotName = $fieldName . 'Slot')
         @php($startSlot = $fieldName . 'StartSlot')
         @php($endSlot = $fieldName . 'EndSlot')
