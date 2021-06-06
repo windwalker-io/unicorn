@@ -19,6 +19,7 @@ use Unicorn\Selector\Filter\FilterHelper;
 use Unicorn\Selector\Filter\SearchHelper;
 use Windwalker\Core\Pagination\Pagination;
 use Windwalker\Core\Pagination\PaginationFactory;
+use Windwalker\Core\State\AppState;
 use Windwalker\Data\Collection;
 use Windwalker\Database\DatabaseAdapter;
 use Windwalker\Event\EventAwareInterface;
@@ -29,6 +30,7 @@ use Windwalker\Utilities\Arr;
 use Windwalker\Utilities\Cache\InstanceCacheTrait;
 use Windwalker\Utilities\Classes\FlowControlTrait;
 
+use function Windwalker\filter;
 use function Windwalker\raw;
 
 /**
@@ -45,6 +47,14 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate
     protected int $page = 1;
 
     protected ?int $limit = null;
+
+    protected string $searchText = '';
+
+    protected ?string $defaultOrdering = null;
+
+    protected ?int $defaultLimit = null;
+
+    protected array $searchFields = [];
 
     protected ?array $allowFields = null;
     
@@ -100,8 +110,6 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate
         return $this;
     }
 
-    // abstract protected function configureQuery(SelectorQuery $query): void;
-
     /**
      * Retrieve an external iterator
      * @link https://php.net/manual/en/iteratoraggregate.getiterator.php
@@ -136,13 +144,20 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate
             BeforeCompileQueryEvent::class,
             compact('query', 'selector')
         );
-        
+
         $query = $this->processFilters($event->getQuery());
         $query = $this->processSearches($query);
 
-        if ($this->limit) {
-            $query->limit($this->limit);
+        if ($limit = $this->getLimit()) {
+            $query->limit($limit);
             $query->offset($this->getOffset());
+        }
+
+        // ordering
+        $order = $query->getOrder();
+
+        if ($order === null) {
+            $query->order($this->handleOrdering($this->defaultOrdering));
         }
 
         $query->groupByJoins('.');
@@ -158,9 +173,9 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate
     }
 
     // abstract protected function beforeCompileQuery(SelectorQuery $query): void;
+
     //
     // abstract protected function afterCompileQuery(SelectorQuery $query): void;
-
     public function all(?string $class = null, array $args = []): Collection
     {
         return $this->compileQuery()->all($class, $args);
@@ -171,13 +186,13 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate
         return $this->compileQuery()->get($class, $args);
     }
 
-    public function page(int|string $page): static
+    public function page(int|string|null $page): static
     {
-        if ($page < 1) {
+        if ($page < 1 || $page === null) {
             $page = 1;
         }
 
-        $this->page = $page;
+        $this->page = (int) $page;
 
         return $this;
     }
@@ -200,28 +215,11 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate
 
     public function ordering(mixed $order, ?string $dir = null): static
     {
-        if (is_string($order)) {
-            $order = Arr::explodeAndClear(',', $order);
+        if ($order === null) {
+            return $this;
         }
 
-        foreach ($order as $i => $orderItem) {
-            if (is_string($orderItem)) {
-                $orderItem = Arr::explodeAndClear(' ', $orderItem);
-
-                if ($dir !== null) {
-                    $orderItem[1] = $dir;
-                }
-
-                $orderItem[1] ??= 'ASC';
-                $orderItem[1] = strtoupper($orderItem[1]);
-
-                if (str_ends_with($orderItem[1], '()')) {
-                    $orderItem[1] = raw($orderItem[1]);
-                }
-
-                $order[$i] = $orderItem;
-            }
-        }
+        $order = $this->handleOrdering($order, $dir);
 
         $this->getQuery()->order($order);
 
@@ -309,6 +307,12 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate
 
             if ($this->isFieldAllow($field)) {
                 $searches[$field] = $value;
+            }
+        }
+
+        if (trim($this->searchText) !== '') {
+            foreach ($this->searchFields as $field) {
+                $searches[$field] = $this->searchText;
             }
         }
 
@@ -427,15 +431,11 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate
         return $this;
     }
 
-    public function searchFor(?string $q, array $fields = []): static
+    public function searchTextFor(string $q, array $fields = []): static
     {
-        if ((string) $q === '') {
-            return $this;
-        }
+        $this->searchText = $q;
 
-        foreach ($fields as $field) {
-            $this->searches[$field] = $q;
-        }
+        $this->setSearchFields($fields);
 
         return $this;
     }
@@ -480,7 +480,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate
     {
         return $this->paginationFactory->create(
             $this->getPage(),
-            $this->limit,
+            $this->getLimit(),
             $neighbours
         )
             ->total($total ?? fn () => $this->count());
@@ -577,5 +577,109 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate
         $this->fieldAlias[$alias] = $field;
 
         return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getDefaultOrdering(): ?string
+    {
+        return $this->defaultOrdering;
+    }
+
+    /**
+     * @param  string|null  $defaultOrdering
+     *
+     * @return  static  Return self to support chaining.
+     */
+    public function defaultOrdering(?string $defaultOrdering): static
+    {
+        $this->defaultOrdering = $defaultOrdering;
+
+        return $this;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getDefaultLimit(): ?int
+    {
+        return $this->defaultLimit ?? 15;
+    }
+
+    /**
+     * @param  int|null  $defaultLimit
+     *
+     * @return  static  Return self to support chaining.
+     */
+    public function defaultLimit(?int $defaultLimit): static
+    {
+        $this->defaultLimit = $defaultLimit;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getSearchFields(): array
+    {
+        return $this->searchFields;
+    }
+
+    /**
+     * @param  array  $searchFields
+     *
+     * @return  static  Return self to support chaining.
+     */
+    public function setSearchFields(array $searchFields): static
+    {
+        $this->searchFields = $searchFields;
+
+        return $this;
+    }
+
+    /**
+     * handleOrdering
+     *
+     * @param  mixed        $order
+     * @param  string|null  $dir
+     *
+     * @return  array|mixed
+     */
+    protected function handleOrdering(mixed $order, ?string $dir = null): mixed
+    {
+        if (is_string($order)) {
+            $order = Arr::explodeAndClear(',', $order);
+        }
+
+        foreach ($order as $i => $orderItem) {
+            if (is_string($orderItem)) {
+                $orderItem = Arr::explodeAndClear(' ', $orderItem);
+
+                if ($dir !== null) {
+                    $orderItem[1] = $dir;
+                }
+
+                $orderItem[1] ??= 'ASC';
+                $orderItem[1] = strtoupper($orderItem[1]);
+
+                if (str_ends_with($orderItem[1], '()')) {
+                    $orderItem[1] = raw($orderItem[1]);
+                }
+
+                $order[$i] = $orderItem;
+            }
+        }
+
+        return $order;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getLimit(): ?int
+    {
+        return $this->limit ?? $this->getDefaultLimit();
     }
 }

@@ -16,8 +16,13 @@ use Symfony\Component\Mime\MimeTypesInterface;
 use Unicorn\Attributes\StateMachine;
 use Unicorn\Controller\CrudController;
 use Unicorn\Controller\GridController;
+use Unicorn\Generator\SubCommand\ControllerSubCommand;
+use Unicorn\Generator\SubCommand\ModelSubCommand;
+use Unicorn\Generator\SubCommand\ViewEditSubCommand;
+use Unicorn\Generator\SubCommand\ViewGridSubCommand;
 use Unicorn\Script\UnicornScript;
 use Unicorn\Upload\FileUploadManager;
+use Windwalker\Core\Application\ApplicationInterface;
 use Windwalker\Core\Language\LangService;
 use Windwalker\Core\Package\AbstractPackage;
 use Windwalker\Core\Package\PackageInstaller;
@@ -36,6 +41,13 @@ class UnicornPackage extends AbstractPackage implements
     BootableProviderInterface,
     BootableDeferredProviderInterface
 {
+    /**
+     * UnicornPackage constructor.
+     */
+    public function __construct(protected ApplicationInterface $app)
+    {
+    }
+
     /**
      * boot
      *
@@ -167,6 +179,26 @@ class UnicornPackage extends AbstractPackage implements
 
         $container->getAttributesResolver()
             ->registerAttribute(StateMachine::class, AttributeType::CLASSES);
+
+        if ($this->app->getClient() === ApplicationInterface::CLIENT_CONSOLE) {
+            $container->mergeParameters(
+                'commands',
+                [
+                    'build:form' => \Unicorn\Generator\Command\BuildFormCommand::class,
+                ]
+            );
+
+            $container->mergeParameters(
+                'generator.commands',
+                [
+                    'unicorn:controller' => ControllerSubCommand::class,
+                    'unicorn:model' => ModelSubCommand::class,
+                    'unicorn:view-grid' => ViewGridSubCommand::class,
+                    'unicorn:view-edit' => ViewEditSubCommand::class,
+                    // 'unicorn:workflow' => ModelSubCommand::class,
+                ]
+            );
+        }
     }
 
     public function install(PackageInstaller $installer): void
