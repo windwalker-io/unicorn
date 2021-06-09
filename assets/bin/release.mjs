@@ -5,8 +5,10 @@
  * @license    MIT
  */
 
-import { cliInput } from '../src/utilities/cli.js';
+import minimist from 'minimist';
 import { execSync as exec } from 'child_process';
+
+const cliInput = minimist(process.argv.slice(2));
 
 const args = cliInput._;
 
@@ -25,24 +27,22 @@ if (cliInput['help'] || cliInput['h']) {
   process.exit(0);
 }
 
+console.log(`>>> npm version ${args.join(' ')}`);
+exec(`npm version ${args.join(' ')}`);
+
 console.log('>>> Git commit all');
 exec(`git add .`);
 try {
-  exec(`git commit -am "Prepare release."`);
+  exec(`git commit -am "Prepare release @windwalker-io/unicorn."`);
 } catch (e) {
   console.log(e.message);
 }
-
-console.log(`>>> npm version ${args.join(' ')}`);
-exec(`npm version ${args.join(' ')}`);
 
 const branch = cliInput['b'] || 'master';
 
 console.log('>>> Push to git');
 
 exec(`git push origin ${branch}`);
-exec(`git push origin --tags -f`);
-exec(`git checkout master`);
 
 console.log('>> Publish to npm');
 
