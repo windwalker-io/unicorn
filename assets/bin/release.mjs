@@ -38,7 +38,7 @@ try {
   console.log(e.message);
 }
 
-const branch = cliInput['b'] || 'master';
+const branch = cliInput['b'] || 'main';
 
 console.log('>>> Push to git');
 
