@@ -27,6 +27,9 @@ if (cliInput['help'] || cliInput['h']) {
   process.exit(0);
 }
 
+console.log(`>>> yarn build:prod`);
+exec(`yarn build:prod`);
+
 console.log(`>>> npm version ${args.join(' ')}`);
 exec(`npm version ${args.join(' ')}`);
 
