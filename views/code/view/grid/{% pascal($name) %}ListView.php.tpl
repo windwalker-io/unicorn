@@ -31,7 +31,7 @@ use Windwalker\ORM\ORM;
     ],
     js: '{% kebab($name) %}-list.js'
 )]
-class {% $className %} implements ViewModelInterface
+class {% pascal($name) %}ListView implements ViewModelInterface
 {
     /**
      * CategoriesView constructor.
