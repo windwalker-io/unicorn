@@ -4,7 +4,7 @@
  * Global variables
  * --------------------------------------------------------------
  * @var $app       AppContext      Application context.
- * @var $vm        object          The view model object.
+ * @var $vm        {% pascal($name) %} The view model object.
  * @var $uri       SystemUri       System Uri information.
  * @var $chronos   ChronosService  The chronos datetime service.
  * @var $nav       Navigator       Navigator object to build route.
@@ -20,6 +20,7 @@ use Windwalker\Core\DateTime\ChronosService;
 use Windwalker\Core\Language\LangService;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\SystemUri;
+use {% $ns %};
 
 $workflow = $app->service(\Unicorn\Workflow\BasicStateWorkflow::class);
 {% $phpClose %}
@@ -81,6 +82,9 @@ $workflow = $app->service(\Unicorn\Workflow\BasicStateWorkflow::class);
 
                 <tbody>
                 @@foreach ($items as $i => $item)
+                    {% $phpOpen %}
+                        $vm->prepareItem($item);
+                    {% $phpClose %}
                     <tr>
                         <td>
                             <x-row-checkbox :row="$i" :id="$item->id"></x-row-checkbox>

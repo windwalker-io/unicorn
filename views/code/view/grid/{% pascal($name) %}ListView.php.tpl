@@ -71,8 +71,6 @@ class {% pascal($name) %}ListView implements ViewModelInterface
 
         $pagination = $items->getPagination();
 
-        $items = $items->getIterator(Collection::class);
-
         // Prepare Form
         $form = $this->formFactory->create(GridForm::class);
         $form->fill(compact('search', 'filter'));
@@ -80,6 +78,11 @@ class {% pascal($name) %}ListView implements ViewModelInterface
         $showFilters = $this->showFilterBar($filter);
 
         return compact('items', 'pagination', 'form', 'showFilters', 'ordering');
+    }
+
+    public function prepareItem(Collection $item): object
+    {
+        return $this->repository->getEntityMapper()->toEntity($item);
     }
 
     /**

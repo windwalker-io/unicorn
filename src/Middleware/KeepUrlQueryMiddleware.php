@@ -48,25 +48,28 @@ class KeepUrlQueryMiddleware implements MiddlewareInterface
         protected Navigator $navigator,
         array $options = [],
     ) {
-        $this->resolveOptions($options);
+        $this->resolveOptions($options, [$this, 'configureOptions']);
     }
 
     protected function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->define('route_enabled')
             ->default(true)
-            ->allowedTypes(['bool', 'null', 'callable']);
+            ->allowedTypes('bool', 'null', 'callable');
 
         $resolver->define('after_hook')
-            ->allowedTypes(['null', 'callable']);
+            ->allowedTypes('null', 'callable')
+            ->default(null);
 
         $resolver->define('view_hook')
-            ->allowedTypes(['null', 'callable']);
+            ->allowedTypes('null', 'callable')
+            ->default(null);
 
         $resolver->define('key')
             ->required();
 
-        $resolver->define('default');
+        $resolver->define('default')
+            ->default('');
     }
 
     /**
@@ -111,6 +114,10 @@ class KeepUrlQueryMiddleware implements MiddlewareInterface
 
                 $router = $this->navigator->getRouter();
                 $route = $router->getRoute($route);
+
+                if (!$route) {
+                    return;
+                }
 
                 foreach ((array) $route->getExtraValue('middlewares') as $item) {
                     if ($this->isSame($item)) {

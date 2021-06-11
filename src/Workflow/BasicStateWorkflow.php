@@ -13,6 +13,7 @@ namespace Unicorn\Workflow;
 
 use Unicorn\Attributes\StateMachine;
 use Unicorn\Enum\BasicState;
+use Unicorn\Enum\PublishingState;
 
 /**
  * The BasicStateWorkflow class.
@@ -28,8 +29,6 @@ class BasicStateWorkflow extends AbstractWorkflow
     {
         $workflow->setStateMeta(BasicState::PUBLISHED(), 'Published', 'fa fa-fw fa-check', 'success');
         $workflow->setStateMeta(BasicState::UNPUBLISHED(), 'Unpublished', 'fa fa-fw fa-xmark', 'danger');
-        $workflow->setStateMeta(BasicState::TRASHED(), 'Trashed', 'fa fa-fw fa-trash');
-        $workflow->setStateMeta(BasicState::ARCHIVED(), 'Archived', 'fa fa-fw fa-file-zipper');
 
         $workflow->setInitialStates(
             [
@@ -51,30 +50,5 @@ class BasicStateWorkflow extends AbstractWorkflow
             BasicState::UNPUBLISHED()
         )
             ->button('fa fa-fw fa-xmark', 'Unpublish');
-
-        $workflow->addTransition(
-            'archive',
-            BasicState::UNPUBLISHED(),
-            BasicState::ARCHIVED(),
-        )
-            ->button('fa fa-fw fa-file-zipper', 'Archive');
-
-        $workflow->addTransition(
-            'trash',
-            [
-                BasicState::UNPUBLISHED(),
-                BasicState::PUBLISHED(),
-                BasicState::ARCHIVED(),
-            ],
-            BasicState::TRASHED(),
-        )
-            ->button('fa fa-fw fa-trash', 'Trash');
-
-        $workflow->addTransition(
-            'untrash',
-            BasicState::TRASHED(),
-            BasicState::UNPUBLISHED(),
-        )
-            ->button('fa fa-fw fa-check', 'Untrash');
     }
 }

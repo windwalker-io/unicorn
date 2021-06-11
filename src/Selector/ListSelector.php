@@ -70,6 +70,8 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate
 
     protected ?SearchHelper $searchHelper = null;
 
+    protected bool $disableSelectGroup = false;
+
     /**
      * ListSelector constructor.
      *
@@ -101,6 +103,13 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate
         );
 
         return $query;
+    }
+
+    public function select(...$columns): static
+    {
+        $this->getQuery()->select(...$columns);
+
+        return $this;
     }
 
     public function modifyQuery(callable $callback): static
@@ -160,7 +169,11 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate
             $query->order($this->handleOrdering($this->defaultOrdering));
         }
 
-        $query->groupByJoins('.');
+        if (!$this->disableSelectGroup) {
+            $query->groupByJoins('.');
+        } else {
+            $query->autoSelections('_');
+        }
 
         // $this->afterCompileQuery($query);
 
@@ -239,7 +252,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate
 
     public function getOffset(): int
     {
-        return ($this->page - 1) * $this->limit;
+        return ($this->page - 1) * $this->getLimit();
     }
 
     public function getPage(): int
@@ -681,5 +694,37 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate
     public function getLimit(): ?int
     {
         return $this->limit ?? $this->getDefaultLimit();
+    }
+
+    /**
+     * Method to get property SearchText
+     *
+     * @return  string
+     *
+     * @since  __DEPLOY_VERSION__
+     */
+    public function getSearchText(): string
+    {
+        return $this->searchText;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDisableSelectGroup(): bool
+    {
+        return $this->disableSelectGroup;
+    }
+
+    /**
+     * @param  bool  $disableSelectGroup
+     *
+     * @return  static  Return self to support chaining.
+     */
+    public function disableSelectGroup(bool $disableSelectGroup): static
+    {
+        $this->disableSelectGroup = $disableSelectGroup;
+
+        return $this;
     }
 }
