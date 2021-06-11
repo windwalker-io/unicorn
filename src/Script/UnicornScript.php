@@ -154,4 +154,11 @@ JS
 
         return $this;
     }
+
+    public function addRoute(string $route, mixed $url): static
+    {
+        $this->data('unicorn.routes', [$route => (string) $url], true);
+
+        return $this;
+    }
 }
