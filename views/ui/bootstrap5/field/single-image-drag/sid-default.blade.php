@@ -78,7 +78,7 @@ $options['modalTarget'] = '#' . $field->getId('__modal');
                             @lang('unicorn.field.sid.drop.desc')
                         </div>
                         @if ($field->isShowSizeNotice())
-                            @if ($options['crop'])
+                            @if ($options['crop'] ?? false)
                                 <div class="c-sid-default__size-info">
                                     @lang('unicorn.field.sid.crop.size.desc', $options['width'], $options['height'])
                                 </div>

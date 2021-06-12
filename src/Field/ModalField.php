@@ -223,6 +223,18 @@ class ModalField extends AbstractField
         return $this;
     }
 
+    /**
+     * @param  string|RouteUri|null  $route
+     *
+     * @return  static  Return self to support chaining.
+     */
+    public function setRoute(string|RouteUri|null $route): static
+    {
+        $this->route = $route;
+
+        return $this;
+    }
+
     protected function prepareQuery(Query $query): void
     {
     }
@@ -412,7 +424,18 @@ class ModalField extends AbstractField
      */
     public function getUrl(): UriInterface|string
     {
-        return $this->url ?? $this->getDefaultUrl();
+        $url = $this->url ?? $this->getDefaultUrl();
+
+        if ($url === null) {
+            throw new \LogicException(
+                sprintf(
+                    'No URL for field: %s, please provide a URL or route name',
+                    static::class
+                )
+            );
+        }
+
+        return $url;
     }
 
     protected function getDefaultUrl(): UriInterface|string|null
