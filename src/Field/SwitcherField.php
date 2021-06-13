@@ -43,6 +43,8 @@ class SwitcherField extends CheckboxField
      */
     public function prepareInput(DOMElement $input): DOMElement
     {
+        $input = parent::prepareInput($input);
+
         if ($this->getCheckedValue() !== null) {
             $input->setAttribute(
                 'checked',
@@ -54,7 +56,7 @@ class SwitcherField extends CheckboxField
 
         $input->setAttribute('value', $this->getCheckedValue() ?? '1');
 
-        return parent::prepareInput($input);
+        return $input;
     }
 
     public function buildFieldElement(DOMElement $input, array $options = []): string|DOMElement

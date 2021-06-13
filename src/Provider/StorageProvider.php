@@ -14,6 +14,8 @@ namespace Unicorn\Provider;
 use Unicorn\Flysystem\FlysystemFactory;
 use Unicorn\Storage\StorageFactory;
 use Unicorn\Storage\StorageManager;
+use Unicorn\Upload\FileUploadManager;
+use Unicorn\Upload\FileUploadService;
 use Windwalker\DI\Container;
 use Windwalker\DI\ServiceProviderInterface;
 
@@ -27,5 +29,11 @@ class StorageProvider implements ServiceProviderInterface
         $container->prepareSharedObject(StorageManager::class);
         $container->prepareSharedObject(StorageFactory::class);
         $container->prepareSharedObject(FlysystemFactory::class);
+        $container->bind(
+            FileUploadService::class,
+            function (Container $container) {
+                return $container->get(FileUploadManager::class)->get();
+            }
+        );
     }
 }

@@ -17,14 +17,20 @@ use Windwalker\Core\Language\LangService;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\RouteUri;
 use Windwalker\Core\View\View;
+use Windwalker\Event\EventAwareInterface;
+use Windwalker\Event\EventAwareTrait;
 use Windwalker\Form\FieldDefinitionInterface;
+use Windwalker\ORM\Event\AfterSaveEvent;
+use Windwalker\ORM\Event\BeforeSaveEvent;
 use Windwalker\ORM\NestedSetMapper;
 
 /**
  * The CrudController class.
  */
-class CrudController
+class CrudController implements EventAwareInterface
 {
+    use EventAwareTrait;
+
     /**
      * CrudController constructor.
      */
@@ -51,8 +57,11 @@ class CrudController
             $item = $app->input('item');
 
             /** @var object $item */
-            $item = $repository->createSaveAction()
-                ->processDataAndSave($item, $form);
+            $action = $repository->createSaveAction();
+
+            $action->addEventDealer($this);
+
+            $item = $action->processDataAndSave($item, $form);
 
             $app->addMessage(
                 $this->lang->trans('save.success'),
@@ -86,5 +95,19 @@ class CrudController
         } finally {
             return $nav->back();
         }
+    }
+
+    public function beforeSave(callable $handler): static
+    {
+        $this->on(BeforeSaveEvent::class, $handler);
+
+        return $this;
+    }
+
+    public function afterSave(callable $handler): static
+    {
+        $this->on(AfterSaveEvent::class, $handler);
+
+        return $this;
     }
 }

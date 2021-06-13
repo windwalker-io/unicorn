@@ -38,6 +38,10 @@ use Windwalker\Utilities\Arr;
  */
 class CalendarField extends TextField
 {
+    public const FORMAT_DATE = 'Y-m-d';
+    public const FORMAT_DATETIME_FULL = 'Y-m-d H:i:S';
+    public const FORMAT_DATETIME_MINUTE = 'Y-m-d H:i';
+
     use LayoutFieldTrait;
 
     #[Inject]
@@ -51,7 +55,7 @@ class CalendarField extends TextField
     public function getDefaultOptions(): array
     {
         return [
-            'dateFormat' => $this->getFormat() ?? 'Y-m-d H:i:S',
+            'dateFormat' => $this->getFormat() ?? self::FORMAT_DATETIME_FULL,
             'enableTime' => $this->getEnableTime(),
             'enableSeconds' => $this->getEnableTime(),
             'allowInput' => true,
@@ -70,11 +74,17 @@ class CalendarField extends TextField
 
         $tz = $this->getTimezone() ?? $this->chronosService->getTimezone();
 
-        $input['value'] = $this->chronosService->toLocalFormat(
-            $input->getAttribute('value'),
-            Chronos::FORMAT_YMD_HIS,
-            $tz,
-        );
+        if (trim((string) $input->getAttribute('value'))) {
+            $value = $input->getAttribute('value');
+
+            $input['value'] = $this->chronosService->isNullDate($value)
+                ? ''
+                : $this->chronosService->toLocalFormat(
+                    $value,
+                    Chronos::FORMAT_YMD_HIS,
+                    $tz,
+                );
+        }
 
         return $input;
     }

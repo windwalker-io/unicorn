@@ -35,8 +35,15 @@ use function Windwalker\raw;
 
 /**
  * The AbstractSelector class.
+ *
+ * @method $this select(...$columns)
+ * @method $this selectRaw($column, ...$args)
+ * @method $this where(...$columns)
+ * @method $this whereRaw($column, ...$args)
+ * @method $this having(...$columns)
+ * @method $this havingRaw($column, ...$args)
  */
-class ListSelector implements EventAwareInterface, \IteratorAggregate
+class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countable
 {
     use EventAwareTrait;
     use InstanceCacheTrait;
@@ -103,13 +110,6 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate
         );
 
         return $query;
-    }
-
-    public function select(...$columns): static
-    {
-        $this->getQuery()->select(...$columns);
-
-        return $this;
     }
 
     public function modifyQuery(callable $callback): static
@@ -551,6 +551,13 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate
         return $this;
     }
 
+    public function addAllowField(string $field): static
+    {
+        $this->customAllowFields[] = $field;
+
+        return $this;
+    }
+
     public function isFieldAllow(string $field): bool
     {
         return in_array($field, $this->getAllowFields(), true);
@@ -725,6 +732,12 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate
     {
         $this->disableSelectGroup = $disableSelectGroup;
 
+        return $this;
+    }
+
+    public function __call(string $name, array $args)
+    {
+        $this->getQuery()->$name(...$args);
         return $this;
     }
 }

@@ -21,6 +21,7 @@ use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\View\Event\BeforeRenderEvent;
 use Windwalker\DI\Definition\DefinitionFactory;
 use Windwalker\DI\Definition\DefinitionInterface;
+use Windwalker\DI\DICreateTrait;
 use Windwalker\Utilities\Options\OptionsResolverTrait;
 
 use function Windwalker\nope;
@@ -33,6 +34,7 @@ use function Windwalker\nope;
 class KeepUrlQueryMiddleware implements MiddlewareInterface
 {
     use OptionsResolverTrait;
+    use DICreateTrait;
 
     /**
      * KeepUrlQueryMiddleware constructor.
@@ -112,8 +114,7 @@ class KeepUrlQueryMiddleware implements MiddlewareInterface
                     return;
                 }
 
-                $router = $this->navigator->getRouter();
-                $route = $router->getRoute($route);
+                $route = $this->navigator->findRoute($route);
 
                 if (!$route) {
                     return;

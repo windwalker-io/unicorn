@@ -342,7 +342,7 @@ class ModalField extends AbstractField
     /**
      * @return string
      */
-    public function getTable(): string
+    public function getTable(): ?string
     {
         return $this->table;
     }

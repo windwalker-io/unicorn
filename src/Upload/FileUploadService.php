@@ -117,6 +117,13 @@ class FileUploadService
 
     public function handleFile(UploadedFileInterface $file, ?string $dest = null): PutResult
     {
+        if ($file->getError() !== UPLOAD_ERR_OK) {
+            throw new \RuntimeException(
+                'Upload error: ' . UploadedFileHelper::getUploadMessage($file->getError()),
+                400
+            );
+        }
+
         $storage = $this->getStorage();
 
         if ($this->isImage($file)) {
@@ -130,9 +137,13 @@ class FileUploadService
         return $storage->putStream($stream, $dest);
     }
 
-    public function handleFileIfSuccess(?UploadedFileInterface $file, ?string $dest = null): ?PutResult
+    public function handleFileIfUploaded(?UploadedFileInterface $file, ?string $dest = null): ?PutResult
     {
-        if (!$file || $file->getError()) {
+        if (!$file) {
+            return null;
+        }
+
+        if (!$file->getClientFilename()) {
             return null;
         }
 

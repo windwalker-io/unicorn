@@ -38,7 +38,7 @@ class FileDragField extends FileField
     public function buildFieldElement(DOMElement $input, array $options = []): string|DOMElement
     {
         // Fix accept
-        if (trim($this->getAccept())) {
+        if (trim((string) $this->getAccept())) {
             $this->accept(
                 (string) Collection::explode(',', $this->getAccept())
                     ->map('trim')

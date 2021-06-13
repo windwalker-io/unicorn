@@ -17,6 +17,7 @@ use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Language\LangService;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\RouteUri;
+use Windwalker\Session\Session;
 
 /**
  * The GridController class.
@@ -31,7 +32,7 @@ class GridController
         $this->lang = $this->lang->extract('unicorn.message.batch.');
     }
 
-    public function filter(Navigator $nav, ListRepositoryInterface $repository): RouteUri
+    public function filter(Navigator $nav, ListRepositoryInterface $repository, Session $session): RouteUri
     {
         $state = $repository->getState();
 

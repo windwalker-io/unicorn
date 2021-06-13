@@ -14,6 +14,7 @@ namespace Unicorn\Field;
 use Windwalker\Core\Manager\DatabaseManager;
 use Windwalker\Database\DatabaseAdapter;
 use Windwalker\DI\Attributes\Inject;
+use Windwalker\ORM\SelectorQuery;
 use Windwalker\Query\Query;
 
 /**
@@ -52,24 +53,37 @@ trait DatabaseAwareTrait
         return $this;
     }
 
-    public function compileQuery(): Query
+    public function compileQuery(): SelectorQuery
     {
-        $this->prepareQuery($query = $this->getQuery());
+        $this->prepareQuery($query = clone $this->getQuery());
+
+        $query->autoSelections('.');
 
         return $query;
     }
 
-    public function createQuery(): Query
+    public function createQuery(): SelectorQuery
     {
         $query = $this->getDb()->orm()->select();
 
-        return $query->from($this->getTable());
+        $table = $this->getTable();
+
+        if (!$table) {
+            throw new \LogicException(
+                sprintf(
+                    'No table provided for class: %s',
+                    static::class
+                )
+            );
+        }
+
+        return $query->from($table);
     }
 
     /**
-     * @return Query
+     * @return SelectorQuery
      */
-    public function getQuery(): Query
+    public function getQuery(): SelectorQuery
     {
         return $this->query ??= $this->createQuery();
     }
@@ -88,9 +102,7 @@ trait DatabaseAwareTrait
 
     public function getItems(): iterable
     {
-        $this->prepareQuery($query = $this->getQuery());
-
-        return $query;
+        return $this->compileQuery();
     }
 
     abstract protected function prepareQuery(Query $query): void;

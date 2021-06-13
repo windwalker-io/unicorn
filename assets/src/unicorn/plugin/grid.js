@@ -321,20 +321,19 @@ class UnicornGridElement {
    *
    * @returns {boolean}
    */
-  deleteRow(row, msg, url, queries) {
+  deleteRow(id, msg, url, queries) {
     msg = msg || this.app.__('unicorn.message.delete.confirm');
 
-    this.app.confirm(msg, isConfirm => {
-      if (isConfirm) {
-        this.toggleAll(false);
+    return this.app.confirm(msg)
+      .then(isConfirm => {
+        if (isConfirm) {
+          // this.toggleAll(false);
+          // this.checkRow(row);
+          queries.id = id;
 
-        this.checkRow(row);
-
-        this.deleteList(false, url, queries);
-      }
-    });
-
-    return true;
+          this.form.delete(url, queries);
+        }
+      });
   }
 
   /**
