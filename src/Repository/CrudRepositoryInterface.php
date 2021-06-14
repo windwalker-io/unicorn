@@ -35,7 +35,7 @@ interface CrudRepositoryInterface extends
      * @psalm-param T       $className
      * @psalm-return T
      */
-    public function getItem(array $conditions = [], ?string $className = null): object;
+    public function getItem(array $conditions = [], ?string $className = null): ?object;
 
     public function delete(array $conditions = []): array;
 }

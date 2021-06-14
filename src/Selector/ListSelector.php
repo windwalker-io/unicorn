@@ -551,9 +551,11 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
         return $this;
     }
 
-    public function addAllowField(string $field): static
+    public function addAllowFields(string ...$fields): static
     {
-        $this->customAllowFields[] = $field;
+        foreach ($fields as $field) {
+            $this->customAllowFields[] = $field;
+        }
 
         return $this;
     }
