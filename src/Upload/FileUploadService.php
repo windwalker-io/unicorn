@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace Unicorn\Upload;
 
 use Intervention\Image\Constraint;
+use Intervention\Image\Exception\NotReadableException;
 use Intervention\Image\Facades\Image;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Size;
@@ -201,7 +202,12 @@ class FileUploadService
 
         $manager = new ImageManager();
         $image = $manager->make($src);
-        $image->orientate();
+
+        try {
+            $image->orientate();
+        } catch (NotReadableException $e) {
+            // No actions
+        }
 
         $width = $resizeConfig['width'];
         $height = $resizeConfig['height'];

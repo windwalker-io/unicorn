@@ -21,7 +21,7 @@ class FormScript extends AbstractScript
     /**
      * FormScript constructor.
      */
-    public function __construct(protected UnicornScript $unicornScript)
+    public function __construct(protected UnicornScript $unicornScript, protected VueScript $vueScript)
     {
     }
 
@@ -62,6 +62,19 @@ class FormScript extends AbstractScript
             $this->unicornScript->importThen(
                 '@main',
                 "u.\$ui.fileDrag()"
+            );
+        }
+    }
+
+    public function multiUploader(): void
+    {
+        if ($this->available()) {
+            // $this->vueScript->vue();
+            $this->unicornScript->translate('unicorn.field.multi.uploader.*');
+            $this->unicornScript->translate('unicorn.field.file.drag.*');
+            $this->unicornScript->importThen(
+                '@main',
+                "u.\$ui.multiUploader()"
             );
         }
     }

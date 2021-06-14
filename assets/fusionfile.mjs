@@ -109,6 +109,11 @@ export async function modules() {
       options.output.libraryTarget = 'umd';
     }
   });
+  webpack('./src/modules/field/multi-uploader.js', './dist/field/', {
+    override: (options) => {
+      options.output.libraryTarget = 'umd';
+    }
+  });
   // Compile end
 }
 
@@ -121,6 +126,16 @@ export async function css() {
   sass('scss/switcher.scss', 'dist/', { minify: 'separate_file' });
   sass('scss/editor.scss', 'dist/', { minify: 'separate_file' });
   sass('scss/field/single-image-drag.scss', 'dist/field/', { minify: 'separate_file' });
+  // Compile end
+}
+
+export async function vue() {
+  // Watch start
+  fusion.watch(['scss/**/*.scss', 'src/vue/**/*']);
+  // Watch end
+
+  // Compile Start
+  fusion.vue('src/vue/entries/**/*.js', 'dist/vue/', { excludeVue: true });
   // Compile end
 }
 
@@ -171,6 +186,7 @@ export default parallel(
   js,
   css,
   modules,
+  vue
 );
 
 /*

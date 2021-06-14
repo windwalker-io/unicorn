@@ -314,14 +314,14 @@ class UnicornGridElement {
   /**
    * Delete an itme.
    *
-   * @param  {number} row
+   * @param  {number} id
    * @param  {string} msg
    * @param  {string} url
    * @param  {Object} queries
    *
    * @returns {boolean}
    */
-  deleteRow(id, msg, url, queries) {
+  deleteRow(id, msg = null, url = null, queries = {}) {
     msg = msg || this.app.__('unicorn.message.delete.confirm');
 
     return this.app.confirm(msg)

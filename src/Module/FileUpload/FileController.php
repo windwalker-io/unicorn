@@ -71,7 +71,7 @@ class FileController
             if (!$file || $file->getError()) {
                 $msg = 'Upload fail';
 
-                if ($app->isDebug()) {
+                if ($app->isDebug() && $file) {
                     $msg .= ': ' . UploadedFileHelper::getUploadMessage($file->getError());
                 }
 

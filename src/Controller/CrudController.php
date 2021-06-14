@@ -90,6 +90,11 @@ class CrudController implements EventAwareInterface
 
         try {
             $repository->getDb()->transaction(fn() => $repository->delete([$key => $ids]));
+
+            $app->addMessage(
+                $this->lang->trans("batch.delete.success", count($ids)),
+                'success'
+            );
         } catch (\Throwable $e) {
             $app->addMessage($e->getMessage());
         } finally {

@@ -20,7 +20,9 @@ use Unicorn\Generator\SubCommand\ControllerSubCommand;
 use Unicorn\Generator\SubCommand\ModelSubCommand;
 use Unicorn\Generator\SubCommand\ViewEditSubCommand;
 use Unicorn\Generator\SubCommand\ViewGridSubCommand;
+use Unicorn\Script\FormScript;
 use Unicorn\Script\UnicornScript;
+use Unicorn\Script\VueScript;
 use Unicorn\Upload\FileUploadManager;
 use Windwalker\Core\Application\ApplicationInterface;
 use Windwalker\Core\Language\LangService;
@@ -91,6 +93,8 @@ class UnicornPackage extends AbstractPackage implements
     public function register(Container $container): void
     {
         $container->prepareSharedObject(UnicornScript::class);
+        $container->prepareSharedObject(FormScript::class);
+        $container->prepareSharedObject(VueScript::class);
         $container->prepareSharedObject(FileUploadManager::class);
         $container->prepareSharedObject(MimeTypes::class)
             ->alias(MimeTypesInterface::class, MimeTypes::class);
@@ -120,20 +124,23 @@ class UnicornPackage extends AbstractPackage implements
         $container->mergeParameters(
             'asset.import_map.imports',
             [
-                '@systemjs' => 'vendor/systemjs/dist/system.js',
-                '@unicorn/' => 'vendor/@windwalker-io/unicorn/dist/',
-                '@unicorn' => 'vendor/@windwalker-io/unicorn/dist/unicorn.js',
-                '@main' => 'vendor/@windwalker-io/unicorn/dist/unicorn.js',
-                '@alpinejs' => 'vendor/alpinejs/dist/alpine.js',
+                '@systemjs'     => 'vendor/systemjs/dist/system.js',
+                '@unicorn/'     => 'vendor/@windwalker-io/unicorn/dist/',
+                '@unicorn'      => 'vendor/@windwalker-io/unicorn/dist/unicorn.js',
+                '@main'         => 'vendor/@windwalker-io/unicorn/dist/unicorn.js',
+                '@alpinejs'     => 'vendor/alpinejs/dist/alpine.js',
                 '@alpinejs-ie11' => 'vendor/alpinejs/dist/alpine-ie11.js',
-                '@spruce' => 'vendor/@ryangjchandler/spruce/dist/spruce.umd.js',
-                '@axios' => 'vendor/axios/dist/axios.js',
+                '@spruce'       => 'vendor/@ryangjchandler/spruce/dist/spruce.umd.js',
+                '@axios'        => 'vendor/axios/dist/axios.js',
                 '@awesome-checkbox' => 'vendor/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css',
                 '@regenerator-runtime' => 'vendor/regenerator-runtime/runtime.js',
-                '@flatpickr/' => 'vendor/flatpickr/dist/',
-                '@cropperjs/' => 'vendor/cropperjs/dist/',
-                '@tinymce' => 'vendor/tinymce/tinymce.js',
-                '@sortablejs' => 'vendor/sortablejs/Sortable.min.js',
+                '@flatpickr/'   => 'vendor/flatpickr/dist/',
+                '@cropperjs/'   => 'vendor/cropperjs/dist/',
+                '@tinymce'      => 'vendor/tinymce/tinymce.js',
+                '@sortablejs'   => 'vendor/sortablejs/Sortable.min.js',
+                '@vue'          => 'vendor/vue/dist/vue.global' . ($this->app->isDebug() ? '' : '.prod') . '.js',
+                '@vuedraggable' => 'vendor/vuedraggable/dist/vuedraggable.umd.min.js',
+                '@vue2-animate' => 'vendor/vue2-animate/dist/vue2-animate.min.css',
             ]
         );
 

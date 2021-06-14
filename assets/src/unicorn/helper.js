@@ -140,7 +140,7 @@ export default class UnicornHelper {
    */
   confirm(message) {
     message = message || 'Are you sure?';
-    console.log(confirm(message));
+
     return new Promise((resolve) => {
       resolve(confirm(message));
     });

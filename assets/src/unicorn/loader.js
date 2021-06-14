@@ -10,9 +10,19 @@ export default class UnicornLoader {
     app.import = this.import;
   }
 
-  static import(src) {
+  static import(...src) {
     const s = window.System;
 
-    return s.import(src);
+    if (src.length === 1) {
+      return s.import(src[0]);
+    }
+
+    const promises = [];
+
+    src.forEach((link) => {
+      promises.push(s.import(link));
+    });
+
+    return Promise.all(promises);
   }
 }

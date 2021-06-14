@@ -114,6 +114,10 @@ export default class UnicornUI {
     return this.app.import('@unicorn/field/modal-field.js');
   }
 
+  multiUploader() {
+    return this.app.import('@unicorn/field/multi-uploader.js');
+  }
+
   /**
    * @param target
    * @param duration

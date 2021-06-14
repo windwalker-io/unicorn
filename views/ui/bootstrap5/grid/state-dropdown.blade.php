@@ -68,11 +68,11 @@ if ($useStates) {
 }
 
 if ($colorOn === 'button') {
-    $buttonColor = 'btn-' . $currentState->getColor();
+    $buttonColor = 'btn-' . ($currentState?->getColor() ?? 'secondary');
     $textColor   = '';
 } elseif ($colorOn === 'text') {
     $buttonColor = $buttonColor ??= 'btn-light';
-    $textColor   = 'text-' . $currentState->getColor();
+    $textColor   = 'text-' . ($currentState?->getColor() ?? 'secondary');
 }
 
 $buttonId ??= 'c-state-dropdown-' . $workflowCtrl->getField() . '-' . $id;
@@ -87,8 +87,8 @@ $buttonId ??= 'c-state-dropdown-' . $workflowCtrl->getField() . '-' . $id;
         style="{{ $buttonStyle ?? '' }}"
         @attr('disabled', $disabled)
     >
-        <i class="{{ $currentState->getIcon() }}"></i>
-        {{ $currentState->getTitle() }}
+        <i class="{{ $currentState?->getIcon() ?? 'fa fa-question-circle' }}"></i>
+        {{ $currentState?->getTitle() ?? 'Unknown State' }}
     </button>
     <ul class="dropdown-menu" aria-labelledby="{{ $buttonId }}">
         @if ($useStates)

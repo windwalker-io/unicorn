@@ -51,6 +51,8 @@ class UnicornScript extends AbstractScript
 
     public function main(): void
     {
+        $this->translate('unicorn.message.delete.confirm');
+
         $this->importScript('@main');
     }
 
