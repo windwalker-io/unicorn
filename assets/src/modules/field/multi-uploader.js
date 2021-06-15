@@ -14,10 +14,9 @@ class MultiUploader extends HTMLElement {
     );
 
     this.modalElement = this.querySelector('.modal');
-    // this.modal = new bootstrap.Modal(this.modalElement);
-    
+
     u.import('@vue')
-      .then(() => u.import('@unicorn/vue/vue-drag-uploader.js', '@vuedraggable'))
+      .then(() => u.import('@unicorn/vue/vue-drag-uploader.js', '@sortablejs', '@vuedraggable'))
       .then(() => {
         const app = Vue.createApp({ name: 'multi-uploader-field' });
         app.component('app', createAppInstance(options, document.querySelector('#multi-uploader-field-tmpl').innerHTML));
@@ -31,16 +30,6 @@ class MultiUploader extends HTMLElement {
 }
 
 customElements.define(MultiUploader.is, MultiUploader);
-
-// u.import('@vue')
-//   .then(() => u.import('@unicorn/vue/vue-drag-uploader.js', '@vuedraggable'))
-//   .then(() => {
-//     const app = Vue.createApp(createAppInstance(u.data('o'), this));
-//     app.component('draggable', vuedraggable);
-//     app.component('vue-drag-uploader', VueDragUploader);
-//     app.mount('#input-item-images-wrap');
-//
-//   });
 
 function createAppInstance(data, tmpl) {
   const { nextTick, onMounted, reactive, ref, toRefs } = Vue;
@@ -134,7 +123,6 @@ function createAppInstance(data, tmpl) {
         item.file = file;
 
         const itemComponent = app.value.$refs[item.key];
-        console.log(itemComponent, itemComponent.value);
 
         state.loading = true;
 
