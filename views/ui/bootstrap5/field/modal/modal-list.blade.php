@@ -32,7 +32,7 @@ $callback = $field->getCallback();
 $listOptions = [
     'max' => $field->getMax(),
     'modalSelector' => '#' . $modalId,
-    'itemTemplate' => '#modal-list-item-tmpl',
+    'itemTemplate' => "#$modalId-tmpl",
     'dataKey' => $field->getId(),
     'sortable' => $field->isSortable()
 ];
@@ -106,10 +106,8 @@ $disabled = $field->isReadonly() || $field->isDisabled();
 
 @teleport($modalId)
 <uni-iframe-modal id="{{ $modalId }}"></uni-iframe-modal>
-@endTeleport
 
-@teleport('modal-list-item')
-<script id="modal-list-item-tmpl" type="text/template">
+<script id="{{ $modalId }}-tmpl" type="text/template">
     <div class="list-group-item item">
         <div class="d-flex">
             @if ($field->isSortable())

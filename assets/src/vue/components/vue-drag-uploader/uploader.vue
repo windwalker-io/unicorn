@@ -114,23 +114,25 @@
       }
 
       function clickAdd() {
-        let $input = document.querySelector('input#luna-multi-uploader-selector');
+        const $input = document.createElement('INPUT');
+        $input.setAttribute('id', 'luna-multi-uploader-selector');
+        $input.setAttribute('type', 'file');
+        $input.setAttribute('accept', props.accept);
+        $input.setAttribute('multiple', true);
+        $input.style.display = 'none';
 
-        if (!$input) {
-          $input = document.createElement('INPUT');
-          $input.setAttribute('id', 'luna-multi-uploader-selector');
-          $input.setAttribute('type', 'file');
-          $input.setAttribute('accept', props.accept);
-          $input.setAttribute('multiple', true);
-          $input.style.display = 'none';
+        $input.addEventListener('change', event => {
+          const files = event.target.files;
+          uploadFiles(files);
 
-          $input.addEventListener('change', event => {
-            const files = event.target.files;
-            uploadFiles(files);
-          });
+          $input.remove();
+        });
 
-          document.body.appendChild($input);
-        }
+        $input.addEventListener('change', event => {
+          $input.remove();
+        });
+
+        document.body.appendChild($input);
 
         $input.dispatchEvent(new MouseEvent('click', {
           'view': window,
