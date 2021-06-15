@@ -79,6 +79,7 @@
       "sortablejs",
       "tinymce",
       "vue",
+      "sortablejs",
       "vuedraggable",
       "vue2-animate"
     ]

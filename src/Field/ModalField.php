@@ -277,10 +277,13 @@ class ModalField extends AbstractField
                     return [];
                 }
 
+                $keyName = explode('.', $keyField);
+                $keyName = array_pop($keyName);
+
                 $items = $this->compileQuery()
                     ->where($keyField, $value)
                     ->all()
-                    ->keyBy($keyField);
+                    ->keyBy($keyName);
 
                 $items = $this->prepareItems($items);
 
@@ -315,11 +318,14 @@ class ModalField extends AbstractField
         $titleField = $this->getTitleField();
         $imageField = $this->getImageField();
 
+        $keyName = explode('.', $keyField);
+        $keyName = array_pop($keyName);
+
         $data = [];
 
         foreach ($items as $i => $item) {
             $datum['title'] = $item->$titleField;
-            $datum['value'] = $item->$keyField;
+            $datum['value'] = $item->$keyName;
             $datum['image'] = $item->$imageField;
 
             $data[$i] = $datum;
