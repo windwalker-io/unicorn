@@ -10,6 +10,7 @@ namespace Unicorn\Legacy\Html;
 
 use Windwalker\Core\Http\AppRequest;
 use Windwalker\Core\Router\Route;
+use Windwalker\Data\Collection;
 use Windwalker\Utilities\Arr;
 use Windwalker\Utilities\TypeCast;
 
@@ -90,7 +91,13 @@ class MenuHelper
             return false;
         }
 
-        if ($matched->getName() === $route && $this->matchRequest($query)) {
+        if (str_contains($path, '::') && $matched->getName() === $route && $this->matchRequest($query)) {
+            return true;
+        }
+
+        $shortName = Collection::explode('::', $matched->getName())->last();
+
+        if ($route === $shortName && $this->matchRequest($query)) {
             return true;
         }
 

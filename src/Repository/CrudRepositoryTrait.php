@@ -55,7 +55,7 @@ trait CrudRepositoryTrait
      * @psalm-param T $className
      * @psalm-return T
      */
-    public function getItem(array $conditions = [], ?string $className = null): ?object
+    public function getItem(mixed $conditions = null, ?string $className = null): ?object
     {
         return $this->getEntityMapper()
             ->findOne($conditions, $className);

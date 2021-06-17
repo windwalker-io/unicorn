@@ -132,7 +132,7 @@ class Breadcrumb
         $params['breadcrumb'] = $this;
 
         return $this->rendererService->render(
-            'unicorn.bootstrap.ui.breadcrumbs',
+            '@theme.breadcrumb',
             $params,
         );
     }
