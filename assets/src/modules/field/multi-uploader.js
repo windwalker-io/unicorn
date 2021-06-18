@@ -5,6 +5,9 @@
  * @license    __LICENSE__
  */
 
+import { createApp, nextTick, onMounted, reactive, ref, toRefs } from 'vue';
+import VueDragUploader from '../../vue/components/vue-drag-uploader/uploader.vue';
+
 class MultiUploader extends HTMLElement {
   static is = 'multi-uploader';
 
@@ -15,12 +18,11 @@ class MultiUploader extends HTMLElement {
 
     this.modalElement = this.querySelector('.modal');
 
-    u.import('@vue')
-      .then(() => u.import('@unicorn/vue/vue-drag-uploader.js', '@sortablejs', '@vuedraggable'))
+    u.import('@sortablejs')
       .then(() => {
-        const app = Vue.createApp({ name: 'multi-uploader-field' });
+        const app = createApp({ name: 'multi-uploader-field' });
         app.component('app', createAppInstance(options, document.querySelector('#multi-uploader-field-tmpl').innerHTML));
-        app.component('draggable', vuedraggable);
+        // app.component('draggable', vuedraggable);
         app.component('vue-drag-uploader', VueDragUploader);
         app.mount(this);
 
@@ -32,8 +34,6 @@ class MultiUploader extends HTMLElement {
 customElements.define(MultiUploader.is, MultiUploader);
 
 function createAppInstance(data, tmpl) {
-  const { nextTick, onMounted, reactive, ref, toRefs } = Vue;
-
   return {
     name: 'multi-uploader-field-app',
     template: tmpl,

@@ -109,9 +109,9 @@ export async function modules() {
       options.output.libraryTarget = 'umd';
     }
   });
-  webpack('./src/modules/field/multi-uploader.js', './dist/field/', {
+  fusion.vue('./src/modules/field/multi-uploader.js', './dist/field/', {
     override: (options) => {
-      options.output.libraryTarget = 'umd';
+      options.resolve.alias['vue$'] = 'vue/dist/vue.esm-bundler.js';
     }
   });
   // Compile end
@@ -135,7 +135,7 @@ export async function vue() {
   // Watch end
 
   // Compile Start
-  fusion.vue('src/vue/entries/**/*.js', 'dist/vue/', { excludeVue: true });
+  fusion.vue('src/vue/entries/**/*.js', 'dist/vue/');
   // Compile end
 }
 

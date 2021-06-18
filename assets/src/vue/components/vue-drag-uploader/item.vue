@@ -36,6 +36,7 @@
 
 <script>
   import { isImage as isImageType, itemStates, swal } from './util';
+  import * as Vue from 'vue';
   const { ref, reactive, computed, watch, toRefs, onMounted } = Vue;
 
   export default {
