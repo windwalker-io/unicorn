@@ -4,7 +4,7 @@
  * Global variables
  * --------------------------------------------------------------
  * @var $app       AppContext      Application context.
- * @var $vm        {% pascal($name) %} The view model object.
+ * @var $vm        {% pascal($name) %}ListView The view model object.
  * @var $uri       SystemUri       System Uri information.
  * @var $chronos   ChronosService  The chronos datetime service.
  * @var $nav       Navigator       Navigator object to build route.
@@ -20,7 +20,7 @@ use Windwalker\Core\DateTime\ChronosService;
 use Windwalker\Core\Language\LangService;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\SystemUri;
-use {% $ns %};
+use {% $ns %}\{% pascal($name) %}ListView;
 
 $workflow = $app->service(\Unicorn\Workflow\BasicStateWorkflow::class);
 {% $phpClose %}
@@ -28,7 +28,7 @@ $workflow = $app->service(\Unicorn\Workflow\BasicStateWorkflow::class);
 @@extends('admin.global.body')
 
 @@section('toolbar-buttons')
-    @include('list-toolbar')
+    @@include('list-toolbar')
 @@stop
 
 @@section('content')
@@ -64,7 +64,7 @@ $workflow = $app->service(\Unicorn\Workflow\BasicStateWorkflow::class);
                             >
                                 Order
                             </x-sort>
-                            @@if ($ordering === '{% kebab($name) %}.ordering ASC')
+                            @@if ($vm->reorderEnabled($ordering))
                                 <x-save-order></x-save-order>
                             @@endif
                         </div>
@@ -103,7 +103,7 @@ $workflow = $app->service(\Unicorn\Workflow\BasicStateWorkflow::class);
                         </td>
                         <td>
                             <x-order-control
-                                :enabled="$ordering === $vm->getDefaultOrdering()"
+                                :enabled="$vm->reorderEnabled($ordering)"
                                 :row="$i"
                                 :id="$item->id"
                                 :value="$item->ordering"
@@ -130,7 +130,7 @@ $workflow = $app->service(\Unicorn\Workflow\BasicStateWorkflow::class);
         </div>
 
         <div class="d-none">
-            @@formToken
+            @@include('@csrf')
         </div>
 
         <x-batch-modal :form="$form" namespace="batch"></x-batch-modal>

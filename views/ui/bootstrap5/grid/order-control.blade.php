@@ -32,7 +32,7 @@ $enabled ?? false;
 
 @if ($enabled)
     <div class="input-group c-order-control flex-nowrap"
-        x-id="order-control-{{ $row  }}"
+        x-id="order-control-{{ $row }}"
         x-data="{ grid: $store.{{ $store ?? 'grid' }} }"
     >
         <input type="text" class="form-control form-control-sm" 
@@ -40,12 +40,12 @@ $enabled ?? false;
             name="ordering[{{ $id }}]" value="{{ $value }}"
             onkeydown="if(event.keyCode == 13) return false;" />
         <button type="button" class="btn btn-default btn-outline-secondary btn-sm has-tooltip"
-            @click="grid.moveUp({{ $id }});"
+            @click="grid.moveUp('{{ $id }}');"
             title="@lang('unicorn.grid.ordering.moveup')">
             <span class="fa fa-chevron-up"></span>
         </button>
         <button type="button" class="btn btn-default btn-outline-secondary btn-sm has-tooltip"
-            @click="grid.moveDown({{ $id }});"
+            @click="grid.moveDown('{{ $id }}');"
             title="@lang('unicorn.grid.ordering.movedown')">
             <span class="fa fa-chevron-down"></span>
         </button>

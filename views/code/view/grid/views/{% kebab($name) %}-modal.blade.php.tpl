@@ -100,7 +100,7 @@ $callback = $app->input('callback');
         </div>
 
         <div class="d-none">
-            @@formToken
+            @@include('@csrf')
         </div>
 
         <x-batch-modal :form="$form" namespace="batch"></x-batch-modal>

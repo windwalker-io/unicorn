@@ -468,11 +468,11 @@ class UnicornGridElement {
   }
 
   moveUp(id, url, queries) {
-    return this.moveRow(id, -1, url, queries);
+    return this.moveItem(id, -1, url, queries);
   }
 
   moveDown(id, url, queries) {
-    return this.moveRow(id, 1, url, queries);
+    return this.moveItem(id, 1, url, queries);
   }
 
   getId(suffix = '') {

@@ -57,13 +57,13 @@ class {% pascal($name) %}ListView implements ViewModelInterface
         $limit    = $state->rememberFromRequest('limit');
         $filter   = (array) $state->rememberFromRequest('filter');
         $search   = (array) $state->rememberFromRequest('search');
-        $ordering = $state->rememberFromRequest('list_ordering') ?? static::getDefaultOrdering();
+        $ordering = $state->rememberFromRequest('list_ordering') ?? $this->getDefaultOrdering();
 
         $items = $this->repository->getListSelector()
             ->setFilters($filter)
             ->searchTextFor(
                 $search['*'] ?? '',
-                static::getSearchFields()
+                $this->getSearchFields()
             )
             ->ordering($ordering)
             ->page($page)
@@ -90,9 +90,9 @@ class {% pascal($name) %}ListView implements ViewModelInterface
      *
      * @return  string
      */
-    public static function getDefaultOrdering(): string
+    public function getDefaultOrdering(): string
     {
-        return '{% kebab($name) %}.id DESC';
+        return '{% snake($name) %}.id DESC';
     }
 
     /**
@@ -100,12 +100,24 @@ class {% pascal($name) %}ListView implements ViewModelInterface
      *
      * @return  string[]
      */
-    public static function getSearchFields(): array
+    public function getSearchFields(): array
     {
         return [
-            '{% kebab($name) %}.title',
-            '{% kebab($name) %}.alias',
+            '{% snake($name) %}.title',
+            '{% snake($name) %}.alias',
         ];
+    }
+
+    /**
+    * Is reorder enabled.
+    *
+    * @param  string  $ordering
+    *
+    * @return  bool
+    */
+    public function reorderEnabled(string $ordering): bool
+    {
+        return $ordering === '{% snake($name) %}.ordering ASC';
     }
 
     /**

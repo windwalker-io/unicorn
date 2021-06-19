@@ -60,7 +60,7 @@ use Windwalker\Core\Router\SystemUri;
             </div>
 
             <div class="d-none">
-                @formToken
+                @@include('@csrf')
             </div>
 
             <a href="{{ $nav->self() }}" uni-modal-link="#modal-1" data-size="modal-xl">Modal</a>

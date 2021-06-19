@@ -16,12 +16,13 @@ use Unicorn\Controller\GridController;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Attributes\Controller;
 use Windwalker\DI\Attributes\Autowire;
+use {% $ns %}\Form\EditForm;
 
 /**
- * The {% $className %} class.
+ * The {% pascal($name) %}Controller class.
  */
 #[Controller()]
-class {% $className %}
+class {% pascal($name) %}Controller
 {
     public function save(AppContext $app, #[Autowire] {% pascal($name) %}Repository $repository, #[Autowire] EditForm $form, CrudController $controller): mixed
     {
