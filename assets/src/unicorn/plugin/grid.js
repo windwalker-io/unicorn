@@ -5,7 +5,6 @@
  * @license    GNU General Public License version 2 or later.
  */
 
-import { merge } from 'lodash-es';
 import { defData } from '../utilities.js';
 
 /**
@@ -46,35 +45,7 @@ class UnicornGridElement {
     if (!this.form) {
       throw new Error('UnicornGrid is dependent on UnicornForm');
     }
-
-    this.registerEvents();
   }
-
-  /**
-   * Start this object and events.
-   */
-  registerEvents() {
-    // this.searchClearButton.click(() => {
-    //   this.searchContainer.find('input, textarea, select').val('');
-    //   this.filterContainer.find('input, textarea, select').val('');
-    //
-    //   this.form.submit();
-    // });
-    //
-    // this.filterButton.click(event => {
-    //   this.toggleFilter();
-    //   event.stopPropagation();
-    //   event.preventDefault();
-    // });
-    //
-    // this.sortButtons.click(event => {
-    //   self.sort(event.currentTarget, event);
-    // });
-  }
-
-  // registerCustomElements() {
-  //   return app.import('@unicorn/ui/grid-components.js');
-  // }
 
   initComponent(store = 'grid', custom = {}) {
     this.ordering = this.element.dataset.ordering;
@@ -84,19 +55,26 @@ class UnicornGridElement {
       this.ordering += ' ASC';
     }
 
-    return this.app.loadSpruce()
-      .then(() => {
-        Spruce.store(store, this.useState(custom));
-        // this.registerCustomElements();
-        this.app.startAlpine();
-      });
+    return this.app.loadAlpine(() => {
+      Alpine.store(store, this.useState(custom));
+    });
   }
 
   useState(custom = {}) {
-    return merge(
-      this,
+    const state = {
+      form: this.form.useState(custom)
+    };
+    Object.getOwnPropertyNames(Object.getPrototypeOf(this))
+      .map(item => state[item] = this[item].bind(this));
+
+    return Object.assign(
+      state,
       custom
     );
+  }
+
+  getElement() {
+    return this.element;
   }
 
   sendFilter($event) {
@@ -200,7 +178,7 @@ class UnicornGridElement {
    * @param {boolean} value
    */
   checkRow(row, value = true) {
-    const ch = this.form.element.querySelector(`input[data-role=grid-checkbox][data-row-number="${row}"]`);
+    const ch = this.getCheckboxByRow(row);
 
     if (!ch) {
       throw new Error('Checkbox of row: ' + row + ' not found.');
@@ -209,16 +187,35 @@ class UnicornGridElement {
     ch.checked = value;
   }
 
+  getCheckboxByRow(row) {
+    return this.form.element.querySelector(`input[data-role=grid-checkbox][data-row-number="${row}"]`);
+  }
+
   /**
    * Update a row.
    *
-   * @param  {number} id
+   * @param  {number} row
    * @param  {string} url
    * @param  {Object} queries
    *
    * @returns {boolean}
    */
-  updateRow(id, url, queries) {
+  updateRow(row, url, queries = {}) {
+    const ch = this.getCheckboxByRow(row);
+
+    return this.updateItem(ch.value, url, queries);
+  }
+
+  /**
+   * Update a row.
+   *
+   * @param  {string|number} id
+   * @param  {string} url
+   * @param  {Object} queries
+   *
+   * @returns {boolean}
+   */
+  updateItem(id, url, queries) {
     this.toggleAll(false);
 
     this.disableAllCheckboxes();
@@ -238,12 +235,10 @@ class UnicornGridElement {
    *
    * @returns {boolean}
    */
-  doTask(task, id, url, queries) {
-    queries = queries || {};
-
+  doTask(task, id, url, queries = {}) {
     queries.task = task;
 
-    return this.updateRow(id, url, queries);
+    return this.updateItem(id, url, queries);
   }
 
   /**
@@ -255,12 +250,29 @@ class UnicornGridElement {
    *
    * @returns {boolean}
    */
-  batch(task, url, queries) {
-    queries = queries || {};
-
+  batch(task, url, queries = {}) {
     queries.task = task;
 
     return this.form.patch(url, queries);
+  }
+
+  /**
+   * Copy a row.
+   *
+   * @param  {string|number} id
+   * @param  {string} url
+   * @param  {Object} queries
+   *
+   * @returns {boolean}
+   */
+  copyItem(id, url, queries = {}) {
+    this.toggleAll(false);
+
+    this.disableAllCheckboxes();
+
+    this.form.injectInput('id[]', id);
+
+    return this.form.post(url, queries);
   }
 
   /**
@@ -272,12 +284,10 @@ class UnicornGridElement {
    *
    * @returns {boolean}
    */
-  copyRow(row, url, queries) {
-    this.toggleAll(false);
+  copyRow(row, url, queries = {}) {
+    const ch = this.getCheckboxByRow(row);
 
-    this.checkRow(row);
-
-    return this.form.post(url, queries);
+    return this.copyItem(ch.value, url, queries);
   }
 
   /**
@@ -312,16 +322,32 @@ class UnicornGridElement {
   }
 
   /**
-   * Delete an itme.
+   * Delete an item.
    *
-   * @param  {number} id
+   * @param  {number} row
    * @param  {string} msg
    * @param  {string} url
    * @param  {Object} queries
    *
    * @returns {boolean}
    */
-  deleteRow(id, msg = null, url = null, queries = {}) {
+  deleteRow(row, msg = null, url = null, queries = {}) {
+    const  ch = this.getCheckboxByRow(row);
+
+    return this.deleteItem(ch.value, msg, url, queries);
+  }
+
+  /**
+   * Delete an item.
+   *
+   * @param  {number|string} id
+   * @param  {string} msg
+   * @param  {string} url
+   * @param  {Object} queries
+   *
+   * @returns {boolean}
+   */
+  deleteItem(id, msg = null, url = null, queries = {}) {
     msg = msg || this.app.__('unicorn.message.delete.confirm');
 
     return this.app.confirm(msg)
@@ -434,7 +460,7 @@ class UnicornGridElement {
    *
    * @returns {boolean}
    */
-  moveRow(id, delta, url, queries) {
+  moveItem(id, delta, url, queries) {
     queries = queries || {};
     queries.delta = delta;
 
@@ -452,17 +478,4 @@ class UnicornGridElement {
   getId(suffix = '') {
     return this.form.element.id + suffix;
   }
-}
-
-function isSortActive($el) {
-  let field = $el.dataset.field;
-  let desc = $el.dataset.desc;
-  let asc = $el.dataset.asc;
-  
-  desc = desc || `${field} DESC`;
-  asc = asc || `${field} ASC`;
-
-  const ordering = this.grid.element.dataset.ordering;
-  console.log(ordering, asc, desc);
-  return ordering === asc || ordering === desc;
 }

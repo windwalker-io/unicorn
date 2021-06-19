@@ -13,19 +13,16 @@ export default class UnicornUI {
   }
 
   static install(app, options = {}) {
-    // Disable Alpine auto load.
-    window.deferLoadingAlpine = () => {
-    };
-
     const ui = app.$ui = new this(app);
     app.addMessage = ui.renderMessage;
 
     app.loadAlpine = ui.loadAlpine.bind(ui);
-    app.loadSpruce = ui.loadSpruce.bind(ui);
-    app.initAlpine = ui.initAlpine.bind(ui);
-    app.startAlpine = ui.startAlpine.bind(ui);
-    app.startAlpineSpruce = ui.startAlpineSpruce.bind(ui);
-    app.initAlpineSpruce = ui.initAlpineSpruce.bind(ui);
+    app.beforeAlpineInit = ui.beforeAlpineInit.bind(ui);
+    // app.loadSpruce = ui.loadSpruce.bind(ui);
+    // app.initAlpine = ui.initAlpine.bind(ui);
+    // app.startAlpine = ui.startAlpine.bind(ui);
+    // app.startAlpineSpruce = ui.startAlpineSpruce.bind(ui);
+    // app.initAlpineSpruce = ui.initAlpineSpruce.bind(ui);
 
     this.prepareInpageCSS();
   }
@@ -49,46 +46,50 @@ export default class UnicornUI {
     //
   }
 
-  loadAlpine() {
+  loadAlpine(callback = null) {
+    if (callback) {
+      this.beforeAlpineInit(callback);
+    }
+
     return this.app.import('@alpinejs');
   }
 
-  loadSpruce() {
-    return Promise.all([
-      this.loadAlpine(),
-      this.app.import('@spruce')
-    ]);
+  beforeAlpineInit(callback) {
+    document.addEventListener('alpine:initializing', callback);
   }
 
-  initAlpine(selector) {
-    return this.loadAlpine().then(() => {
-      const element = this.app.selectOne(selector);
-      Alpine.initializeComponent(element);
-    });
-  }
+  // loadSpruce() {
+  //   return Promise.all([
+  //     this.loadAlpine(),
+  //     this.app.import('@spruce')
+  //   ]);
+  // }
 
-  startAlpine() {
-    return this.loadAlpine().then(() => {
-      if (Spruce) {
-        Spruce.start();
-      }
+  // initAlpine(selector) {
+  //   return this.loadAlpine().then(() => {
+  //     const element = this.app.selectOne(selector);
+  //     Alpine.initializeComponent(element);
+  //   });
+  // }
 
-      Alpine.start();
-    });
-  }
+  // startAlpine() {
+  //   return this.loadAlpine().then(() => {
+  //     Alpine.start();
+  //   });
+  // }
 
-  startAlpineSpruce() {
-    return this.loadSpruce().then(() => {
-      Alpine.start();
-    });
-  }
-
-  initAlpineSpruce(selector) {
-    return this.loadSpruce().then(() => {
-      const element = this.app.selectOne(selector);
-      Alpine.initializeComponent(element);
-    });
-  }
+  // startAlpineSpruce() {
+  //   return this.loadSpruce().then(() => {
+  //     Alpine.start();
+  //   });
+  // }
+  //
+  // initAlpineSpruce(selector) {
+  //   return this.loadSpruce().then(() => {
+  //     const element = this.app.selectOne(selector);
+  //     Alpine.initializeComponent(element);
+  //   });
+  // }
 
   flatpickr() {
     return this.app.import('@unicorn/ui/flatpickr-components.js');

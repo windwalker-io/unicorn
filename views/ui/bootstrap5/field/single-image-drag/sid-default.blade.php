@@ -33,6 +33,7 @@ $imageHelper = $app->service(\Unicorn\Image\ImageHelper::class);
 
 $image = $field->getValue() ?: $imageHelper->placeholder();
 $previewHandler = $field->getPreviewHandler() ?? fn () => $asset->appendVersion($image, \Windwalker\uid());
+$image = $previewHandler($image);
 
 $maxWidth = $field->getMaxWidth();
 $minWidth = $field->getMinWidth();

@@ -23,25 +23,28 @@ use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\SystemUri;
 
 $store ??= 'grid';
+
+$uid = \Windwalker\uid();
 ?>
 
 <a href="javascript: void(0);"
     x-id="sort"
+    x-ref="sort-{{ $uid }}"
     x-data="{ grid: $store.{{ $store }} }"
     data-field="{{ $field ?? '' }}"
     data-asc="{{ $asc ?? '' }}"
     data-desc="{{ $desc ?? '' }}"
-    @click="grid.sort($el)"
+    @click="grid.sort($refs['sort-{{ $uid }}'])"
     data-bs-toggle="tooltip"
     title="@lang('unicorn.grid.sort.button')">
     {!! $slot ?? "- Sort: $field -" !!}
 
-    <template x-if="grid.isSortActive($el)">
+    <template x-if="grid.isSortActive($refs['sort-{{ $uid }}'])">
         <small
             class="fa"
             :class="{
-                'fa-caret-down': grid.getDirection($el) === 'ASC',
-                'fa-caret-up': grid.getDirection($el) === 'DESC'
+                'fa-caret-down': grid.getDirection($refs['sort-{{ $uid }}']) === 'ASC',
+                'fa-caret-up': grid.getDirection($refs['sort-{{ $uid }}']) === 'DESC'
             }"
         ></small>
     </template>

@@ -25,17 +25,15 @@
   },
   "homepage": "https://github.com/ventoviro/unicorn#readme",
   "dependencies": {
-    "alpinejs": "^2.8.2",
+    "alpinejs": "^3.0",
     "awesome-bootstrap-checkbox": "^1.0.1",
     "axios": "^0.21.1",
     "cropperjs": "^1.5.11",
     "flatpickr": "^4.6.9",
-    "gulp": "^4.0.2",
     "sortablejs": "^1.13.0",
     "systemjs": "^6.8.3",
     "tinymce": "^5.8.0",
-    "vue2-animate": "^2.1.4",
-    "vuedraggable": "^4.0.3"
+    "vue2-animate": "^2.1.4"
   },
   "devDependencies": {
     "@babel/core": "^7.13.14",
@@ -43,9 +41,9 @@
     "@babel/plugin-proposal-decorators": "^7.13.5",
     "@babel/plugin-proposal-optional-chaining": "^7.13.12",
     "@babel/preset-env": "^7.13.12",
-    "@ryangjchandler/spruce": "^2.6.3",
     "@vue/compiler-sfc": "^3.1.1",
     "@windwalker-io/fusion": "^1.0.0-beta.4",
+    "gulp": "^4.0.2",
     "babel-loader": "^8.2.2",
     "core-js": "3",
     "file-loader": "^6.2.0",
@@ -58,6 +56,8 @@
     "sprintf-js": "^1.1.2",
     "style-loader": "^2.0.0",
     "vinyl-named-with-path": "^1.0.0",
+    "vuedraggable": "^4.0.3",
+    "vue": "^3.0",
     "vue-demi": "^0.9.1",
     "vue-loader": "^16",
     "vue-style-loader": "^4.1.3",
@@ -67,7 +67,6 @@
   "windwalker": {
     "vendors": [
       "@fortawesome/fontawesome-free",
-      "@ryangjchandler/spruce",
       "@windwalker-io/unicorn",
       "alpinejs",
       "awesome-bootstrap-checkbox",

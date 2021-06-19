@@ -6,7 +6,7 @@
  */
 
 import { defData } from '../utilities.js';
-import { each, merge } from 'lodash-es';
+import { each } from 'lodash-es';
 
 export default class UnicornForm {
   static get is() {
@@ -87,19 +87,23 @@ class UnicornFormElement {
   }
 
   initComponent(store = 'form', custom = {}) {
-    return this.app.loadSpruce()
-      .then(() => {
-        Spruce.store(store, this.useState(custom));
-        // this.registerCustomElements();
-        this.app.startAlpine();
-      });
+    return this.app.loadAlpine(() => {
+      Alpine.store(store, this.useState(custom));
+    });
   }
-
   useState(custom = {}) {
-    return merge(
-      this,
+    const state = {};
+    Object.getOwnPropertyNames(Object.getPrototypeOf(this))
+      .map(item => state[item] = this[item].bind(this));
+
+    return Object.assign(
+      state,
       custom
     );
+  }
+
+  getElement() {
+    return this.element;
   }
 
   /**

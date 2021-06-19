@@ -25,7 +25,7 @@ $store ??= 'grid';
 ?>
 <input type="checkbox"
     data-task="toggle-all"
-    :x-id="'toggle-all_' + grid.form.element.id"
+    :x-id="'toggle-all_' + grid.form.getElement().id"
     x-data="{ grid: $store['{{ $store }}'] }"
     class="form-check-input"
     @click="grid.toggleAll($event.target.checked)"

@@ -98,7 +98,7 @@ $buttonId ??= 'c-state-dropdown-' . $workflowCtrl->getField() . '-' . $id;
                         @if ($batch)
                         @click="$store.{{ $store }}.patch(null, { batch: { '{{ $workflowCtrl->getField() }}': '{{ $state->getValue() }}' } })">
                         @else
-                        @click="$store.{{ $store }}.updateRow('{{ $id }}', null, { batch: { '{{ $workflowCtrl->getField() }}': '{{ $state->getValue() }}' } })">
+                        @click="$store.{{ $store }}.updateItem('{{ $id }}', null, { batch: { '{{ $workflowCtrl->getField() }}': '{{ $state->getValue() }}' } })">
                         @endif
                         <i class="{{ $state->getIcon() }} text-{{ $state->getColor() }}"></i>
                         {{ $state->getTitle() ?? $state->getName() }}
