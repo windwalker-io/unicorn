@@ -22,7 +22,7 @@ use Windwalker\DI\Attributes\Autowire;
 use Windwalker\ORM\ORM;
 
 /**
- * The {% $className %} class.
+ * The {% pascal($name) %}ListView class.
  */
 #[ViewModel(
     layout: [
