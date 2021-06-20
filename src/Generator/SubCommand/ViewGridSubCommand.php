@@ -72,7 +72,7 @@ class ViewGridSubCommand extends \Windwalker\Core\Generator\SubCommand\ViewSubCo
      */
     public function execute(IOInterface $io): int
     {
-        [, $name] = $this->getNameParts($io);
+        [, $name] = $this->getNameParts($io, 'ListView');
         $force = $io->getOption('force');
 
         if (!$name) {
@@ -83,18 +83,18 @@ class ViewGridSubCommand extends \Windwalker\Core\Generator\SubCommand\ViewSubCo
 
         $this->codeGenerator->from($this->getViewPath('view/grid/**/*.tpl'))
             ->replaceTo(
-                $this->getDestPath($io),
+                $this->getDestPath($io, 'ListView'),
                 [
-                    'className' => Str::ensureRight($name, 'View'),
-                    'name' => Str::removeRight($name, 'View'),
-                    'ns' => $this->getNamesapce($io),
+                    'className' => Str::ensureRight($name, 'ListView'),
+                    'name' => Str::removeRight($name, 'ListView'),
+                    'ns' => $this->getNamesapce($io, 'ListView'),
                 ],
                 $force
             );
 
         if ($io->getOption('model')) {
             $name = $io->getArgument('name');
-            $name = Str::removeRight($name, 'Controller');
+            $name = Str::removeRight($name, 'ListView');
             $args = $io->getArguments();
             $args['task'] = 'unicorn:model';
             $args['name'] = $name;

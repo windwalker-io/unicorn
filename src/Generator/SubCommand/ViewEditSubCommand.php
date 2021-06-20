@@ -72,7 +72,7 @@ class ViewEditSubCommand extends \Windwalker\Core\Generator\SubCommand\ViewSubCo
      */
     public function execute(IOInterface $io): int
     {
-        [, $name] = $this->getNameParts($io);
+        [, $name] = $this->getNameParts($io, 'EditView');
         $force = $io->getOption('force');
 
         if (!$name) {
@@ -83,18 +83,17 @@ class ViewEditSubCommand extends \Windwalker\Core\Generator\SubCommand\ViewSubCo
 
         $this->codeGenerator->from($this->getViewPath('view/edit/**/*.tpl'))
             ->replaceTo(
-                $this->getDestPath($io),
+                $this->getDestPath($io, 'EditView'),
                 [
-                    'className' => Str::ensureRight($name, 'View'),
-                    'name' => Str::removeRight($name, 'View'),
-                    'ns' => $this->getNamesapce($io),
+                    'name' => Str::removeRight($name, 'EditView'),
+                    'ns' => $this->getNamesapce($io), 'EditView',
                 ],
                 $force
             );
 
         if ($io->getOption('model')) {
             $name = $io->getArgument('name');
-            $name = Str::removeRight($name, 'Controller');
+            $name = Str::removeRight($name, 'EditView');
             $args = $io->getArguments();
             $args['task'] = 'unicorn:model';
             $args['name'] = $name;
