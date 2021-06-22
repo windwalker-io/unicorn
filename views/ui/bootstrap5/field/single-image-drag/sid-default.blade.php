@@ -146,7 +146,7 @@ $options['modalTarget'] = '#' . $field->getId('__modal');
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title" id="{{ $field->getId('__modal-label') }}">
-                    @lang('unicorn.field.sid.crop.modal.title')
+                    @lang('unicorn.field.sid.crop')
                 </h4>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -195,11 +195,11 @@ $options['modalTarget'] = '#' . $field->getId('__modal');
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default btn-outline-secondary" data-bs-dismiss="modal">
-                    @translate('unicorn.field.sid.crop.modal.close')
+                    @lang('unicorn.field.sid.close')
                 </button>
                 <button type="button" class="btn btn-primary"
                     data-sid="save-button">
-                    @translate('unicorn.field.sid.crop.modal.ok')
+                    @lang('unicorn.field.sid.ok')
                 </button>
             </div>
         </div>

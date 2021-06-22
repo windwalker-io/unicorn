@@ -86,7 +86,7 @@ class ViewEditSubCommand extends \Windwalker\Core\Generator\SubCommand\ViewSubCo
                 $this->getDestPath($io, 'EditView'),
                 [
                     'name' => Str::removeRight($name, 'EditView'),
-                    'ns' => $this->getNamesapce($io), 'EditView',
+                    'ns' => $this->getNamesapce($io, 'EditView'),
                 ],
                 $force
             );

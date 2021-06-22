@@ -23,7 +23,7 @@ $slot ??= \Windwalker\nope();
 
         @if ($alias = $form->getField($aliasField))
             <x-field :field="$alias" class="mb-3" input-class="input-sm form-control-sm"
-                input-cols="9"
+                floating
             ></x-field>
         @endif
 

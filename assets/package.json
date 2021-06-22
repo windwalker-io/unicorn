@@ -71,6 +71,7 @@
       "alpinejs",
       "awesome-bootstrap-checkbox",
       "axios",
+      "bootstrap",
       "cropperjs",
       "flatpickr",
       "regenerator-runtime",
