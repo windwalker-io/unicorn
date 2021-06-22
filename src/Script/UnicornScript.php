@@ -49,6 +49,16 @@ class UnicornScript extends AbstractScript
         }
     }
 
+    public function init(?string $mainJS = null): void
+    {
+        if ($mainJS) {
+            $this->asset->importMap('@main', $mainJS);
+        }
+
+        $this->systemJS();
+        $this->main();
+    }
+
     public function main(): void
     {
         $this->translate('unicorn.message.delete.confirm');

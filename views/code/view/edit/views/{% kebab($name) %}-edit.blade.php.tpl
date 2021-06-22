@@ -23,13 +23,13 @@ use Windwalker\Core\Router\SystemUri;
 
 {% $phpClose %}
 
-@extends('admin.global.body')
+@@extends('admin.global.body')
 
-@section('toolbar-buttons')
-    @include('edit-toolbar')
-@stop
+@@section('toolbar-buttons')
+    @@include('edit-toolbar')
+@@stop
 
-@section('content')
+@@section('content')
     <uni-form-validate scroll>
         <form name="admin-form" id="admin-form" novalidate
             action="{{ $nav->to('{% kebab($name) %}_edit') }}"
@@ -68,4 +68,4 @@ use Windwalker\Core\Router\SystemUri;
             <uni-iframe-modal id="modal-1"></uni-iframe-modal>
         </form>
     </uni-form-validate>
-@stop
+@@stop
