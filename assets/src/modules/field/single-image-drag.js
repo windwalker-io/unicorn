@@ -35,6 +35,7 @@ class SingleImageDrag extends HTMLElement {
     this.savebutton = this.modalElement.querySelector('[data-sid=save-button]');
     this.modalToolbarButtons = this.modalElement.querySelectorAll('[data-sid-toolbar]');
 
+    // BS5
     this.modalElement.addEventListener('shown.bs.modal', () => {
       const cropper = this.getCropper();
       cropper.replace(this.currentImage);
@@ -46,19 +47,6 @@ class SingleImageDrag extends HTMLElement {
       this.saveCropped();
       this.modal.hide();
     });
-
-    // image.addEventListener('ready', (e) => {
-    //   console.log(e);
-    // });
-    //
-    // this.cropper = new Cropper(image, {
-    //   autoCropArea: 0.5,
-    //   ready: () => {
-    //     console.log(this.cropper);
-    //     //Should set crop box data first here
-    //     this.cropper.setCropBoxData(cropBoxData).setCanvasData(canvasData);
-    //   }
-    // });
 
     this.bindEvents();
     
@@ -164,7 +152,6 @@ class SingleImageDrag extends HTMLElement {
       const reader = new FileReader();
 
       reader.addEventListener('load', (event) => {
-
         this.cropContainer.style.visibility = 'hidden';
         this.currentImage = event.target.result;
 
