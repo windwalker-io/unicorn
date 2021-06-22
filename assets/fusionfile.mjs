@@ -15,6 +15,8 @@ import fusion, {
   module
 } from '@windwalker-io/fusion';
 import { babelBasicOptions } from '@windwalker-io/fusion/src/utilities/babel.js';
+import * as moduleTasks from './src/fusion/modules.mjs';
+export * from './src/fusion/modules.mjs';
 
 export async function main() {
   // Watch start
@@ -60,62 +62,9 @@ export async function js() {
   // Compile end
 }
 
-export async function modules() {
-  // Watch start
-  fusion.watch(
-    ['src/modules/**/*.js', 'scss/**/*.scss']
-  );
-  // Watch end
-
-  // Compile Start
-  webpack('./src/modules/ui/ui-bootstrap5.js', './dist/ui/', {
-    override: (options) => {
-      options.output.libraryTarget = 'system';
-    }
-  });
-  webpack('./src/modules/ui/validation-components.js', './dist/ui/', {
-    override: (options) => {
-      options.output.libraryTarget = 'umd';
-    }
-  });
-  webpack('./src/modules/ui/flatpickr-components.js', './dist/ui/', {
-    override: (options) => {
-      options.output.libraryTarget = 'umd';
-    }
-  });
-  webpack('./src/modules/ui/list-dependent.js', './dist/ui/', {
-    override: (options) => {
-      options.output.library = 'ListDependent';
-      options.output.libraryTarget = 'umd';
-    }
-  });
-  webpack('./src/modules/field/single-image-drag.js', './dist/field/', {
-    override: (options) => {
-      options.output.libraryTarget = 'umd';
-    }
-  });
-  webpack('./src/modules/field/file-drag.js', './dist/field/', {
-    override: (options) => {
-      options.output.libraryTarget = 'umd';
-    }
-  });
-  webpack('./src/modules/ui/iframe-modal.js', './dist/ui/', {
-    override: (options) => {
-      options.output.libraryTarget = 'umd';
-    }
-  });
-  webpack('./src/modules/field/modal-field.js', './dist/field/', {
-    override: (options) => {
-      options.output.libraryTarget = 'umd';
-    }
-  });
-  fusion.vue('./src/modules/field/multi-uploader.js', './dist/field/', {
-    override: (options) => {
-      options.resolve.alias['vue$'] = 'vue/dist/vue.esm-bundler.js';
-    }
-  });
-  // Compile end
-}
+export const modules = parallel(
+  ...Object.values(moduleTasks)
+);
 
 export async function css() {
   // Watch start

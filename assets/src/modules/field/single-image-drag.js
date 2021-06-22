@@ -35,13 +35,19 @@ class SingleImageDrag extends HTMLElement {
     this.savebutton = this.modalElement.querySelector('[data-sid=save-button]');
     this.modalToolbarButtons = this.modalElement.querySelectorAll('[data-sid-toolbar]');
 
-    // BS5
-    this.modalElement.addEventListener('shown.bs.modal', () => {
+    const modalShown = () => {
       const cropper = this.getCropper();
       cropper.replace(this.currentImage);
       this.cropContainer.style.visibility = '';
       this.currentImage = null;
-    });
+    };
+
+    // BS5
+    if (bootstrap.Modal.VERSION.startsWith('5')) {
+      this.modalElement.addEventListener('shown.bs.modal', modalShown.bind(this));
+    } else {
+      $(this.modalElement).on('shown.bs.modal', modalShown.bind(this));
+    }
 
     this.savebutton.addEventListener('click', () => {
       this.saveCropped();
