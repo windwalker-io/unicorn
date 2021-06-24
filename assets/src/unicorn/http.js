@@ -48,8 +48,12 @@ export default class UnicornHttp {
   }
 
   prepareAxios(axios) {
-    axios.interceptors.request.use(function (config) {
+    axios.interceptors.request.use((config) => {
       config.headers['X-CSRF-Token'] = this.app.data('csrf-token');
+
+      if (config.url && config.url.startsWith('@')) {
+        config.url = this.app.route(config.url);
+      }
 
       return config;
     });
@@ -189,6 +193,8 @@ export default class UnicornHttp {
    */
   request(options) {
     return this.getHttp().then(axios => {
+      this.prepareAxios(axios);
+
       return axios(options);
     });
     // let reqOptions = options;

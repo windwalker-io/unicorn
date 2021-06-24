@@ -22,6 +22,7 @@ import UnicornLoader from './loader.js';
 import UnicornHelper from './helper.js';
 import UnicornHttp from './http.js';
 import UnicornApp from './app.js';
+import UnicornUri from './uri.js';
 export { default as helper } from './helper.js';
 
 export function createApp(options = {}) {
@@ -42,6 +43,7 @@ window.u = u;
 
 u.use(UnicornLoader);
 u.use(UnicornHelper);
+u.use(UnicornUri);
 u.use(UnicornCrypto);
 u.use(UnicornLang);
 u.use(UnicornRouter);

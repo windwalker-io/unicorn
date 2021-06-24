@@ -47,13 +47,46 @@ export default class UnicornRouter {
    * @returns {String|UnicornRouter}
    */
   route(route, query = null) {
-    const url = this.app.data('unicorn.routes')?.[route];
+    const source = route;
+    const extract = this.extractRoute(source);
+    route = extract.route;
+    const path = extract.path;
+    const routes = this.app.data('unicorn.routes') || {};
+
+    let url = routes[route];
 
     if (url == null) {
-      throw new Error(`Route: "${route}" not found`);
+      if (!route.startsWith('@')) {
+        route = '@' + route;
+      } else {
+        route = route.substr(1);
+      }
+    }
+
+    url = routes[route];
+
+    if (url == null) {
+      throw new Error(`Route: "${source}" not found`);
+    }
+
+    if (path) {
+      url += '/' + path;
     }
 
     return this.addQuery(url, query);
+  }
+
+  extractRoute(route) {
+    if (route.indexOf('/') === -1) {
+      return { route, path: '' }
+    }
+
+    const segments = route.split('/');
+
+    route = segments.shift();
+    const path = segments.join('/');
+
+    return { route, path };
   }
 
   has(route) {

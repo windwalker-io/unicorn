@@ -11,9 +11,13 @@ declare(strict_types=1);
 
 namespace Unicorn\Script;
 
+use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Asset\AbstractScript;
 use Windwalker\Core\Http\Browser;
 use Windwalker\Core\Language\LangService;
+use Windwalker\Core\Router\SystemUri;
+use Windwalker\Core\Security\CsrfService;
+use Windwalker\Utilities\Str;
 
 /**
  * The UnicornScript class.
@@ -27,8 +31,11 @@ class UnicornScript extends AbstractScript
     /**
      * UnicornScript constructor.
      */
-    public function __construct(protected Browser $browser, protected LangService $langService)
-    {
+    public function __construct(
+        protected AppContext $app,
+        protected Browser $browser,
+        protected LangService $langService,
+    ) {
     }
 
     public function systemJS(): void
@@ -62,6 +69,16 @@ class UnicornScript extends AbstractScript
     public function main(): void
     {
         $this->translate('unicorn.message.delete.confirm');
+
+        $uri = $this->app->getSystemUri()->all();
+        $uri['asset'] = [
+            'path' => $this->asset->path(),
+            'root' => $this->asset->root()
+        ];
+
+        $this->data('unicorn.uri', $uri);
+
+        $this->data('csrf-token', $this->app->service(CsrfService::class)->getToken());
 
         $this->importScript('@main');
     }
@@ -169,6 +186,8 @@ JS
 
     public function addRoute(string $route, mixed $url): static
     {
+        $route = Str::ensureLeft($route, '@');
+
         $this->data('unicorn.routes', [$route => (string) $url], true);
 
         return $this;
