@@ -50,7 +50,7 @@ export default class UnicornRouter {
     const source = route;
     const extract = this.extractRoute(source);
     route = extract.route;
-    const path = extract.path;
+    let path = extract.path;
     const routes = this.app.data('unicorn.routes') || {};
 
     let url = routes[route];
@@ -69,22 +69,31 @@ export default class UnicornRouter {
       throw new Error(`Route: "${source}" not found`);
     }
 
+    // Merge query
     if (path) {
-      url += '/' + path;
+      const { route: u1, path: u1q } = this.extractRoute(url, '?');
+      const { route: u2, path: u2q } = this.extractRoute(path, '?');
+
+      url = u1 + '/' + u2;
+
+      if (u1q || u2q) {
+        const q = [ u1q, u2q ].filter(u => u).join('&');
+        url += '?' + q;
+      }
     }
 
     return this.addQuery(url, query);
   }
 
-  extractRoute(route) {
-    if (route.indexOf('/') === -1) {
+  extractRoute(route, sep = '/') {
+    if (route.indexOf(sep) === -1) {
       return { route, path: '' }
     }
 
-    const segments = route.split('/');
+    const segments = route.split(sep);
 
     route = segments.shift();
-    const path = segments.join('/');
+    const path = segments.join(sep);
 
     return { route, path };
   }
