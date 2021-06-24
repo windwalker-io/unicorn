@@ -9,6 +9,7 @@ export * from './events.js';
 export * from './mixwith.js';
 
 import UnicornAnimate from './animate.js';
+import UnicornCrypto from './crypto.js';
 import UnicornDirective from './directive.js';
 import UnicornLang from './lang.js';
 import UnicornValidation from './plugin/validation.js';
@@ -41,6 +42,7 @@ window.u = u;
 
 u.use(UnicornLoader);
 u.use(UnicornHelper);
+u.use(UnicornCrypto);
 u.use(UnicornLang);
 u.use(UnicornRouter);
 u.use(UnicornHttp);
