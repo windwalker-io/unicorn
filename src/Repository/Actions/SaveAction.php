@@ -77,11 +77,11 @@ class SaveAction extends AbstractDatabaseAction
      *
      * @param  array|object       $data
      * @param  array|string|null  $condFields
-     * @param  bool               $updateNulls
+     * @param  int                $options
      *
      * @return  object
      */
-    public function save(array|object $data, array|string $condFields = null, bool $updateNulls = false): object
+    public function save(array|object $data, array|string $condFields = null, int $options = 0): object
     {
         if (is_array($data)) {
             $entity = $this->getEntityMapper()->toEntity($data);
@@ -89,7 +89,7 @@ class SaveAction extends AbstractDatabaseAction
             $entity = $data;
         }
 
-        return $this->getEntityMapper()->saveOne($entity, $condFields, $updateNulls);
+        return $this->getEntityMapper()->saveOne($entity, $condFields, $options);
     }
 
     public function beforeSave(callable $listener): static
