@@ -4,7 +4,7 @@
     "homepage": "https://github.com/ventoviro/unicorn",
     "type": "windwalker-package",
     "license": "MIT",
-    "minimum-stability": "dev",
+    "minimum-stability": "beta",
     "authors": [
         {
             "name": "Simon Asika",
@@ -25,6 +25,13 @@
         "league/flysystem": "Install ^2.0 to support flysystem storage",
         "league/flysystem-aws-s3-v3": "^2.0",
         "aws/aws-sdk-php": "^3.181"
+    },
+    "archive": {
+        "exclude": [
+            ".github",
+            "assets",
+            "test"
+        ]
     },
     "autoload": {
         "psr-4": {
