@@ -3,17 +3,20 @@
 /**
  * Part of starter project.
  *
- * @copyright  Copyright (C) 2021 __ORGANIZATION__.
- * @license    __LICENSE__
+ * @copyright    Copyright (C) 2021 __ORGANIZATION__.
+ * @license        __LICENSE__
  */
 
 declare(strict_types=1);
 
-namespace {% $ns %};
+namespace App\Repository;
 
 use App\Entity\{% pascal($name) %};
+use Unicorn\Attributes\ConfigureAction;
 use Unicorn\Attributes\Repository;
-use Unicorn\Repository\Actions\ActionsFactory;
+use Unicorn\Repository\Actions\BatchAction;
+use Unicorn\Repository\Actions\ReorderAction;
+use Unicorn\Repository\Actions\SaveAction;
 use Unicorn\Repository\ListRepositoryInterface;
 use Unicorn\Repository\ListRepositoryTrait;
 use Unicorn\Repository\ManageRepositoryInterface;
@@ -22,7 +25,7 @@ use Unicorn\Selector\ListSelector;
 use Windwalker\ORM\SelectorQuery;
 
 /**
- * The {% pascal($name) %} class.
+ * The {% pascal($name) %}Repository class.
  */
 #[Repository(entityClass: {% pascal($name) %}::class)]
 class {% pascal($name) %}Repository implements ManageRepositoryInterface, ListRepositoryInterface
@@ -33,28 +36,31 @@ class {% pascal($name) %}Repository implements ManageRepositoryInterface, ListRe
     /**
      * Configure List Selector.
      *
-     * @param  SelectorQuery  $query
-     * @param  ListSelector   $selector
+     * @param    SelectorQuery  $query
+     * @param    ListSelector   $selector
      *
-     * @return  void
+     * @return    void
      */
     protected function configureSelector(SelectorQuery $query, ListSelector $selector): void
     {
         $query->from({% pascal($name) %}::class);
     }
 
-    /**
-     * Configure Actions.
-     * - SaveAction
-     * - ReorderAction
-     * - BatchAction
-     *
-     * @param  ActionsFactory  $actionsFactory
-     *
-     * @return  void
-     */
-    protected function configureActions(ActionsFactory $actionsFactory): void
+    #[ConfigureAction(SaveAction::class)]
+    protected function configureSaveAction(SaveAction $action): void
     {
-        // $actionsFactory->configure(ReorderAction::class, callable);
+        //
+    }
+
+    #[ConfigureAction(ReorderAction::class)]
+    protected function configureReorderAction(ReorderAction $action): void
+    {
+        //
+    }
+
+    #[ConfigureAction(BatchAction::class)]
+    protected function configureBatchAction(BatchAction $action): void
+    {
+        //
     }
 }

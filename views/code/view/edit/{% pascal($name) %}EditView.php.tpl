@@ -13,6 +13,7 @@ namespace {% $ns %};
 
 use App\Entity\{% pascal($name) %};
 use {% $ns %}\Form\EditForm;
+use App\Repository\{% pascal($name) %}Repository;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Attributes\ViewModel;
 use Windwalker\Core\Form\FormFactory;
