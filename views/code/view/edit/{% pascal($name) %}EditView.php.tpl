@@ -31,13 +31,6 @@ use Windwalker\ORM\ORM;
 )]
 class {% pascal($name) %}EditView implements ViewModelInterface
 {
-    /**
-     * CategoryEditView constructor.
-     *
-     * @param  ORM          $orm
-     * @param  FormFactory  $formFactory
-     * @param  Navigator    $nav
-     */
     public function __construct(
         protected ORM $orm,
         protected FormFactory $formFactory,

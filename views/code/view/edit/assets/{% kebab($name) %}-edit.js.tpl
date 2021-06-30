@@ -11,5 +11,5 @@ u.formValidation();
 u.form('#admin-form').initComponent();
 
 u.$ui.bootstrap.tooltip();
-// u.$ui.listDependent();
+
 u.$ui.iframeModal();
