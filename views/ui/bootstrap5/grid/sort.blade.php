@@ -29,22 +29,22 @@ $uid = \Windwalker\uid();
 
 <a href="javascript: void(0);"
     x-id="sort"
-    x-ref="sort-{{ $uid }}"
-    x-data="{ grid: $store.{{ $store }} }"
+    x-ref="root"
+    x-data="{ grid: $store.{{ $store }}, $root: $refs.root }"
     data-field="{{ $field ?? '' }}"
     data-asc="{{ $asc ?? '' }}"
     data-desc="{{ $desc ?? '' }}"
-    @click="grid.sort($refs['sort-{{ $uid }}'])"
+    @click="grid.sort($root)"
     data-bs-toggle="tooltip"
     title="@lang('unicorn.grid.sort.button')">
     {!! $slot ?? "- Sort: $field -" !!}
 
-    <template x-if="grid.isSortActive($refs['sort-{{ $uid }}'])">
+    <template x-if="grid.isSortActive($root)">
         <small
             class="fa"
             :class="{
-                'fa-caret-down': grid.getDirection($refs['sort-{{ $uid }}']) === 'ASC',
-                'fa-caret-up': grid.getDirection($refs['sort-{{ $uid }}']) === 'DESC'
+                'fa-caret-down': grid.getDirection($root) === 'ASC',
+                'fa-caret-up': grid.getDirection($root) === 'DESC'
             }"
         ></small>
     </template>

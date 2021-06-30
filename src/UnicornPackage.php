@@ -19,6 +19,7 @@ use Unicorn\Controller\CrudController;
 use Unicorn\Controller\GridController;
 use Unicorn\Generator\SubCommand\ControllerSubCommand;
 use Unicorn\Generator\SubCommand\ModelSubCommand;
+use Unicorn\Generator\SubCommand\RouteSubCommand;
 use Unicorn\Generator\SubCommand\ViewEditSubCommand;
 use Unicorn\Generator\SubCommand\ViewGridSubCommand;
 use Unicorn\Script\FormScript;
@@ -202,6 +203,7 @@ class UnicornPackage extends AbstractPackage implements
                     'unicorn:model' => ModelSubCommand::class,
                     'unicorn:view-grid' => ViewGridSubCommand::class,
                     'unicorn:view-edit' => ViewEditSubCommand::class,
+                    'unicorn:route' => RouteSubCommand::class,
                     // 'unicorn:workflow' => ModelSubCommand::class,
                 ]
             );

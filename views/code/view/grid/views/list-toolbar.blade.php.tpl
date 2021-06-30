@@ -3,13 +3,13 @@
 /**
  * Global variables
  * --------------------------------------------------------------
- * @var $app       AppContext      Application context.
- * @var $vm        object          The view model object.
- * @var $uri       SystemUri       System Uri information.
- * @var $chronos   ChronosService  The chronos datetime service.
- * @var $nav       Navigator       Navigator object to build route.
- * @var $asset     AssetService    The Asset manage service.
- * @var $lang      LangService     The language translation service.
+ * @var  $app       AppContext      Application context.
+ * @var  $vm        object          The view model object.
+ * @var  $uri       SystemUri       System Uri information.
+ * @var  $chronos   ChronosService  The chronos datetime service.
+ * @var  $nav       Navigator       Navigator object to build route.
+ * @var  $asset     AssetService    The Asset manage service.
+ * @var  $lang      LangService     The language translation service.
  */
 
 declare(strict_types=1);
@@ -25,7 +25,7 @@ use Windwalker\Core\Router\SystemUri;
 
 <div x-id="toolbar" x-data="{ form: $store.grid.form, grid: $store.grid }">
     <a type="button" class="btn btn-success btn-sm"
-        href="{{ $nav->to('{% kebab($name) %}_edit')->var('new', 1) }}"
+        href="{{ $nav->to('{% snake($name) %}_edit')->var('new', 1) }}"
         style="min-width: 150px"
     >
         <i class="fa fa-plus"></i>

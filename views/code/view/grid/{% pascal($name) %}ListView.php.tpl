@@ -33,13 +33,6 @@ use Windwalker\ORM\ORM;
 )]
 class {% pascal($name) %}ListView implements ViewModelInterface
 {
-    /**
-     * CategoriesView constructor.
-     *
-     * @param  ORM               $orm
-     * @param  {% pascal($name) %}Repository  $repository
-     * @param  FormFactory       $formFactory
-     */
     public function __construct(
         protected ORM $orm,
         #[Autowire]
@@ -48,6 +41,14 @@ class {% pascal($name) %}ListView implements ViewModelInterface
     ) {
     }
 
+    /**
+     * Prepare view data.
+     *
+     * @param  AppContext  $app   The request app context.
+     * @param  View        $view  The view object.
+     *
+     * @return  array
+     */
     public function prepare(AppContext $app, View $view): array
     {
         $state = $this->repository->getState();
@@ -77,6 +78,9 @@ class {% pascal($name) %}ListView implements ViewModelInterface
 
         $showFilters = $this->showFilterBar($filter);
 
+        // Browser Title
+        $view->setTitle('{% pascal($name) %} Edit');
+
         return compact('items', 'pagination', 'form', 'showFilters', 'ordering');
     }
 
@@ -103,18 +107,19 @@ class {% pascal($name) %}ListView implements ViewModelInterface
     public function getSearchFields(): array
     {
         return [
+            '{% snake($name) %}.id',
             '{% snake($name) %}.title',
             '{% snake($name) %}.alias',
         ];
     }
 
     /**
-    * Is reorder enabled.
-    *
-    * @param  string  $ordering
-    *
-    * @return  bool
-    */
+     * Is reorder enabled.
+     *
+     * @param  string  $ordering
+     *
+     * @return  bool
+     */
     public function reorderEnabled(string $ordering): bool
     {
         return $ordering === '{% snake($name) %}.ordering ASC';

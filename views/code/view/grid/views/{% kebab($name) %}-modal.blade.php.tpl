@@ -3,13 +3,13 @@
 /**
  * Global variables
  * --------------------------------------------------------------
- * @@var $app       AppContext      Application context.
- * @@var $vm        object          The view model object.
- * @@var $uri       SystemUri       System Uri information.
- * @@var $chronos   ChronosService  The chronos datetime service.
- * @@var $nav       Navigator       Navigator object to build route.
- * @@var $asset     AssetService    The Asset manage service.
- * @@var $lang      LangService     The language translation service.
+ * @var $app       AppContext      Application context.
+ * @var $vm        object          The view model object.
+ * @var $uri       SystemUri       System Uri information.
+ * @var $chronos   ChronosService  The chronos datetime service.
+ * @var $nav       Navigator       Navigator object to build route.
+ * @var $asset     AssetService    The Asset manage service.
+ * @var $lang      LangService     The language translation service.
  */
 
 declare(strict_types=1);
@@ -24,9 +24,9 @@ use Windwalker\Core\Router\SystemUri;
 $callback = $app->input('callback');
 {% $phpClose %}
 
-@@extends('admin.global.pure')
+@extends('admin.global.pure')
 
-@@section('superbody')
+@section('superbody')
     <form id="grid-form" action="" x-data="{ grid: $store.grid }"
         x-ref="gridForm"
         data-ordering="{{ $ordering }}"
@@ -39,18 +39,13 @@ $callback = $app->input('callback');
                 <thead>
                 <tr>
                     <th>
-                        <x-sort field="{% kebab($name) %}.title">
+                        <x-sort field="{% snake($name) %}.title">
                             Title
                         </x-sort>
                     </th>
                     <th>
-                        <x-sort field="{% kebab($name) %}.state">
+                        <x-sort field="{% snake($name) %}.state">
                             State
-                        </x-sort>
-                    </th>
-                    <th>
-                        <x-sort field="{% kebab($name) %}.category_id">
-                            Category
                         </x-sort>
                     </th>
                     <th>
@@ -62,8 +57,8 @@ $callback = $app->input('callback');
                 </thead>
 
                 <tbody>
-                @@foreach ($items as $i => $item)
-                    @@php($data = [
+                @foreach($items as $i => $item)
+                    @php($data = [
                         'title' => $item->title,
                         'value' => $item->id,
                         'image' => $item->image,
@@ -80,13 +75,10 @@ $callback = $app->input('callback');
                             {{ $item->state }}
                         </th>
                         <td>
-                            {{ $item->category->title ?? '' }}
-                        </td>
-                        <td>
                             {{ $item->id }}
                         </td>
                     </tr>
-                @@endforeach
+                @endforeach
                 </tbody>
 
                 <tfoot>
@@ -100,10 +92,10 @@ $callback = $app->input('callback');
         </div>
 
         <div class="d-none">
-            @@include('@csrf')
+            @include('@csrf')
         </div>
 
         <x-batch-modal :form="$form" namespace="batch"></x-batch-modal>
     </form>
 
-@@stop
+@stop

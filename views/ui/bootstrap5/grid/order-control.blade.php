@@ -22,34 +22,35 @@ use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\SystemUri;
 
 /**
- * @var string $id
- * @var int    $row
- * @var int    $value
- * @var string $store
+ * @var string     $id
+ * @var int|string $row
+ * @var int        $value
+ * @var string     $store
  */
 $enabled ?? false;
+$row ?? \Windwalker\uid();
 ?>
 
 @if ($enabled)
-    <div class="input-group c-order-control flex-nowrap"
-        x-id="order-control-{{ $row }}"
-        x-data="{ grid: $store.{{ $store ?? 'grid' }} }"
-    >
-        <input type="text" class="form-control form-control-sm" 
-            data-order-row="{{ $row }}"
-            name="ordering[{{ $id }}]" value="{{ $value }}"
-            onkeydown="if(event.keyCode == 13) return false;" />
-        <button type="button" class="btn btn-default btn-outline-secondary btn-sm has-tooltip"
-            @click="grid.moveUp('{{ $id }}');"
-            title="@lang('unicorn.grid.ordering.moveup')">
-            <span class="fa fa-chevron-up"></span>
-        </button>
-        <button type="button" class="btn btn-default btn-outline-secondary btn-sm has-tooltip"
-            @click="grid.moveDown('{{ $id }}');"
-            title="@lang('unicorn.grid.ordering.movedown')">
-            <span class="fa fa-chevron-down"></span>
-        </button>
-    </div>
+<div class="input-group c-order-control flex-nowrap"
+    x-id="order-control-{{ $row }}"
+    x-data="{ grid: $store.{{ $store ?? 'grid' }} }"
+>
+    <input type="text" class="form-control form-control-sm"
+        data-order-row="{{ $row }}"
+        name="ordering[{{ $id }}]" value="{{ $value }}"
+        onkeydown="if(event.keyCode == 13){return false;}" />
+    <button type="button" class="btn btn-default btn-outline-secondary btn-sm has-tooltip"
+        @click="grid.moveUp('{{ $id }}');"
+        title="@lang('unicorn.grid.ordering.moveup')">
+        <span class="fa fa-chevron-up"></span>
+    </button>
+    <button type="button" class="btn btn-default btn-outline-secondary btn-sm has-tooltip"
+        @click="grid.moveDown('{{ $id }}');"
+        title="@lang('unicorn.grid.ordering.movedown')">
+        <span class="fa fa-chevron-down"></span>
+    </button>
+</div>
 @else
     {{ $value }}
 @endif

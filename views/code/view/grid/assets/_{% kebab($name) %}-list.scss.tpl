@@ -1,4 +1,4 @@
-// SCSS file for {% $name %}-list
+// SCSS file for {% kebab($name) %}-list
 
 .view-{% kebab($name) %}-list {
     //

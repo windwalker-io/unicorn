@@ -35,7 +35,7 @@ class GridForm implements FieldDefinitionInterface
             'search',
             function (Form $form) {
                 $form->add('*', SearchField::class)
-                    ->addFilter('trim')
+                    ->placeholder('Search')
                     ->attr('x-on:keydown.enter', '$store.grid.sendFilter($event)');
             }
         );
@@ -43,7 +43,7 @@ class GridForm implements FieldDefinitionInterface
         $form->ns(
             'filter',
             function (Form $form) {
-                $form->add('{% kebab($name) %}.state', ListField::class)
+                $form->add('{% snake($name) %}.state', ListField::class)
                     ->label('State')
                     ->option('- Select -', '')
                     ->option('Published', (string) BasicState::PUBLISHED()->getValue())

@@ -3,13 +3,13 @@
 /**
  * Global variables
  * --------------------------------------------------------------
- * @var $app       AppContext      Application context.
- * @var $vm        {% pascal($name) %}ListView The view model object.
- * @var $uri       SystemUri       System Uri information.
- * @var $chronos   ChronosService  The chronos datetime service.
- * @var $nav       Navigator       Navigator object to build route.
- * @var $asset     AssetService    The Asset manage service.
- * @var $lang      LangService     The language translation service.
+ * @var  $app       AppContext      Application context.
+ * @var  $vm        {% pascal($name) %}ListView The view model object.
+ * @var  $uri       SystemUri       System Uri information.
+ * @var  $chronos   ChronosService  The chronos datetime service.
+ * @var  $nav       Navigator       Navigator object to build route.
+ * @var  $asset     AssetService    The Asset manage service.
+ * @var  $lang      LangService     The language translation service.
  */
 
 declare(strict_types=1);
@@ -22,16 +22,20 @@ use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\SystemUri;
 use {% $ns %}\{% pascal($name) %}ListView;
 
+/**
+ * @var \App\Entity\{% pascal($name) %} $entity
+ */
+
 $workflow = $app->service(\Unicorn\Workflow\BasicStateWorkflow::class);
 {% $phpClose %}
 
-@@extends('admin.global.body')
+@extends('admin.global.body')
 
-@@section('toolbar-buttons')
-    @@include('list-toolbar')
-@@stop
+@section('toolbar-buttons')
+    @include('list-toolbar')
+@stop
 
-@@section('content')
+@section('content')
     <form id="grid-form" action="" x-data="{ grid: $store.grid }"
         x-ref="gridForm"
         data-ordering="{{ $ordering }}"
@@ -46,34 +50,34 @@ $workflow = $app->service(\Unicorn\Workflow\BasicStateWorkflow::class);
                     <th style="width: 1%">
                         <x-toggle-all></x-toggle-all>
                     </th>
-                    <th style="width: 5%">
-                        <x-sort field="{% kebab($name) %}.state">
+                    <th style="width: 5%" class="text-nowrap">
+                        <x-sort field="{% snake($name) %}.state">
                             State
                         </x-sort>
                     </th>
-                    <th>
-                        <x-sort field="{% kebab($name) %}.title">
+                    <th class="text-nowrap">
+                        <x-sort field="{% snake($name) %}.title">
                             Title
                         </x-sort>
                     </th>
-                    <th style="width: 10%" class="">
+                    <th style="width: 10%" class="text-nowrap">
                         <div class="d-flex w-100 justify-content-between">
                             <x-sort
-                                asc="{% kebab($name) %}.ordering ASC"
-                                desc="{% kebab($name) %}.ordering DESC"
+                                asc="{% snake($name) %}.ordering ASC"
+                                desc="{% snake($name) %}.ordering DESC"
                             >
                                 Order
                             </x-sort>
-                            @@if ($vm->reorderEnabled($ordering))
+                            @if($vm->reorderEnabled($ordering))
                                 <x-save-order></x-save-order>
-                            @@endif
+                            @endif
                         </div>
                     </th>
-                    <th>
+                    <th style="width: 1%" class="text-nowrap">
                         Delete
                     </th>
-                    <th>
-                        <x-sort field="category.id">
+                    <th style="width: 1%" class="text-nowrap text-right">
+                        <x-sort field="{% snake($name) %}.id">
                             ID
                         </x-sort>
                     </th>
@@ -81,23 +85,23 @@ $workflow = $app->service(\Unicorn\Workflow\BasicStateWorkflow::class);
                 </thead>
 
                 <tbody>
-                @@foreach ($items as $i => $item)
+                @foreach($items as $i => $item)
                     {% $phpOpen %}
-                        $vm->prepareItem($item);
+                        $entity = $vm->prepareItem($item);
                     {% $phpClose %}
                     <tr>
                         <td>
-                            <x-row-checkbox :row="$i" :id="$item->id"></x-row-checkbox>
+                            <x-row-checkbox :row="$i" :id="$entity->getId()"></x-row-checkbox>
                         </td>
                         <th>
                             <x-state-dropdown color-on="text"
                                 button-style="min-width: 150px"
                                 use-states
-                                :workflow="$workflow" :id="$item->id" :value="$item->state"
+                                :workflow="$workflow" :id="$entity->getId()" :value="$item->state"
                             />
                         </th>
                         <td>
-                            <a href="{{ $nav->to('{% kebab($name) %}_edit')->id($item->id) }}">
+                            <a href="{{ $nav->to('{% snake($name) %}_edit')->id($entity->getId()) }}">
                                 {{ $item->title }}
                             </a>
                         </td>
@@ -105,18 +109,22 @@ $workflow = $app->service(\Unicorn\Workflow\BasicStateWorkflow::class);
                             <x-order-control
                                 :enabled="$vm->reorderEnabled($ordering)"
                                 :row="$i"
-                                :id="$item->id"
+                                :id="$entity->getId()"
                                 :value="$item->ordering"
                             ></x-order-control>
                         </td>
-                        <td>
-
+                        <td class="text-center">
+                            <button type="button" class="btn btn-sm btn-outline-secondary"
+                                @click="grid.deleteItem('{{ $entity->getId() }}')"
+                            >
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
                         </td>
-                        <td>
-                            {{ $item->id }}
+                        <td class="text-right">
+                            {{ $entity->getId() }}
                         </td>
                     </tr>
-                @@endforeach
+                @endforeach
                 </tbody>
 
                 <tfoot>
@@ -130,10 +138,10 @@ $workflow = $app->service(\Unicorn\Workflow\BasicStateWorkflow::class);
         </div>
 
         <div class="d-none">
-            @@include('@csrf')
+            @include('@csrf')
         </div>
 
         <x-batch-modal :form="$form" namespace="batch"></x-batch-modal>
     </form>
 
-@@stop
+@stop

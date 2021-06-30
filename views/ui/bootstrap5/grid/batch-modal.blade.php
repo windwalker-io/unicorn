@@ -66,10 +66,6 @@ $copyButtonText ??= 'Duplicate';
                 </div>
             </div>
             <div class="modal-footer d-flex justify-content-end">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                    <span class="fa fa-times"></span>
-                    @translate('unicorn.core.close')
-                </button>
                 @if ($update)
                     <button type="button" class="btn btn-primary ml-2"
                         @click="grid.form.patch()"
@@ -86,6 +82,11 @@ $copyButtonText ??= 'Duplicate';
                         {{ $copyButtonText }}
                     </button>
                 @endif
+
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <span class="fa fa-times"></span>
+                    @translate('unicorn.core.close')
+                </button>
             </div>
         </div>
     </div>

@@ -446,7 +446,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
 
     public function searchTextFor(string $q, array $fields = []): static
     {
-        $this->searchText = $q;
+        $this->searchText = trim($q);
 
         $this->setSearchFields($fields);
 
