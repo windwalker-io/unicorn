@@ -13,6 +13,7 @@ namespace Unicorn;
 
 use Symfony\Component\Mime\MimeTypes;
 use Symfony\Component\Mime\MimeTypesInterface;
+use Unicorn\Attributes\ConfigureAction;
 use Unicorn\Attributes\StateMachine;
 use Unicorn\Controller\CrudController;
 use Unicorn\Controller\GridController;

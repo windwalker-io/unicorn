@@ -49,9 +49,9 @@ class SaveAction extends AbstractDatabaseAction
 
         $data = $this->processDataAndValidate($data, $form, $args);
 
-        $entity = $this->getEntityMapper()->hydrate($data, $entity);
+        // $entity = $this->getEntityMapper()->hydrate($data, $entity);
 
-        return $this->save($entity);
+        return $this->save($data);
     }
 
     /**
@@ -83,13 +83,9 @@ class SaveAction extends AbstractDatabaseAction
      */
     public function save(array|object $data, array|string $condFields = null, int $options = 0): object
     {
-        if (is_array($data)) {
-            $entity = $this->getEntityMapper()->toEntity($data);
-        } else {
-            $entity = $data;
-        }
+        $data = $this->getEntityMapper()->toCollection($data);
 
-        return $this->getEntityMapper()->saveOne($entity, $condFields, $options);
+        return $this->getEntityMapper()->saveOne($data, $condFields, $options);
     }
 
     public function beforeSave(callable $listener): static

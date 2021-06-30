@@ -11,8 +11,12 @@ declare(strict_types=1);
 
 namespace Unicorn\Repository;
 
+use Unicorn\Attributes\ConfigureAction;
 use Unicorn\Repository\Actions\ActionsFactory;
+use Windwalker\Attributes\AttributesAccessor;
 use Windwalker\DI\Attributes\Inject;
+
+use function Windwalker\arr;
 
 /**
  * Trait ActionsAwareTrait
@@ -73,5 +77,20 @@ trait ActionsAwareTrait
         }
     }
 
-    abstract protected function configureActions(ActionsFactory $actionsFactory): void;
+    protected function configureActions(ActionsFactory $actionsFactory): void
+    {
+        foreach (get_class_methods($this) as $method) {
+            AttributesAccessor::runAttributeIfExists(
+                new \ReflectionMethod($this, $method),
+                ConfigureAction::class,
+                function (ConfigureAction $attr) use ($actionsFactory, $method) {
+                    $actionsFactory->configure(
+                        $attr->className,
+                        fn (object $action) => $this->$method($action)
+                    );
+                },
+                \ReflectionAttribute::IS_INSTANCEOF
+            );
+        }
+    }
 }
