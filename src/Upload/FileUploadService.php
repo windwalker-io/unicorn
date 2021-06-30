@@ -99,7 +99,7 @@ class FileUploadService
         return $this->storageManager->get($this->options['storage']);
     }
 
-    public function handleBase64(string $file, ?string $dest = null): PutResult
+    public function handleBase64(string $file, ?string $dest = null, array $options = []): PutResult
     {
         $storage = $this->getStorage();
         $stream = Base64DataUri::toStream($file, $mime);
@@ -113,10 +113,10 @@ class FileUploadService
             $this->mimeTypes->getExtensions($mime)[0] ?? null
         );
 
-        return $storage->putStream($stream, $dest);
+        return $storage->putStream($stream, $dest, $options);
     }
 
-    public function handleFile(UploadedFileInterface $file, ?string $dest = null): PutResult
+    public function handleFile(UploadedFileInterface $file, ?string $dest = null, array $options = []): PutResult
     {
         if ($file->getError() !== UPLOAD_ERR_OK) {
             throw new \RuntimeException(
@@ -135,10 +135,10 @@ class FileUploadService
 
         $dest ??= $this->getUploadPath($dest, Path::getExtension($file->getClientFilename()));
 
-        return $storage->putStream($stream, $dest);
+        return $storage->putStream($stream, $dest, $options);
     }
 
-    public function handleFileIfUploaded(?UploadedFileInterface $file, ?string $dest = null): ?PutResult
+    public function handleFileIfUploaded(?UploadedFileInterface $file, ?string $dest = null, array $options = []): ?PutResult
     {
         if (!$file) {
             return null;
@@ -148,7 +148,7 @@ class FileUploadService
             return null;
         }
 
-        return $this->handleFile($file, $dest);
+        return $this->handleFile($file, $dest, $options);
     }
 
     public function getUploadPath(?string $path, string $ext = '', ?string $dir = null): string
