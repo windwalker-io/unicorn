@@ -15,8 +15,10 @@ use Symfony\Component\Mime\MimeTypes;
 use Symfony\Component\Mime\MimeTypesInterface;
 use Unicorn\Attributes\ConfigureAction;
 use Unicorn\Attributes\StateMachine;
+use Unicorn\Command\MigFromCommand;
 use Unicorn\Controller\CrudController;
 use Unicorn\Controller\GridController;
+use Unicorn\Generator\Command\BuildFormCommand;
 use Unicorn\Generator\SubCommand\ControllerSubCommand;
 use Unicorn\Generator\SubCommand\ModelSubCommand;
 use Unicorn\Generator\SubCommand\RouteSubCommand;
@@ -192,7 +194,8 @@ class UnicornPackage extends AbstractPackage implements
             $container->mergeParameters(
                 'commands',
                 [
-                    'build:form' => \Unicorn\Generator\Command\BuildFormCommand::class,
+                    'build:form' => BuildFormCommand::class,
+                    'mig:from' => MigFromCommand::class,
                 ]
             );
 
