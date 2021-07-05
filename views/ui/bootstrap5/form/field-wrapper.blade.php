@@ -60,7 +60,7 @@ $validateAttrs ??= [];
 if ($attributes ?? null) {
     $attributes = $attributes->exceptProps(['field', 'options']);
 
-    $attrs = $attributes->merge($attrs)->getAttributes();
+    $attrs = $attributes->merge($attrs, false)->getAttributes();
 
     foreach ($attrs as $name => $value) {
         if (str_starts_with($name, 'input-')) {

@@ -57,7 +57,7 @@ if ($inputElement instanceof \Windwalker\DOM\DOMElement) {
     if ($attributes ?? null) {
         $attributes = $attributes->exceptProps(['field', 'options']);
 
-        $attributes = $attributes->merge($inputElement->getAttributes(true));
+        $attributes = $attributes->merge($inputElement->getAttributes(true), false);
         $inputElement->setAttributes($attributes->getAttributes());
     }
 

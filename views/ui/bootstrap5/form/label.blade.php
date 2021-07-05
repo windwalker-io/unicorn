@@ -54,7 +54,7 @@ if ($labelElement instanceof \Windwalker\DOM\DOMElement) {
     if ($attributes ?? null) {
         $attributes = $attributes->exceptProps(['field', 'options']);
 
-        $attributes = $attributes->merge($labelElement->getAttributes(true));
+        $attributes = $attributes->merge($labelElement->getAttributes(true), false);
         $labelElement->setAttributes($attributes->getAttributes());
     }
 }
