@@ -18,7 +18,7 @@ $router->group('{% kebab($name) %}')
             ->putHandler('filter')
             ->patchHandler('batch');
 
-        $router->any('{% snake($name) %}_edit', '/{% kebab($name) %}/edit')
+        $router->any('{% snake($name) %}_edit', '/{% kebab($name) %}/edit[/{id}]')
             ->controller({% pascal($name) %}Controller::class)
             ->view({% pascal($name) %}EditView::class);
     });
