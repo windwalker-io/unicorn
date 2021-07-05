@@ -33,9 +33,9 @@ trait CrudRepositoryTrait
         return $this->createAction($actionClass, $this);
     }
 
-    public function save(object|array $item, bool $updateNulls = false): object
+    public function save(object|array $item, int $options = 0): object
     {
-        return $this->createSaveAction()->save($item, null, $updateNulls);
+        return $this->createSaveAction()->save($item, null, $options);
     }
 
     public function processDataAndSave(object|array $item, mixed $form = null, array $args = []): object
