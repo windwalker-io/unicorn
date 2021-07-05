@@ -242,6 +242,10 @@ export class UnicornFieldValidateElement extends HTMLElement {
   }
 
   checkValidity() {
+    if (!this.$input) {
+      return true;
+    }
+
     this.$input.classList.remove(this.invalidClass);
     this.$input.classList.remove(this.validClass);
 
