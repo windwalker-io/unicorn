@@ -325,7 +325,10 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
 
         if (trim($this->searchText) !== '') {
             foreach ($this->searchFields as $field) {
-                $searches[$field] = $this->searchText;
+
+                if ($this->isFieldAllow($field)) {
+                    $searches[$field] = $this->searchText;
+                }
             }
         }
 
