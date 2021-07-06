@@ -11,6 +11,8 @@ declare(strict_types=1);
 
 namespace Unicorn\Repository\Actions;
 
+use Unicorn\Repository\AfterBatchItemEvent;
+use Unicorn\Repository\BeforeBatchItemEvent;
 use Windwalker\Core\Form\Exception\ValidateFailException;
 use Windwalker\Core\Language\LangService;
 use Windwalker\DI\Attributes\Inject;
@@ -61,7 +63,32 @@ class BatchAction extends AbstractDatabaseAction
             }
 
             $item[$key] = $id;
-            $items[] = $mapper->updateOne($item);
+
+            $event = $this->emit(
+                BeforeBatchItemEvent::class,
+                [
+                    'id' => $id,
+                    'data' => $item,
+                    'task' => 'update',
+                    'action' => $this,
+                    'orm' => $mapper->getORM()
+                ]
+            );
+
+            $item = $mapper->updateOne($oldData = $event->getData());
+
+            $event = $this->emit(
+                AfterBatchItemEvent::class,
+                [
+                    'id' => $id,
+                    'data' => $item,
+                    'task' => 'update',
+                    'action' => $this,
+                    'orm' => $mapper->getORM()
+                ]
+            );
+
+            $items[] = $event->getData();
         }
 
         return $items;
@@ -81,15 +108,39 @@ class BatchAction extends AbstractDatabaseAction
 
         foreach ($ids as $id) {
             if ($data === []) {
-                throw new ValidateFailException(
-                    $this->lang->trans('unicorn.message.batch.data.empty')
-                );
+                // throw new ValidateFailException(
+                //     $this->lang->trans('unicorn.message.batch.data.empty')
+                // );
             }
 
-            $items[] = $mapper->copy(
-                [$key => $id],
-                fn(array $item) => array_merge($item, $data)
+            $event = $this->emit(
+                BeforeBatchItemEvent::class,
+                [
+                    'id' => $id,
+                    'data' => $data,
+                    'task' => 'copy',
+                    'action' => $this,
+                    'orm' => $mapper->getORM()
+                ]
             );
+
+            $data = $mapper->copy(
+                [$key => $event->getId()],
+                fn(array $item) => array_merge($item, $event->getData())
+            );
+
+            $event = $this->emit(
+                AfterBatchItemEvent::class,
+                [
+                    'id' => $id,
+                    'data' => $data,
+                    'task' => 'copy',
+                    'action' => $this,
+                    'orm' => $mapper->getORM()
+                ]
+            );
+
+            $items[] = $event->getData();
         }
 
         return $items;

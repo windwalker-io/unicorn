@@ -17,13 +17,17 @@ use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Language\LangService;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\RouteUri;
+use Windwalker\Event\EventAwareInterface;
+use Windwalker\Event\EventAwareTrait;
 use Windwalker\Session\Session;
 
 /**
  * The GridController class.
  */
-class GridController
+class GridController implements EventAwareInterface
 {
+    use EventAwareTrait;
+
     /**
      * GridController constructor.
      */
@@ -63,7 +67,11 @@ class GridController
         $ids = (array) $app->input('id');
         $data ??= (array) $app->input('batch');
 
-        $repository->createBatchAction()->update($ids, $data);
+        $action = $repository->createBatchAction();
+
+        $action->addEventDealer($this);
+
+        $action->update($ids, $data);
 
         $task = $app->input('task');
         $app->addMessage(
@@ -81,7 +89,11 @@ class GridController
         $ids = (array) $app->input('id');
         $data = (array) $app->input('batch');
 
-        $repository->createBatchAction()->copy($ids, $data);
+        $action = $repository->createBatchAction();
+
+        $action->addEventDealer($this);
+
+        $action->copy($ids, $data);
 
         $app->addMessage($this->lang->trans('copy.success', count($ids)), 'success');
 
