@@ -163,6 +163,7 @@ class UnicornPackage extends AbstractPackage implements
                 '@batch-modal' => '@theme.grid.batch-modal',
                 '@card' => '@theme.card',
                 '@fieldset' => '@theme.form.fieldset',
+                '@bool-icon' => '@theme.bool-icon',
             ]
         );
 
@@ -184,6 +185,7 @@ class UnicornPackage extends AbstractPackage implements
                 'input' => '@theme.form.input',
                 'label' => '@theme.form.label',
                 'fieldset' => '@fieldset',
+                'bool-icon' => '@bool-icon',
             ]
         );
 

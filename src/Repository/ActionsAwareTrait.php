@@ -13,8 +13,13 @@ namespace Unicorn\Repository;
 
 use Unicorn\Attributes\ConfigureAction;
 use Unicorn\Repository\Actions\ActionsFactory;
+use Unicorn\Repository\Actions\BatchAction;
+use Unicorn\Repository\Actions\SaveAction;
 use Windwalker\Attributes\AttributesAccessor;
 use Windwalker\DI\Attributes\Inject;
+
+use Windwalker\ORM\Event\AfterSaveEvent;
+use Windwalker\ORM\Event\BeforeSaveEvent;
 
 use function Windwalker\arr;
 
@@ -80,8 +85,10 @@ trait ActionsAwareTrait
     protected function configureActions(ActionsFactory $actionsFactory): void
     {
         foreach (get_class_methods($this) as $method) {
+            $ref = new \ReflectionMethod($this, $method);
+
             AttributesAccessor::runAttributeIfExists(
-                new \ReflectionMethod($this, $method),
+                $ref,
                 ConfigureAction::class,
                 function (ConfigureAction $attr) use ($actionsFactory, $method) {
                     $actionsFactory->configure(
@@ -91,6 +98,27 @@ trait ActionsAwareTrait
                 },
                 \ReflectionAttribute::IS_INSTANCEOF
             );
+
+            $this->runEventAttr($ref, SaveAction::class, BeforeSaveEvent::class);
+            $this->runEventAttr($ref, SaveAction::class, AfterSaveEvent::class);
+            $this->runEventAttr($ref, BatchAction::class, BeforeBatchItemEvent::class);
+            $this->runEventAttr($ref, BatchAction::class, AfterBatchItemEvent::class);
         }
+    }
+
+    protected function runEventAttr(\ReflectionMethod $ref, string $actionClass, string $event): void
+    {
+        AttributesAccessor::runAttributeIfExists(
+            $ref,
+            $event,
+            function (object $attr) use ($event, $actionClass, $ref) {
+                $this->actionsFactory->configure(
+                    $actionClass,
+                    fn(object $action) => $action->on($event, [$this, $ref->getName()]),
+                    ActionsFactory::IS_INSTANCE_OF
+                );
+            },
+            \ReflectionAttribute::IS_INSTANCEOF
+        );
     }
 }
