@@ -70,18 +70,14 @@ if ($inputElement instanceof \Windwalker\DOM\DOMElement) {
     );
 }
 
-$validateAttributes = new ComponentAttributes($validateAttrs ?? []);
-$validateAttributes['class'] .= ' d-block';
-
 if ($floating) {
-    $validateAttributes['class'] .= ' form-floating';
     $inputElement['placeholder'] ??= $field->getLabelName();
 }
 
 $fieldElement = $field->buildFieldElement($inputElement, $options);
 ?>
 
-<uni-field-validate {!! $validateAttributes !!}>
+<div uni-field-validate class="{{ $floating ? 'form-floating' : '' }}">
 {!! $fieldElement !!}
 
 @if ($end ?? null)
@@ -93,8 +89,4 @@ $fieldElement = $field->buildFieldElement($inputElement, $options);
 @else
     <div data-field-error class="{{ $attributes['error-class'] ?? 'invalid-tooltip' }}"></div>
 @endif
-</uni-field-validate>
-
-@if ($help = $field->get('help'))
-    <div class="small text-muted mt-2">{!! $help !!}</div>
-@endif
+</div>

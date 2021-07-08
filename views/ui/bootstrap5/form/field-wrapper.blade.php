@@ -125,4 +125,8 @@ $noLabel ??= $options['no_label'] ?? false;
             @endif
         </div>
     @endif
+
+    @if ($help = $field->get('help'))
+        <div class="small text-muted mt-2">{!! $help !!}</div>
+    @endif
 </div>

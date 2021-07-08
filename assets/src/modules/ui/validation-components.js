@@ -12,44 +12,40 @@
  */
 const handlers = {};
 
-/**
- * UnicornFormValidateElement
- */
-export class UnicornFormValidateElement extends HTMLElement {
+class UnicornFormValidation {
   presetFields = [];
   validators = {};
   $form;
 
   static is = 'uni-form-validate';
 
-  constructor() {
-    super();
+  constructor(el, options = {}) {
+    this.$form = el;
+    this.options = options;
 
     this.registerDefaultValidators();
+
+    this.init();
   }
 
   get scrollEnabled() {
-    const scroll = this.getAttribute('scroll');
-
-    return scroll != null && scroll !== 'false';
+    return this.options.scroll === true;
   }
 
   get scrollOffset() {
-    return Number(this.getAttribute('scroll-offset') || -100);
+    return Number(this.options.scrollOffset || -100);
   }
 
   get fieldSelector() {
-    return this.getAttribute('field-selector') || 'uni-field-validate';
+    return this.options.fieldSelector || '[uni-field-validate]';
   }
 
   get validatedClass() {
-    return this.getAttribute('validated-class') || 'was-validated';
+    return this.options.validatedClass || 'was-validated';
   }
 
-  connectedCallback() {
-    this.$form = this.querySelector('form');
-    
-    if (this.$form) {
+  init() {
+    if (this.$form.tagName === 'FORM') {
       this.$form.setAttribute('novalidate', true);
       this.$form.addEventListener('submit', (event) => {
         if (!this.validateAll()) {
@@ -59,6 +55,10 @@ export class UnicornFormValidateElement extends HTMLElement {
 
           return false;
         }
+
+        event.stopImmediatePropagation(); // Stop following events
+        event.stopPropagation();
+        event.preventDefault();
 
         return true;
       }, false);
@@ -82,7 +82,8 @@ export class UnicornFormValidateElement extends HTMLElement {
     let firstFail = null;
 
     fields.forEach((field) => {
-      const result = field.checkValidity();
+      const fv = u.getBoundedInstance(field, 'field.validation');
+      const result = fv.checkValidity();
 
       if (!result && !firstFail) {
         firstFail = field;
@@ -158,30 +159,16 @@ export class UnicornFormValidateElement extends HTMLElement {
   }
 }
 
-/**
- * UnicornFieldValidateElement
- */
-export class UnicornFieldValidateElement extends HTMLElement {
+class UnicornFieldValidation {
   $input;
 
   static is = 'uni-field-validate';
 
-  constructor() {
-    super();
-  }
+  constructor(el, options = {}) {
+    this.el = el;
+    this.options = options;
 
-  static get observedAttributes() {
-    return [
-      'selector',
-    ]
-  }
-
-  attributeChangedCallback(name, oldValue, newValue) {
-    switch (name) {
-      case 'selector':
-        this.selectInput();
-        break;
-    }
+    this.init();
   }
 
   get $form() {
@@ -189,33 +176,33 @@ export class UnicornFieldValidateElement extends HTMLElement {
   }
 
   get errorSelector() {
-    return this.getAttribute('error-selector') || '[data-field-error]';
+    return this.options.errorSelector || '[data-field-error]';
   }
 
   get selector() {
-    return this.getAttribute('selector') || 'input, select, textarea';
+    return this.options.selector || 'input, select, textarea';
   }
 
   get validClass() {
-    return this.getAttribute('valid-class') || 'is-valid';
+    return this.options.validClass || 'is-valid';
   }
 
   get invalidClass() {
-    return this.getAttribute('invalid-class') || 'is-invalid';
+    return this.options.invalidClass || 'is-invalid';
   }
 
   selectInput() {
-    return this.$input = this.querySelector(this.selector);
+    return this.$input = this.el.querySelector(this.selector);
   }
 
-  connectedCallback() {
+  init() {
     this.selectInput();
 
     this.bindEvents();
 
-    if (this.querySelector(this.errorSelector)?.classList?.contains('invalid-tooltip')) {
-      if (window.getComputedStyle(this).position === 'static') {
-        this.style.position = 'relative';
+    if (this.el.querySelector(this.errorSelector)?.classList?.contains('invalid-tooltip')) {
+      if (window.getComputedStyle(this.el).position === 'static') {
+        this.el.style.position = 'relative';
       }
     }
   }
@@ -229,12 +216,9 @@ export class UnicornFieldValidateElement extends HTMLElement {
       this.showInvalidResponse();
     });
 
-    const events = this.attributes['events'] || 'change';
+    const events = this.options['events'] || ['change'];
 
-    events.split(',')
-      .map(e => e.trim())
-      .filter(e => e !== '')
-      .forEach((eventName) => {
+    events.forEach((eventName) => {
         this.$input.addEventListener(eventName, () => {
           this.checkValidity();
         });
@@ -271,10 +255,11 @@ export class UnicornFieldValidateElement extends HTMLElement {
     const validates = (this.$input.getAttribute('data-validate') || '').split('|');
     let help;
     let result = true;
+    const fv = u.getBoundedInstance(this.$form, 'form.validation');
 
     if (this.$input.value !== '' && validates.length) {
       for (let i in validates) {
-        const validator = this.$form.validators[validates[i]];
+        const validator = fv.validators[validates[i]];
         if (validator && !validator.handler(this.$input.value, this.$input)) {
           help = validator.options.notice;
 
@@ -301,21 +286,46 @@ export class UnicornFieldValidateElement extends HTMLElement {
   }
 
   showInvalidResponse() {
-    const $help = this.querySelector(this.errorSelector);
+    const $help = this.el.querySelector(this.errorSelector);
 
     $help.textContent = this.$input.validationMessage;
   }
 
   clearInvalidResponse() {
-    const $help = this.querySelector(this.errorSelector);
+    const $help = this.el.querySelector(this.errorSelector);
 
     $help.textContent = '';
   }
 
   getForm() {
-    return this.closest(this.attributes['form-selector'] || 'uni-form-validate');
+    return this.el.closest(this.options['formSelector'] || '[uni-form-validate]');
   }
 }
+
+u.directive('form-validate', {
+  mounted(el, binding) {
+    u.getBoundedInstance(el, 'form.validation', (ele) => {
+      return new UnicornFormValidation(ele, JSON.parse(binding.value || '{}'));
+    });
+  },
+  updated(el, binding) {
+    const instance = u.getBoundedInstance(el, 'form.validation');
+    instance.options = JSON.parse(binding.value || '{}');
+  }
+});
+
+u.directive('field-validate', {
+  mounted(el, binding) {
+    u.getBoundedInstance(el, 'field.validation', (ele) => {
+      return new UnicornFieldValidation(ele, JSON.parse(binding.value || '{}'));
+    });
+  },
+
+  updated(el, binding) {
+    const instance = u.getBoundedInstance(el, 'field.validation');
+    instance.options = JSON.parse(binding.value || '{}');
+  }
+});
 
 function camelTo(str, sep) {
   return str.replace(/([a-z])([A-Z])/g, `$1${sep}$2`).toLowerCase();
@@ -372,5 +382,5 @@ handlers['password-confirm'] = function (value, element) {
   return target.val() === value;
 };
 
-customElements.define(UnicornFormValidateElement.is, UnicornFormValidateElement);
-customElements.define(UnicornFieldValidateElement.is, UnicornFieldValidateElement);
+// customElements.define(UnicornFormValidateElement.is, UnicornFormValidateElement);
+// customElements.define(UnicornFieldValidateElement.is, UnicornFieldValidateElement);
