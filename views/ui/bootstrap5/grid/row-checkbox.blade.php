@@ -27,11 +27,13 @@ use Windwalker\Core\Router\SystemUri;
  */
 ?>
 
-<input id="cb{{ $row }}"
-    type="checkbox"
-    name="id[{{ $row }}]"
-    data-row-number="{{ $row }}"
-    class="form-check-input"
-    value="{{ $id }}"
-    data-role="grid-checkbox"
-/>
+<div class="form-inline">
+    <input id="cb{{ $row }}"
+        type="checkbox"
+        name="id[{{ $row }}]"
+        data-row-number="{{ $row }}"
+        class="form-check-input"
+        value="{{ $id }}"
+        data-role="grid-checkbox"
+    />
+</div>

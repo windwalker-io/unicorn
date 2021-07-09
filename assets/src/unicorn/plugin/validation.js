@@ -14,5 +14,3 @@ export default class UnicornValidation {
     };
   }
 }
-
-

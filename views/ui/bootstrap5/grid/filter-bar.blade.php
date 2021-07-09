@@ -49,6 +49,7 @@ $filterBlock ??= null;
 >
     <div class="c-filter-bar-top d-flex">
         <div class="c-filter-bar__top-start d-flex">
+            {{-- Search --}}
             @if ($searchBlock !== false)
                 @if ($searchBlock === null)
                     <div class="input-group">
@@ -68,8 +69,9 @@ $filterBlock ??= null;
                 @endif
             @endif
 
+            {{-- Buttons --}}
             @if ($filterBlock !== false)
-                <div class="btn-group ms-3">
+                <div class="btn-group ms-3 ml-3">
                     <button type="button" class="btn text-nowrap"
                         data-filter-toggle-button
                         :class="[ open ? 'btn-dark' : 'btn-outline-secondary' ]"
@@ -91,11 +93,13 @@ $filterBlock ??= null;
             @endif
         </div>
 
+        {{-- End --}}
         <div class="c-filter-bar__top-end ms-auto">
             {!! $end ?? '' !!}
         </div>
     </div>
 
+    {{-- Filters --}}
     @if ($filterBlock !== false)
     <div class="c-filter-bar__filters" x-ref="filterForm" style="display: none;">
         <div class="pt-3">

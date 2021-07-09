@@ -45,7 +45,6 @@ if ($field instanceof \Windwalker\Form\Field\HiddenFieldInterface) {
 $floating = $field->get('floating') ?? $attributes['floating'] ?? false;
 
 if ($floating) {
-    $wrapper->addClass('form-floating');
     $field->set('floating', true);
 } else {
     $wrapper->addClass('row');
@@ -55,27 +54,19 @@ $attrs = $wrapper->getAttributes(true);
 
 $inputAttrs ??= [];
 $labelAttrs ??= [];
-$validateAttrs ??= [];
+$validate ??= [];
 
 if ($attributes ?? null) {
-    $attributes = $attributes->exceptProps(['field', 'options']);
+    $attributes = $attributes->exceptProps(['field', 'options', 'validate']);
 
     $attrs = $attributes->merge($attrs, false)->getAttributes();
 
     foreach ($attrs as $name => $value) {
         if (str_starts_with($name, 'input-')) {
-            $newName = Str::removeLeft($name, 'input-');
-            $inputAttrs[$newName] = $value;
-
+            $inputAttrs[Str::removeLeft($name, 'input-')] = $value;
             unset($attrs[$name]);
         } elseif (str_starts_with($name, 'label-')) {
-            $newName = Str::removeLeft($name, 'label-');
-            $labelAttrs[$newName] = $value;
-
-            unset($attrs[$name]);
-        } elseif (str_starts_with($name, 'validate-')) {
-            $inputAttrs[$name] = $value;
-
+            $labelAttrs[Str::removeLeft($name, 'label-')] = $value;
             unset($attrs[$name]);
         }
     }
@@ -99,32 +90,36 @@ $noLabel ??= $options['no_label'] ?? false;
 ?>
 
 <div {!! \Windwalker\DOM\HTMLElement::buildAttributes($attrs) !!}>
-    @if ($floating)
+    @if (!$noLabel && !$floating)
+        @if ($label ?? null)
+            {!! $label(field: $field, options: $options) !!}
+        @else
+            <x-label :field="$field" :options="$options" :="$labelAttrs"></x-label>
+        @endif
+    @endif
+
+    <div data-input-continer uni-field-validate="{{ json_encode($validate) }}"
+        class="position-relative {{ $floating ? 'form-floating' : 'col-md-' . ($inputCols ?? 12) }}">
         @if ($defaultSlot ?? null)
             {!! $defaultSlot(field: $field, options: $options) !!}
         @else
-            <x-input :field="$field" :options="$options" :="$inputAttrs" floating>
-                <x-slot name="end">
+            <x-input :field="$field" :options="$options" :="$inputAttrs"></x-input>
+
+            @if (!$noLabel && $floating)
+                @if ($label ?? null)
+                    {!! $label(field: $field, options: $options) !!}
+                @else
                     <x-label :field="$field" :options="$options" :="$labelAttrs"></x-label>
-                </x-slot>
-            </x-input>
-        @endif
-    @else
-        @if (!$noLabel)
-            @if ($label ?? null)
-                {!! $label(field: $field, options: $options) !!}
-            @else
-                <x-label :field="$field" :options="$options" :="$labelAttrs"></x-label>
+                @endif
             @endif
         @endif
-        <div data-input-continer class="col-md-{{ $inputCols ?? 12 }}">
-            @if ($defaultSlot ?? null)
-                {!! $defaultSlot(field: $field, options: $options) !!}
-            @else
-                <x-input :field="$field" :options="$options" :="$inputAttrs"></x-input>
-            @endif
-        </div>
-    @endif
+
+        @if ($error ?? null)
+            {!! $error(field: $field, input: $inputElement) !!}
+        @else
+            <div data-field-error class="{{ $attributes['error-class'] ?? 'invalid-tooltip' }}"></div>
+        @endif
+    </div>
 
     @if ($help = $field->get('help'))
         <div class="small text-muted mt-2">{!! $help !!}</div>

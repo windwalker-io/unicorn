@@ -38,19 +38,8 @@ $options = array_merge($field->getStates(), $options ?? []);
 
 $floating = $field->get('floating') ?? $attributes['floating'] ?? null;
 
-$validateAttrs ??= [];
-
 if ($attributes ?? null) {
     $attributes = $attributes->exceptProps(['field', 'options']);
-
-    foreach ($attributes->getAttributes() as $name => $value) {
-        if (str_starts_with($name, 'validate-')) {
-            $newName = Str::removeLeft($name, 'validate-');
-            $validateAttrs[$newName] = $value;
-
-            unset($attributes[$name]);
-        }
-    }
 }
 
 if ($inputElement instanceof \Windwalker\DOM\DOMElement) {
@@ -64,7 +53,7 @@ if ($inputElement instanceof \Windwalker\DOM\DOMElement) {
     $inputElement->addClass(
         match (true) {
             $inputElement->getAttribute('type') === 'checkbox' => 'form-input-check',
-            $inputElement->getName() === 'select' => 'form-select',
+            $inputElement->getName() === 'select' => 'custom-select form-select',
             default => 'form-control'
         }
     );
@@ -77,16 +66,8 @@ if ($floating) {
 $fieldElement = $field->buildFieldElement($inputElement, $options);
 ?>
 
-<div uni-field-validate class="{{ $floating ? 'form-floating' : '' }}">
 {!! $fieldElement !!}
 
 @if ($end ?? null)
     {!! $end(field: $field, input: $inputElement) !!}
 @endif
-
-@if ($error ?? null)
-    {!! $error(field: $field, input: $inputElement) !!}
-@else
-    <div data-field-error class="{{ $attributes['error-class'] ?? 'invalid-tooltip' }}"></div>
-@endif
-</div>
