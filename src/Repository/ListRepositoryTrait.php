@@ -19,19 +19,22 @@ use Windwalker\ORM\SelectorQuery;
  */
 trait ListRepositoryTrait
 {
-    public function getListSelector(): ListSelector
+    public function createSelector(SelectorQuery &$query = null): ListSelector
     {
-        return $this->createSelector();
-    }
+        $selector = $this->createSelectorObject();
 
-    public function createSelector(): ListSelector
-    {
-        $selector = new ListSelector($this->db, $this->paginationFactory);
-
-        $this->configureSelector($selector->getQuery(), $selector);
+        $this->configureSelector($query = $selector->getQuery(), $selector);
 
         return $selector;
     }
 
-    abstract protected function configureSelector(SelectorQuery $query, ListSelector $selector): void;
+    protected function createSelectorObject(): ListSelector
+    {
+        return new ListSelector($this->db, $this->paginationFactory);
+    }
+
+    protected function configureSelector(SelectorQuery $query, ListSelector $selector): void
+    {
+        //
+    }
 }

@@ -33,17 +33,13 @@ class {% pascal($name) %}Repository implements ManageRepositoryInterface, ListRe
     use ManageRepositoryTrait;
     use ListRepositoryTrait;
 
-    /**
-     * Configure List Selector.
-     *
-     * @param    SelectorQuery  $query
-     * @param    ListSelector   $selector
-     *
-     * @return    void
-     */
-    protected function configureSelector(SelectorQuery $query, ListSelector $selector): void
+    public function getListSelector(): ListSelector
     {
-        $query->from({% pascal($name) %}::class);
+        $selector = $this->createSelector();
+
+        $selector->from({% pascal($name) %}::class);
+
+        return $selector;
     }
 
     #[ConfigureAction(SaveAction::class)]

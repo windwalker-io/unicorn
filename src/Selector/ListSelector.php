@@ -17,6 +17,7 @@ use Unicorn\Selector\Event\BeforeCompileQueryEvent;
 use Unicorn\Selector\Event\ConfigureQueryEvent;
 use Unicorn\Selector\Filter\FilterHelper;
 use Unicorn\Selector\Filter\SearchHelper;
+use Windwalker\Core\Database\QueryProxyTrait;
 use Windwalker\Core\Pagination\Pagination;
 use Windwalker\Core\Pagination\PaginationFactory;
 use Windwalker\Core\State\AppState;
@@ -35,19 +36,13 @@ use function Windwalker\raw;
 
 /**
  * The AbstractSelector class.
- *
- * @method $this select(...$columns)
- * @method $this selectRaw($column, ...$args)
- * @method $this where(...$columns)
- * @method $this whereRaw($column, ...$args)
- * @method $this having(...$columns)
- * @method $this havingRaw($column, ...$args)
  */
 class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countable
 {
     use EventAwareTrait;
     use InstanceCacheTrait;
     use FlowControlTrait;
+    use QueryProxyTrait;
 
     protected ?SelectorQuery $query = null;
 
@@ -740,9 +735,8 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
         return $this;
     }
 
-    public function __call(string $name, array $args)
+    protected function getInnerQuery(): Query
     {
-        $this->getQuery()->$name(...$args);
-        return $this;
+        return $this->getQuery();
     }
 }
