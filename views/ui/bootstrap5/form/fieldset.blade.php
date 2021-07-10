@@ -26,11 +26,12 @@ use Windwalker\Form\Form;
  * @var Form   $form
  * @var string $name
  */
-$fieldset = $form->getFieldset($name);
+$name ??= null;
+$fieldset = $name ? $form->getFieldset($name) : null;
 $ns ??= '';
 
 $is ??= 'card';
-$title ??= $fieldset->getTitle();
+$title ??= $fieldset?->getTitle();
 $floating ??= false;
 ?>
 
