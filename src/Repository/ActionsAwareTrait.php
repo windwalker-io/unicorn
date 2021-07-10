@@ -18,7 +18,9 @@ use Unicorn\Repository\Actions\SaveAction;
 use Windwalker\Attributes\AttributesAccessor;
 use Windwalker\DI\Attributes\Inject;
 
+use Windwalker\ORM\Event\AfterCopyEvent;
 use Windwalker\ORM\Event\AfterSaveEvent;
+use Windwalker\ORM\Event\BeforeCopyEvent;
 use Windwalker\ORM\Event\BeforeSaveEvent;
 
 use function Windwalker\arr;
@@ -103,6 +105,8 @@ trait ActionsAwareTrait
             $this->runEventAttr($ref, SaveAction::class, AfterSaveEvent::class);
             $this->runEventAttr($ref, BatchAction::class, BeforeBatchItemEvent::class);
             $this->runEventAttr($ref, BatchAction::class, AfterBatchItemEvent::class);
+            $this->runEventAttr($ref, BatchAction::class, BeforeCopyEvent::class);
+            $this->runEventAttr($ref, BatchAction::class, AfterCopyEvent::class);
         }
     }
 
