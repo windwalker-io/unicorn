@@ -53,7 +53,11 @@ $filterBlock ??= null;
             @if ($searchBlock !== false)
                 @if ($searchBlock === null)
                     <div class="input-group">
-                        {!! $form->getField($searchInput)->renderInput() !!}
+                        <?php $searchField = $form->getField($searchInput); ?>
+
+                        <x-input :field="$searchField"
+                            x-on:keyup.enter="$store.grid.sendFilter()"
+                        ></x-input>
 
                         <button type="button" class="btn btn-outline-secondary"
                             data-search-button
