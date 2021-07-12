@@ -12,6 +12,8 @@ declare(strict_types=1);
 namespace Unicorn\Repository;
 
 use Unicorn\Selector\ListSelector;
+use Windwalker\Core\Pagination\PaginationFactory;
+use Windwalker\DI\Attributes\Inject;
 use Windwalker\ORM\SelectorQuery;
 
 /**
@@ -19,6 +21,9 @@ use Windwalker\ORM\SelectorQuery;
  */
 trait ListRepositoryTrait
 {
+    #[Inject]
+    protected ?PaginationFactory $paginationFactory = null;
+
     public function createSelector(SelectorQuery &$query = null): ListSelector
     {
         $selector = $this->createSelectorObject();

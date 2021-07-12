@@ -30,9 +30,6 @@ trait DatabaseRepositoryTrait
     protected DatabaseAdapter $db;
 
     #[Inject]
-    protected PaginationFactory $paginationFactory;
-
-    #[Inject]
     protected FormFactory $formFactory;
 
     protected ?Repository $metaAttribute = null;
