@@ -24,6 +24,7 @@ use Windwalker\Console\CommandWrapper;
 use Windwalker\Console\IOInterface;
 use Windwalker\Core\Console\ConsoleApplication;
 use Windwalker\Core\Generator\Builder\CallbackAstBuilder;
+use Windwalker\Core\Migration\Exception\MigrationExistsException;
 use Windwalker\Core\Migration\MigrationService;
 use Windwalker\Filesystem\FileObject;
 use Windwalker\Utilities\Str;
@@ -95,11 +96,19 @@ class MigFromCommand implements CommandInterface
         $migGroups = [];
 
         foreach ($excel->getSheetsIterator(true) as $sheet => $rows) {
-            if ($sheet === 'Sample' || !Utf8String::isAscii($sheet)) {
+            if ($sheet[0] === '_' || $sheet === 'Sample' || !Utf8String::isAscii($sheet)) {
                 continue;
             }
 
             $tableName = $sheet;
+
+            $rows = iterator_to_array($rows);
+
+            $firstKey = array_key_first($rows[array_key_first($rows)]);
+
+            if ($firstKey !== 'Name') {
+                continue;
+            }
 
             $migGroups[$this->getGroupName($tableName)][$tableName] = $rows;
         }
@@ -109,16 +118,22 @@ class MigFromCommand implements CommandInterface
         foreach ($migGroups as $groupName => $tables) {
             $groupName = StrNormalize::toPascalCase($groupName);
 
-            $files = $this->migrationService->copyMigrationFile(
-                WINDWALKER_MIGRATIONS,
-                $groupName . 'Init',
-                __DIR__ . '/../../../core/resources/templates/migration/*',
-                [
-                    'version_format' => 'YmdHisu'
-                ]
-            );
+            try {
+                $files = $this->migrationService->copyMigrationFile(
+                    WINDWALKER_MIGRATIONS,
+                    $groupName . 'Init',
+                    __DIR__ . '/../../../core/resources/templates/migration/*',
+                    [
+                        'version_format' => 'YmdHisu'
+                    ]
+                );
+            } catch (MigrationExistsException $e) {
+                $io->writeln($e->getMessage());
 
-            $dest = $files->getResults()[0];
+                $mig = $e->getMigration();
+
+                $dest = $mig->file;
+            }
 
             $i = 0;
             $uses = 0;
@@ -165,6 +180,8 @@ class MigFromCommand implements CommandInterface
 
             foreach ($tables as $tableName => $rows) {
                 $className = StrNormalize::toPascalCase(StrInflector::toSingular($tableName));
+
+                $io->writeln('$ php windwalker g entity ' . $className);
 
                 $this->app->runProcess(
                     'php windwalker g entity ' . $className,
