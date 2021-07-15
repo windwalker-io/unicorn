@@ -14,8 +14,10 @@ namespace Unicorn\Attributes;
 use MyCLabs\Enum\Enum;
 use Unicorn\Workflow\AbstractWorkflow;
 use Unicorn\Workflow\WorkflowController;
+use Windwalker\Core\Language\LangService;
 use Windwalker\DI\Attributes\AttributeHandler;
 use Windwalker\DI\Attributes\ContainerAttributeInterface;
+use Windwalker\Form\Enum\EnumTranslatableInterface;
 
 /**
  * The StateMachine class.
@@ -39,6 +41,7 @@ class StateMachine implements ContainerAttributeInterface
         return function (...$args) use ($handler) {
             /** @var AbstractWorkflow $machine */
             $machine = $handler(...$args);
+            $container = $handler->getContainer();
 
             $workflow = new WorkflowController();
             $workflow->setField($this->field);
@@ -46,6 +49,11 @@ class StateMachine implements ContainerAttributeInterface
             if (is_a($this->enum, Enum::class, true)) {
                 $class = $this->enum;
                 $workflow->setStates($class::values());
+
+                if (is_subclass_of($class, EnumTranslatableInterface::class)) {
+                    $lang = $container->get(LangService::class);
+                    $workflow->setStateTitles($class::getTransItems($lang));
+                }
             }
 
             $workflow->setAllowFreeTransitions(!$this->strict);

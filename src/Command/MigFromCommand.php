@@ -127,6 +127,8 @@ class MigFromCommand implements CommandInterface
                         'version_format' => 'YmdHisu'
                     ]
                 );
+
+                $dest = $files->getResults()[0];
             } catch (MigrationExistsException $e) {
                 $io->writeln($e->getMessage());
 
@@ -137,22 +139,29 @@ class MigFromCommand implements CommandInterface
 
             $i = 0;
             $uses = 0;
+            $usesList = [];
             $factory = new BuilderFactory();
 
-            $leaveNode = function (Node $node) use ($io, $tables, &$i, &$uses, $factory, &$entities) {
+            $leaveNode = function (Node $node) use ($io, $tables, &$i, &$uses, $factory, &$entities, &$usesList) {
                 if ($node instanceof Node\Stmt\Namespace_) {
                     foreach ($node->stmts as $stmt) {
                         if ($stmt instanceof Node\Stmt\Use_) {
                             $uses++;
+                            $usesList[] = (string) $stmt->uses[0]->name;
                         }
                     }
 
                     foreach ($tables as $tableName => $rows) {
                         $className = StrNormalize::toPascalCase(StrInflector::toSingular($tableName));
+                        $entities[] = $entityClass = 'App\Entity\\' . $className;
+
+                        if (in_array($entityClass, $usesList, true)) {
+                            continue;
+                        }
 
                         array_unshift(
                             $node->stmts,
-                            $factory->use($entities[] = 'App\Entity\\' . $className)->getNode()
+                            $factory->use($entityClass)->getNode()
                         );
                     }
                 }
