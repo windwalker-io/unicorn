@@ -11,7 +11,7 @@ use Windwalker\Core\Router\RouteCreator;
 
 $router->group('{% kebab($name) %}')
     ->register(function (RouteCreator $router) {
-        $router->any('{% snake($name) %}_list', '/{% kebab($name) %}s')
+        $router->any('{% snake($name) %}_list', '/{% kebab($name) %}/list')
             ->controller({% pascal($name) %}Controller::class)
             ->view({% pascal($name) %}ListView::class)
             ->postHandler('copy')

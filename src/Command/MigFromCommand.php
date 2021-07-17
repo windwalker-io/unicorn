@@ -24,6 +24,7 @@ use Windwalker\Console\CommandWrapper;
 use Windwalker\Console\IOInterface;
 use Windwalker\Core\Console\ConsoleApplication;
 use Windwalker\Core\Generator\Builder\CallbackAstBuilder;
+use Windwalker\Core\Migration\Exception\MigrationExistsException;
 use Windwalker\Core\Migration\MigrationService;
 use Windwalker\Filesystem\FileObject;
 use Windwalker\Utilities\Str;
@@ -95,11 +96,19 @@ class MigFromCommand implements CommandInterface
         $migGroups = [];
 
         foreach ($excel->getSheetsIterator(true) as $sheet => $rows) {
-            if ($sheet === 'Sample' || !Utf8String::isAscii($sheet)) {
+            if ($sheet[0] === '_' || $sheet === 'Sample' || !Utf8String::isAscii($sheet)) {
                 continue;
             }
 
             $tableName = $sheet;
+
+            $rows = iterator_to_array($rows);
+
+            $firstKey = array_key_first($rows[array_key_first($rows)]);
+
+            if ($firstKey !== 'Name') {
+                continue;
+            }
 
             $migGroups[$this->getGroupName($tableName)][$tableName] = $rows;
         }
@@ -109,35 +118,50 @@ class MigFromCommand implements CommandInterface
         foreach ($migGroups as $groupName => $tables) {
             $groupName = StrNormalize::toPascalCase($groupName);
 
-            $files = $this->migrationService->copyMigrationFile(
-                WINDWALKER_MIGRATIONS,
-                $groupName . 'Init',
-                __DIR__ . '/../../../core/resources/templates/migration/*',
-                [
-                    'version_format' => 'YmdHisu'
-                ]
-            );
+            try {
+                $files = $this->migrationService->copyMigrationFile(
+                    WINDWALKER_MIGRATIONS,
+                    $groupName . 'Init',
+                    __DIR__ . '/../../../core/resources/templates/migration/*',
+                    [
+                        'version_format' => 'YmdHisu'
+                    ]
+                );
 
-            $dest = $files->getResults()[0];
+                $dest = $files->getResults()[0];
+            } catch (MigrationExistsException $e) {
+                $io->writeln($e->getMessage());
+
+                $mig = $e->getMigration();
+
+                $dest = $mig->file;
+            }
 
             $i = 0;
             $uses = 0;
+            $usesList = [];
             $factory = new BuilderFactory();
 
-            $leaveNode = function (Node $node) use ($io, $tables, &$i, &$uses, $factory, &$entities) {
+            $leaveNode = function (Node $node) use ($io, $tables, &$i, &$uses, $factory, &$entities, &$usesList) {
                 if ($node instanceof Node\Stmt\Namespace_) {
                     foreach ($node->stmts as $stmt) {
                         if ($stmt instanceof Node\Stmt\Use_) {
                             $uses++;
+                            $usesList[] = (string) $stmt->uses[0]->name;
                         }
                     }
 
                     foreach ($tables as $tableName => $rows) {
                         $className = StrNormalize::toPascalCase(StrInflector::toSingular($tableName));
+                        $entities[] = $entityClass = 'App\Entity\\' . $className;
+
+                        if (in_array($entityClass, $usesList, true)) {
+                            continue;
+                        }
 
                         array_unshift(
                             $node->stmts,
-                            $factory->use($entities[] = 'App\Entity\\' . $className)->getNode()
+                            $factory->use($entityClass)->getNode()
                         );
                     }
                 }
@@ -165,6 +189,8 @@ class MigFromCommand implements CommandInterface
 
             foreach ($tables as $tableName => $rows) {
                 $className = StrNormalize::toPascalCase(StrInflector::toSingular($tableName));
+
+                $io->writeln('$ php windwalker g entity ' . $className);
 
                 $this->app->runProcess(
                     'php windwalker g entity ' . $className,
