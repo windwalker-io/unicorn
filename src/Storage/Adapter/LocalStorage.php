@@ -114,7 +114,9 @@ class LocalStorage implements StorageInterface
             return $handler($path);
         }
 
-        $root = $this->options['host'] ?? $this->app->service(SystemUri::class)->root;
+        $root = $options['cdn']['root']
+            ?? $this->options['host']
+            ?? $this->app->service(SystemUri::class)->root;
 
         return new Uri($root . $this->options['path'] . '/' . $path);
     }

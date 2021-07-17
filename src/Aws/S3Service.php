@@ -8,6 +8,7 @@
 
 namespace Unicorn\Aws;
 
+use Aws\CloudFront\CloudFrontClient;
 use Aws\Result;
 use Aws\S3\S3Client;
 use Psr\Http\Message\UriInterface;
@@ -19,23 +20,28 @@ use Windwalker\Utilities\Str;
 /**
  * The S3Service class.
  *
- * @see https://aws.amazon.com/tw/documentation/sdk-for-php/
- * @see https://docs.aws.amazon.com/aws-sdk-php/v3/api/api-s3-2006-03-01.html
- * @see https://docs.aws.amazon.com/aws-sdk-php/v3/api/class-Aws.S3.S3Client.html
+ * @see    https://aws.amazon.com/tw/documentation/sdk-for-php/
+ * @see    https://docs.aws.amazon.com/aws-sdk-php/v3/api/api-s3-2006-03-01.html
+ * @see    https://docs.aws.amazon.com/aws-sdk-php/v3/api/class-Aws.S3.S3Client.html
  *
  * @since  1.4
  */
 class S3Service
 {
     public const ACL_PRIVATE = 'private';
+
     public const ACL_PUBLIC_READ = 'public-read';
+
     public const ACL_PUBLIC_READ_WRITE = 'public-read-write';
+
     public const ACL_AUTHENTICATED_READ = 'authenticated-read';
 
     public const STORAGE_CLASS_STANDARD = 'STANDARD';
+
     public const STORAGE_CLASS_RRS = 'REDUCED_REDUNDANCY';
 
     public const SSE_NONE = '';
+
     public const SSE_AES256 = 'AES256';
 
     /**
@@ -53,7 +59,7 @@ class S3Service
     /**
      * getObject
      *
-     * @param array $args
+     * @param  array  $args
      *
      * @return  Result
      *
@@ -67,8 +73,8 @@ class S3Service
     /**
      * getFile
      *
-     * @param string $path
-     * @param array  $args
+     * @param  string  $path
+     * @param  array   $args
      *
      * @return  Result
      *
@@ -84,16 +90,41 @@ class S3Service
     /**
      * getPreSignedUrl
      *
-     * @param string $path     The file path.
-     * @param string $expires  Use DateTime syntax, example: `+300seconds`
-     * @param array  $args     Arguments.
+     * @param  string                         $path     The file path.
+     * @param  int|string|\DateTimeInterface  $expires  Use DateTime syntax, example: `+300seconds`
+     * @param  array                          $args     Arguments.
      *
      * @return  UriInterface
      *
      * @since  1.5.1
      */
-    public function getPreSignedUrl(string $path, string $expires, array $args = []): UriInterface
-    {
+    public function getPreSignedUrl(
+        string $path,
+        int|string|\DateTimeInterface $expires,
+        array $args = []
+    ): UriInterface {
+        // Cloudfront
+        if (($cdn = $this->getCDNHost()) && strtolower($this->getCDNProvider()) === 'cloudfront') {
+            $cfc = new CloudFrontClient(
+                [
+                    'credentials' => $this->client->getCredentials()->wait(),
+                    'region' => $this->client->getRegion(),
+                    'version' => 'latest'
+                ]
+            );
+
+            $url = $cfc->getSignedUrl(
+                [
+                    'url' => $cdn . '/' . $this->getPathFromFullUrl($path),
+                    'expires' => $expires,
+                    'private_key' => $this->options['cdn']['private_key'],
+                    'key_pair_id' => $this->options['cdn']['key_pair_id']
+                ]
+            );
+            
+            show($url);exit(' @Checkpoint');
+        }
+
         $args['Key'] = $this->getPathFromFullUrl($path);
 
         $cmd = $this->client->getCommand('GetObject', $args);
@@ -105,10 +136,10 @@ class S3Service
     /**
      * getPreSignedUrlWithFilename
      *
-     * @param string $path     The file path.
-     * @param string $expires  Use DateTime syntax, example: `+300seconds`
-     * @param string $filename File name to save to local.
-     * @param array  $args     Arguments.
+     * @param  string  $path      The file path.
+     * @param  string  $expires   Use DateTime syntax, example: `+300seconds`
+     * @param  string  $filename  File name to save to local.
+     * @param  array   $args      Arguments.
      *
      * @return  \Psr\Http\Message\UriInterface
      *
@@ -135,7 +166,7 @@ class S3Service
     /**
      * putObject
      *
-     * @param array $args
+     * @param  array  $args
      *
      * @return  Result
      *
@@ -149,9 +180,9 @@ class S3Service
     /**
      * uploadFile
      *
-     * @param string $file
-     * @param string $path
-     * @param array  $args
+     * @param  string  $file
+     * @param  string  $path
+     * @param  array   $args
      *
      * @return  Result
      *
@@ -173,9 +204,9 @@ class S3Service
     /**
      * uploadFile
      *
-     * @param string|Stream $data
-     * @param string        $path
-     * @param array         $args
+     * @param  string|Stream  $data
+     * @param  string         $path
+     * @param  array          $args
      *
      * @return  Result
      *
@@ -192,7 +223,7 @@ class S3Service
     /**
      * deleteObject
      *
-     * @param array $args
+     * @param  array  $args
      *
      * @return  Result
      *
@@ -206,8 +237,8 @@ class S3Service
     /**
      * deleteObject
      *
-     * @param string $path
-     * @param array  $args
+     * @param  string  $path
+     * @param  array   $args
      *
      * @return  Result
      *
@@ -223,12 +254,12 @@ class S3Service
     /**
      * Delete file by URL or full path with subfolder.
      *
-     * @param string $path
-     * @param array  $args
+     * @param  string  $path
+     * @param  array   $args
      *
      * @return  Result
      *
-     * @since  1.5.2
+     * @since      1.5.2
      *
      * @deprecated Use deleteFile() directly.
      */
@@ -276,7 +307,7 @@ class S3Service
     /**
      * getPathFromFullUrl
      *
-     * @param string $url
+     * @param  string  $url
      *
      * @return  string
      *
@@ -289,7 +320,7 @@ class S3Service
         }
 
         $host = $this->getHost(true, false)->__toString();
-        
+
         if (str_starts_with($url, $host)) {
             return ltrim(substr($url, strlen($host)), '/');
         }
@@ -299,15 +330,21 @@ class S3Service
         if (str_starts_with($url, $host)) {
             return ltrim(substr($url, strlen($host)), '/');
         }
-        
+
+        $host = $this->getCDNHost();
+
+        if ($host && str_starts_with($url, $host)) {
+            return ltrim(substr($url, strlen($host)), '/');
+        }
+
         return $url;
     }
 
     /**
      * command
      *
-     * @param string $name
-     * @param array  $args
+     * @param  string  $name
+     * @param  array   $args
      *
      * @return  Result
      *
@@ -375,8 +412,8 @@ class S3Service
     /**
      * getHost
      *
-     * @param bool $subfolder
-     * @param bool $pathStyle
+     * @param  bool  $subfolder
+     * @param  bool  $pathStyle
      *
      * @return UriInterface
      */
@@ -405,11 +442,32 @@ class S3Service
         return $uri;
     }
 
+    public function getViewerHost(bool $subfolder = true, bool $pathStyle = false): UriInterface
+    {
+        $cdn = $this->getCDNHost();
+
+        if ($cdn) {
+            return new Uri($cdn);
+        }
+
+        return $this->getHost($subfolder, $pathStyle);
+    }
+
     public function getUri(string $path, bool $pathStyle = false): Uri
     {
         return new Uri(
-            $this->getHost(true, $pathStyle) . '/' . ltrim($path, '/')
+            $this->getViewerHost(true, $pathStyle) . '/' . ltrim($path, '/')
         );
+    }
+
+    public function getCDNHost(): ?string
+    {
+        return $this->options['cdn']['root'] ?? null;
+    }
+
+    public function getCDNProvider(): ?string
+    {
+        return $this->options['cdn']['provider'];
     }
 
     /**
@@ -427,7 +485,7 @@ class S3Service
     /**
      * Method to set property s3Client
      *
-     * @param   S3Client $client
+     * @param  S3Client  $client
      *
      * @return  static  Return self to support chaining.
      *

@@ -14,9 +14,11 @@ namespace Unicorn\Storage;
 use Aws\CommandInterface;
 use Aws\Credentials\Credentials;
 use Aws\Middleware;
+use Aws\ResultInterface;
 use Aws\S3\S3Client;
 use Composer\CaBundle\CaBundle;
 use League\Flysystem\Filesystem;
+use Psr\Http\Message\RequestInterface;
 use Symfony\Component\Mime\MimeTypesInterface;
 use Unicorn\Aws\S3Service;
 use Unicorn\Storage\Adapter\LocalStorage;
@@ -25,6 +27,7 @@ use Windwalker\Core\Application\ApplicationInterface;
 use Windwalker\Core\Application\PathResolver;
 use Windwalker\DI\Container;
 use Windwalker\Filesystem\Path;
+use Windwalker\Uri\UriNormalizer;
 
 /**
  * The StorageFactory class.
@@ -62,7 +65,8 @@ class StorageFactory
 
     public function s3Client(array $options = []): S3Client
     {
-        $credentials = new Credentials($options['access_key'] ?? '', $options['secret'] ?? '');
+        $credentials = $options['credentials']
+            ?? new Credentials($options['access_key'] ?? '', $options['secret'] ?? '');
 
         $options['credentials'] = $credentials;
         $options['region'] ??= $this->container->getParam('storage.s3.default_region');
@@ -75,8 +79,8 @@ class StorageFactory
         $s3 = new S3Client($options);
 
         $s3->getHandlerList()->appendInit(
-            Middleware::mapCommand(
-                static function (CommandInterface $command) use ($options) {
+            function (callable $handler) use ($options) {
+                return function (CommandInterface $command, RequestInterface $request = null) use ($handler, $options) {
                     $args = $options['args'] ?? [];
 
                     if (!isset($command['Bucket'])) {
@@ -84,32 +88,37 @@ class StorageFactory
                     }
 
                     $subfolder = $options['subfolder'] ?? '';
+                    $key = $command['Key'] ?? null;
 
-                    if (isset($command['Key'])) {
+                    if ($key !== null) {
                         $command['Key'] = ltrim(
-                            Path::clean(
-                                $subfolder . '/' . $command['Key'],
-                                '/'
-                            ),
+                            UriNormalizer::cleanPath($subfolder . '/' . $command['Key']),
                             '/'
                         );
                     }
 
                     $command['Prefix'] = ltrim(
-                        Path::clean(
-                            $subfolder . '/' . $command['Prefix'],
-                            '/'
-                        ),
+                        UriNormalizer::cleanPath($subfolder . '/' . $command['Prefix'],),
                         '/'
                     );
 
                     foreach ($args as $k => $v) {
-                        $command[$k] = $v;
+                        $command[$k] = $command[$k] ?? $v;
                     }
 
-                    return $command;
-                }
-            )
+                    return $handler($command, $request)
+                        ->then(
+                            function (ResultInterface $result) use ($options, $key) {
+                                if ($key !== null && isset($options['cdn']['root'])) {
+                                    $result['S3URL'] = $result['ObjectURL'];
+                                    $result['ObjectURL'] = $options['cdn']['root'] . '/' . $key;
+                                }
+
+                                return $result;
+                            }
+                        );
+                };
+            }
         );
 
         return $s3;
