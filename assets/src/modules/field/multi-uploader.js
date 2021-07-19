@@ -18,10 +18,12 @@ class MultiUploader extends HTMLElement {
 
     this.modalElement = this.querySelector('.modal');
 
+    const tmplSelector = options.tmplSelector || '#multi-uploader-field-tmpl';
+
     u.import('@sortablejs')
       .then(() => {
         const app = createApp({ name: 'multi-uploader-field' });
-        app.component('app', createAppInstance(options, document.querySelector('#multi-uploader-field-tmpl').innerHTML));
+        app.component('app', createAppInstance(options, document.querySelector(tmplSelector).innerHTML));
         // app.component('draggable', vuedraggable);
         app.component('vue-drag-uploader', VueDragUploader);
         app.mount(this);

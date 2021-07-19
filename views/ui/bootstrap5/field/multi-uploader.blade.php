@@ -34,14 +34,17 @@ $lang = $app->service(LangService::class);
 
 $hasEditForm = count($subForm);
 
+$tmplId = 'multi-uploader-field-tmpl-' . $field->getId();
+
+$data['tmplSelector'] ??= '#' . $tmplId;
 ?>
 
 <multi-uploader id="{{ $field->getId('-wrap') }}" options="{{ json_encode($data) }}">
     <app></app>
 </multi-uploader>
 
-@teleport('multi-uploader-field')
-<script id="multi-uploader-field-tmpl" type="x-template">
+@teleport($tmplId)
+<script id="{{ $tmplId }}" type="x-template">
     <vue-drag-uploader
         id="{{ $field->getId() }}"
         :value="value"
