@@ -46,6 +46,8 @@ class SwitcherField extends CheckboxField
         $input = parent::prepareInput($input);
 
         if ($this->getCheckedValue() !== null) {
+            $input->removeAttribute('checked');
+
             $input->setAttribute(
                 'checked',
                 (string) $this->getValue() === (string) $this->getCheckedValue()
