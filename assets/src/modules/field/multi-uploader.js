@@ -86,7 +86,7 @@ function createAppInstance(data, tmpl) {
         const ext = url.split('.').pop().split('?').shift();
         const allow = ['png', 'jpeg', 'jpg', 'gif', 'bmp', 'webp'];
 
-        return allow.indexOf(ext) !== -1;
+        return allow.indexOf(ext.toLowerCase()) !== -1;
       }
 
       function dragover(e) {
