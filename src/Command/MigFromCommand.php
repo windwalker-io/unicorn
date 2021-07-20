@@ -335,7 +335,7 @@ PHP;
             $col .= "->length($length)";
         }
 
-        if (strtolower(trim($null)) === 'allow') {
+        if ($type === 'json' || strtolower(trim($null)) === 'allow') {
             $col .= "->nullable(true)";
         }
 
