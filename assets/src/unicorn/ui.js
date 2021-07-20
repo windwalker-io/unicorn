@@ -14,7 +14,8 @@ export default class UnicornUI {
 
   static install(app, options = {}) {
     const ui = app.$ui = new this(app);
-    app.addMessage = ui.renderMessage;
+    app.addMessage = ui.renderMessage.bind(ui);
+    app.notify = ui.notify.bind(ui);
 
     app.loadAlpine = ui.loadAlpine.bind(ui);
     app.beforeAlpineInit = ui.beforeAlpineInit.bind(ui);
@@ -43,7 +44,11 @@ export default class UnicornUI {
   }
 
   renderMessage(messages, type = 'info') {
-    //
+    this.theme.renderMessage(messages, type);
+  }
+
+  notify(messages, type = 'info') {
+    this.theme.renderMessage(messages, type);
   }
 
   loadAlpine(callback = null) {

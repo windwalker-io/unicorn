@@ -8,11 +8,35 @@
 export class UIBootstrap5 {
   static install(app) {
     app.$ui.bootstrap = new this(app.$ui);
+    app.$ui.theme = new this(app.$ui);
   }
 
   constructor(ui) {
     this.ui = ui;
     this.app = ui.app;
+  }
+
+  renderMessage(messages, type = 'info') {
+    if (!Array.isArray(messages)) {
+      messages = [ messages ];
+    }
+
+    let text = '';
+
+    messages.forEach((msg) => {
+      text += `<div class="">${msg}</div>`;
+    });
+
+    const html = this.app.html(`<div class="alert alert-${type} alert-dismissible fade show" role="alert">
+  ${text}
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>`);
+
+    const container = this.app.selectOne('.c-messages-container');
+
+    if (container) {
+      container.appendChild(html);
+    }
   }
 
   /**
