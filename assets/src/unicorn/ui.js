@@ -134,8 +134,9 @@ export default class UnicornUI {
       { duration, easing: 'ease-out' }
     );
 
-    return animation.finished.then(() => {
+    return animation.finished.then((r) => {
       target.style.display = 'none';
+      return r;
     });
   }
 
@@ -143,18 +144,28 @@ export default class UnicornUI {
     target = this.app.selectOne(target);
 
     target.style.display = display;
+
+    // Get height
+    let maxHeight = 0;
+    [].forEach.call(target.children, (child) => {
+      maxHeight = Math.max(child.offsetHeight, maxHeight);
+    });
+
     const animation = u.animate(
       target,
       {
         height: [
           0,
-          target.scrollHeight + 'px'
+          maxHeight + 'px'
         ]
       },
       { duration, easing: 'ease-out' }
     );
 
-    return animation.finished;
+    return animation.finished.then((r) => {
+      target.style.overflow = 'visible';
+      return r;
+    });
   }
 
   slideToggle(target, duration = 500, display = 'block') {

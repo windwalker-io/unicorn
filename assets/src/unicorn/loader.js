@@ -8,6 +8,7 @@
 export default class UnicornLoader {
   static install(app) {
     app.import = this.import;
+    app.importCSS = this.importCSS;
   }
 
   static import(...src) {
@@ -24,5 +25,17 @@ export default class UnicornLoader {
     });
 
     return Promise.all(promises);
+  }
+
+  static importCSS(...src) {
+    u.import(...src).then((modules) => {
+      if (!Array.isArray(modules)) {
+        modules = [ modules ];
+      }
+
+      const styles = modules.map(module => module.default);
+
+      document.adoptedStyleSheets = [...document.adoptedStyleSheets, ...styles];
+    });
   }
 }

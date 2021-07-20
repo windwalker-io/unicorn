@@ -28,6 +28,7 @@
     "alpinejs": "^3.0",
     "awesome-bootstrap-checkbox": "^1.0.1",
     "axios": "^0.21.1",
+    "choices.js": "^9.0.1",
     "cropperjs": "^1.5.11",
     "flatpickr": "^4.6.9",
     "sortablejs": "^1.13.0",
@@ -83,7 +84,8 @@
       "vue",
       "sortablejs",
       "vuedraggable",
-      "vue2-animate"
+      "vue2-animate",
+      "choices.js"
     ]
   }
 }
