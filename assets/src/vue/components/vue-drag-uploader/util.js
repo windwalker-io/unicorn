@@ -32,5 +32,5 @@ export function isImage(filePath) {
     'webp',
   ];
 
-  return allow.indexOf(ext) !== -1;
+  return allow.indexOf(ext.toLowerCase()) !== -1;
 }
