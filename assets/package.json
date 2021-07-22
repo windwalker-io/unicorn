@@ -1,6 +1,6 @@
 {
   "name": "@windwalker-io/unicorn",
-  "version": "1.0.7-7",
+  "version": "1.0.7-8",
   "description": "Unicorn framework js library",
   "scripts": {
     "build": "cross-env node_modules/.bin/gulp",
@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/ventoviro/unicorn#readme",
   "dependencies": {
+    "@webcomponents/webcomponentsjs": "^2.5.0",
     "alpinejs": "^3.0",
     "awesome-bootstrap-checkbox": "^1.0.1",
     "axios": "^0.21.1",
@@ -71,6 +72,7 @@
     "vendors": [
       "@fortawesome/fontawesome-free",
       "@windwalker-io/unicorn",
+      "@webcomponents/webcomponentsjs",
       "alpinejs",
       "awesome-bootstrap-checkbox",
       "axios",

@@ -19,6 +19,8 @@ export default class UnicornUI {
 
     app.loadAlpine = ui.loadAlpine.bind(ui);
     app.beforeAlpineInit = ui.beforeAlpineInit.bind(ui);
+    app.webComponentPolyfill = ui.webComponentPolyfill.bind(ui);
+    app.defineCustomElement = ui.defineCustomElement.bind(ui);
     // app.loadSpruce = ui.loadSpruce.bind(ui);
     // app.initAlpine = ui.initAlpine.bind(ui);
     // app.startAlpine = ui.startAlpine.bind(ui);
@@ -61,6 +63,25 @@ export default class UnicornUI {
 
   beforeAlpineInit(callback) {
     document.addEventListener('alpine:initializing', callback);
+  }
+
+  webComponentPolyfill() {
+    return u.import('@vendor/@webcomponents/webcomponentsjs/webcomponents-bundle.js')
+      .then((m) => new Promise((resolve) => {
+        window.addEventListener('WebComponentsReady', function() {
+          resolve(m);
+        });
+      }));
+  }
+
+  defineCustomElement(is, target) {
+    const promise = u.import('@vendor/@webcomponents/webcomponentsjs/custom-elements-es5-adapter.js');
+
+    return promise.then(m => {
+      customElements.define(is, target);
+
+      return m;
+    });
   }
 
   // loadSpruce() {

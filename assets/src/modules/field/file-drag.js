@@ -175,4 +175,4 @@ class FileDrag extends HTMLElement {
   }
 }
 
-customElements.define(FileDrag.is, FileDrag);
+u.defineCustomElement(FileDrag.is, FileDrag);

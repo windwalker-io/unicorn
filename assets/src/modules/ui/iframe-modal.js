@@ -102,7 +102,7 @@ class IFrameModal extends HTMLElement {
   }
 }
 
-customElements.define(IFrameModal.is, IFrameModal);
+u.defineCustomElement(IFrameModal.is, IFrameModal);
 
 u.directive('modal-link', {
   mounted(el, binding) {

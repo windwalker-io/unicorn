@@ -161,6 +161,6 @@ class ModalList extends HTMLElement {
   }
 }
 
-customElements.define(ModalList.is, ModalList);
+u.defineCustomElement(ModalList.is, ModalList);
 
 u.use(ModalField);

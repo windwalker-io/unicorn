@@ -33,7 +33,7 @@ class MultiUploader extends HTMLElement {
   }
 }
 
-customElements.define(MultiUploader.is, MultiUploader);
+u.defineCustomElement(MultiUploader.is, MultiUploader);
 
 function createAppInstance(data, tmpl) {
   return {

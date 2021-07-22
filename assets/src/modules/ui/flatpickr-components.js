@@ -92,5 +92,5 @@ Promise.all([
   const styleSheet = modules[1].default; // A CSSStyleSheet object
   document.adoptedStyleSheets = [...document.adoptedStyleSheets, styleSheet];
 
-  customElements.define(FlatpickrElement.is, FlatpickrElement);
+  u.defineCustomElement(FlatpickrElement.is, FlatpickrElement);
 });

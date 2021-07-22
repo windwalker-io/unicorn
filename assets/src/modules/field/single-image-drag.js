@@ -55,7 +55,7 @@ class SingleImageDrag extends HTMLElement {
     });
 
     this.bindEvents();
-    
+
     this.style.visibility = '';
   }
 
@@ -99,7 +99,7 @@ class SingleImageDrag extends HTMLElement {
       document.body.appendChild(input);
       input.click();
     });
-    
+
     this.pasteButton.addEventListener('click', () => {
       navigator.clipboard.read().then((items) => {
         let types = items[0].types;
@@ -112,7 +112,7 @@ class SingleImageDrag extends HTMLElement {
         types = types.slice().sort();
 
         const type = types[0];
-        
+
         items[0].getType(type).then((blob) => {
           console.log(blob);
           this.handleFileSelect(new File([ blob ], 'image.png', { type }));
@@ -409,11 +409,11 @@ class SingleImageDrag extends HTMLElement {
 
 Promise.all([
   u.import('@cropperjs/cropper.min.js'),
-  u.import('@cropperjs/cropper.css')
+  u.import('@cropperjs/cropper.css'),
 ])
   .then((modules) => {
     const styleSheet = modules[1].default;
     document.adoptedStyleSheets = [...document.adoptedStyleSheets, styleSheet];
-
-    customElements.define(SingleImageDrag.is, SingleImageDrag);
   });
+
+u.defineCustomElement(SingleImageDrag.is, SingleImageDrag);
