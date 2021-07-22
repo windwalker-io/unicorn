@@ -5,6 +5,8 @@
  * @license    __LICENSE__
  */
 
+import 'construct-style-sheets-polyfill';
+
 export default class UnicornUI {
   theme;
 
