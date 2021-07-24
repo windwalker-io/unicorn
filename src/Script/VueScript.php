@@ -24,5 +24,16 @@ class VueScript extends AbstractScript
     public function vue(int $version = 3): void
     {
         $this->asset->js('@vue');
+
+        if ($version === 2) {
+            $this->compositionAPI();
+        }
+    }
+
+    public function compositionAPI(): void
+    {
+        if ($this->available()) {
+            $this->js('vendor/@vue/composition-api/dist/vue-composition-api.js');
+        }
     }
 }
