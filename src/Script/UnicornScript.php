@@ -104,6 +104,13 @@ JS
         return $this;
     }
 
+    public function importMainThen(string $code): static
+    {
+        $this->addInitialise(Str::ensureRight(rtrim($code), ';'));
+
+        return $this;
+    }
+
     public function data(string $name, mixed $data, bool $merge = true): static
     {
         if ($merge) {
@@ -188,8 +195,8 @@ JS
 
     public function addRoute(string $route, mixed $url = null): static
     {
-        if ($url === null) {
-            $url = $this->nav->to(Str::removeLeft($route, '@'));
+        if ($url === null || is_array($url)) {
+            $url = $this->nav->to(Str::removeLeft($route, '@'), $url ?? []);
         }
 
         $route = Str::ensureLeft($route, '@');

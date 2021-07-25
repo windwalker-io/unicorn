@@ -28,8 +28,7 @@ class FormScript extends AbstractScript
     public function flatpickr(): void
     {
         if ($this->available()) {
-            $this->unicornScript->importThen(
-                '@main',
+            $this->unicornScript->importMainThen(
                 "u.\$ui.flatpickr()"
             );
         }
@@ -47,8 +46,7 @@ class FormScript extends AbstractScript
         if ($this->available()) {
             $this->unicornScript->translate('unicorn.field.sid.*');
 
-            $this->unicornScript->importThen(
-                '@main',
+            $this->unicornScript->importMainThen(
                 "u.\$ui.sid()"
             );
         }
@@ -59,8 +57,7 @@ class FormScript extends AbstractScript
         if ($this->available()) {
             $this->unicornScript->translate('unicorn.field.file.drag.*');
 
-            $this->unicornScript->importThen(
-                '@main',
+            $this->unicornScript->importMainThen(
                 "u.\$ui.fileDrag()"
             );
         }
@@ -72,8 +69,7 @@ class FormScript extends AbstractScript
             // $this->vueScript->vue();
             $this->unicornScript->translate('unicorn.field.multi.uploader.*');
             $this->unicornScript->translate('unicorn.field.file.drag.*');
-            $this->unicornScript->importThen(
-                '@main',
+            $this->unicornScript->importMainThen(
                 "u.\$ui.multiUploader()"
             );
         }
@@ -86,8 +82,7 @@ class FormScript extends AbstractScript
         string $callbackName
     ): void {
         if ($this->available($callbackName)) {
-            $this->unicornScript->importThen(
-                '@main',
+            $this->unicornScript->importMainThen(
                 <<<JS
                 u.\$ui.modalField().then(function () {
                     window.$callbackName = u.\$modalField.createCallback('$type', '$selector', '$modalSelector');
