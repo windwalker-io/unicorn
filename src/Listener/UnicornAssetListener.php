@@ -22,7 +22,7 @@ use Windwalker\Event\Attributes\ListenTo;
  * The UnicornAssetListener class.
  */
 #[EventSubscriber]
-class UnicornAssetSubscriber
+class UnicornAssetListener
 {
     /**
      * UnicornAssetListener constructor.
