@@ -11,6 +11,8 @@ declare(strict_types=1);
 
 namespace Unicorn\Storage;
 
+use Aws\AwsClient;
+use Aws\CloudFront\CloudFrontClient;
 use Aws\CommandInterface;
 use Aws\Credentials\Credentials;
 use Aws\Middleware;
@@ -27,7 +29,10 @@ use Windwalker\Core\Application\ApplicationInterface;
 use Windwalker\Core\Application\PathResolver;
 use Windwalker\DI\Container;
 use Windwalker\Filesystem\Path;
+use Windwalker\Uri\Uri;
 use Windwalker\Uri\UriNormalizer;
+
+use function Windwalker\tid;
 
 /**
  * The StorageFactory class.
@@ -80,7 +85,7 @@ class StorageFactory
 
         $s3->getHandlerList()->appendInit(
             function (callable $handler) use ($options) {
-                return function (CommandInterface $command, RequestInterface $request = null) use ($handler, $options) {
+                return function (CommandInterface $command, RequestInterface $request = null) use ($s3, $handler, $options) {
                     $args = $options['args'] ?? [];
 
                     if (!isset($command['Bucket'])) {
@@ -108,10 +113,36 @@ class StorageFactory
 
                     return $handler($command, $request)
                         ->then(
-                            function (ResultInterface $result) use ($options, $key) {
+                            function (ResultInterface $result) use ($s3, $options, $key) {
                                 if ($key !== null && isset($options['cdn']['root'])) {
                                     $result['S3URL'] = $result['ObjectURL'];
                                     $result['ObjectURL'] = $options['cdn']['root'] . '/' . $key;
+
+                                    $provider = strtolower($options['cdn']['provider'] ?? '');
+
+                                    // Clear CDN Cache
+                                    if ($provider === 'cloudfront' && !empty($options['cdn']['auto_clear_cache'])) {
+                                        $cfc = new CloudFrontClient(
+                                            [
+                                                'credentials' => $s3->getCredentials()->wait(),
+                                                'region' => $s3->getRegion(),
+                                                'version' => 'latest'
+                                            ]
+                                        );
+
+                                        $cfc->createInvalidation(
+                                            [
+                                                'DistributionId' => self::getCloudfrontDistId($options['cdn']),
+                                                'InvalidationBatch' => [
+                                                    'CallerReference' => tid(),
+                                                    'Paths' => [
+                                                        'Items' => $key,
+                                                        'Quantity' => 1,
+                                                    ],
+                                                ]
+                                            ]
+                                        );
+                                    }
                                 }
 
                                 return $result;
@@ -130,5 +161,17 @@ class StorageFactory
         $adapter = $this->container->resolve($adapterFactory);
 
         return new Filesystem($adapter);
+    }
+
+    protected static function getCloudfrontDistId(array $cdnOptions): ?string
+    {
+        if (isset($cdnOptions['id'])) {
+            return $cdnOptions['id'];
+        }
+
+        $url = new Uri($cdnOptions['root'] ?? '');
+        $host = explode('.', $url->getHost());
+
+        return array_shift($host);
     }
 }
