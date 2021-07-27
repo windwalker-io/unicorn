@@ -136,7 +136,7 @@ class StorageFactory
                                                 'InvalidationBatch' => [
                                                     'CallerReference' => tid(),
                                                     'Paths' => [
-                                                        'Items' => $key,
+                                                        'Items' => [$key],
                                                         'Quantity' => 1,
                                                     ],
                                                 ]
