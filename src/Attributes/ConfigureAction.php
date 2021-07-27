@@ -24,7 +24,7 @@ class ConfigureAction
     /**
      * ConfigureAction constructor.
      */
-    public function __construct(public string $className, int $flags = 0)
+    public function __construct(public string $className, public int $flags = 0)
     {
     }
 }

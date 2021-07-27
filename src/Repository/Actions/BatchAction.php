@@ -150,12 +150,12 @@ class BatchAction extends AbstractDatabaseAction
     {
         // Remove empty data
         foreach ($data as $k => $value) {
-            if ((string) $value === '') {
-                unset($data[$k]);
-            } elseif ($this->getEmptySymbol()->is($value)) {
+            if ($this->getEmptySymbol()->is($value)) {
                 $data[$k] = '';
             } elseif ($value === '\\' . $this->getEmptySymbol()->getValue()) {
                 $data[$k] = $this->getEmptySymbol()->getValue();
+            } elseif ((string) $value === '') {
+                unset($data[$k]);
             }
         }
 

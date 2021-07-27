@@ -37,7 +37,7 @@ class NestedReorderAction extends ReorderAction
         }
 
         /** @var NestedSetMapper $mapper */
-        $mapper     = $this->getEntityMapper();
+        $mapper = $this->getEntityMapper();
 
         foreach ($ids as $id) {
             /** @var NestedEntityInterface $item */

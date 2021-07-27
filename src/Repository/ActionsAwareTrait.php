@@ -95,7 +95,8 @@ trait ActionsAwareTrait
                 function (ConfigureAction $attr) use ($actionsFactory, $method) {
                     $actionsFactory->configure(
                         $attr->className,
-                        fn (object $action) => $this->$method($action)
+                        fn (object $action) => $this->$method($action),
+                        $attr->flags
                     );
                 },
                 \ReflectionAttribute::IS_INSTANCEOF

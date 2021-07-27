@@ -11,8 +11,10 @@ declare(strict_types=1);
 
 namespace Unicorn\Repository\Nested;
 
+use Unicorn\Attributes\ConfigureAction;
 use Unicorn\Repository\Actions\NestedReorderAction;
 use Unicorn\Repository\Actions\NestedSaveAction;
+use Unicorn\Repository\Actions\ReorderAction;
 use Unicorn\Repository\ManageRepositoryTrait;
 
 /**
@@ -30,5 +32,11 @@ trait NestedManageRepositoryTrait
     public function createReorderAction(string $actionClass = NestedReorderAction::class): NestedReorderAction
     {
         return $this->createAction($actionClass, $this);
+    }
+
+    #[ConfigureAction(ReorderAction::class, ConfigureAction::IS_INSTANCE_OF)]
+    protected function configureReorderAction(ReorderAction $action): void
+    {
+        $action->setOrderField('lft');
     }
 }
