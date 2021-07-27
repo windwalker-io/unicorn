@@ -93,10 +93,10 @@ class StorageFactory
                     }
 
                     $subfolder = $options['subfolder'] ?? '';
-                    $key = $command['Key'] ?? null;
+                    $fullKey = $key = $command['Key'] ?? null;
 
                     if ($key !== null) {
-                        $command['Key'] = ltrim(
+                        $command['Key'] = $fullKey = ltrim(
                             UriNormalizer::cleanPath($subfolder . '/' . $command['Key']),
                             '/'
                         );
@@ -113,7 +113,7 @@ class StorageFactory
 
                     return $handler($command, $request)
                         ->then(
-                            function (ResultInterface $result) use ($s3, $options, $key) {
+                            function (ResultInterface $result) use ($s3, $options, $key, $fullKey) {
                                 if ($key !== null && isset($options['cdn']['root'])) {
                                     $result['S3URL'] = $result['ObjectURL'];
                                     $result['ObjectURL'] = $options['cdn']['root'] . '/' . $key;
@@ -136,7 +136,7 @@ class StorageFactory
                                                 'InvalidationBatch' => [
                                                     'CallerReference' => tid(),
                                                     'Paths' => [
-                                                        'Items' => [$key],
+                                                        'Items' => [$fullKey],
                                                         'Quantity' => 1,
                                                     ],
                                                 ]
