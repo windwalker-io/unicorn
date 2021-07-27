@@ -121,7 +121,10 @@ class StorageFactory
                                     $provider = strtolower($options['cdn']['provider'] ?? '');
 
                                     // Clear CDN Cache
-                                    if ($provider === 'cloudfront' && !empty($options['cdn']['auto_clear_cache'])) {
+                                    if (
+                                        $provider === 'cloudfront'
+                                        && !empty($options['cdn']['auto_clear_cache'])
+                                    ) {
                                         $cfc = new CloudFrontClient(
                                             [
                                                 'credentials' => $s3->getCredentials()->wait(),
@@ -132,7 +135,7 @@ class StorageFactory
 
                                         $cfc->createInvalidation(
                                             [
-                                                'DistributionId' => self::getCloudfrontDistId($options['cdn']),
+                                                'DistributionId' => $options['cdn']['id'] ?? '',
                                                 'InvalidationBatch' => [
                                                     'CallerReference' => tid(),
                                                     'Paths' => [
@@ -161,17 +164,5 @@ class StorageFactory
         $adapter = $this->container->resolve($adapterFactory);
 
         return new Filesystem($adapter);
-    }
-
-    protected static function getCloudfrontDistId(array $cdnOptions): ?string
-    {
-        if (isset($cdnOptions['id'])) {
-            return $cdnOptions['id'];
-        }
-
-        $url = new Uri($cdnOptions['root'] ?? '');
-        $host = explode('.', $url->getHost());
-
-        return array_shift($host);
     }
 }
