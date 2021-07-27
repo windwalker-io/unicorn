@@ -84,7 +84,7 @@ class StorageFactory
         $s3 = new S3Client($options);
 
         $s3->getHandlerList()->appendInit(
-            function (callable $handler) use ($options) {
+            function (callable $handler) use ($s3, $options) {
                 return function (CommandInterface $command, RequestInterface $request = null) use ($s3, $handler, $options) {
                     $args = $options['args'] ?? [];
 
