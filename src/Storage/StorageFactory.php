@@ -124,6 +124,7 @@ class StorageFactory
                                     if (
                                         $provider === 'cloudfront'
                                         && !empty($options['cdn']['auto_clear_cache'])
+                                        && !empty($options['cdn']['id'])
                                     ) {
                                         $cfc = new CloudFrontClient(
                                             [
