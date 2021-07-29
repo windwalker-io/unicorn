@@ -7,6 +7,7 @@
 
 export default class UnicornHttp {
   globalAxios;
+  cancelToken;
   axios;
 
   static get is() { return 'http'; }
@@ -29,12 +30,23 @@ export default class UnicornHttp {
     return this;
   }
 
-  createHttp() {
+  /**
+   * @return {Promise}
+   */
+  getGlobalAxios() {
     if (!this.globalAxios) {
       this.globalAxios = this.app.import('@axios');
     }
 
-    return this.globalAxios.then((axios) => {
+    return this.globalAxios;
+  }
+
+  /**
+   * @return {Promise}
+   */
+  createHttp() {
+    return this.getGlobalAxios().then((axios) => {
+      this.cancelToken = axios.CancelToken;
       return this.axios = axios.create(this.options.axios || {});
     });
   }
@@ -192,11 +204,33 @@ export default class UnicornHttp {
    * @returns {Promise<AxiosResponse>}
    */
   request(options) {
-    return this.getHttp().then(axios => {
+    let cancel;
+
+    const p = this.getHttp().then(axios => {
       this.prepareAxios(axios);
+
+      const cancelTokenSource = this.cancelToken.source();
+
+      cancel = (message) => {
+        return cancelTokenSource.cancel(message);
+      };
+
+      if (options.cancelToken && typeof options.cancelToken === 'object') {
+        const canceller = options.cancelToken;
+        canceller.cancel = cancel;
+      }
+
+      options.cancelToken = cancelTokenSource.token;
 
       return axios(options);
     });
+
+    p.cancel = (message) => {
+      return cancel(message);
+    };
+
+    return p;
+
     // let reqOptions = options;
     // let reqUrl = url;
     // let reqHeaders = headers;

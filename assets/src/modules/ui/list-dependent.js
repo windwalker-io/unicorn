@@ -6,7 +6,7 @@
  */
 
 // TODO: This module not completed yet for 4.x
-import { defaultsDeep } from 'lodash-es';
+import { defaultsDeep, each } from 'lodash-es';
 
 const nope = (value, ele, dep) => {
 };
@@ -18,8 +18,8 @@ const nope = (value, ele, dep) => {
  * @param {Object}        options
  * @constructor
  */
-export default class ListDependent {
-  $xhr = null;
+export class ListDependent {
+  cancelToken = null;
 
   static get defaultOptions() {
     return {
@@ -41,20 +41,27 @@ export default class ListDependent {
     };
   }
 
-  static select(element) {
-    return typeof element === 'string' ? document.querySelector(element) : element;
+  static handle(el, dependent = null, options = {}) {
+    return u.getBoundedInstance(el, 'list-dependent', () => {
+      return new this(el, dependent, options);
+    });
   }
 
   constructor(element, dependent, options) {
-    this.element = element;
-    this.options = defaultsDeep({}, options, this.constructor.defaultOptions);
-    this.dependent = this.constructor.select(dependent);
+    this.element = u.selectOne(element);
+    this.setOptions(options);
+
+    this.dependent = u.selectOne(dependent);
 
     this.bindEvents();
 
     if (this.options.initial_load) {
-      this.changeList(this.dependent.val(), true);
+      this.changeList(this.dependent.value, true);
     }
+  }
+
+  setOptions(options) {
+    this.options = defaultsDeep({}, options, this.constructor.defaultOptions);
   }
 
   /**
@@ -62,7 +69,7 @@ export default class ListDependent {
    */
   bindEvents() {
     this.dependent.addEventListener('change', (event) => {
-      this.changeList(this.constructor.select(event.currentTarget)?.value);
+      this.changeList(event.currentTarget?.value);
     });
   }
 
@@ -122,23 +129,28 @@ export default class ListDependent {
 
     this.beforeHook(value, this.element, this.dependent);
 
-    if (this.$xhr) {
-      this.$xhr.abort();
-      this.$xhr = null;
+    if (this.cancelToken) {
+      this.cancelToken.cancel();
+      this.cancelToken = null;
     }
 
-    this.$xhr = u.$http.get(this.options.ajax.url, data)
+    this.cancelToken = {};
+    u.$http.get(this.options.ajax.url, {
+      params: data,
+      cancelToken: this.cancelToken
+    })
+      .then(res => res.data)
       .then((response) => {
         if (response.success) {
           this.updateListElements(response.data);
         } else {
           console.error(response.message);
         }
-      }).fail(err => {
+      }).catch(err => {
         console.error(err);
-      }).always(() => {
+      }).finally(() => {
         this.afterHook(value, this.element, this.dependent);
-        this.$xhr = null;
+        this.cancelToken = null;
       });
   }
 
@@ -148,10 +160,9 @@ export default class ListDependent {
    * @param {Array} items
    */
   updateListElements(items) {
-    const self = this;
     const textField = this.options.text_field;
     const valueField = this.options.value_field;
-    self.element.empty();
+    this.element.innerHTML = '';
 
     if (this.options.first_option) {
       items.unshift({});
@@ -159,11 +170,11 @@ export default class ListDependent {
       items[0][valueField] = this.options.first_option[valueField];
     }
 
-    $.each(items, (i, item) => {
+    each(items, (item, i) => {
       if (Array.isArray(item)) {
-        const group = $(`<optgroup label="${i}"></optgroup>`);
+        const group = u.html(`<optgroup label="${i}"></optgroup>`);
 
-        $.each(item, (k, child) => {
+        each(item, (child, k) => {
           this.appendOptionTo({
             value: child[valueField],
             text: child[textField],
@@ -171,7 +182,7 @@ export default class ListDependent {
           }, group);
         })
 
-        this.element.append(group);
+        this.element.appendChild(group);
 
         return;
       }
@@ -183,26 +194,25 @@ export default class ListDependent {
       }, this.element);
     });
 
-    this.element.trigger('chosen:updated');
-    this.element.trigger('change');
+    this.element.dispatchEvent(new CustomEvent('change'));
   }
 
   appendOptionTo(item, parent) {
     const value = item.value;
-    const option = $('<option>' + item.text + '</option>');
-    option.attr('value', value);
+    const option = u.html('<option>' + item.text + '</option>');
+    option.setAttribute('value', value);
 
     if (item.attributes) {
-      $.each(item.attributes, (index, val) => {
-        option.attr(index, val);
+      each(item.attributes, (val, index) => {
+        option.setAttribute(index, val);
       });
     }
 
     if (this.isSelected(value)) {
-      option.attr('selected', 'selected');
+      option.setAttribute('selected', 'selected');
     }
 
-    parent.append(option);
+    parent.appendChild(option);
   }
 
   isSelected(value) {
@@ -248,3 +258,16 @@ export default class ListDependent {
     return after.call(this, value, element, dependent);
   }
 }
+
+u.directive('list-dependent', {
+  mounted(el, binding) {
+    const options = JSON.parse(binding.value);
+
+    ListDependent.handle(el, options.dependent, options);
+  },
+  updated(el, binding) {
+    const options = JSON.parse(binding.value);
+
+    ListDependent.handle(el).setOptions(options);
+  }
+});

@@ -123,8 +123,14 @@ export default class UnicornUI {
     return this.app.import('@unicorn/ui/flatpickr-components.js');
   }
 
-  listDependent() {
-    return this.app.import('@unicorn/ui/list-dependent.js');
+  listDependent(element, dependent, options = {}) {
+    return this.app.import('@unicorn/ui/list-dependent.js').then((module) => {
+      if (element) {
+        module.ListDependent.handle(element, dependent, options);
+      }
+      
+      return module;
+    });
   }
 
   sid() {
