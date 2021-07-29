@@ -133,7 +133,10 @@ class FileUploadService
             $stream = $file->getStream();
         }
 
-        $dest ??= $this->getUploadPath($dest, Path::getExtension($file->getClientFilename()));
+        $ext = Path::getExtension($file->getClientFilename());
+        $dest ??= $this->getUploadPath($dest, $ext);
+
+        $dest = str_replace('.{ext}', '.' . $ext, $dest);
 
         return $storage->putStream($stream, $dest, $options);
     }
@@ -154,7 +157,7 @@ class FileUploadService
     public function getUploadPath(?string $path, string $ext = '', ?string $dir = null): string
     {
         if (!$path) {
-            $path = $this->generateFileName() . '.' . ltrim($ext, '.');
+            $path = $this->generateFileName() . '.{ext}';
         }
 
         $dir ??= $this->options['dir'];
