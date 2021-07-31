@@ -15,6 +15,7 @@ use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Asset\AbstractScript;
 use Windwalker\Core\Http\Browser;
 use Windwalker\Core\Language\LangService;
+use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\SystemUri;
 use Windwalker\Core\Security\CsrfService;
 use Windwalker\Utilities\Str;
@@ -35,6 +36,7 @@ class UnicornScript extends AbstractScript
         protected AppContext $app,
         protected Browser $browser,
         protected LangService $langService,
+        protected Navigator $nav
     ) {
     }
 
@@ -98,6 +100,13 @@ System.import('$uri').then(function (module) {
 });
 JS
 );
+
+        return $this;
+    }
+
+    public function importMainThen(string $code): static
+    {
+        $this->addInitialise(Str::ensureRight(rtrim($code), ';'));
 
         return $this;
     }
@@ -184,8 +193,12 @@ JS
         return $this;
     }
 
-    public function addRoute(string $route, mixed $url): static
+    public function addRoute(string $route, mixed $url = null): static
     {
+        if ($url === null || is_array($url)) {
+            $url = $this->nav->to(Str::removeLeft($route, '@'), $url ?? []);
+        }
+
         $route = Str::ensureLeft($route, '@');
 
         $this->data('unicorn.routes', [$route => (string) $url], true);

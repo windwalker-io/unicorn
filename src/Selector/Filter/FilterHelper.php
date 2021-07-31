@@ -68,8 +68,10 @@ class FilterHelper extends AbstractFilterHelper
             }
 
             // Filter array IN()
-            if (is_array($value) && $value !== []) {
-                $query->where($field, 'in', $value);
+            if (is_array($value)) {
+                if ($value !== []) {
+                    $query->where($field, 'in', $value);
+                }
 
                 return $query;
             }

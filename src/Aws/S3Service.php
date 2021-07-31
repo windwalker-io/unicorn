@@ -122,7 +122,7 @@ class S3Service
                 ]
             );
             
-            show($url);exit(' @Checkpoint');
+            return new Uri($url);
         }
 
         $args['Key'] = $this->getPathFromFullUrl($path);

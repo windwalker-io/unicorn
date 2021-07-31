@@ -28,8 +28,7 @@ class BootstrapScript extends AbstractScript
     public function iframeModal(): void
     {
         if ($this->available()) {
-            $this->unicornScript->importThen(
-                '@main',
+            $this->unicornScript->importMainThen(
                 "u.\$ui.iframeModal()"
             );
         }

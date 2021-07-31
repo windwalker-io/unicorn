@@ -115,3 +115,16 @@ export async function multiUploader() {
     }
   });
 }
+
+export async function s3Uploader() {
+  watch(
+    ['src/modules/**/*.js', 'scss/**/*.scss']
+  );
+
+  fusion.vue('./src/modules/aws/s3-uploader.js', './dist/aws/', {
+    override: (options) => {
+      options.output.library = 'S3Uploader';
+      options.output.libraryTarget = 'umd';
+    }
+  });
+}

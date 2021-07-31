@@ -19,6 +19,7 @@ use Windwalker\Core\Pagination\PaginationFactory;
 use Windwalker\Database\DatabaseAdapter;
 use Windwalker\DI\Attributes\Inject;
 use Windwalker\ORM\EntityMapper;
+use Windwalker\ORM\ORM;
 use Windwalker\ORM\SelectorQuery;
 
 /**
@@ -66,6 +67,11 @@ trait DatabaseRepositoryTrait
     public function getEntityMapper(): EntityMapper
     {
         return $this->db->orm()->mapper($this->getEntityClass());
+    }
+
+    public function getORM(): ORM
+    {
+        return $this->db->orm();
     }
 
     /**

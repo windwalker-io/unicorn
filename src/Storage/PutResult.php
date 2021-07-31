@@ -17,7 +17,7 @@ use Psr\Http\Message\UriInterface;
 /**
  * The PutResult class.
  */
-class PutResult extends Result
+class PutResult extends Result implements \Stringable
 {
     /**
      * PutResult constructor.
@@ -35,5 +35,10 @@ class PutResult extends Result
     public function getUri(): UriInterface
     {
         return $this->uri;
+    }
+
+    public function __toString()
+    {
+        return (string) $this->getUri();
     }
 }

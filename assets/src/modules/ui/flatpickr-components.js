@@ -40,9 +40,8 @@ class FlatpickrElement extends HTMLElement {
 
   connectedCallback() {
     const options = JSON.parse(this.getAttribute('options'));
-    console.log('conn');
+
     this.handleOptions(options).then((options) => {
-      console.log(options);
       this.instance = flatpickr(
         this.querySelector(this.selector),
         options
