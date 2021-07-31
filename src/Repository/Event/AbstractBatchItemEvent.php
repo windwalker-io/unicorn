@@ -9,7 +9,7 @@
 
 declare(strict_types=1);
 
-namespace Unicorn\Repository;
+namespace Unicorn\Repository\Event;
 
 use Unicorn\Repository\Actions\BatchAction;
 use Windwalker\Event\AbstractEvent;

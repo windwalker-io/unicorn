@@ -11,8 +11,8 @@ declare(strict_types=1);
 
 namespace Unicorn\Repository\Actions;
 
-use Unicorn\Repository\AfterBatchItemEvent;
-use Unicorn\Repository\BeforeBatchItemEvent;
+use Unicorn\Repository\Event\AfterBatchItemEvent;
+use Unicorn\Repository\Event\BeforeBatchItemEvent;
 use Windwalker\Core\Form\Exception\ValidateFailException;
 use Windwalker\Core\Language\LangService;
 use Windwalker\DI\Attributes\Inject;
@@ -75,7 +75,7 @@ class BatchAction extends AbstractDatabaseAction
                 ]
             );
 
-            $item = $mapper->updateOne($oldData = $event->getData());
+            $mapper->updateOne($oldData = $event->getData());
 
             $event = $this->emit(
                 AfterBatchItemEvent::class,

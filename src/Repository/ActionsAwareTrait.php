@@ -15,6 +15,8 @@ use Unicorn\Attributes\ConfigureAction;
 use Unicorn\Repository\Actions\ActionsFactory;
 use Unicorn\Repository\Actions\BatchAction;
 use Unicorn\Repository\Actions\SaveAction;
+use Unicorn\Repository\Event\AfterBatchItemEvent;
+use Unicorn\Repository\Event\BeforeBatchItemEvent;
 use Windwalker\Attributes\AttributesAccessor;
 use Windwalker\DI\Attributes\Inject;
 

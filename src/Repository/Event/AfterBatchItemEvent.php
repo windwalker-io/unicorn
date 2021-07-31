@@ -9,7 +9,7 @@
 
 declare(strict_types=1);
 
-namespace Unicorn\Repository;
+namespace Unicorn\Repository\Event;
 
 /**
  * The AfterBatchItemEvent class.
