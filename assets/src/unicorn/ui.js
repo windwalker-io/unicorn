@@ -119,6 +119,20 @@ export default class UnicornUI {
   //   });
   // }
 
+  choices(selector = null, options = {}) {
+    return Promise.all([
+      this.app.import('@vendor/choices.js/public/assets/scripts/choices.min.js'),
+      this.app.importCSS('@vendor/choices.js/public/assets/styles/choices.min.css')
+    ])
+      .then((m) => {
+        if (selector) {
+          new Choices(selector, options);
+        }
+
+        return m;
+      });
+  }
+
   flatpickr() {
     return this.app.import('@unicorn/ui/flatpickr-components.js');
   }
