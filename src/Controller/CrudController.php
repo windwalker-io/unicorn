@@ -97,6 +97,8 @@ class CrudController implements EventAwareInterface
             );
         } catch (\Throwable $e) {
             $app->addMessage($e->getMessage());
+
+            throw $e;
         } finally {
             return $nav->back();
         }
