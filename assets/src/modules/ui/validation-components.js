@@ -56,10 +56,6 @@ class UnicornFormValidation {
           return false;
         }
 
-        event.stopImmediatePropagation(); // Stop following events
-        event.stopPropagation();
-        event.preventDefault();
-
         return true;
       }, false);
     }
@@ -191,6 +187,10 @@ class UnicornFieldValidation {
     return this.options.invalidClass || 'is-invalid';
   }
 
+  get isVisible() {
+    return !!(this.$input.offsetWidth || this.$input.offsetHeight || this.$input.getClientRects().length);
+  }
+
   selectInput() {
     return this.$input = this.el.querySelector(this.selector);
   }
@@ -286,6 +286,19 @@ class UnicornFieldValidation {
   }
 
   showInvalidResponse() {
+    if (!this.isVisible) {
+      let title = this.findLabel()?.textContent;
+
+      if (!title) {
+        title = this.$input.name;
+      }
+
+      u.addMessage(
+        `Field: ${title} - ${this.$input.validationMessage}`,
+        'warning'
+      );
+    }
+
     const $help = this.el.querySelector(this.errorSelector);
 
     $help.textContent = this.$input.validationMessage;
@@ -299,6 +312,23 @@ class UnicornFieldValidation {
 
   getForm() {
     return this.el.closest(this.options['formSelector'] || '[uni-form-validate]');
+  }
+
+  findLabel() {
+    const id = this.$input.id;
+
+    const wrapper = this.$input.closest('[data-field-wrapper]');
+    let label = null;
+
+    if (wrapper) {
+      label = wrapper.querySelector('[data-field-label]');
+    }
+
+    if (!label) {
+      label = document.querySelector(`label[for="${id}"]`);
+    }
+
+    return label;
   }
 }
 

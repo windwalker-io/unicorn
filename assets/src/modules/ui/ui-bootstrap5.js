@@ -39,6 +39,14 @@ export class UIBootstrap5 {
     }
   }
 
+  clearMessages() {
+    const container = this.app.selectOne('.c-messages-container');
+
+    if (container) {
+      container.innerHTML = '';
+    }
+  }
+
   /**
    * @see https://getbootstrap.com/docs/5.0/components/tooltips/#example-enable-tooltips-everywhere
    *
