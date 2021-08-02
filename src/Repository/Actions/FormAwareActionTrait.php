@@ -43,14 +43,15 @@ trait FormAwareActionTrait
     public function filterBy(
         array $data,
         mixed $form,
-        array $args = []
+        array $args = [],
+        bool $keepFullData = false
     ): array {
         if (is_string($form) || $form instanceof FieldDefinitionInterface) {
             $form = $this->getForm($form, $args);
         }
 
         if ($form instanceof Form) {
-            return $form->filter($data);
+            return $form->filter($data, $keepFullData);
         }
 
         if (is_array($form)) {
@@ -88,7 +89,7 @@ trait FormAwareActionTrait
                 if ($first) {
                     throw new ValidateFailException(
                         sprintf(
-                            'Field: %s fail.',
+                            'Field: %s validate fail.',
                             $first->getField()->getName()
                         )
                     );
@@ -107,44 +108,6 @@ trait FormAwareActionTrait
         }
 
         return true;
-    }
-
-    /**
-     * prepareFormStore
-     *
-     * @param  array                                 $data
-     * @param  FieldDefinitionInterface|string|null  $definition
-     * @param  array                                 $args
-     *
-     * @return  array
-     */
-    public function prepareFormStore(
-        array $data,
-        FieldDefinitionInterface|string|null $definition = null,
-        array $args = []
-    ): array {
-        $form = $this->getForm($definition, $args);
-
-        return $form->prepareStore($data);
-    }
-
-    /**
-     * prepareStore
-     *
-     * @param  array                                 $data
-     * @param  FieldDefinitionInterface|string|null  $definition
-     * @param  array                                 $args
-     *
-     * @return  array
-     */
-    public function prepareStore(
-        array $data,
-        FieldDefinitionInterface|string|null $definition = null,
-        array $args = []
-    ): array {
-        $data = $this->filterBy($data, $definition, $args);
-
-        return $this->prepareFormStore($data, $definition, $args);
     }
 
     /**

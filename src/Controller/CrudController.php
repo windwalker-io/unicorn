@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace Unicorn\Controller;
 
 use Unicorn\Repository\CrudRepositoryInterface;
+use Unicorn\Repository\Event\PrepareSaveEvent;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Language\LangService;
 use Windwalker\Core\Router\Navigator;
@@ -51,7 +52,9 @@ class CrudController implements EventAwareInterface
         AppContext $app,
         Navigator $nav,
         CrudRepositoryInterface $repository,
-        FieldDefinitionInterface $form
+        FieldDefinitionInterface $form,
+        array $formArgs = [],
+        int $options = 0
     ): RouteUri {
         try {
             $item = $app->input('item');
@@ -61,7 +64,7 @@ class CrudController implements EventAwareInterface
 
             $action->addEventDealer($this);
 
-            $item = $action->processDataAndSave($item, $form);
+            $item = $action->processDataAndSave($item, $form, [], $options);
 
             $app->addMessage(
                 $this->lang->trans('save.success'),
@@ -102,6 +105,13 @@ class CrudController implements EventAwareInterface
 
             throw $e;
         }
+    }
+
+    public function prepareSave(callable $handler): static
+    {
+        $this->on(PrepareSaveEvent::class, $handler);
+
+        return $this;
     }
 
     public function beforeSave(callable $handler): static
