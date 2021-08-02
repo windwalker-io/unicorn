@@ -46,13 +46,9 @@ class SaveAction extends AbstractDatabaseAction
         if (is_object($data)) {
             $entity = $data;
             $data = $this->getEntityMapper()->extract($data);
-        } else {
-            $entity = $this->getEntityMapper()->createEntity();
         }
 
         $data = $this->processDataAndValidate($data, $form, $args, $options);
-
-        // $entity = $this->getEntityMapper()->hydrate($data, $entity);
 
         return $this->save($data);
     }
@@ -93,7 +89,12 @@ class SaveAction extends AbstractDatabaseAction
     public function save(array|object $data, array|string $condFields = null, int $options = 0): object
     {
         $source = $data;
-        $data = $this->getEntityMapper()->extract($data);
+
+        // If is object, extract it.
+        // If is array, do not extract again since EntityMapper::extract() will cast values.
+        if (is_object($data)) {
+            $data = $this->getEntityMapper()->extract($data);
+        }
 
         $event = $this->emit(
             PrepareSaveEvent::class,
