@@ -95,12 +95,12 @@ class CrudController implements EventAwareInterface
                 $this->lang->trans("batch.delete.success", count($ids)),
                 'success'
             );
+
+            return $nav->back();
         } catch (\Throwable $e) {
             $app->addMessage($e->getMessage());
 
             throw $e;
-        } finally {
-            return $nav->back();
         }
     }
 
