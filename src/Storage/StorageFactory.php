@@ -13,6 +13,7 @@ namespace Unicorn\Storage;
 
 use Aws\AwsClient;
 use Aws\CloudFront\CloudFrontClient;
+use Aws\CloudFront\Exception\CloudFrontException;
 use Aws\CommandInterface;
 use Aws\Credentials\Credentials;
 use Aws\Middleware;
@@ -150,8 +151,8 @@ class StorageFactory
                                                     ]
                                                 ]
                                             );
-                                        } catch (\Exception $e) {
-                                            if ($e->getCode() !== 400) {
+                                        } catch (CloudFrontException $e) {
+                                            if ($e->getResponse()?->getStatusCode() !== 400) {
                                                 throw $e;
                                             }
 
