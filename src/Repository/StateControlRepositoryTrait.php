@@ -54,6 +54,12 @@ trait StateControlRepositoryTrait
     private function guessName(): string
     {
         $ref = new \ReflectionClass($this);
+        $name = $ref->getShortName();
+
+        if (str_ends_with($name, 'Repository')) {
+            return Str::removeRight($ref->getShortName(), 'Repository');
+        }
+
         $ns = $ref->getNamespaceName();
         $ns = \Windwalker\str($ns)
             ->removeLeft($this->moduleNamespaceBase)
