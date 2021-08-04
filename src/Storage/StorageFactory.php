@@ -25,8 +25,11 @@ use Symfony\Component\Mime\MimeTypesInterface;
 use Unicorn\Aws\S3Service;
 use Unicorn\Storage\Adapter\LocalStorage;
 use Unicorn\Storage\Adapter\S3Storage;
+use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Application\ApplicationInterface;
 use Windwalker\Core\Application\PathResolver;
+use Windwalker\Core\Application\WebApplicationInterface;
+use Windwalker\Core\Console\ConsoleApplication;
 use Windwalker\DI\Container;
 use Windwalker\Filesystem\Path;
 use Windwalker\Uri\Uri;
@@ -134,18 +137,32 @@ class StorageFactory
                                             ]
                                         );
 
-                                        $cfc->createInvalidation(
-                                            [
-                                                'DistributionId' => $options['cdn']['id'] ?? '',
-                                                'InvalidationBatch' => [
-                                                    'CallerReference' => tid(),
-                                                    'Paths' => [
-                                                        'Items' => ['/' . $fullKey],
-                                                        'Quantity' => 1,
-                                                    ],
+                                        try {
+                                            $cfc->createInvalidation(
+                                                [
+                                                    'DistributionId' => $options['cdn']['id'] ?? '',
+                                                    'InvalidationBatch' => [
+                                                        'CallerReference' => tid(),
+                                                        'Paths' => [
+                                                            'Items' => ['/' . $fullKey],
+                                                            'Quantity' => 1,
+                                                        ],
+                                                    ]
                                                 ]
-                                            ]
-                                        );
+                                            );
+                                        } catch (\Exception $e) {
+                                            if ($e->getCode() !== 400) {
+                                                throw $e;
+                                            }
+
+                                            $app = $this->getApp();
+
+                                            if ($app->isDebug()) {
+                                                $app->addMessage($e->getMessage(), 'warning');
+                                            }
+
+                                            // No actions
+                                        }
                                     }
                                 }
 
@@ -165,5 +182,16 @@ class StorageFactory
         $adapter = $this->container->resolve($adapterFactory);
 
         return new Filesystem($adapter);
+    }
+
+    public function getApp(): AppContext|ConsoleApplication
+    {
+        $app = $this->container->get(ApplicationInterface::class);
+
+        if ($app->getClient() === ApplicationInterface::CLIENT_CONSOLE) {
+            return $this->container->get(ConsoleApplication::class);
+        }
+
+        return $this->container->get(AppContext::class);
     }
 }
