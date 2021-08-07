@@ -32,6 +32,7 @@ use Windwalker\Core\Application\ApplicationInterface;
 use Windwalker\Core\Language\LangService;
 use Windwalker\Core\Package\AbstractPackage;
 use Windwalker\Core\Package\PackageInstaller;
+use Windwalker\Core\Renderer\RendererService;
 use Windwalker\DI\Attributes\AttributeType;
 use Windwalker\DI\BootableDeferredProviderInterface;
 use Windwalker\DI\BootableProviderInterface;
@@ -108,9 +109,10 @@ class UnicornPackage extends AbstractPackage implements
         $container->prepareSharedObject(GridController::class);
 
         $container->extend(
-            CompositeRenderer::class,
-            function (CompositeRenderer $renderer) {
+            RendererService::class,
+            function (RendererService $renderer) {
                 $renderer->addPath(dirname(__DIR__) . '/views');
+                $renderer->addPath(dirname(__DIR__) . '/views/ui/bootstrap5', null, '@theme');
 
                 return $renderer;
             }
@@ -150,20 +152,20 @@ class UnicornPackage extends AbstractPackage implements
         $container->mergeParameters(
             'renderer.aliases',
             [
-                '@theme' => 'ui.bootstrap5',
-                '@title-bar' => '@theme.form.title-bar',
-                '@filter-bar' => '@theme.grid.filter-bar',
-                '@sort' => '@theme.grid.sort',
-                '@toggle-all' => '@theme.grid.toggle-all',
-                '@row-checkbox' => '@theme.grid.row-checkbox',
-                '@order-control' => '@theme.grid.order-control',
-                '@save-order' => '@theme.grid.save-order',
-                '@state-button' => '@theme.grid.state-button',
-                '@state-dropdown' => '@theme.grid.state-dropdown',
-                '@batch-modal' => '@theme.grid.batch-modal',
-                '@card' => '@theme.card',
-                '@fieldset' => '@theme.form.fieldset',
-                '@bool-icon' => '@theme.bool-icon',
+                // '@theme' => 'ui.bootstrap5',
+                '@title-bar' => '@theme::form.title-bar',
+                '@filter-bar' => '@theme::grid.filter-bar',
+                '@sort' => '@theme::grid.sort',
+                '@toggle-all' => '@theme::grid.toggle-all',
+                '@row-checkbox' => '@theme::grid.row-checkbox',
+                '@order-control' => '@theme::grid.order-control',
+                '@save-order' => '@theme::grid.save-order',
+                '@state-button' => '@theme::grid.state-button',
+                '@state-dropdown' => '@theme::grid.state-dropdown',
+                '@batch-modal' => '@theme::grid.batch-modal',
+                '@card' => '@theme::card',
+                '@fieldset' => '@theme::form.fieldset',
+                '@bool-icon' => '@theme::bool-icon',
             ]
         );
 
@@ -181,9 +183,9 @@ class UnicornPackage extends AbstractPackage implements
                 'state-dropdown' => '@state-dropdown',
                 'batch-modal' => '@batch-modal',
                 'card' => '@card',
-                'field' => '@theme.form.field-wrapper',
-                'input' => '@theme.form.input',
-                'label' => '@theme.form.label',
+                'field' => '@theme::form.field-wrapper',
+                'input' => '@theme::form.input',
+                'label' => '@theme::form.label',
                 'fieldset' => '@fieldset',
                 'bool-icon' => '@bool-icon',
             ]
