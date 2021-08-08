@@ -13,7 +13,7 @@
     ],
     "require": {
         "php": ">=8.0",
-        "windwalker/core": "4.x-dev",
+        "windwalker/core": "^4.0",
         "intervention/image": "^2.5"
     },
     "require-dev": {
