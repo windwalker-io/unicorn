@@ -225,6 +225,6 @@ class UnicornPackage extends AbstractPackage implements
     {
         $installer->installConfig(__DIR__ . '/../etc/*.php', 'config');
         $installer->installRoutes(__DIR__ . '/../routes/*.php', 'routes');
-        $installer->installLanguages(__DIR__ . '/../resources/languages/*.php', 'lang');
+        $installer->installLanguages(__DIR__ . '/../resources/languages/**/*', 'lang');
     }
 }
