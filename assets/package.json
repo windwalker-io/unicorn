@@ -44,7 +44,7 @@
     "@babel/plugin-proposal-optional-chaining": "^7.13.12",
     "@babel/preset-env": "^7.13.12",
     "@vue/compiler-sfc": "^3.1.1",
-    "@windwalker-io/fusion": "^1.0.0-beta.4",
+    "@windwalker-io/fusion": "^1.0",
     "babel-loader": "^8.2.2",
     "construct-style-sheets-polyfill": "^3.0.0-0",
     "core-js": "3",
