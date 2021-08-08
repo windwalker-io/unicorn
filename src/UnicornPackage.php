@@ -108,24 +108,28 @@ class UnicornPackage extends AbstractPackage implements
         $container->prepareSharedObject(CrudController::class);
         $container->prepareSharedObject(GridController::class);
 
-        $container->extend(
-            RendererService::class,
-            function (RendererService $renderer) {
-                $renderer->addPath(dirname(__DIR__) . '/views');
-                $renderer->addPath(dirname(__DIR__) . '/views/ui/bootstrap5', null, '@theme');
+        if ($container->has(RendererService::class)) {
+            $container->extend(
+                RendererService::class,
+                function (RendererService $renderer) {
+                    $renderer->addPath(dirname(__DIR__) . '/views');
+                    $renderer->addPath(dirname(__DIR__) . '/views/ui/bootstrap5', null, '@theme');
 
-                return $renderer;
-            }
-        );
+                    return $renderer;
+                }
+            );
+        }
 
-        $container->extend(
-            LangService::class,
-            function (LangService $lang) {
-                return $lang->addPath(__DIR__ . '/../resources/languages')
-                    ->loadFile('unicorn', 'ini')
-                    ->loadFile('unicorn', 'php');
-            }
-        );
+        if ($container->has(LangService::class)) {
+            $container->extend(
+                LangService::class,
+                function (LangService $lang) {
+                    return $lang->addPath(__DIR__ . '/../resources/languages')
+                        ->loadFile('unicorn', 'ini')
+                        ->loadFile('unicorn', 'php');
+                }
+            );
+        }
 
         $container->mergeParameters(
             'asset.import_map.imports',
