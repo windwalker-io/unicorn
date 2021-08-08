@@ -24,7 +24,8 @@
     "suggest": {
         "league/flysystem": "Install ^2.0 to support flysystem storage",
         "league/flysystem-aws-s3-v3": "^2.0",
-        "aws/aws-sdk-php": "^3.181"
+        "aws/aws-sdk-php": "^3.181",
+        "myclabs/php-enum": "Install ^1.0 to support enum class."
     },
     "archive": {
         "exclude": [
