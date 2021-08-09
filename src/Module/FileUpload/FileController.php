@@ -36,7 +36,7 @@ class FileController
             throw new \DomainException('Unable to find profile: ' . get_debug_type($profile), 400);
         }
 
-        if ($resize) {
+        if ((string) $resize === '1') {
             $size = $request->input('size');
             [$width, $height] = explode('x', $size) + [null, null];
             $width = $request->input('width') ?: $width;
@@ -50,6 +50,12 @@ class FileController
                     'crop' => $request->input('crop'),
                     'quality' => $request->input('quality'),
                     'output_format' => $request->input('output_format'),
+                ]
+            );
+        } elseif ($resize === '0') {
+            $uploadService->setResizeConfig(
+                [
+                    'enabled' => false,
                 ]
             );
         }
