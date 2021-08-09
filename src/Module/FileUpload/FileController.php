@@ -39,8 +39,8 @@ class FileController
         if ($resize) {
             $size = $request->input('size');
             [$width, $height] = explode('x', $size) + [null, null];
-            $width ??= $request->input('width');
-            $height ??= $request->input('height');
+            $width = $request->input('width') ?: $width;
+            $height = $request->input('height') ?: $height;
 
             $uploadService->setResizeConfig(
                 [
