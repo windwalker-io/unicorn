@@ -83,7 +83,7 @@ class MultiUploaderField extends AbstractField
         $subForm->appendNamespace('/' . $this->getNamespaceName(true));
 
         $url = $this->getUrl() ?? (string) $this->getBuiltInUploadUrl($this->getUploadProfile() ?? 'image')
-            ->var('resize', 0)
+            ->var('resize', $this->getResize())
             ->var('crop', (int) $this->getCrop())
             ->var('width', $this->getWidth())
             ->var('height', $this->getHeight())
