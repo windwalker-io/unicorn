@@ -38,7 +38,7 @@ class FileController
 
         if ((string) $resize === '1') {
             $size = $request->input('size');
-            [$width, $height] = explode('x', $size) + [null, null];
+            [$width, $height] = explode('x', (string) $size) + [null, null];
             $width = $request->input('width') ?: $width;
             $height = $request->input('height') ?: $height;
 
