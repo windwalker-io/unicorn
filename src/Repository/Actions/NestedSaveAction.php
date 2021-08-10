@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace Unicorn\Repository\Actions;
 
+use Unicorn\Repository\Event\PrepareSaveEvent;
 use Windwalker\ORM\Nested\NestedEntityInterface;
 use Windwalker\ORM\Nested\Position;
 use Windwalker\ORM\NestedSetMapper;
@@ -22,11 +23,13 @@ class NestedSaveAction extends SaveAction
 {
     public function save(object|array $data, array|string $condFields = null, int $options = 0): object
     {
+        $source = $data;
+
         /** @var NestedSetMapper $mapper */
         /** @var NestedEntityInterface $entity */
         /** @var NestedEntityInterface $oldEntity */
         $mapper = $this->getEntityMapper();
-        $entity = $this->getEntityMapper()->toEntity($data);
+        $entity = $mapper->toEntity($data);
 
         $oldEntity = $entity->getPrimaryKeyValue()
             ? $mapper->findOne($entity->getPrimaryKeyValue())
@@ -39,7 +42,23 @@ class NestedSaveAction extends SaveAction
             $mapper->setPosition($entity, $entity->getParentId(), Position::LAST_CHILD);
         }
 
-        $entity = $this->getEntityMapper()->saveOne($entity, $condFields, $options);
+        // If is object, extract it.
+        // If is array, do not extract again since EntityMapper::extract() will cast values.
+        if (is_object($data)) {
+            $data = $this->getEntityMapper()->extract($data);
+        }
+
+        $event = $this->emit(
+            PrepareSaveEvent::class,
+            compact('data', 'source', 'condFields', 'options')
+        );
+
+        $entity = $this->getEntityMapper()
+            ->saveOne(
+                $event->getData(),
+                $event->getCondFields(),
+                $event->getOptions()
+            );
 
         if ($mapper->isPathable()) {
             $mapper->rebuildPath($entity);
