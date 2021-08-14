@@ -35,7 +35,7 @@ class InlineField extends AbstractField implements CompositeFieldInterface
 
     public function getDefaultLayout(): string
     {
-        return '@theme.field.inline';
+        return '@theme::field.inline';
     }
 
     public function prepareInput(DOMElement $input): DOMElement

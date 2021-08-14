@@ -62,7 +62,7 @@ class MultiUploaderField extends AbstractField
 
     public function getDefaultLayout(): string
     {
-        return '@theme.field.multi-uploader';
+        return '@theme::field.multi-uploader';
     }
 
     /**

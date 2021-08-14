@@ -49,7 +49,7 @@ class CalendarField extends TextField
 
     public function getDefaultLayout(): string
     {
-        return '@theme/field/calendar';
+        return '@theme::field/calendar';
     }
 
     public function getDefaultOptions(): array

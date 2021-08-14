@@ -32,7 +32,7 @@ class FileDragField extends FileField
 
     public function getDefaultLayout(): string
     {
-        return '@theme.field.file-drag';
+        return '@theme::field.file-drag';
     }
 
     public function buildFieldElement(DOMElement $input, array $options = []): string|DOMElement

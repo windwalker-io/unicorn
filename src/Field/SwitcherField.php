@@ -35,7 +35,7 @@ class SwitcherField extends CheckboxField
 
     public function getDefaultLayout(): string
     {
-        return '@theme.field.switcher';
+        return '@theme::field.switcher';
     }
 
     /**

@@ -58,7 +58,7 @@ class SingleImageDragField extends TextField
 
     public function getDefaultLayout(): string
     {
-        return '@theme.field.single-image-drag.sid-default';
+        return '@theme::field.single-image-drag.sid-default';
     }
 
     public function buildFieldElement(DOMElement $input, array $options = []): string|DOMElement
