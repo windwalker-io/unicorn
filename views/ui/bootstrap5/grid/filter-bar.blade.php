@@ -113,7 +113,7 @@ $filterBlock ??= null;
                 <div class="row c-filter-bar__filter-group">
                     @foreach ($fields as $field)
                         <div class="col-lg-3 col-sm-6 mb-3">
-                            <x-field :field="$field" floating></x-field>
+                            <x-field :field="$field"></x-field>
                         </div>
                     @endforeach
                 </div>
