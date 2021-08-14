@@ -129,6 +129,28 @@ export default class UnicornUI {
   //   });
   // }
 
+  /**
+   * Highlight mark some keywords.
+   *
+   * @param selector
+   * @param keyword
+   * @param options
+   * @returns {Promise}
+   */
+  mark(selector = null, keyword = '', options = {}) {
+    return this.app.import('@vendor/mark.js/dist/mark.min.js')
+      .then((m) => {
+        if (selector != null) {
+          const instance = new Mark(selector);
+          instance.mark(keyword, options);
+        }
+        return m;
+      })
+      .catch(() => {
+        console.error('Package "mark.js" not found.');
+      });
+  }
+
   choices(selector = null, options = {}) {
     return Promise.all([
       this.app.import('@vendor/choices.js/public/assets/scripts/choices.min.js'),
