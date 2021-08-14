@@ -24,6 +24,7 @@ use Unicorn\Generator\SubCommand\ModelSubCommand;
 use Unicorn\Generator\SubCommand\RouteSubCommand;
 use Unicorn\Generator\SubCommand\ViewEditSubCommand;
 use Unicorn\Generator\SubCommand\ViewGridSubCommand;
+use Unicorn\Image\ImagePlaceholder;
 use Unicorn\Script\FormScript;
 use Unicorn\Script\UnicornScript;
 use Unicorn\Script\VueScript;
@@ -103,6 +104,9 @@ class UnicornPackage extends AbstractPackage implements
         $container->prepareSharedObject(FileUploadManager::class);
         $container->prepareSharedObject(MimeTypes::class)
             ->alias(MimeTypesInterface::class, MimeTypes::class);
+
+        // Services
+        $container->prepareSharedObject(ImagePlaceholder::class);
 
         // MVC
         $container->prepareSharedObject(CrudController::class);

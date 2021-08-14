@@ -23,15 +23,15 @@ use Windwalker\Core\Router\SystemUri;
 
 /**
  * @var \Unicorn\Field\SingleImageDragField $field
- * @var array $options
- * @var \Unicorn\Image\ImageHelper $imageHelper
+ * @var array                               $options
+ * @var \Unicorn\Image\ImagePlaceholder     $imageHelper
  */
 
 $inputElement = $field->getPreparedInput();
 $inputElement->addClass('c-sid-default');
-$imageHelper = $app->service(\Unicorn\Image\ImageHelper::class);
+$imageHelper = $app->service(\Unicorn\Image\ImagePlaceholder::class);
 
-$image = $field->getValue() ?: $imageHelper->placeholder();
+$image = $field->getValue() ?: $field->getDefaultImage() ?: $imageHelper->placeholder4to3();
 $previewHandler = $field->getPreviewHandler() ?? fn () => $asset->appendVersion($image, \Windwalker\uid());
 $image = $previewHandler($image);
 
@@ -111,8 +111,11 @@ $options['modalTarget'] = '#' . $field->getId('__modal');
                                 </div>
                             @endif
                         @endif
-                        <img src="{{ $imageHelper->ajaxLoader() }}"
-                            id="{{ $field->getId('__loader') }}" class="c-sid-default__loader" alt="Lading" style="display: none;">
+                        <div id="{{ $field->getId('__loader') }}"
+                            class="spinner-border c-sid-default__loader"
+                            style="display: none;">
+
+                        </div>
                     </div>
 
                     <div class="d-none">
