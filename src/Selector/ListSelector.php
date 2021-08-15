@@ -4,7 +4,7 @@
  * Part of starter project.
  *
  * @copyright  Copyright (C) 2021 __ORGANIZATION__.
- * @license    __LICENSE__
+ * @license    MIT
  */
 
 declare(strict_types=1);
@@ -708,7 +708,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
      *
      * @return  string
      *
-     * @since  __DEPLOY_VERSION__
+     * @since  1.0.0
      */
     public function getSearchText(): string
     {
