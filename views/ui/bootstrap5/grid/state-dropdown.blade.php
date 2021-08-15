@@ -14,6 +14,9 @@
 
 declare(strict_types=1);
 
+use Unicorn\Html\State\StateButton;
+use Unicorn\Workflow\AbstractWorkflow;
+use Unicorn\Workflow\WorkflowController;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Asset\AssetService;
 use Windwalker\Core\DateTime\ChronosService;
@@ -22,14 +25,12 @@ use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\SystemUri;
 
 /**
- * @var \Unicorn\Html\State\StateButton                                         $state
- * @var string                                                                  $value
- * @var \Unicorn\Html\State\StateButton|array                                   $states
- * @var \Unicorn\Workflow\AbstractWorkflow $workflow
- * @var \Unicorn\Workflow\WorkflowController $workflowCtrl
+ * @var StateButton         $state
+ * @var string              $value
+ * @var StateButton|array   $states
+ * @var AbstractWorkflow    $workflow
+ * @var WorkflowController  $workflowCtrl
  */
-
-// show($workflow->getEnabledTransitions($value));
 
 $batch   ??= false;
 $disabled ??= false;
