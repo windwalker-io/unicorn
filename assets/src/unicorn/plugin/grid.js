@@ -408,6 +408,13 @@ class UnicornGridElement {
   }
 
   /**
+   * @returns {string[]}
+   */
+  getCheckedValues() {
+    return this.getChecked().map(input => input.value);
+  }
+
+  /**
    * Validate there has one or more checked boxes.
    *
    * @param   {string}    msg
