@@ -5,6 +5,7 @@
  * @license    __LICENSE__
  */
 
+import { defaultsDeep } from 'lodash-es';
 import { prepareData } from './utilities.js';
 import 'sprintf-js';
 
@@ -30,6 +31,7 @@ export default class UnicornHelper {
     app.numberFormat = helper.numberFormat;
     app.sprintf = sprintf;
     app.vsprintf = vsprintf;
+    app.defaultsDeep = helper.defaultsDeep;
   }
 
   constructor(app) {
@@ -269,5 +271,9 @@ export default class UnicornHelper {
     }
 
     return (number < 0 ? '-' : '') + numbersString + formattedNumber + (decimalsString ? (decPoint + decimalsString) : '');
+  }
+
+  defaultsDeep(...args) {
+    return defaultsDeep(...args);
   }
 }

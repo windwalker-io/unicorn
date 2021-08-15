@@ -108,22 +108,33 @@ export class UIBootstrap5 {
     );
   }
 
-  keepTab(selector = null, options = {}) {
-    return this.app.import('@unicorn/bootstrap/keep-tab.js')
-      .then((m) => {
-        if (selector) {
-          return new LoadTab(selector, options);
-        }
-
-        return m;
-      });
-  }
-
   toast(seletor, config = {}) {
     return this.app.getBoundedInstance(
       selector,
       'bs.collapse',
       (element) => new bootstrap.Toast(element, config)
     );
+  }
+
+  keepTab(selector = null, options = {}) {
+    return this.app.import('@unicorn/bootstrap/keep-tab.js')
+      .then((m) => {
+        if (selector) {
+          return new m.LoadTab(selector, options);
+        }
+
+        return m;
+      });
+  }
+
+  buttonRadio(selector = null, options = {}) {
+    return this.app.import('@unicorn/bootstrap/button-radio.js')
+      .then((m) => {
+        if (selector) {
+          return new m.ButtonRadio(selector, options);
+        }
+
+        return m;
+      });
   }
 }

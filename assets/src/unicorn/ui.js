@@ -293,6 +293,57 @@ export default class UnicornUI {
     });
   }
 
+  disableOnSubmit(formSelector = '#admin-form', buttonSelector = null, options = {}) {
+    buttonSelector = buttonSelector || [
+      '#admin-toolbar button',
+      '#admin-toolbar a',
+      formSelector + ' .disable-on-submit',
+      formSelector + ' .js-dos',
+      formSelector + ' [data-dos]',
+    ].join(',');
+
+    const iconSelector = options.iconSelector || [
+      '[class="^fa-"]',
+      '[data-spin]',
+      '[data-spinner]',
+    ].join(',');
+
+    const event = options.event || 'submit';
+    const spinnerClass = options.spinnerClass || 'spinner-border spinner-border-sm';
+
+    this.app.selectAll(buttonSelector, (button) => {
+      button.addEventListener('click', (e) => {
+        button.dataset.clicked = '1';
+
+        setTimeout(() => {
+          delete button.dataset.clicked;
+        }, 1500);
+      });
+    });
+
+    this.app.selectOne(formSelector).addEventListener(event, (e) => {
+      setTimeout(() => {
+        this.app.selectAll(buttonSelector, (button) => {
+          button.disabled = true;
+          button.classList.add('disabled');
+          button.href = 'javascript:\/\/';
+          button.onclick = 'return false;';
+
+          if (button.dataset.clicked) {
+            const icon = button.querySelector(iconSelector);
+
+            if (icon) {
+              icon.setAttribute('class', spinnerClass);
+              icon.styles.width = '1em';
+              icon.styles.height = '1em';
+              icon.styles.borderWith = '.15em';
+            }
+          }
+        });
+      }, 0);
+    });
+  }
+
   static prepareInpageCSS() {
     //
   }
