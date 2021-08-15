@@ -100,12 +100,23 @@ export class UIBootstrap5 {
     );
   }
 
-  tab(seletor, config = {}) {
+  tab(selector, config = {}) {
     return this.app.getBoundedInstance(
       selector,
       'bs.collapse',
       (element) => new bootstrap.Tab(element, config)
     );
+  }
+
+  keepTab(selector = null, options = {}) {
+    return this.app.import('@unicorn/bootstrap/keep-tab.js')
+      .then((m) => {
+        if (selector) {
+          return new LoadTab(selector, options);
+        }
+
+        return m;
+      });
   }
 
   toast(seletor, config = {}) {
