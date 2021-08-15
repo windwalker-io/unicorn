@@ -79,7 +79,7 @@ $buttonId ??= 'c-state-dropdown-' . $workflowCtrl->getField() . '-' . $id;
 ?>
 
 <div class="dropdown c-state-dropdown" {!! $attributes !!}>
-    <button class="btn {{ $buttonColor }} btn-{{ $size }} {{ $textColor }} dropdown-toggle c-state-dropdown__toggle"
+    <button class="btn {{ $buttonColor }} btn-{{ $size }} d-flex align-items-center {{ $textColor }} dropdown-toggle c-state-dropdown__toggle"
         type="button"
         id="{{ $buttonId }}"
         data-bs-toggle="dropdown"
@@ -87,8 +87,8 @@ $buttonId ??= 'c-state-dropdown-' . $workflowCtrl->getField() . '-' . $id;
         style="{{ $buttonStyle ?? '' }}"
         @attr('disabled', $disabled)
     >
-        <i class="{{ $currentState?->getIcon() ?? 'fa fa-question-circle' }}"></i>
-        {{ $currentState?->getTitle() ?? 'Unknown State' }}
+        <i class="{{ $currentState?->getIcon() ?? 'fa fa-question-circle' }} mr-1 me-1"></i>
+        <span class="mr-auto me-auto pr-1 pe-1">{{ $currentState?->getTitle() ?? 'Unknown State' }}</span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="{{ $buttonId }}">
         @if ($useStates)

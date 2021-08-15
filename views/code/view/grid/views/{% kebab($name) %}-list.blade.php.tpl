@@ -95,9 +95,11 @@ $workflow = $app->service(\Unicorn\Workflow\BasicStateWorkflow::class);
                         </td>
                         <th>
                             <x-state-dropdown color-on="text"
-                                button-style="min-width: 150px"
+                                button-style="width: 100%"
                                 use-states
-                                :workflow="$workflow" :id="$entity->getId()" :value="$item->state"
+                                :workflow="$workflow"
+                                :id="$entity->getId()"
+                                :value="$item->state"
                             />
                         </th>
                         <td>
