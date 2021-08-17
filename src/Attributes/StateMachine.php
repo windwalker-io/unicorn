@@ -17,7 +17,7 @@ use Unicorn\Workflow\WorkflowController;
 use Windwalker\Core\Language\LangService;
 use Windwalker\DI\Attributes\AttributeHandler;
 use Windwalker\DI\Attributes\ContainerAttributeInterface;
-use Windwalker\Form\Enum\EnumTranslatableInterface;
+use Windwalker\Utilities\Enum\EnumTranslatableInterface;
 
 /**
  * The StateMachine class.
