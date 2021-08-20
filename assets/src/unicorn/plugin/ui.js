@@ -49,6 +49,18 @@ export default class UnicornUI {
     this.aliveHandle = null;
   }
 
+  loadAlpine(callback = null) {
+    if (callback) {
+      this.beforeAlpineInit(callback);
+    }
+
+    return this.app.import('@alpinejs');
+  }
+
+  beforeAlpineInit(callback) {
+    document.addEventListener('alpine:initializing', callback);
+  }
+
   renderMessage(messages, type = 'info') {
     this.theme.renderMessage(messages, type);
   }
@@ -63,18 +75,6 @@ export default class UnicornUI {
 
   clearNotifies() {
     this.theme.clearMessages();
-  }
-
-  loadAlpine(callback = null) {
-    if (callback) {
-      this.beforeAlpineInit(callback);
-    }
-
-    return this.app.import('@alpinejs');
-  }
-
-  beforeAlpineInit(callback) {
-    document.addEventListener('alpine:initializing', callback);
   }
 
   webComponentPolyfill() {

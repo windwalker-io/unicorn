@@ -26,6 +26,7 @@ use Unicorn\Generator\SubCommand\ViewEditSubCommand;
 use Unicorn\Generator\SubCommand\ViewGridSubCommand;
 use Unicorn\Image\ImagePlaceholder;
 use Unicorn\Script\FormScript;
+use Unicorn\Script\ModernScript;
 use Unicorn\Script\UnicornScript;
 use Unicorn\Script\VueScript;
 use Unicorn\Upload\FileUploadManager;
@@ -102,6 +103,7 @@ class UnicornPackage extends AbstractPackage implements
         $container->prepareSharedObject(FormScript::class);
         $container->prepareSharedObject(VueScript::class);
         $container->prepareSharedObject(FileUploadManager::class);
+        $container->prepareSharedObject(ModernScript::class);
         $container->prepareSharedObject(MimeTypes::class)
             ->alias(MimeTypesInterface::class, MimeTypes::class);
 
@@ -154,6 +156,8 @@ class UnicornPackage extends AbstractPackage implements
                 '@vue'          => 'vendor/vue/dist/vue.global' . ($this->app->isDebug() ? '' : '.prod') . '.js',
                 '@vuedraggable' => 'vendor/vuedraggable/dist/vuedraggable.umd.min.js',
                 '@vue2-animate' => 'vendor/vue2-animate/dist/vue2-animate.min.css',
+                '@core-js'      => 'vendor/core-js-bundle/minified.js',
+                '@current-script-polyfill' => 'vendor/current-script-polyfill/currentScript.js',
             ]
         );
 

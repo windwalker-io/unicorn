@@ -26,7 +26,7 @@
   "homepage": "https://github.com/ventoviro/unicorn#readme",
   "dependencies": {
     "@webcomponents/webcomponentsjs": "^2.5.0",
-    "alpinejs": "^3.0",
+    "alpinejs": "^2.0||^3.0",
     "awesome-bootstrap-checkbox": "^1.0.1",
     "axios": "^0.21.1",
     "choices.js": "^9.0.1",
@@ -45,6 +45,7 @@
     "@babel/preset-env": "^7.13.12",
     "@vue/compiler-sfc": "^3.1.1",
     "@windwalker-io/fusion": "^1.0",
+    "@ryangjchandler/spruce": "^2.0",
     "babel-loader": "^8.2.2",
     "construct-style-sheets-polyfill": "^3.0.0-0",
     "core-js": "3",
@@ -89,7 +90,10 @@
       "vuedraggable",
       "vue2-animate",
       "choices.js",
-      "mark.js"
+      "mark.js",
+      "core-js-bundle",
+      "jquery",
+      "current-script-polyfill"
     ]
   }
 }

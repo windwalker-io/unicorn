@@ -6,7 +6,7 @@
  */
 
 import { defaultsDeep } from 'lodash-es';
-import { prepareData } from './utilities.js';
+import { prepareData } from './../utilities.js';
 import 'sprintf-js';
 
 export default class UnicornHelper {
