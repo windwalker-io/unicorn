@@ -6,6 +6,7 @@
  */
 
 import 'construct-style-sheets-polyfill';
+import { defaultsDeep } from 'lodash-es';
 
 export default class UnicornUI {
   theme;
@@ -175,6 +176,10 @@ export default class UnicornUI {
     ])
       .then((m) => {
         if (selector) {
+          options = defaultsDeep(options, {
+            shouldSort: false
+          });
+
           new Choices(selector, options);
         }
 
