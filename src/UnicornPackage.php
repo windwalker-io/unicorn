@@ -175,9 +175,10 @@ class UnicornPackage extends AbstractPackage implements
                 '@state-button' => '@theme::grid.state-button',
                 '@state-dropdown' => '@theme::grid.state-dropdown',
                 '@batch-modal' => '@theme::grid.batch-modal',
-                '@card' => '@theme::card',
                 '@fieldset' => '@theme::form.fieldset',
                 '@bool-icon' => '@theme::bool-icon',
+                '@card' => '@theme::components.card',
+                '@input-group' => '@theme::components.input-group',
             ]
         );
 
@@ -194,12 +195,13 @@ class UnicornPackage extends AbstractPackage implements
                 'state-button' => '@state-button',
                 'state-dropdown' => '@state-dropdown',
                 'batch-modal' => '@batch-modal',
-                'card' => '@card',
                 'field' => '@theme::form.field-wrapper',
                 'input' => '@theme::form.input',
                 'label' => '@theme::form.label',
                 'fieldset' => '@fieldset',
                 'bool-icon' => '@bool-icon',
+                'card' => '@card',
+                'input-group' => '@input-group',
             ]
         );
 

@@ -105,6 +105,7 @@ $buttonId ??= trim('c-state-dropdown-' . implode('-', $fieldName) . '-' . $id, '
         type="button"
         id="{{ $buttonId }}"
         data-bs-toggle="dropdown"
+        data-toggle="dropdown"
         aria-expanded="false"
         style="{{ $buttonStyle ?? '' }}"
         title="{{ $currentState?->getTitle() }}"

@@ -75,6 +75,7 @@
       "@fortawesome/fontawesome-free",
       "@windwalker-io/unicorn",
       "@webcomponents/webcomponentsjs",
+      "@ryangjchandler/spruce",
       "alpinejs",
       "awesome-bootstrap-checkbox",
       "axios",

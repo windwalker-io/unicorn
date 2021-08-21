@@ -50,11 +50,28 @@ export default class UnicornUI {
   }
 
   loadAlpine(callback = null) {
+    // For V3
     if (callback) {
       this.beforeAlpineInit(callback);
     }
 
-    return this.app.import('@alpinejs');
+    return this.app.import('@alpinejs')
+      .then((m) => {
+        // For V2
+        if (Alpine.version.startsWith('2.')) {
+          return this.app.$alpine2.loadSpruce().then((s) => {
+            Alpine.store = Spruce.store.bind(Spruce);
+            callback();
+            return m;
+          })
+            .then(() => {
+              this.app.$alpine2.startAlpine();
+              return m;
+            });
+        }
+
+        return m;
+      });
   }
 
   beforeAlpineInit(callback) {
@@ -303,7 +320,7 @@ export default class UnicornUI {
     ].join(',');
 
     const iconSelector = options.iconSelector || [
-      '[class="^fa-"]',
+      '[class*="fa-"]',
       '[data-spin]',
       '[data-spinner]',
     ].join(',');
@@ -321,7 +338,7 @@ export default class UnicornUI {
       });
     });
 
-    this.app.selectOne(formSelector).addEventListener(event, (e) => {
+    this.app.selectOne(formSelector)?.addEventListener(event, (e) => {
       setTimeout(() => {
         this.app.selectAll(buttonSelector, (button) => {
           button.disabled = true;
@@ -334,9 +351,9 @@ export default class UnicornUI {
 
             if (icon) {
               icon.setAttribute('class', spinnerClass);
-              icon.styles.width = '1em';
-              icon.styles.height = '1em';
-              icon.styles.borderWith = '.15em';
+              // icon.styles.width = '1em';
+              // icon.styles.height = '1em';
+              // icon.styles.borderWith = '.15em';
             }
           }
         });

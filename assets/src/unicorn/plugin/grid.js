@@ -55,8 +55,10 @@ class UnicornGridElement {
       this.ordering += ' ASC';
     }
 
-    return this.app.loadAlpine(() => {
+    return this.app.loadAlpine((m) => {
       Alpine.store(store, this.useState(custom));
+
+      return m;
     });
   }
 

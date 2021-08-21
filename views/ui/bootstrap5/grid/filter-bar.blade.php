@@ -52,22 +52,24 @@ $filterBlock ??= null;
             {{-- Search --}}
             @if ($searchBlock !== false)
                 @if ($searchBlock === null)
-                    <div class="input-group">
+                    <x-input-group class="" tag-name="span">
                         <?php $searchField = $form->getField($searchInput); ?>
 
                         <x-input :field="$searchField"
                             x-on:keyup.enter="$store.grid.sendFilter()"
                         ></x-input>
 
-                        <button type="button" class="btn btn-outline-secondary"
-                            data-search-button
-                            data-bs-toggle="tooltip"
-                            title="Search"
-                            @click="$store.grid.sendFilter()"
-                        >
-                            <i class="fa fa-magnifying-glass"></i>
-                        </button>
-                    </div>
+                        <x-slot name="end">
+                            <button type="button" class="btn btn-outline-secondary"
+                                data-search-button
+                                data-bs-toggle="tooltip"
+                                title="Search"
+                                @click="$store.grid.sendFilter()"
+                            >
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                            </button>
+                        </x-slot>
+                    </x-input-group>
                 @else
                     {!! $searchBlock ?? '' !!}
                 @endif
