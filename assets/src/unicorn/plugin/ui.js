@@ -7,6 +7,7 @@
 
 import 'construct-style-sheets-polyfill';
 import { defaultsDeep } from 'lodash-es';
+import { CheckboxesMultiSelect } from '../../systemjs/ui/checkboxes-multi-select.js';
 
 export default class UnicornUI {
   theme;
@@ -280,9 +281,6 @@ export default class UnicornUI {
     }
   }
 
-  /**
-   * @param el
-   */
   fadeOut(el, duration = 500) {
     el = this.app.selectOne(el);
 
@@ -365,6 +363,17 @@ export default class UnicornUI {
         });
       }, delay);
     });
+  }
+
+  checkboxesMultiSelect(selector = null, options = {}) {
+    return this.app.import('@unicorn/ui/checkboxes-multi-select.js')
+      .then((m) => {
+        if (selector) {
+          return m.CheckboxesMultiSelect.handle(selector, options);
+        }
+
+        return m;
+      });
   }
 
   static prepareInpageCSS() {

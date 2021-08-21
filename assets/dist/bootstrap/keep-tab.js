@@ -43,6 +43,12 @@ System.register([], function (_export, _context) {
           }
 
           var $element = this.$element = u.selectOne(selector);
+
+          if (!$element) {
+            console.warn("[KeepTab] Element ".concat(selector, " not found."));
+            return;
+          }
+
           this.$element = $element;
           this.tabButtons = $element.querySelectorAll('[data-toggle=tab],[data-bs-toggle=tab]');
           this.storageKey = 'tab-href-' + this.hashCode(location.href + ':' + uid);

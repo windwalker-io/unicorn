@@ -23,6 +23,11 @@ export class LoadTab {
 
     const $element = this.$element = u.selectOne(selector);
 
+    if (!$element) {
+      console.warn(`[KeepTab] Element ${selector} not found.`);
+      return;
+    }
+
     this.$element = $element;
     this.tabButtons = $element.querySelectorAll('[data-toggle=tab],[data-bs-toggle=tab]');
 
