@@ -18,95 +18,164 @@ const defaultOptions = {
 };
 
 export class ButtonRadio {
-  constructor(selector, options) {
-    throw new Error('ButtonRadio Work in process');
+  wrapper = null;
+  radios = [];
+  inputs = [];
+  buttons = [];
+  colors = [];
 
+  static handle(el, options = {}) {
+    return u.getBoundedInstance(el, 'button-radio', (el) => {
+      return new this(el, options);
+    });
+  }
+
+  constructor(selector, options) {
     this.element = u.selectOne(selector);
-    this.options = u.defaultsDeep({}, options, defaultOptions);
-    let colors = [];
+    this.options = options = u.defaultsDeep({}, options, defaultOptions);
+    let wrapper = null;
 
     // Turn radios into btn-group
-    const $radios = this.element.querySelectorAll(this.options.selector);
 
-    options = this.options;
+    if (this.element.dataset.fieldInput != null) {
+      wrapper = this.element;
+    } else {
+      wrapper = this.element.querySelector('[data-field-input]');
+    }
 
-    u.selectAll($radios, ($radio) => {
-      $radio.classList.add(options.buttonClass);
-      $radio.classList.add(options.color['default']);
+    this.wrapper = wrapper;
+    let inputGroup = wrapper.querySelector('.btn-group');
+    const exists = inputGroup != null;
+
+    if (!inputGroup) {
+      inputGroup = u.h('div', { class: 'btn-group' })
+    }
+
+    this.radios = wrapper.querySelectorAll('.radio');
+
+    this.radios.forEach(radio => {
+      const button = this.prepareButton(radio, exists);
+
+      if (!exists) {
+        inputGroup.appendChild(button);
+      }
     });
 
-    $radios.on('click', e => {
-      const $btn = $(e.currentTarget);
-      const $group = $btn.parent().find('.' + options.buttonClass);
-      const $input = $btn.find('input[type=radio]');
+    this.syncState();
 
-      if ($input.prop('disabled') || $input.prop('readonly')) {
+    wrapper.insertBefore(inputGroup, wrapper.firstChild);
+
+    wrapper.dispatchEvent(new Event('button-radio.loaded'));
+
+    // Make color elements unique
+    this.colors = [...new Set(this.colors)];
+  }
+
+  prepareButton(radio, exists = false) {
+    const options = this.options;
+
+    const input = radio.querySelector('input');
+    const label = radio.querySelector('label');
+
+    let button = null;
+
+    if (exists) {
+      button = this.wrapper.querySelector(`[data-for="${input.id}"]`);
+      button.classList.add(...this.parseClasses(`${options.buttonClass} ${options.color['default']}`));
+    } else {
+      button = u.h(
+        'button',
+        {
+          type: 'button',
+          class: `${options.buttonClass} ${options.color['default']}`,
+          'data-value': input.value,
+        },
+        `<span>${label.innerHTML}</span>`
+      );
+    }
+
+    u.$helper.set(button, '__unicorn.input', input);
+    this.inputs.push(input);
+    this.buttons.push(button);
+
+    radio.style.display = 'none';
+
+    // Prepare color schema
+    let color = input.dataset.colorClass;
+
+    if (color == null) {
+      switch (input.value) {
+        case '':
+          color = options.color.blue;
+          break;
+
+        case '0':
+          color = options.color.red;
+          break;
+
+        default:
+          color = options.color.green;
+          break;
+      }
+
+      input.dataset.colorClass = color;
+    }
+    
+    this.colors.push(color);
+
+    if (input.disabled) {
+      button.classList.add('disabled');
+    }
+
+    if (input.getAttribute('readonly')) {
+      button.classList.add('readonly');
+    }
+
+    // Bind event
+    button.addEventListener('click', () => {
+      if (input.getAttribute('disabled') || input.getAttribute('readonly')) {
         return;
       }
 
-      if (!$input.prop('checked')) {
-        $group
-          .addClass(options.color.default)
-          .removeClass(options.activeClass)
-          .removeClass(colors);
+      const changed = !input.checked;
 
-        $btn.addClass(options.activeClass).addClass($input.attr('data-color-class')).removeClass(options.color.default);
+      if (changed) {
+        this.inputs.forEach((ele) => {
+          ele.checked = false;
+        });
 
-        $input.prop('checked', true);
-        $input[0].dispatchEvent(new Event('change'));
+        input.checked = true;
+
+        this.syncState();
+
+        input.dispatchEvent(new Event('change'));
+        input.dispatchEvent(new Event('input'));
       }
     });
 
-    $radios.each(function () {
-      const $radio = $(this);
-      const $input = $radio.find('input');
-      const $label = $radio.find('label');
-      const $text = $('<span>' + $label.text() + '</span>');
+    return button;
+  }
 
-      $label.hide();
-      $input.hide();
-      $radio.prepend($text);
-      $radio.removeClass('radio');
+  syncState() {
+    const options = this.options;
 
-      // Prepare color schema
-      let color = $input.attr('data-color-class');
+    this.buttons.forEach((button) => {
+      const input = u.$helper.get(button, '__unicorn.input');
 
-      if (color == null) {
-        switch ($input.val()) {
-          case '':
-            color = options.color.blue;
-            break;
+      button.classList.add(...this.parseClasses(options.color.default));
+      button.classList.remove(...this.parseClasses(options.activeClass));
+      button.classList.remove(...this.parseClasses(...this.colors));
 
-          case '0':
-            color = options.color.red;
-            break;
-
-          default:
-            color = options.color.green;
-            break;
-        }
-
-        $input.attr('data-color-class', color);
-      }
-
-      colors.push(color);
-
-      if ($input.prop('checked')) {
-        $radio.removeClass(options.color.default).addClass(options.activeClass).addClass(color);
-      }
-
-      if ($input.prop('disabled')) {
-        $radio.addClass('disabled');
-      }
-
-      if ($input.prop('readonly')) {
-        $radio.addClass('readonly');
+      if (input.checked) {
+        button.classList.add(...this.parseClasses(options.activeClass));
+        button.classList.add(...this.parseClasses(input.dataset.colorClass));
+        button.classList.remove(...this.parseClasses(options.color.default));
       }
     });
+  }
 
-    $radios.parent().trigger('button-radio.loaded');
-
-    // Make color elements unique
-    colors = $.unique(colors);
+  parseClasses(...className) {
+    className = className.join(' ');
+    return className.split(' ').filter(t => t !== '');
   }
 }

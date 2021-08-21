@@ -131,7 +131,7 @@ export class UIBootstrap5 {
     return this.app.import('@unicorn/bootstrap/button-radio.js')
       .then((m) => {
         if (selector) {
-          return new m.ButtonRadio(selector, options);
+          return m.ButtonRadio.handle(selector, options);
         }
 
         return m;

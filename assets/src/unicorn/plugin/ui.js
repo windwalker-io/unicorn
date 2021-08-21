@@ -325,6 +325,7 @@ export default class UnicornUI {
       '[data-spinner]',
     ].join(',');
 
+    const delay = options.delay != null ? options.delay : 500;
     const event = options.event || 'submit';
     const spinnerClass = options.spinnerClass || 'spinner-border spinner-border-sm';
 
@@ -357,7 +358,7 @@ export default class UnicornUI {
             }
           }
         });
-      }, 0);
+      }, delay);
     });
   }
 
