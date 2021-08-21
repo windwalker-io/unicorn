@@ -24,8 +24,6 @@ export default class UnicornHelper {
     app.$set = helper.$set;
     app.isDebug = helper.isDebug.bind(helper);
     app.confirm = helper.confirm.bind(helper);
-    app.keepAlive = helper.keepAlive.bind(helper);
-    app.stopKeepAlive = helper.stopKeepAlive;
     app.isNullDate = helper.isNullDate.bind(helper);
     app.getNullDate = helper.getNullDate.bind(helper);
     app.numberFormat = helper.numberFormat;
@@ -36,7 +34,6 @@ export default class UnicornHelper {
 
   constructor(app) {
     this.app = app;
-    this.aliveHandle = null;
   }
 
   selectOne(ele) {
@@ -205,29 +202,6 @@ export default class UnicornHelper {
   // notify(message, type = 'info') {
   //   return this.app.addMessage(message, type);
   // }
-
-  /**
-   * Keep alive.
-   *
-   * @param {string} url
-   * @param {Number} time
-   *
-   * @return {number}
-   */
-  keepAlive(url, time = 60000) {
-    return this.aliveHandle = window.setInterval(() => fetch(url), time);
-  }
-
-  /**
-   * Stop keep alive
-   */
-  stopKeepAlive() {
-    clearInterval(this.aliveHandle);
-
-    this.aliveHandle =  null;
-
-    return this;
-  }
 
   /**
    * Is NULL date from default SQL.

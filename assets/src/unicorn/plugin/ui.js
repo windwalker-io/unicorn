@@ -7,10 +7,10 @@
 
 import 'construct-style-sheets-polyfill';
 import { defaultsDeep } from 'lodash-es';
-import { CheckboxesMultiSelect } from '../../systemjs/ui/checkboxes-multi-select.js';
 
 export default class UnicornUI {
   theme;
+  aliveHandle;
 
   static get is() {
     return 'ui';
@@ -374,6 +374,29 @@ export default class UnicornUI {
 
         return m;
       });
+  }
+
+  /**
+   * Keep alive.
+   *
+   * @param {string} url
+   * @param {Number} time
+   *
+   * @return {number}
+   */
+  keepAlive(url, time = 60000) {
+    return this.aliveHandle = window.setInterval(() => fetch(url), time);
+  }
+
+  /**
+   * Stop keep alive
+   */
+  stopKeepAlive() {
+    clearInterval(this.aliveHandle);
+
+    this.aliveHandle =  null;
+
+    return this;
   }
 
   static prepareInpageCSS() {
