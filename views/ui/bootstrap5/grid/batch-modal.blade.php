@@ -61,7 +61,7 @@ $copyButtonText ??= 'Duplicate';
                 </p>
                 <div class="c-batch-modal__form">
                     @foreach ($form->getFields(null, $namespace) as $field)
-                        <x-field :field="$field" floating class="mb-3"></x-field>
+                        <x-field :field="$field" class="mb-3"></x-field>
                     @endforeach
                 </div>
             </div>
