@@ -51,7 +51,7 @@ export default class UnicornLoader {
   }
 
   static importCSS(...src) {
-    u.import(...src).then((modules) => {
+    return u.import(...src).then((modules) => {
       if (!Array.isArray(modules)) {
         modules = [ modules ];
       }
