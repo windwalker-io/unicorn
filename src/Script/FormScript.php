@@ -75,6 +75,15 @@ class FormScript extends AbstractScript
         }
     }
 
+    public function colorPicker(): void
+    {
+        if ($this->available()) {
+            $this->unicornScript->importMainThen(
+                "u.\$ui.colorPicker()"
+            );
+        }
+    }
+
     public function modalField(
         string $type,
         string $selector,

@@ -313,6 +313,70 @@ export default class UnicornUI {
     });
   }
 
+  /**
+   * Color Picker.
+   * Todo: Move to another file.
+   */
+  colorPicker() {
+    u.directive('color-picker', {
+      mounted(el, binding) {
+        u.getBoundedInstance(el, 'color.picker', () => {
+          const text = el.querySelector('[data-role=color-text]');
+          const preview = el.querySelector('[data-role=color-preview]');
+          const pick = el.querySelector('[data-task=pick-color]');
+          const inputContainer = el.querySelector('[data-role=input-container]');
+
+          pick.addEventListener('click', () => {
+            openPicker();
+          });
+
+          text.addEventListener('focus', () => {
+            openPicker();
+          });
+
+          text.addEventListener('change', () => {
+            updatePreview();
+          });
+
+          text.dispatchEvent(new Event('change'));
+
+          function openPicker() {
+            const input = u.h('input', { type: 'color', value: text.value });
+
+            inputContainer.innerHTML = '';
+            inputContainer.appendChild(input);
+
+            input.addEventListener('change', () => {
+              preview.style.backgroundColor = input.value;
+              text.value = input.value;
+              updatePreview();
+            });
+
+            input.addEventListener('input', () => {
+              preview.style.backgroundColor = input.value;
+              text.value = input.value;
+              updatePreview();
+            });
+
+            setTimeout(() => {
+              input.click();
+            }, 0);
+          }
+
+          function updatePreview() {
+            preview.style.backgroundColor = text.value;
+
+            // @see https://stackoverflow.com/a/12043228
+            const sep = 200;
+            const [, r, g, b] = preview.style.backgroundColor.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+            const luma = Number(r) * 0.2126 + Number(g) * 0.7152 + Number(b) * 0.0722;
+            pick.style.color = luma > sep ? 'black' : 'white';
+          }
+        });
+      }
+    })
+  }
+
   disableOnSubmit(formSelector = '#admin-form', buttonSelector = null, options = {}) {
     buttonSelector = buttonSelector || [
       '#admin-toolbar button',
