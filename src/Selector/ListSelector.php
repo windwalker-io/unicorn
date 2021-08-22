@@ -491,7 +491,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
     {
         return $this->paginationFactory->create(
             $this->getPage(),
-            $this->getLimit(),
+            (int) $this->getLimit(),
             $neighbours
         )
             ->total($total ?? fn () => $this->count());
@@ -624,7 +624,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
      */
     public function getDefaultLimit(): ?int
     {
-        return $this->defaultLimit;
+        return $this->defaultLimit ?? 15;
     }
 
     /**
