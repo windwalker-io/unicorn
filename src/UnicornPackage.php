@@ -201,6 +201,7 @@ class UnicornPackage extends AbstractPackage implements
                 'fieldset' => '@fieldset',
                 'bool-icon' => '@bool-icon',
                 'card' => '@card',
+                'div' => '@theme::components.div',
                 'input-group' => '@input-group',
             ]
         );

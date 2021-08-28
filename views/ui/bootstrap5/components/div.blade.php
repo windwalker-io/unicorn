@@ -23,13 +23,13 @@ use Windwalker\Core\Router\SystemUri;
 
 ?>
 
-<div class="card {{ $class ?? '' }}">
+<div {{ $attributes }}>
     @if ($header ?? null)
         {!! $header(headerClass: $headerClass ?? '') !!}
     @elseif ($title ?? null)
-        <div class="card-header {{ $headerClass ?? '' }}">
+        <h3 class="{{ $headerClass ?? '' }}">
             {!! $title ?? '' !!}
-        </div>
+        </h3>
     @endif
 
     @if ($start ?? null)
@@ -40,9 +40,7 @@ use Windwalker\Core\Router\SystemUri;
         {!! $body(bodyClass: $bodyClass) !!}
     @else
         @if ($slot ?? null)
-            <div class="card-body {{ $bodyClass ?? '' }}">
                 {!! $slot !!}
-            </div>
         @endif
     @endif
 
@@ -52,9 +50,5 @@ use Windwalker\Core\Router\SystemUri;
 
     @if ($footer ?? null)
         {!! $footer(footerClass: $footerClass ?? '') !!}
-    @elseif ($footerTitle ?? null)
-        <div class="card-footer {{ $footerClass ?? '' }}">
-            {!! $footerTitle ?? '' !!}
-        </div>
     @endif
 </div>
