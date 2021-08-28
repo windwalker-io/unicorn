@@ -59,7 +59,7 @@ $attributes = $attributes->exceptProps(['states']);
         @elseif ($state->getHref())
         onclick="location.href = '{{ $state->getHref() }}'"
         @elseif ($state->getTask())
-        @click="$store.{{ $store }}.doTask('{{ $state->getTask() }}', {{ $id ?? '' }})"
+        @click="$store.{{ $store }}.doTask('{{ $state->getTask() }}', '{{ $id ?? '' }}')"
         @endif
     >
         <span class="c-state-button__icon {{ $state->getIcon() }} text-{{ $state->getColor() }}"></span>

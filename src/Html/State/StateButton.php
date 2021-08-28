@@ -8,6 +8,7 @@
 
 namespace Unicorn\Html\State;
 
+use MyCLabs\Enum\Enum;
 use Windwalker\Utilities\Arr;
 
 /**
@@ -75,10 +76,14 @@ class StateButton
      *
      * @return StateOption
      */
-    public function addState(string $value): StateOption
+    public function addState(mixed $value): StateOption
     {
+        if ($value instanceof Enum) {
+            $value = $value->getValue();
+        }
+
         // Force type to prevent null data
-        return $this->states[$value] = new StateOption($value);
+        return $this->states[$value] = new StateOption((string) $value);
     }
 
     /**
@@ -88,7 +93,7 @@ class StateButton
      *
      * @return StateOption|null
      */
-    public function getState(string $value): ?StateOption
+    public function getState(mixed $value): ?StateOption
     {
         return $this->states[$value] ?? null;
     }
