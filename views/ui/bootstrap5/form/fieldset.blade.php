@@ -30,7 +30,7 @@ $name ??= null;
 $fieldset = $name ? $form->getFieldset($name) : null;
 $ns ??= '';
 
-$is ??= 'card';
+$is ??= 'div';
 $title ??= $fieldset?->getTitle();
 $floating ??= false;
 ?>

@@ -37,6 +37,18 @@ class PutResult extends Result implements \Stringable
         return $this->uri;
     }
 
+    /**
+     * @param  UriInterface  $uri
+     *
+     * @return  static  Return self to support chaining.
+     */
+    public function setUri(UriInterface $uri): static
+    {
+        $this->uri = $uri;
+
+        return $this;
+    }
+
     public function __toString()
     {
         return (string) $this->getUri();

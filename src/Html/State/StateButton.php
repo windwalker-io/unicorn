@@ -78,12 +78,25 @@ class StateButton
      */
     public function addState(mixed $value): StateOption
     {
+        $value = $this->normalizeValue($value);
+
+        // Force type to prevent null data
+        return $this->states[$value] = new StateOption($value, $this->options);
+    }
+
+    public function normalizeValue(mixed $value): string
+    {
         if ($value instanceof Enum) {
             $value = $value->getValue();
         }
 
-        // Force type to prevent null data
-        return $this->states[$value] = new StateOption((string) $value);
+        if ($value === true) {
+            $value = '1';
+        } elseif ($value === false) {
+            $value = '0';
+        }
+
+        return (string) $value;
     }
 
     /**
@@ -108,21 +121,21 @@ class StateButton
         return $this->states;
     }
 
-    public function getCompiledState(string $value): StateOption
+    public function getCompiledState(string $value, array $options = []): StateOption
     {
         $state = clone $this->getState($value);
 
-        $state->merge($this->options);
+        $state->merge($options);
 
         return $state;
     }
 
-    public function getCompiledStates(): array
+    public function getCompiledStates(array $options = []): array
     {
         $states = [];
 
         foreach ($this->getStates() as $value => $state) {
-            $states[$value] = $this->getCompiledState($value);
+            $states[$value] = $this->getCompiledState($value, $options);
         }
 
         return $states;

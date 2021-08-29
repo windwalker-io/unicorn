@@ -25,6 +25,9 @@ use Unicorn\Flysystem\Base64DataUri;
 use Unicorn\Storage\PutResult;
 use Unicorn\Storage\StorageInterface;
 use Unicorn\Storage\StorageManager;
+use Unicorn\Upload\Event\FileUploadedEvent;
+use Windwalker\Event\EventAwareInterface;
+use Windwalker\Event\EventAwareTrait;
 use Windwalker\Filesystem\Filesystem;
 use Windwalker\Filesystem\Path;
 use Windwalker\Http\Helper\UploadedFileHelper;
@@ -35,8 +38,9 @@ use function Windwalker\uid;
 /**
  * The FileUploadService class.
  */
-class FileUploadService
+class FileUploadService implements EventAwareInterface
 {
+    use EventAwareTrait;
     use OptionsResolverTrait;
 
     /**
@@ -45,7 +49,7 @@ class FileUploadService
     public function __construct(
         array $options,
         protected StorageManager $storageManager,
-        protected MimeTypesInterface $mimeTypes
+        protected ?MimeTypesInterface $mimeTypes = null
     ) {
         $this->resolveOptions(
             $options,
@@ -113,7 +117,14 @@ class FileUploadService
             $this->mimeTypes->getExtensions($mime)[0] ?? null
         );
 
-        return $storage->putStream($stream, $dest, $options);
+        $result = $storage->putStream($stream, $dest, $options);
+
+        $event = $this->emit(
+            FileUploadedEvent::class,
+            compact('file', 'result', 'dest', 'stream', 'options')
+        );
+
+        return $event->getResult();
     }
 
     public function handleFile(UploadedFileInterface $file, ?string $dest = null, array $options = []): PutResult
@@ -138,7 +149,14 @@ class FileUploadService
 
         $dest = str_replace('.{ext}', '.' . $ext, $dest);
 
-        return $storage->putStream($stream, $dest, $options);
+        $result = $storage->putStream($stream, $dest, $options);
+
+        $event = $this->emit(
+            FileUploadedEvent::class,
+            compact('file', 'result', 'dest', 'stream', 'options')
+        );
+
+        return $event->getResult();
     }
 
     public function handleFileIfUploaded(?UploadedFileInterface $file, ?string $dest = null, array $options = []): ?PutResult

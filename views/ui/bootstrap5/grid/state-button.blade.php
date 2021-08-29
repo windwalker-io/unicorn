@@ -27,17 +27,25 @@ use Windwalker\Core\Router\SystemUri;
  * @var \Unicorn\Html\State\StateButton|array $states
  * @var \Windwalker\Edge\Component\ComponentAttributes $attributes
  */
+
+$options ??= [];
+
 if ($states instanceof \Unicorn\Html\State\StateButton) {
-    $state = $states->getCompiledState($value);
+    $state = $states->getCompiledState($value, $options);
 } else {
     $state = new \Unicorn\Html\State\StateOption($value);
     $state->merge($states[$value] ?? []);
+    $state->merge($options);
 }
 
 $store ??= 'grid';
 $size ??= 'sm';
 
 $attributes = $attributes->exceptProps(['states']);
+
+$color = \Windwalker\Utilities\Str::ensureLeft($state->getColor(), 'text-');
+
+$value = $states->normalizeValue($value ?? '');
 ?>
 
 @if ($state->isOnlyIcon())
@@ -62,7 +70,7 @@ $attributes = $attributes->exceptProps(['states']);
         @click="$store.{{ $store }}.doTask('{{ $state->getTask() }}', '{{ $id ?? '' }}')"
         @endif
     >
-        <span class="c-state-button__icon {{ $state->getIcon() }} text-{{ $state->getColor() }}"></span>
+        <span class="c-state-button__icon {{ $color }} {{ $state->getIcon() }}"></span>
 
         @if (!empty($options['text']))
             <span class="c-state-button__text {{ $options['text_color'] ?? '' }}">{{ $options['text'] }}</span>
