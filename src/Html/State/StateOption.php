@@ -50,9 +50,12 @@ class StateOption
      * StateOption constructor.
      *
      * @param  string  $value
+     * @param  array   $options
      */
-    public function __construct(string $value)
+    public function __construct(string $value, array $options = [])
     {
+        $this->merge($options);
+
         $this->value = $value;
     }
 

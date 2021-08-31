@@ -21,17 +21,15 @@ use Windwalker\Core\Language\LangService;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\SystemUri;
 
-/** @var \Windwalker\Edge\Component\ComponentAttributes $attributes */
-$attributes = $attributes->class('card');
 ?>
 
 <div {!! $attributes !!}>
     @if ($header ?? null)
         {!! $header(headerClass: $headerClass ?? '') !!}
     @elseif ($title ?? null)
-        <div class="card-header {{ $headerClass ?? '' }}">
+        <h3 class="{{ $headerClass ?? '' }}">
             {!! $title ?? '' !!}
-        </div>
+        </h3>
     @endif
 
     @if ($start ?? null)
@@ -42,9 +40,7 @@ $attributes = $attributes->class('card');
         {!! $body(bodyClass: $bodyClass) !!}
     @else
         @if ($slot ?? null)
-            <div class="card-body {{ $bodyClass ?? '' }}">
                 {!! $slot !!}
-            </div>
         @endif
     @endif
 
@@ -54,9 +50,5 @@ $attributes = $attributes->class('card');
 
     @if ($footer ?? null)
         {!! $footer(footerClass: $footerClass ?? '') !!}
-    @elseif ($footerTitle ?? null)
-        <div class="card-footer {{ $footerClass ?? '' }}">
-            {!! $footerTitle ?? '' !!}
-        </div>
     @endif
 </div>

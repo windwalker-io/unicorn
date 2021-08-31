@@ -63,7 +63,7 @@ $filterBlock ??= null;
                             <button type="button" class="btn btn-outline-secondary"
                                 data-search-button
                                 data-bs-toggle="tooltip"
-                                title="Search"
+                                title="@lang('unicorn.grid.search.button.desc')"
                                 @click="$store.grid.sendFilter()"
                             >
                                 <i class="fa-solid fa-magnifying-glass"></i>
@@ -79,19 +79,20 @@ $filterBlock ??= null;
             @if ($filterBlock !== false)
                 <div class="btn-group ms-3 ml-3">
                     <button type="button" class="btn text-nowrap"
-                        data-filter-toggle-button
                         :class="[ open ? 'btn-dark' : 'btn-outline-secondary' ]"
                         @click="open = !open"
+                        data-bs-toggle="tooltip"
+                        title="@lang('unicorn.grid.filter.button.desc')"
                     >
-                        Filters
+                        @lang('unicorn.grid.filter.button.text')
                         <span class="filter-button-icon fa"
                             :class="[ open ? 'fa-angle-up' : 'fa-angle-down' ]"
                         ></span>
                     </button>
                     <button type="button" class="btn btn-outline-secondary"
-                        data-filter-clear-button
-                        {{--@click="gridState.uniform.clearAll($refs.filterbar)"--}}
                         @click="$store.grid.clearFilters($refs.filterbar)"
+                        data-bs-toggle="tooltip"
+                        title="@lang('unicorn.grid.clear.button.desc')"
                     >
                         <span class="fa fa-times"></span>
                     </button>

@@ -45,7 +45,7 @@ class LocalStorage implements StorageInterface
         $path = $this->options['path'] ?? '';
 
         if (!str_starts_with($path, DIRECTORY_SEPARATOR)) {
-            $path = '@public/' . $path;
+            $path = '@root/' . $path;
         }
 
         return $this->app->path($path);
@@ -113,12 +113,22 @@ class LocalStorage implements StorageInterface
         if (is_callable($handler)) {
             return $handler($path);
         }
+        
+        $su = $this->app->service(SystemUri::class);
 
         $root = $options['cdn']['root']
             ?? $this->options['host']
-            ?? $this->app->service(SystemUri::class)->root;
+            ?? $su->root;
 
-        return new Uri($root . $this->options['path'] . '/' . $path);
+        $base = $this->options['uri_base'] ?? '';
+
+        if ($base) {
+            $path = $base . '/' . $path;
+        }
+
+        return new Uri(
+            $su->addUriBase($path, $root)
+        );
     }
 
     public function get(string $path, array $options = []): GetResult

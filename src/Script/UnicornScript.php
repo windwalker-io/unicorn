@@ -63,6 +63,7 @@ class UnicornScript extends AbstractScript
     public function main(): void
     {
         $this->translate('unicorn.message.delete.confirm');
+        $this->translate('unicorn.message.grid.checked');
 
         $uri = $this->app->getSystemUri()->all();
         $uri['asset'] = [
