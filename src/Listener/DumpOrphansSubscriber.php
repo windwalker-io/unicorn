@@ -27,7 +27,7 @@ use Windwalker\Utilities\Contract\LanguageInterface;
  * The DumpOrphansListener class.
  */
 #[EventSubscriber]
-class DumpOrphansListener
+class DumpOrphansSubscriber
 {
     public function __construct(
         protected ApplicationInterface $app,
