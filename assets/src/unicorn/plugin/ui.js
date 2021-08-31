@@ -61,11 +61,12 @@ export default class UnicornUI {
       .then((m) => {
         // For V2
         if (Alpine.version.startsWith('2.')) {
-          return this.app.$alpine2.loadSpruce().then((s) => {
-            Alpine.store = Spruce.store.bind(Spruce);
-            callback();
-            return m;
-          })
+          return this.app.$alpine2.loadSpruce()
+            .then((s) => {
+              Alpine.store = Spruce.store.bind(Spruce);
+              callback();
+              return m;
+            })
             .then(() => {
               this.app.$alpine2.startAlpine();
               return m;
