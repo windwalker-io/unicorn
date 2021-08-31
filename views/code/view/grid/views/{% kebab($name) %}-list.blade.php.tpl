@@ -52,12 +52,12 @@ $workflow = $app->service(\Unicorn\Workflow\BasicStateWorkflow::class);
                     </th>
                     <th style="width: 5%" class="text-nowrap">
                         <x-sort field="{% snake($name) %}.state">
-                            State
+                            @lang('unicorn.field.state')
                         </x-sort>
                     </th>
                     <th class="text-nowrap">
                         <x-sort field="{% snake($name) %}.title">
-                            Title
+                            @lang('unicorn.field.title')
                         </x-sort>
                     </th>
                     <th style="width: 10%" class="text-nowrap">
@@ -66,7 +66,7 @@ $workflow = $app->service(\Unicorn\Workflow\BasicStateWorkflow::class);
                                 asc="{% snake($name) %}.ordering ASC"
                                 desc="{% snake($name) %}.ordering DESC"
                             >
-                                Order
+                                @lang('unicorn.field.ordering')
                             </x-sort>
                             @if($vm->reorderEnabled($ordering))
                                 <x-save-order></x-save-order>
@@ -74,11 +74,11 @@ $workflow = $app->service(\Unicorn\Workflow\BasicStateWorkflow::class);
                         </div>
                     </th>
                     <th style="width: 1%" class="text-nowrap">
-                        Delete
+                        @lang('unicorn.field.delete')
                     </th>
                     <th style="width: 1%" class="text-nowrap text-right">
                         <x-sort field="{% snake($name) %}.id">
-                            ID
+                            @lang('unicorn.field.id')
                         </x-sort>
                     </th>
                 </tr>
@@ -103,9 +103,11 @@ $workflow = $app->service(\Unicorn\Workflow\BasicStateWorkflow::class);
                             />
                         </th>
                         <td>
-                            <a href="{{ $nav->to('{% snake($name) %}_edit')->id($entity->getId()) }}">
-                                {{ $item->title }}
-                            </a>
+                            <div>
+                                <a href="{{ $nav->to('{% snake($name) %}_edit')->id($entity->getId()) }}">
+                                    {{ $item->title }}
+                                </a>
+                            </div>
                         </td>
                         <td>
                             <x-order-control

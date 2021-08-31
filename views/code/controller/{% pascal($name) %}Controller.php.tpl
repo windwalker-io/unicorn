@@ -31,8 +31,9 @@ class {% pascal($name) %}Controller
         CrudController $controller,
         Navigator $nav,
         #[Autowire] {% pascal($name) %}Repository $repository,
-        #[Autowire] EditForm $form,
     ): mixed {
+        $form = $app->make(EditForm::class);
+
         $uri = $app->call([$controller, 'save'], compact('repository', 'form'));
 
         switch ($app->input('task')) {
@@ -72,7 +73,8 @@ class {% pascal($name) %}Controller
         #[Autowire] {% pascal($name) %}Repository $repository,
         GridController $controller
     ): mixed {
-        $data = match ($app->input('task')) {
+        $task = $app->input('task');
+        $data = match ($task) {
             'publish' => ['state' => 1],
             'unpublish' => ['state' => 0],
             default => null
