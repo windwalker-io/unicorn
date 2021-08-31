@@ -50,7 +50,7 @@ class GridForm implements FieldDefinitionInterface
                 $form->add('{% snake($name) %}.state', ListField::class)
                     ->label('State')
                     ->option($this->trans('unicorn.select.placeholder'), '')
-                    ->registerOptions(BasicState::getTransItems($this->translator))
+                    ->registerOptions(BasicState::getTransItems($this->lang))
                     ->attr('x-on:change', '$store.grid.sendFilter()');
             }
         );
@@ -62,7 +62,7 @@ class GridForm implements FieldDefinitionInterface
                     ->label('State')
                     ->option($this->trans('unicorn.select.no.change'), '')
                     ->option('Published', (string) BasicState::PUBLISHED()->getValue())
-                    ->registerOptions(BasicState::getTransItems($this->translator));
+                    ->registerOptions(BasicState::getTransItems($this->lang));
             }
         );
     }
