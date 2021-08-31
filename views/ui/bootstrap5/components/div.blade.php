@@ -23,7 +23,7 @@ use Windwalker\Core\Router\SystemUri;
 
 ?>
 
-<div {{ $attributes }}>
+<div {!! $attributes !!}>
     @if ($header ?? null)
         {!! $header(headerClass: $headerClass ?? '') !!}
     @elseif ($title ?? null)

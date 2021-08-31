@@ -146,7 +146,7 @@ $buttonId ??= trim('c-state-dropdown-' . implode('-', $fieldName) . '-' . $id, '
                     <li>
                         <a class="dropdown-item" href="javascript://"
                             @if ($batch)
-                            @click="$store.{{ $store }}.patch(null, { batch: { '{{ $workflowCtrl->getField() }}': '{{ $state->getValue() }}' } })">
+                            @click="$store.{{ $store }}.form.patch(null, { batch: { '{{ $workflowCtrl->getField() }}': '{{ $state->getValue() }}' } })">
                             @else
                                 @click="$store.{{ $store }}.updateItem('{{ $id }}', null, { batch: { '{{ $workflowCtrl->getField() }}': '{{ $state->getValue() }}' } })">
                             @endif

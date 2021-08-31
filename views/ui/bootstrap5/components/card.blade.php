@@ -21,9 +21,11 @@ use Windwalker\Core\Language\LangService;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\SystemUri;
 
+/** @var \Windwalker\Edge\Component\ComponentAttributes $attributes */
+$attributes = $attributes->class('card');
 ?>
 
-<div class="card {{ $class ?? '' }}">
+<div {!! $attributes !!}>
     @if ($header ?? null)
         {!! $header(headerClass: $headerClass ?? '') !!}
     @elseif ($title ?? null)

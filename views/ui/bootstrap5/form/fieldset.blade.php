@@ -25,6 +25,7 @@ use Windwalker\Form\Form;
 /**
  * @var Form   $form
  * @var string $name
+ * @var \Windwalker\Edge\Component\ComponentAttributes $attributes
  */
 $name ??= null;
 $fieldset = $name ? $form->getFieldset($name) : null;
@@ -33,9 +34,15 @@ $ns ??= '';
 $is ??= 'div';
 $title ??= $fieldset?->getTitle();
 $floating ??= false;
+
+$attributes = $attributes->exceptProps(
+    [
+        'form'
+    ]
+);
 ?>
 
-<x-component :is="$is" {{ $attributes }}>
+<x-component :is="$is" :="$attributes">
     @if ($header ?? null)
         <x-slot name="header">
             {!! $header(title: $title, fieldset: $fieldset) !!}

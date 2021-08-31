@@ -49,7 +49,7 @@ $value = $states->normalizeValue($value ?? '');
 ?>
 
 @if ($state->isOnlyIcon())
-    <span class="{{ $state->getIcon() }} c-state-button c-state-button--icon"
+    <span class="{{ $color }} {{ $state->getIcon() }} c-state-button c-state-button--icon"
         data-bs-toggle="tooltip"
         title="{{ $state->getHelp() }}"
         {!! $attributes !!}

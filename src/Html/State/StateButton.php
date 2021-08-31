@@ -9,7 +9,7 @@
 namespace Unicorn\Html\State;
 
 use MyCLabs\Enum\Enum;
-use Windwalker\Utilities\Arr;
+use Windwalker\Utilities\Options\OptionAccessTrait;
 
 /**
  * The StateButton class.
@@ -18,6 +18,8 @@ use Windwalker\Utilities\Arr;
  */
 class StateButton
 {
+    use OptionAccessTrait;
+
     /**
      * Property states.
      *
@@ -26,13 +28,6 @@ class StateButton
     protected array $states = [
         //
     ];
-
-    /**
-     * Property options.
-     *
-     * @var  array
-     */
-    protected array $options = [];
 
     /**
      * create
@@ -153,30 +148,6 @@ class StateButton
         if (isset($this->states[$value])) {
             unset($this->states[$value]);
         }
-
-        return $this;
-    }
-
-    /**
-     * Method to get property Options
-     *
-     * @return  array
-     */
-    public function getOptions(): array
-    {
-        return $this->options;
-    }
-
-    /**
-     * Method to set property options
-     *
-     * @param   array $options
-     *
-     * @return  static  Return self to support chaining.
-     */
-    public function setOptions(array $options): static
-    {
-        $this->options = $options;
 
         return $this;
     }

@@ -106,6 +106,7 @@ class TinymceEditorField extends AbstractEditorField
         $defaultOptions['plugins'] = [];
 
         $toolbar = $this->getToolbar() ?: static::TOOLBAR_FULL;
+        $defaultOptions['toolbar1'] = '';
 
         if ($toolbar === static::TOOLBAR_FULL) {
             $defaultOptions['plugins'] = [
@@ -121,6 +122,13 @@ class TinymceEditorField extends AbstractEditorField
                 '| link image media | table code | fullscreen';
 
             $defaultOptions['image_advtab'] = true;
+        }
+
+        if ($options['extra_buttons'] ?? null) {
+            $defaultOptions['toolbar1'] .= ' ' . implode(
+                ' ',
+                (array) $options['extra_buttons']
+            );
         }
 
         if ($this->getEnableImageUpload() ?? true) {

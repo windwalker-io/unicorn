@@ -66,7 +66,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
 
     protected array $searches = [];
 
-    protected array $fieldAlias = [];
+    protected array $fieldAliases = [];
 
     protected ?FilterHelper $filterHelper = null;
 
@@ -229,7 +229,9 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
 
         $order = $this->handleOrdering($order, $dir);
 
-        $this->getQuery()->order($order);
+        if ($order) {
+            $this->getQuery()->order($order);
+        }
 
         return $this;
     }
@@ -565,36 +567,49 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
 
     public function resolveFieldAlias(string $field): string
     {
-        while (isset($this->fieldAlias[$field])) {
-            $field = $this->fieldAlias[$field];
+        while (isset($this->fieldAliases[$field])) {
+            $field = $this->fieldAliases[$field];
+
+            if (!is_string($field)) {
+                break;
+            }
         }
 
         return $field;
     }
 
-    /**
-     * @return array
-     */
-    public function getFieldAlias(): array
+    public function resolveField(string $field): ?string
     {
-        return $this->fieldAlias;
+        if (!$this->isFieldAllow($field)) {
+            return null;
+        }
+
+        return $this->resolveFieldAlias($field);
     }
 
     /**
-     * @param  array  $fieldAlias
+     * @return array
+     */
+    public function getFieldAliases(): array
+    {
+        return $this->fieldAliases;
+    }
+
+    /**
+     * @param  array  $fieldAliases
      *
      * @return  static  Return self to support chaining.
      */
-    public function setFieldAlias(array $fieldAlias): static
+    public function setFieldAliases(array $fieldAliases): static
     {
-        $this->fieldAlias = $fieldAlias;
+        $this->fieldAliases = $fieldAliases;
 
         return $this;
     }
 
     public function fieldAlias(string $alias, string $field): static
     {
-        $this->fieldAlias[$alias] = $field;
+        $this->fieldAliases[$alias] = $field;
 
         return $this;
     }
@@ -677,6 +692,13 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
             if (is_string($orderItem)) {
                 $orderItem = Arr::explodeAndClear(' ', $orderItem);
 
+                $orderItem[0] = $this->resolveField($orderItem[0]);
+
+                if (!$orderItem[0]) {
+                    $order[$i] = null;
+                    continue;
+                }
+
                 if ($dir !== null) {
                     $orderItem[1] = $dir;
                 }
@@ -692,7 +714,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
             }
         }
 
-        return $order;
+        return array_filter($order);
     }
 
     /**
