@@ -15,11 +15,11 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Exception\InvalidArgumentException;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
+use Unicorn\Form\FormFieldsBuilder;
 use Windwalker\Console\CommandInterface;
 use Windwalker\Console\CommandWrapper;
 use Windwalker\Console\InteractInterface;
 use Windwalker\Console\IOInterface;
-use Windwalker\Core\Generator\Builder\FormFieldsBuilder;
 use Windwalker\Core\Utilities\ClassFinder;
 use Windwalker\DI\Attributes\Autowire;
 use Windwalker\Filesystem\Filesystem;
@@ -65,7 +65,7 @@ class BuildFormCommand implements CommandInterface, InteractInterface
         );
 
         $command->addOption(
-            'base-ns',
+            'ns',
             null,
             InputOption::VALUE_REQUIRED,
             'The base namespace.',
@@ -120,7 +120,7 @@ class BuildFormCommand implements CommandInterface, InteractInterface
             throw new InvalidArgumentException('Unable use multiple classes.');
         }
 
-        $class = StrNormalize::toClassNamespace($io->getOption('base-ns') . '\\' . $class);
+        $class = StrNormalize::toClassNamespace($io->getOption('ns') . '\\' . $class);
 
         $tbm = $this->orm->getDb()->getTable($table);
 
