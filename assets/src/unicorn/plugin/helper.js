@@ -58,7 +58,7 @@ export default class UnicornHelper {
     return resultSet;
   }
 
-  getBoundedInstance(selector, name, callback) {
+  getBoundedInstance(selector, name, callback = () => null) {
     const element = this.selectOne(selector);
 
     if (!element) {
