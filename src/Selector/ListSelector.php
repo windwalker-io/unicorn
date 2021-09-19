@@ -28,6 +28,7 @@ use Windwalker\Query\Query;
 use Windwalker\Utilities\Arr;
 use Windwalker\Utilities\Cache\InstanceCacheTrait;
 use Windwalker\Utilities\Classes\FlowControlTrait;
+use Windwalker\Utilities\Options\OptionAccessTrait;
 use Windwalker\Utilities\Wrapper\RawWrapper;
 
 use function Windwalker\raw;
@@ -37,6 +38,7 @@ use function Windwalker\raw;
  */
 class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countable
 {
+    use OptionAccessTrait;
     use EventAwareTrait;
     use InstanceCacheTrait;
     use FlowControlTrait;
@@ -69,8 +71,6 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
     protected ?FilterHelper $filterHelper = null;
 
     protected ?SearchHelper $searchHelper = null;
-
-    protected bool $disableSelectGroup = false;
 
     /**
      * ListSelector constructor.
@@ -150,11 +150,6 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
         $query = $this->processFilters($event->getQuery());
         $query = $this->processSearches($query);
 
-        if ($limit = $this->getLimit()) {
-            $query->limit($limit);
-            $query->offset($this->getOffset());
-        }
-
         // ordering
         $order = $query->getOrder();
 
@@ -162,10 +157,17 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
             $query->order($this->handleOrdering($this->defaultOrdering));
         }
 
-        if (!$this->disableSelectGroup) {
+        if (!$this->isDisableSelectGroup()) {
             $query->groupByJoins('.');
         } else {
             $query->autoSelections('_');
+        }
+
+        if ($limit = $this->getLimit()) {
+            $query->limit($limit);
+            // Count first to cache
+            $this->count($query);
+            $query->offset($this->getOffset());
         }
 
         // $this->afterCompileQuery($query);
@@ -214,9 +216,9 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
         return $this;
     }
 
-    public function count(): int
+    public function count(Query $query = null): int
     {
-        return $this->cacheStorage['count'] ??= $this->compileQuery()->count();
+        return $this->cacheStorage['count'] ??= ($query ?? $this->compileQuery())->count();
     }
 
     /**
@@ -255,7 +257,26 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
 
     public function getOffset(): int
     {
-        return ($this->page - 1) * $this->getLimit();
+        return $this->once(
+            'offset',
+            function () {
+                $start = ($this->page - 1) * $this->getLimit();
+
+                if ($this->getOption('page_fix') ?? true) {
+                    $limit = $this->getLimit();
+                    $total = $this->count();
+
+                    if ($total && $start > $total - $limit) {
+                        $page  = (int) ceil($total / $limit);
+                        $start = max(0, ($page - 1) * $limit);
+
+                        $this->page($page);
+                    }
+                }
+
+                return $start;
+            }
+        );
     }
 
     public function getPage(): int
@@ -496,6 +517,11 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
      */
     public function getPagination(int|callable|null $total = null, ?int $neighbours = null): Pagination
     {
+        // Prepare page fix
+        if ($this->getOption('page_fix') ?? true) {
+            $this->getOffset();
+        }
+
         return $this->paginationFactory->create(
             $this->getPage(),
             (int) $this->getLimit(),
@@ -751,7 +777,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
      */
     public function isDisableSelectGroup(): bool
     {
-        return $this->disableSelectGroup;
+        return (bool) $this->getOption('disable_select_group');
     }
 
     /**
@@ -761,7 +787,14 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
      */
     public function disableSelectGroup(bool $disableSelectGroup): static
     {
-        $this->disableSelectGroup = $disableSelectGroup;
+        $this->setOption('disable_select_group', $disableSelectGroup);
+
+        return $this;
+    }
+
+    public function disablePageFix(bool $value): static
+    {
+        $this->setOption('page_fix', !$value);
 
         return $this;
     }
