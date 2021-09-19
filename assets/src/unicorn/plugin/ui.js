@@ -179,7 +179,8 @@ export default class UnicornUI {
       .then((m) => {
         if (selector) {
           options = defaultsDeep(options, {
-            shouldSort: false
+            shouldSort: false,
+            removeItemButton: true
           });
 
           new Choices(selector, options);
