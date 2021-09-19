@@ -201,9 +201,15 @@ PHP;
             default:
                 $this->addUse(TextField::class);
 
+                $extra = '';
+
+                if ($colName === 'title' || $colName === 'name') {
+                    $extra = "\n->required(true)";
+                }
+
                 return <<<PHP
         \$form->add('$colName', TextField::class)
-            ->label($label);
+            ->label($label)$extra;
 PHP;
         }
     }
