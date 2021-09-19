@@ -204,7 +204,8 @@ PHP;
                 $extra = '';
 
                 if ($colName === 'title' || $colName === 'name') {
-                    $extra = "\n->required(true)";
+                    $extra = "\n->required(true)"
+                        . "\n->addFilter('trim')";
                 }
 
                 return <<<PHP
