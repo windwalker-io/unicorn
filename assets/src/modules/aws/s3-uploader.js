@@ -8,6 +8,8 @@
 import { defaultsDeep } from 'lodash-es';
 
 const instances = {};
+const promises = {};
+const resolves = {};
 
 /**
  * @param {string} name
@@ -18,9 +20,28 @@ const instances = {};
 export function getInstance(name, ...args) {
   if (!instances[name]) {
     instances[name] = new S3Uploader(name, ...args);
+
+    if (resolves[name]) {
+      resolves[name](instances[name]);
+      delete resolves[name];
+    }
   }
 
   return instances[name];
+}
+
+export function get(name) {
+  if (instances[name]) {
+    return Promise.resolve(instances[name]);
+  }
+
+  if (!promises[name]) {
+    promises[name] = new Promise((resolve) => {
+      resolves[name] = resolve;
+    });
+  }
+
+  return promises[name];
 }
 
 export function destroy(name) {
