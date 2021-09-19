@@ -11,7 +11,6 @@ declare(strict_types=1);
 
 namespace Unicorn\Selector;
 
-use Unicorn\Repository\DatabaseRepositoryTrait;
 use Unicorn\Selector\Event\AfterCompileQueryEvent;
 use Unicorn\Selector\Event\BeforeCompileQueryEvent;
 use Unicorn\Selector\Event\ConfigureQueryEvent;
@@ -20,7 +19,6 @@ use Unicorn\Selector\Filter\SearchHelper;
 use Windwalker\Core\Database\QueryProxyTrait;
 use Windwalker\Core\Pagination\Pagination;
 use Windwalker\Core\Pagination\PaginationFactory;
-use Windwalker\Core\State\AppState;
 use Windwalker\Data\Collection;
 use Windwalker\Database\DatabaseAdapter;
 use Windwalker\Event\EventAwareInterface;
@@ -30,8 +28,8 @@ use Windwalker\Query\Query;
 use Windwalker\Utilities\Arr;
 use Windwalker\Utilities\Cache\InstanceCacheTrait;
 use Windwalker\Utilities\Classes\FlowControlTrait;
+use Windwalker\Utilities\Wrapper\RawWrapper;
 
-use function Windwalker\filter;
 use function Windwalker\raw;
 
 /**
@@ -59,7 +57,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
     protected array $searchFields = [];
 
     protected ?array $allowFields = null;
-    
+
     protected array $customAllowFields = [];
 
     protected array $filters = [];
@@ -221,6 +219,14 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
         return $this->cacheStorage['count'] ??= $this->compileQuery()->count();
     }
 
+    /**
+     * ordering
+     *
+     * @param  array|string|RawWrapper  $order
+     * @param  string|null              $dir
+     *
+     * @return  $this
+     */
     public function ordering(mixed $order, ?string $dir = null): static
     {
         if ($order === null) {
@@ -322,7 +328,6 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
 
         if (trim($this->searchText) !== '') {
             foreach ($this->searchFields as $field) {
-
                 if ($this->isFieldAllow($field)) {
                     $searches[$field] = $this->searchText;
                 }
@@ -373,7 +378,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
     /**
      * hasFilter
      *
-     * @param string $key
+     * @param  string  $key
      *
      * @return  bool
      *
@@ -397,7 +402,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
     /**
      * getFilter
      *
-     * @param string $key
+     * @param  string  $key
      *
      * @return  mixed
      *
@@ -456,7 +461,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
     /**
      * hasSearch
      *
-     * @param string $key
+     * @param  string  $key
      *
      * @return  bool
      *
@@ -470,7 +475,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
     /**
      * getSearch
      *
-     * @param string $key
+     * @param  string  $key
      *
      * @return  mixed
      *
@@ -496,7 +501,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
             (int) $this->getLimit(),
             $neighbours
         )
-            ->total($total ?? fn () => $this->count());
+            ->total($total ?? fn() => $this->count());
     }
 
     /**
@@ -686,6 +691,10 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
     {
         if (is_string($order)) {
             $order = Arr::explodeAndClear(',', $order);
+        }
+
+        if ($order instanceof RawWrapper) {
+            $order = [$order];
         }
 
         foreach ($order as $i => $orderItem) {
