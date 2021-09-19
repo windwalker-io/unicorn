@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace Unicorn\Script;
 
+use Psr\Http\Message\UriInterface;
 use Windwalker\Core\Asset\AbstractScript;
 
 /**
@@ -96,6 +97,29 @@ class FormScript extends AbstractScript
                 u.\$ui.modalField().then(function () {
                     window.$callbackName = u.\$modalField.createCallback('$type', '$selector', '$modalSelector');
                 });
+                JS
+            );
+        }
+    }
+
+    public function listDependent(
+        string $selector,
+        string $dependent,
+        mixed $source,
+        array $options = []
+    ): void {
+        if ($this->available($selector, $dependent)) {
+            if (is_string($source) || $source instanceof UriInterface) {
+                $options['ajax']['url'] = (string) $source;
+            } else {
+                $options['source'] = $source;
+            }
+
+            $optionsString = self::getJSObject($options);
+
+            $this->unicornScript->importMainThen(
+                <<<JS
+                u.\$ui.listDependent('$selector', '$dependent', $optionsString);
                 JS
             );
         }
