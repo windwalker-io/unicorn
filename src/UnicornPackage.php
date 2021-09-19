@@ -131,8 +131,7 @@ class UnicornPackage extends AbstractPackage implements
                 LangService::class,
                 function (LangService $lang) {
                     return $lang->addPath(__DIR__ . '/../resources/languages')
-                        ->loadFile('unicorn', 'ini')
-                        ->loadFile('unicorn', 'php');
+                        ->loadFile('unicorn', 'ini');
                 }
             );
         }
