@@ -33,6 +33,7 @@ use Windwalker\Filesystem\Path;
 use Windwalker\Http\Helper\UploadedFileHelper;
 use Windwalker\Utilities\Options\OptionsResolverTrait;
 
+use function Windwalker\chronos;
 use function Windwalker\uid;
 
 /**
@@ -86,6 +87,10 @@ class FileUploadService implements EventAwareInterface
         $resolver->define('storage')
             ->allowedTypes('string', 'null')
             ->default('local');
+
+        $resolver->define('options')
+            ->allowedTypes('array')
+            ->default([]);
     }
 
     public function setResizeConfig(array $resizeConfig): static
@@ -112,10 +117,12 @@ class FileUploadService implements EventAwareInterface
             $stream = $this->resizeImage($stream);
         }
 
-        $dest ??= $this->getUploadPath(
-            $dest,
-            $this->mimeTypes->getExtensions($mime)[0] ?? null
-        );
+        $ext = $this->mimeTypes->getExtensions($mime)[0] ?? null;
+        $dest ??= $this->getUploadPath($dest, $ext);
+
+        $dest = static::replaceVariables($dest, (string) $ext);
+
+        $options = array_merge($this->getOption('options'), $options);
 
         $result = $storage->putStream($stream, $dest, $options);
 
@@ -147,7 +154,9 @@ class FileUploadService implements EventAwareInterface
         $ext = Path::getExtension($file->getClientFilename());
         $dest ??= $this->getUploadPath($dest, $ext);
 
-        $dest = str_replace('.{ext}', '.' . $ext, $dest);
+        $dest = static::replaceVariables($dest, $ext);
+
+        $options = array_merge($this->getOption('options'), $options);
 
         $result = $storage->putStream($stream, $dest, $options);
 
@@ -289,5 +298,23 @@ class FileUploadService implements EventAwareInterface
         }
 
         return $ext;
+    }
+
+    public static function replaceVariables(string $dest, string $ext): string
+    {
+        $chronos = chronos();
+
+        return strtr(
+            $dest,
+            [
+                '{year}' => $chronos->format('Y'),
+                '{month}' => $chronos->format('m'),
+                '{day}' => $chronos->format('d'),
+                '{hour}' => $chronos->format('H'),
+                '{minute}' => $chronos->format('i'),
+                '{second}' => $chronos->format('s'),
+                '{ext}' => $ext,
+            ]
+        );
     }
 }

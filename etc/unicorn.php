@@ -9,6 +9,8 @@
 
 declare(strict_types=1);
 
+use Unicorn\Aws\S3Service;
+
 return [
     'unicorn' => [
         'enabled' => true,
@@ -33,12 +35,13 @@ return [
             'default' => 'default',
             'profiles' => [
                 'default' => [
-                    'storage' => 'local',
+                    'storage' => env('UPLOAD_STORAGE_DEFAULT') ?: 'local',
                     'accept' => null,
                 ],
                 'image' => [
-                    'storage' => 'local',
+                    'storage' => env('UPLOAD_STORAGE_DEFAULT') ?: 'local',
                     'accept' => 'image/*',
+                    'dir' => 'images/{year}/{month}/{day}',
                     'resize' => [
                         'enabled' => true,
                         'width' => 1200,
@@ -47,6 +50,9 @@ return [
                         'quality' => 85,
                         'output_format' => null
                     ],
+                    'options' => [
+                        'ACL' => S3Service::ACL_PUBLIC_READ
+                    ]
                 ]
             ]
         ]
