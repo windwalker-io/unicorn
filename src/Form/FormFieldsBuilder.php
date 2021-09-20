@@ -14,11 +14,15 @@ namespace Unicorn\Form;
 use PhpParser\Node;
 use PhpParser\ParserFactory;
 use Unicorn\Field\CalendarField;
+use Unicorn\Field\SwitcherField;
+use Unicorn\Form\Event\BuildFormFieldEvent;
 use Windwalker\Core\Generator\Builder\AbstractAstBuilder;
 use Windwalker\Core\Language\TranslatorTrait;
 use Windwalker\Database\DatabaseAdapter;
 use Windwalker\Database\Manager\TableManager;
 use Windwalker\Database\Schema\Ddl\Column;
+use Windwalker\Event\EventAwareInterface;
+use Windwalker\Event\EventAwareTrait;
 use Windwalker\Form\Field\HiddenField;
 use Windwalker\Form\Field\NumberField;
 use Windwalker\Form\Field\TextareaField;
@@ -29,8 +33,10 @@ use Windwalker\Utilities\StrNormalize;
 /**
  * The FormFieldsBuilder class.
  */
-class FormFieldsBuilder extends AbstractAstBuilder
+class FormFieldsBuilder extends AbstractAstBuilder implements EventAwareInterface
 {
+    use EventAwareTrait;
+
     protected array $uses = [];
     protected array $newUses = [];
     protected bool|string|null $langPrefix = null;
@@ -143,6 +149,19 @@ class FormFieldsBuilder extends AbstractAstBuilder
             );
         }
 
+        $event = $this->emit(
+            BuildFormFieldEvent::class,
+            [
+                'column' => $column,
+                'label' => $label,
+                'formFieldsBuilder' => $this
+            ]
+        );
+
+        if ($event->getCode() !== null) {
+            return $event->getCode();
+        }
+
         if ($column->isAutoIncrement()) {
             $this->addUse(HiddenField::class);
             return <<<PHP
@@ -151,6 +170,17 @@ PHP;
         }
 
         switch ($column->getDataType()) {
+            case $colName === 'state' && $column->getDataType() === 'tinyint':
+                $this->addUse(SwitcherField::class);
+
+                return <<<PHP
+        \$form->add('$colName', SwitcherField::class)
+            ->label($label)
+            ->circle(true)
+            ->color('success')
+            ->defaultValue('1');
+PHP;
+
             case 'datetime':
             case 'timestamp':
                 $this->addUse(CalendarField::class);
@@ -204,8 +234,8 @@ PHP;
                 $extra = '';
 
                 if ($colName === 'title' || $colName === 'name') {
-                    $extra = "\n->required(true)"
-                        . "\n->addFilter('trim')";
+                    $extra = "\n            ->required(true)"
+                        . "\n            ->addFilter('trim')";
                 }
 
                 return <<<PHP
@@ -228,7 +258,7 @@ PHP;
         return $this->className;
     }
 
-    protected function addUse(string $ns): void
+    public function addUse(string $ns): void
     {
         if (!in_array($ns, $this->uses, true)) {
             $this->newUses[] = $ns;

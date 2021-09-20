@@ -20,6 +20,7 @@ use Windwalker\Console\CommandInterface;
 use Windwalker\Console\CommandWrapper;
 use Windwalker\Console\InteractInterface;
 use Windwalker\Console\IOInterface;
+use Windwalker\Core\Console\ConsoleApplication;
 use Windwalker\Core\Utilities\ClassFinder;
 use Windwalker\DI\Attributes\Autowire;
 use Windwalker\Filesystem\Filesystem;
@@ -39,8 +40,11 @@ class BuildFormCommand implements CommandInterface, InteractInterface
     /**
      * BuildEntityCommand constructor.
      */
-    public function __construct(#[Autowire] protected ClassFinder $classFinder, protected ORM $orm)
-    {
+    public function __construct(
+        #[Autowire] protected ClassFinder $classFinder,
+        protected ORM $orm,
+        protected ConsoleApplication $app
+    ) {
     }
 
     /**
@@ -127,6 +131,7 @@ class BuildFormCommand implements CommandInterface, InteractInterface
         $ref = new \ReflectionClass($class);
 
         $builder = new FormFieldsBuilder($ref->getName(), $tbm);
+        $builder->addEventDealer($this->app);
         $newCode = $builder->process($io->getOptions(), $added);
 
         if (!$this->io->getOption('dry-run')) {
