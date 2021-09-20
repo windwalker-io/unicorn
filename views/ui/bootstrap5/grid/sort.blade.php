@@ -28,6 +28,7 @@ $uid = \Windwalker\uid();
 ?>
 
 <a href="javascript: void(0);"
+    class="text-decoration-none"
     x-id="sort"
     x-ref="root"
     x-data="{ grid: $store.{{ $store }}, $root: $el }"

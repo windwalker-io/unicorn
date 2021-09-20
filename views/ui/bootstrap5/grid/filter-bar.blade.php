@@ -66,7 +66,7 @@ $filterBlock ??= null;
                                 title="@lang('unicorn.grid.search.button.desc')"
                                 @click="$store.grid.sendFilter()"
                             >
-                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <i class="fa fa-magnifying-glass"></i>
                             </button>
                         </x-slot>
                     </x-input-group>
