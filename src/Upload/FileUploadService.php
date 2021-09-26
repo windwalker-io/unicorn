@@ -4,7 +4,7 @@
  * Part of starter project.
  *
  * @copyright  Copyright (C) 2021 __ORGANIZATION__.
- * @license    __LICENSE__
+ * @license    MIT
  */
 
 declare(strict_types=1);
@@ -25,18 +25,23 @@ use Unicorn\Flysystem\Base64DataUri;
 use Unicorn\Storage\PutResult;
 use Unicorn\Storage\StorageInterface;
 use Unicorn\Storage\StorageManager;
+use Unicorn\Upload\Event\FileUploadedEvent;
+use Windwalker\Event\EventAwareInterface;
+use Windwalker\Event\EventAwareTrait;
 use Windwalker\Filesystem\Filesystem;
 use Windwalker\Filesystem\Path;
 use Windwalker\Http\Helper\UploadedFileHelper;
 use Windwalker\Utilities\Options\OptionsResolverTrait;
 
+use function Windwalker\chronos;
 use function Windwalker\uid;
 
 /**
  * The FileUploadService class.
  */
-class FileUploadService
+class FileUploadService implements EventAwareInterface
 {
+    use EventAwareTrait;
     use OptionsResolverTrait;
 
     /**
@@ -45,7 +50,7 @@ class FileUploadService
     public function __construct(
         array $options,
         protected StorageManager $storageManager,
-        protected MimeTypesInterface $mimeTypes
+        protected ?MimeTypesInterface $mimeTypes = null
     ) {
         $this->resolveOptions(
             $options,
@@ -82,6 +87,10 @@ class FileUploadService
         $resolver->define('storage')
             ->allowedTypes('string', 'null')
             ->default('local');
+
+        $resolver->define('options')
+            ->allowedTypes('array')
+            ->default([]);
     }
 
     public function setResizeConfig(array $resizeConfig): static
@@ -108,12 +117,21 @@ class FileUploadService
             $stream = $this->resizeImage($stream);
         }
 
-        $dest ??= $this->getUploadPath(
-            $dest,
-            $this->mimeTypes->getExtensions($mime)[0] ?? null
+        $ext = $this->mimeTypes->getExtensions($mime)[0] ?? null;
+        $dest ??= $this->getUploadPath($dest, $ext);
+
+        $dest = static::replaceVariables($dest, (string) $ext);
+
+        $options = array_merge($this->getOption('options'), $options);
+
+        $result = $storage->putStream($stream, $dest, $options);
+
+        $event = $this->emit(
+            FileUploadedEvent::class,
+            compact('file', 'result', 'dest', 'stream', 'options')
         );
 
-        return $storage->putStream($stream, $dest, $options);
+        return $event->getResult();
     }
 
     public function handleFile(UploadedFileInterface $file, ?string $dest = null, array $options = []): PutResult
@@ -136,9 +154,18 @@ class FileUploadService
         $ext = Path::getExtension($file->getClientFilename());
         $dest ??= $this->getUploadPath($dest, $ext);
 
-        $dest = str_replace('.{ext}', '.' . $ext, $dest);
+        $dest = static::replaceVariables($dest, $ext);
 
-        return $storage->putStream($stream, $dest, $options);
+        $options = array_merge($this->getOption('options'), $options);
+
+        $result = $storage->putStream($stream, $dest, $options);
+
+        $event = $this->emit(
+            FileUploadedEvent::class,
+            compact('file', 'result', 'dest', 'stream', 'options')
+        );
+
+        return $event->getResult();
     }
 
     public function handleFileIfUploaded(?UploadedFileInterface $file, ?string $dest = null, array $options = []): ?PutResult
@@ -271,5 +298,23 @@ class FileUploadService
         }
 
         return $ext;
+    }
+
+    public static function replaceVariables(string $dest, string $ext): string
+    {
+        $chronos = chronos();
+
+        return strtr(
+            $dest,
+            [
+                '{year}' => $chronos->format('Y'),
+                '{month}' => $chronos->format('m'),
+                '{day}' => $chronos->format('d'),
+                '{hour}' => $chronos->format('H'),
+                '{minute}' => $chronos->format('i'),
+                '{second}' => $chronos->format('s'),
+                '{ext}' => $ext,
+            ]
+        );
     }
 }

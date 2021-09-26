@@ -4,7 +4,7 @@
  * Part of starter project.
  *
  * @copyright  Copyright (C) 2021 __ORGANIZATION__.
- * @license    __LICENSE__
+ * @license    MIT
  */
 
 declare(strict_types=1);
@@ -62,7 +62,7 @@ class MultiUploaderField extends AbstractField
 
     public function getDefaultLayout(): string
     {
-        return '@theme.field.multi-uploader';
+        return '@theme::field.multi-uploader';
     }
 
     /**

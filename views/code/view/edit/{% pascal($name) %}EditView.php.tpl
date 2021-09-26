@@ -52,7 +52,7 @@ class {% pascal($name) %}EditView implements ViewModelInterface
     {
         $id = $app->input('id');
 
-        $item = $this->orm->findOne({% pascal($name) %}::class, $id);
+        $item = $this->repository->getItem($id);
 
         $form = $this->formFactory
             ->create(EditForm::class)

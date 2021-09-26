@@ -4,7 +4,7 @@
  * Part of starter project.
  *
  * @copyright  Copyright (C) 2021 __ORGANIZATION__.
- * @license    __LICENSE__
+ * @license    MIT
  */
 
 declare(strict_types=1);
@@ -174,10 +174,10 @@ class ModalField extends AbstractField
     public function getDefaultLayout(): string
     {
         if ($this->isMultiple()) {
-            return '@theme.field.modal.modal-list';
+            return '@theme::field.modal.modal-list';
         }
 
-        return '@theme.field.modal.modal-single';
+        return '@theme::field.modal.modal-single';
     }
 
     protected function getItemTitle(): ?string

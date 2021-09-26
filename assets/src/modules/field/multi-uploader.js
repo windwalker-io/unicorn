@@ -116,7 +116,7 @@ function createAppInstance(data, tmpl) {
 
         app.value.checkFile(file);
 
-        if (!app.value.canUpload) {
+        if (app.value.isReadonly) {
           return;
         }
 

@@ -4,7 +4,7 @@
  * Part of starter project.
  *
  * @copyright  Copyright (C) 2021 __ORGANIZATION__.
- * @license    __LICENSE__
+ * @license    MIT
  */
 
 declare(strict_types=1);
@@ -22,7 +22,7 @@ use Windwalker\Event\Attributes\ListenTo;
  * The UnicornAssetListener class.
  */
 #[EventSubscriber]
-class UnicornAssetListener
+class UnicornAssetSubscriber
 {
     /**
      * UnicornAssetListener constructor.

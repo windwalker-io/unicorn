@@ -4,7 +4,7 @@
  * Part of starter project.
  *
  * @copyright  Copyright (C) 2021 __ORGANIZATION__.
- * @license    __LICENSE__
+ * @license    MIT
  */
 
 declare(strict_types=1);
@@ -20,6 +20,8 @@ use Windwalker\Core\Router\RouteUri;
 use Windwalker\Event\EventAwareInterface;
 use Windwalker\Event\EventAwareTrait;
 use Windwalker\Session\Session;
+
+use function Windwalker\value;
 
 /**
  * The GridController class.
@@ -49,7 +51,7 @@ class GridController implements EventAwareInterface
         return $nav->self();
     }
 
-    public function batch(AppContext $app, ManageRepositoryInterface $repository, ?array $data = null): mixed
+    public function batch(AppContext $app, ManageRepositoryInterface $repository, mixed $data = null): mixed
     {
         if ($task = $app->input('task')) {
             $method = 'batch' . ucfirst($task);
@@ -62,10 +64,11 @@ class GridController implements EventAwareInterface
         return $app->call([$this, 'batchUpdate'], compact('repository', 'data'));
     }
 
-    public function batchUpdate(AppContext $app, Navigator $nav, ManageRepositoryInterface $repository, ?array $data = null): RouteUri
+    public function batchUpdate(AppContext $app, Navigator $nav, ManageRepositoryInterface $repository, mixed $data = null): RouteUri
     {
         $ids = (array) $app->input('id');
         $data ??= (array) $app->input('batch');
+        $data = value($data);
 
         $action = $repository->createBatchAction();
 

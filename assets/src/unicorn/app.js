@@ -7,7 +7,7 @@
 
 import { EventMixin } from './events.js';
 import { mix } from './mixwith.js';
-import { merge } from 'lodash-es';
+import { defaultsDeep } from 'lodash-es';
 
 export default class UnicornApp extends mix(class {}).with(EventMixin) {
   plugins = {};
@@ -24,7 +24,7 @@ export default class UnicornApp extends mix(class {}).with(EventMixin) {
 
   constructor(options = {}) {
     super();
-    this.options = merge({}, this.constructor.defaultOptions, options);
+    this.options = defaultsDeep({}, options, this.constructor.defaultOptions);
 
     // Wait dom ready
     this.wait((resolve) => {

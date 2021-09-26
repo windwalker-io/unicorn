@@ -5,7 +5,6 @@
  * @license    __LICENSE__
  */
 
-import randomBytes from 'randombytes';
 import md5 from 'md5';
 
 let globalSerial = 1;
@@ -20,6 +19,7 @@ export default class UnicornCrypto {
     app.base64Decode = $crypto.base64Decode.bind($crypto);
     app.uuid4 = $crypto.uuid4.bind($crypto);
     app.uid = $crypto.uid.bind($crypto);
+    app.tid = $crypto.tid.bind($crypto);
     app.md5 = $crypto.md5.bind($crypto);
     app.serial = $crypto.serial.bind($crypto);
   }
@@ -121,10 +121,37 @@ export default class UnicornCrypto {
 
       const time = (start * 100000) + (performance.now() * 100);
 
-      return prefix + time.toString(12) + (randomBytes(4).toString('hex'));
+      return prefix + time.toString(12) + (this.randomString(4));
     }
 
-    return prefix + randomBytes(12).toString('hex');
+    return prefix + this.randomString(12);
+  }
+
+  /**
+   * @param {string}  prefix
+   * @returns {string}
+   */
+  tid(prefix = '') {
+    return this.uid(prefix, true);
+  }
+
+  randomString(n = 12) {
+    const QUOTA = 65536;
+    const crypto = (window.crypto || window.msCrypto);
+
+    if (!crypto) {
+      return Math.floor(Math.random() * (n ** 10));
+    }
+
+    const a = new Uint8Array(n);
+
+    for (let i = 0; i < n; i += QUOTA) {
+      crypto.getRandomValues(a.subarray(i, i + Math.min(n - i, QUOTA)));
+    }
+
+    return [...a]
+      .map(x => x.toString(16).padStart(2, '0'))
+      .join('');
   }
 
   md5(str) {

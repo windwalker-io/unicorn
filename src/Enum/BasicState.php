@@ -4,7 +4,7 @@
  * Part of starter project.
  *
  * @copyright  Copyright (C) 2021 __ORGANIZATION__.
- * @license    __LICENSE__
+ * @license    MIT
  */
 
 declare(strict_types=1);
@@ -12,6 +12,9 @@ declare(strict_types=1);
 namespace Unicorn\Enum;
 
 use MyCLabs\Enum\Enum;
+use Windwalker\Utilities\Contract\LanguageInterface;
+use Windwalker\Utilities\Enum\EnumTranslatableInterface;
+use Windwalker\Utilities\Enum\EnumTranslatableTrait;
 
 /**
  * The State class.
@@ -19,8 +22,10 @@ use MyCLabs\Enum\Enum;
  * @method static static UNPUBLISHED()
  * @method static static PUBLISHED()
  */
-class BasicState extends Enum
+class BasicState extends Enum implements EnumTranslatableInterface
 {
+    use EnumTranslatableTrait;
+
     public const UNPUBLISHED = 0;
     public const PUBLISHED = 1;
 
@@ -39,5 +44,10 @@ class BasicState extends Enum
         $value = (string) $value === '' ? 0 : $value;
 
         parent::__construct($value);
+    }
+
+    public function trans(LanguageInterface $lang, ...$args): string
+    {
+        return $lang->trans('unicorn.state.' . $this->getKey());
     }
 }

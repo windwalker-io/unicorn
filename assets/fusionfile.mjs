@@ -54,11 +54,12 @@ export async function main() {
 
 export async function js() {
   // Watch start
-  fusion.watch('src/js/**/*.js');
+  fusion.watch(['src/js/**/*.js', 'src/systemjs/**/*.js']);
   // Watch end
 
   // Compile Start
   babel('src/js/**/*.js', 'dist/');
+  babel('src/systemjs/**/*.js', 'dist/', { module: 'systemjs' });
   // Compile end
 }
 

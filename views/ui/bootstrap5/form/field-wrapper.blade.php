@@ -14,11 +14,11 @@
 
 declare(strict_types=1);
 
+use Unicorn\Form\BootstrapFormRenderer;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Asset\AssetService;
 use Windwalker\Core\Attributes\ViewModel;
 use Windwalker\Core\DateTime\ChronosService;
-use Windwalker\Core\Form\FormRenderer;
 use Windwalker\Core\Language\LangService;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\SystemUri;
@@ -30,6 +30,8 @@ use Windwalker\Utilities\Str;
  * @var \Windwalker\DOM\DOMElement $wrapper
  * @var \Windwalker\Edge\Component\ComponentAttributes $attributes
  */
+
+BootstrapFormRenderer::handleFieldConfiguration($field);
 
 $wrapper ??= $field->getPreparedWrapper();
 $options = array_merge($field->getStates(), $options ?? []);

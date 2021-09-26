@@ -4,7 +4,7 @@
  * Part of starter project.
  *
  * @copyright  Copyright (C) 2021 __ORGANIZATION__.
- * @license    __LICENSE__
+ * @license    MIT
  */
 
 declare(strict_types=1);
@@ -32,7 +32,7 @@ class FileDragField extends FileField
 
     public function getDefaultLayout(): string
     {
-        return '@theme.field.file-drag';
+        return '@theme::field.file-drag';
     }
 
     public function buildFieldElement(DOMElement $input, array $options = []): string|DOMElement

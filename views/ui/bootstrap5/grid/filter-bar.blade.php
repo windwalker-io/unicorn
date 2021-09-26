@@ -52,22 +52,24 @@ $filterBlock ??= null;
             {{-- Search --}}
             @if ($searchBlock !== false)
                 @if ($searchBlock === null)
-                    <div class="input-group">
+                    <x-input-group class="" tag-name="span">
                         <?php $searchField = $form->getField($searchInput); ?>
 
                         <x-input :field="$searchField"
                             x-on:keyup.enter="$store.grid.sendFilter()"
                         ></x-input>
 
-                        <button type="button" class="btn btn-outline-secondary"
-                            data-search-button
-                            data-bs-toggle="tooltip"
-                            title="Search"
-                            @click="$store.grid.sendFilter()"
-                        >
-                            <i class="fa fa-magnifying-glass"></i>
-                        </button>
-                    </div>
+                        <x-slot name="end">
+                            <button type="button" class="btn btn-outline-secondary"
+                                data-search-button
+                                data-bs-toggle="tooltip"
+                                title="@lang('unicorn.grid.search.button.desc')"
+                                @click="$store.grid.sendFilter()"
+                            >
+                                <i class="fa fa-magnifying-glass"></i>
+                            </button>
+                        </x-slot>
+                    </x-input-group>
                 @else
                     {!! $searchBlock ?? '' !!}
                 @endif
@@ -77,19 +79,20 @@ $filterBlock ??= null;
             @if ($filterBlock !== false)
                 <div class="btn-group ms-3 ml-3">
                     <button type="button" class="btn text-nowrap"
-                        data-filter-toggle-button
                         :class="[ open ? 'btn-dark' : 'btn-outline-secondary' ]"
                         @click="open = !open"
+                        data-bs-toggle="tooltip"
+                        title="@lang('unicorn.grid.filter.button.desc')"
                     >
-                        Filters
+                        @lang('unicorn.grid.filter.button.text')
                         <span class="filter-button-icon fa"
                             :class="[ open ? 'fa-angle-up' : 'fa-angle-down' ]"
                         ></span>
                     </button>
                     <button type="button" class="btn btn-outline-secondary"
-                        data-filter-clear-button
-                        {{--@click="gridState.uniform.clearAll($refs.filterbar)"--}}
                         @click="$store.grid.clearFilters($refs.filterbar)"
+                        data-bs-toggle="tooltip"
+                        title="@lang('unicorn.grid.clear.button.desc')"
                     >
                         <span class="fa fa-times"></span>
                     </button>
@@ -113,7 +116,7 @@ $filterBlock ??= null;
                 <div class="row c-filter-bar__filter-group">
                     @foreach ($fields as $field)
                         <div class="col-lg-3 col-sm-6 mb-3">
-                            <x-field :field="$field" floating></x-field>
+                            <x-field :field="$field"></x-field>
                         </div>
                     @endforeach
                 </div>

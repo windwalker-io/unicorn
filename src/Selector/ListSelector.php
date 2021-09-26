@@ -4,14 +4,13 @@
  * Part of starter project.
  *
  * @copyright  Copyright (C) 2021 __ORGANIZATION__.
- * @license    __LICENSE__
+ * @license    MIT
  */
 
 declare(strict_types=1);
 
 namespace Unicorn\Selector;
 
-use Unicorn\Repository\DatabaseRepositoryTrait;
 use Unicorn\Selector\Event\AfterCompileQueryEvent;
 use Unicorn\Selector\Event\BeforeCompileQueryEvent;
 use Unicorn\Selector\Event\ConfigureQueryEvent;
@@ -20,7 +19,6 @@ use Unicorn\Selector\Filter\SearchHelper;
 use Windwalker\Core\Database\QueryProxyTrait;
 use Windwalker\Core\Pagination\Pagination;
 use Windwalker\Core\Pagination\PaginationFactory;
-use Windwalker\Core\State\AppState;
 use Windwalker\Data\Collection;
 use Windwalker\Database\DatabaseAdapter;
 use Windwalker\Event\EventAwareInterface;
@@ -30,8 +28,9 @@ use Windwalker\Query\Query;
 use Windwalker\Utilities\Arr;
 use Windwalker\Utilities\Cache\InstanceCacheTrait;
 use Windwalker\Utilities\Classes\FlowControlTrait;
+use Windwalker\Utilities\Options\OptionAccessTrait;
+use Windwalker\Utilities\Wrapper\RawWrapper;
 
-use function Windwalker\filter;
 use function Windwalker\raw;
 
 /**
@@ -39,6 +38,7 @@ use function Windwalker\raw;
  */
 class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countable
 {
+    use OptionAccessTrait;
     use EventAwareTrait;
     use InstanceCacheTrait;
     use FlowControlTrait;
@@ -59,20 +59,18 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
     protected array $searchFields = [];
 
     protected ?array $allowFields = null;
-    
+
     protected array $customAllowFields = [];
 
     protected array $filters = [];
 
     protected array $searches = [];
 
-    protected array $fieldAlias = [];
+    protected array $fieldAliases = [];
 
     protected ?FilterHelper $filterHelper = null;
 
     protected ?SearchHelper $searchHelper = null;
-
-    protected bool $disableSelectGroup = false;
 
     /**
      * ListSelector constructor.
@@ -152,11 +150,6 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
         $query = $this->processFilters($event->getQuery());
         $query = $this->processSearches($query);
 
-        if ($limit = $this->getLimit()) {
-            $query->limit($limit);
-            $query->offset($this->getOffset());
-        }
-
         // ordering
         $order = $query->getOrder();
 
@@ -164,10 +157,17 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
             $query->order($this->handleOrdering($this->defaultOrdering));
         }
 
-        if (!$this->disableSelectGroup) {
+        if (!$this->isDisableSelectGroup()) {
             $query->groupByJoins('.');
         } else {
             $query->autoSelections('_');
+        }
+
+        if ($limit = $this->getLimit()) {
+            $query->limit($limit);
+            // Count first to cache
+            $this->count($query);
+            $query->offset($this->getOffset());
         }
 
         // $this->afterCompileQuery($query);
@@ -216,11 +216,19 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
         return $this;
     }
 
-    public function count(): int
+    public function count(Query $query = null): int
     {
-        return $this->cacheStorage['count'] ??= $this->compileQuery()->count();
+        return $this->cacheStorage['count'] ??= ($query ?? $this->compileQuery())->count();
     }
 
+    /**
+     * ordering
+     *
+     * @param  array|string|RawWrapper  $order
+     * @param  string|null              $dir
+     *
+     * @return  $this
+     */
     public function ordering(mixed $order, ?string $dir = null): static
     {
         if ($order === null) {
@@ -229,7 +237,9 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
 
         $order = $this->handleOrdering($order, $dir);
 
-        $this->getQuery()->order($order);
+        if ($order) {
+            $this->getQuery()->order($order);
+        }
 
         return $this;
     }
@@ -247,7 +257,26 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
 
     public function getOffset(): int
     {
-        return ($this->page - 1) * $this->getLimit();
+        return $this->once(
+            'offset',
+            function () {
+                $start = ($this->page - 1) * $this->getLimit();
+
+                if ($this->getOption('page_fix') ?? true) {
+                    $limit = $this->getLimit();
+                    $total = $this->count();
+
+                    if ($total && $start > $total - $limit) {
+                        $page  = (int) ceil($total / $limit);
+                        $start = max(0, ($page - 1) * $limit);
+
+                        $this->page($page);
+                    }
+                }
+
+                return $start;
+            }
+        );
     }
 
     public function getPage(): int
@@ -320,7 +349,6 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
 
         if (trim($this->searchText) !== '') {
             foreach ($this->searchFields as $field) {
-
                 if ($this->isFieldAllow($field)) {
                     $searches[$field] = $this->searchText;
                 }
@@ -371,7 +399,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
     /**
      * hasFilter
      *
-     * @param string $key
+     * @param  string  $key
      *
      * @return  bool
      *
@@ -395,7 +423,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
     /**
      * getFilter
      *
-     * @param string $key
+     * @param  string  $key
      *
      * @return  mixed
      *
@@ -454,7 +482,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
     /**
      * hasSearch
      *
-     * @param string $key
+     * @param  string  $key
      *
      * @return  bool
      *
@@ -468,7 +496,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
     /**
      * getSearch
      *
-     * @param string $key
+     * @param  string  $key
      *
      * @return  mixed
      *
@@ -489,12 +517,17 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
      */
     public function getPagination(int|callable|null $total = null, ?int $neighbours = null): Pagination
     {
+        // Prepare page fix
+        if ($this->getOption('page_fix') ?? true) {
+            $this->getOffset();
+        }
+
         return $this->paginationFactory->create(
             $this->getPage(),
-            $this->getLimit(),
+            (int) $this->getLimit(),
             $neighbours
         )
-            ->total($total ?? fn () => $this->count());
+            ->total($total ?? fn() => $this->count());
     }
 
     /**
@@ -565,36 +598,49 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
 
     public function resolveFieldAlias(string $field): string
     {
-        while (isset($this->fieldAlias[$field])) {
-            $field = $this->fieldAlias[$field];
+        while (isset($this->fieldAliases[$field])) {
+            $field = $this->fieldAliases[$field];
+
+            if (!is_string($field)) {
+                break;
+            }
         }
 
         return $field;
     }
 
-    /**
-     * @return array
-     */
-    public function getFieldAlias(): array
+    public function resolveField(string $field): ?string
     {
-        return $this->fieldAlias;
+        if (!$this->isFieldAllow($field)) {
+            return null;
+        }
+
+        return $this->resolveFieldAlias($field);
     }
 
     /**
-     * @param  array  $fieldAlias
+     * @return array
+     */
+    public function getFieldAliases(): array
+    {
+        return $this->fieldAliases;
+    }
+
+    /**
+     * @param  array  $fieldAliases
      *
      * @return  static  Return self to support chaining.
      */
-    public function setFieldAlias(array $fieldAlias): static
+    public function setFieldAliases(array $fieldAliases): static
     {
-        $this->fieldAlias = $fieldAlias;
+        $this->fieldAliases = $fieldAliases;
 
         return $this;
     }
 
     public function fieldAlias(string $alias, string $field): static
     {
-        $this->fieldAlias[$alias] = $field;
+        $this->fieldAliases[$alias] = $field;
 
         return $this;
     }
@@ -673,9 +719,20 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
             $order = Arr::explodeAndClear(',', $order);
         }
 
+        if ($order instanceof RawWrapper) {
+            $order = [$order];
+        }
+
         foreach ($order as $i => $orderItem) {
             if (is_string($orderItem)) {
                 $orderItem = Arr::explodeAndClear(' ', $orderItem);
+
+                $orderItem[0] = $this->resolveField($orderItem[0]);
+
+                if (!$orderItem[0]) {
+                    $order[$i] = null;
+                    continue;
+                }
 
                 if ($dir !== null) {
                     $orderItem[1] = $dir;
@@ -692,7 +749,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
             }
         }
 
-        return $order;
+        return array_filter($order);
     }
 
     /**
@@ -708,7 +765,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
      *
      * @return  string
      *
-     * @since  __DEPLOY_VERSION__
+     * @since  1.0.0
      */
     public function getSearchText(): string
     {
@@ -720,7 +777,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
      */
     public function isDisableSelectGroup(): bool
     {
-        return $this->disableSelectGroup;
+        return (bool) $this->getOption('disable_select_group');
     }
 
     /**
@@ -730,7 +787,14 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
      */
     public function disableSelectGroup(bool $disableSelectGroup): static
     {
-        $this->disableSelectGroup = $disableSelectGroup;
+        $this->setOption('disable_select_group', $disableSelectGroup);
+
+        return $this;
+    }
+
+    public function disablePageFix(bool $value): static
+    {
+        $this->setOption('page_fix', !$value);
 
         return $this;
     }

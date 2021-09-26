@@ -4,7 +4,7 @@
  * Part of starter project.
  *
  * @copyright  Copyright (C) 2021 __ORGANIZATION__.
- * @license    __LICENSE__
+ * @license    MIT
  */
 
 declare(strict_types=1);
@@ -58,7 +58,7 @@ class SingleImageDragField extends TextField
 
     public function getDefaultLayout(): string
     {
-        return '@theme.field.single-image-drag.sid-default';
+        return '@theme::field.single-image-drag.sid-default';
     }
 
     public function buildFieldElement(DOMElement $input, array $options = []): string|DOMElement

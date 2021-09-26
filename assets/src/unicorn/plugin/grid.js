@@ -55,8 +55,10 @@ class UnicornGridElement {
       this.ordering += ' ASC';
     }
 
-    return this.app.loadAlpine(() => {
+    return this.app.loadAlpine((m) => {
       Alpine.store(store, this.useState(custom));
+
+      return m;
     });
   }
 
@@ -405,6 +407,13 @@ class UnicornGridElement {
     return this.app.selectAll(
       this.element.querySelectorAll('input[data-role=grid-checkbox][type=checkbox]:checked')
     );
+  }
+
+  /**
+   * @returns {string[]}
+   */
+  getCheckedValues() {
+    return this.getChecked().map(input => input.value);
   }
 
   /**

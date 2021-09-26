@@ -4,7 +4,7 @@
  * Part of starter project.
  *
  * @copyright  Copyright (C) 2021 __ORGANIZATION__.
- * @license    __LICENSE__
+ * @license    MIT
  */
 
 declare(strict_types=1);
@@ -24,7 +24,9 @@ use Unicorn\Generator\SubCommand\ModelSubCommand;
 use Unicorn\Generator\SubCommand\RouteSubCommand;
 use Unicorn\Generator\SubCommand\ViewEditSubCommand;
 use Unicorn\Generator\SubCommand\ViewGridSubCommand;
+use Unicorn\Image\ImagePlaceholder;
 use Unicorn\Script\FormScript;
+use Unicorn\Script\ModernScript;
 use Unicorn\Script\UnicornScript;
 use Unicorn\Script\VueScript;
 use Unicorn\Upload\FileUploadManager;
@@ -101,8 +103,12 @@ class UnicornPackage extends AbstractPackage implements
         $container->prepareSharedObject(FormScript::class);
         $container->prepareSharedObject(VueScript::class);
         $container->prepareSharedObject(FileUploadManager::class);
+        $container->prepareSharedObject(ModernScript::class);
         $container->prepareSharedObject(MimeTypes::class)
             ->alias(MimeTypesInterface::class, MimeTypes::class);
+
+        // Services
+        $container->prepareSharedObject(ImagePlaceholder::class);
 
         // MVC
         $container->prepareSharedObject(CrudController::class);
@@ -125,8 +131,7 @@ class UnicornPackage extends AbstractPackage implements
                 LangService::class,
                 function (LangService $lang) {
                     return $lang->addPath(__DIR__ . '/../resources/languages')
-                        ->loadFile('unicorn', 'ini')
-                        ->loadFile('unicorn', 'php');
+                        ->loadFile('unicorn', 'ini');
                 }
             );
         }
@@ -150,6 +155,8 @@ class UnicornPackage extends AbstractPackage implements
                 '@vue'          => 'vendor/vue/dist/vue.global' . ($this->app->isDebug() ? '' : '.prod') . '.js',
                 '@vuedraggable' => 'vendor/vuedraggable/dist/vuedraggable.umd.min.js',
                 '@vue2-animate' => 'vendor/vue2-animate/dist/vue2-animate.min.css',
+                '@core-js'      => 'vendor/core-js-bundle/minified.js',
+                '@current-script-polyfill' => 'vendor/current-script-polyfill/currentScript.js',
             ]
         );
 
@@ -167,9 +174,10 @@ class UnicornPackage extends AbstractPackage implements
                 '@state-button' => '@theme::grid.state-button',
                 '@state-dropdown' => '@theme::grid.state-dropdown',
                 '@batch-modal' => '@theme::grid.batch-modal',
-                '@card' => '@theme::card',
                 '@fieldset' => '@theme::form.fieldset',
                 '@bool-icon' => '@theme::bool-icon',
+                '@card' => '@theme::components.card',
+                '@input-group' => '@theme::components.input-group',
             ]
         );
 
@@ -186,12 +194,14 @@ class UnicornPackage extends AbstractPackage implements
                 'state-button' => '@state-button',
                 'state-dropdown' => '@state-dropdown',
                 'batch-modal' => '@batch-modal',
-                'card' => '@card',
                 'field' => '@theme::form.field-wrapper',
                 'input' => '@theme::form.input',
                 'label' => '@theme::form.label',
                 'fieldset' => '@fieldset',
                 'bool-icon' => '@bool-icon',
+                'card' => '@card',
+                'div' => '@theme::components.div',
+                'input-group' => '@input-group',
             ]
         );
 

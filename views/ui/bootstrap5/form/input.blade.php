@@ -14,17 +14,16 @@
 
 declare(strict_types=1);
 
+use Unicorn\Form\BootstrapFormRenderer;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Asset\AssetService;
 use Windwalker\Core\Attributes\ViewModel;
 use Windwalker\Core\DateTime\ChronosService;
-use Windwalker\Core\Form\FormRenderer;
 use Windwalker\Core\Language\LangService;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\SystemUri;
 use Windwalker\Edge\Component\ComponentAttributes;
 use Windwalker\Form\Field\AbstractField;
-use Windwalker\Utilities\Str;
 
 /**
  * @var AbstractField $field
@@ -50,13 +49,7 @@ if ($inputElement instanceof \Windwalker\DOM\DOMElement) {
         $inputElement->setAttributes($attributes->getAttributes());
     }
 
-    $inputElement->addClass(
-        match (true) {
-            $inputElement->getAttribute('type') === 'checkbox' => 'form-input-check',
-            $inputElement->getName() === 'select' => 'custom-select form-select',
-            default => 'form-control'
-        }
-    );
+    BootstrapFormRenderer::handleInputClasses($field, $inputElement);
 }
 
 if ($floating) {

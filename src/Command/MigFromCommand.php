@@ -4,7 +4,7 @@
  * Part of unicorn project.
  *
  * @copyright  Copyright (C) 2021 __ORGANIZATION__.
- * @license    __LICENSE__
+ * @license    MIT
  */
 
 declare(strict_types=1);
@@ -12,8 +12,10 @@ declare(strict_types=1);
 namespace Unicorn\Command;
 
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpParser\BuilderFactory;
 use PhpParser\Node;
+use PhpParser\NodeTraverser;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
@@ -26,6 +28,7 @@ use Windwalker\Core\Console\ConsoleApplication;
 use Windwalker\Core\Generator\Builder\CallbackAstBuilder;
 use Windwalker\Core\Migration\Exception\MigrationExistsException;
 use Windwalker\Core\Migration\MigrationService;
+use Windwalker\Data\Collection;
 use Windwalker\Filesystem\FileObject;
 use Windwalker\Utilities\Str;
 use Windwalker\Utilities\StrInflector;
@@ -77,6 +80,13 @@ class MigFromCommand implements CommandInterface
             InputOption::VALUE_NONE,
             'Build entities.'
         );
+        $command->addOption(
+            'force',
+            'f',
+            InputOption::VALUE_OPTIONAL,
+            'Force override.',
+            false
+        );
     }
 
     /**
@@ -91,6 +101,10 @@ class MigFromCommand implements CommandInterface
         $file = $io->getArgument('file');
 
         $io->writeln('Extracting file....');
+
+        if (!class_exists(Spreadsheet::class)) {
+            throw new \DomainException('Please install phpoffice/phpspreadsheet first.');
+        }
 
         $excel = new ExcelImporter($file);
         $migGroups = [];
@@ -114,6 +128,7 @@ class MigFromCommand implements CommandInterface
         }
 
         $entities = [];
+        $existsTables = [];
 
         foreach ($migGroups as $groupName => $tables) {
             $groupName = StrNormalize::toPascalCase($groupName);
@@ -142,7 +157,18 @@ class MigFromCommand implements CommandInterface
             $usesList = [];
             $factory = new BuilderFactory();
 
-            $leaveNode = function (Node $node) use ($io, $tables, &$i, &$uses, $factory, &$entities, &$usesList) {
+            $leaveNode = function (Node $node) use ($io, $tables, &$i, &$uses, $factory, &$entities, &$usesList, &$existsTables) {
+                if ($node instanceof Node\Stmt\Use_) {
+                    $use = (string) $node->uses[0]->name;
+                    $use = Collection::explode('\\', $use)->pop();
+
+                    $tableName = strtolower(StrNormalize::toUnderscoreSeparated(StrInflector::toPlural($use)));
+
+                    if (array_key_exists($tableName, $tables)) {
+                        return NodeTraverser::REMOVE_NODE;
+                    }
+                }
+
                 if ($node instanceof Node\Stmt\Namespace_) {
                     foreach ($node->stmts as $stmt) {
                         if ($stmt instanceof Node\Stmt\Use_) {
@@ -166,18 +192,60 @@ class MigFromCommand implements CommandInterface
                     }
                 }
 
-                if ($node instanceof Node\Expr\Closure) {
-                    foreach ($tables as $tableName => $rows) {
-                        if ($i === 0) {
-                            $node->stmts[] = new Node\Stmt\Expression(new Node\Scalar\String_('@create-' . $tableName));
-                        }
+                if (
+                    $node instanceof Node\Stmt\Expression
+                    && $node->expr instanceof Node\Expr\MethodCall
+                    && (string) $node->expr->var->name === 'mig'
+                    && (string) $node->expr->name === 'createTable'
+                ) {
+                    $tableClass = $node->expr->args[0]->value;
 
-                        if ($i === 1) {
-                            $node->stmts[] = new Node\Stmt\Expression(new Node\Scalar\String_('@drop-' . $tableName));
+                    if ($tableClass instanceof Node\Expr\ClassConstFetch) {
+                        $className = (string) $tableClass->class;
+                        $tableName = strtolower(
+                            StrNormalize::toUnderscoreSeparated(StrInflector::toPlural($className))
+                        );
+
+                        if (array_key_exists($tableName, $tables)) {
+                            $existsTables[] = $tableName;
+                            return new Node\Stmt\Expression(
+                                new Node\Scalar\String_('@create-' . $tableName)
+                            );
                         }
                     }
-                    $i++;
                 }
+                
+                if ($node instanceof Node\Expr\MethodCall) {
+                    if ($node->var->name === 'mig' && (string) $node->name === 'up') {
+                        $func = $node->args[0]->value;
+
+                        if ($func instanceof Node\Expr\Closure) {
+                            foreach ($tables as $tableName => $rows) {
+                                if (!in_array($tableName, $existsTables, true)) {
+                                    $func->stmts[] = new Node\Stmt\Expression(
+                                        new Node\Scalar\String_('@create-' . $tableName)
+                                    );
+                                }
+                            }
+                        }
+                    }
+
+                    if ($node->var->name === 'mig' && (string) $node->name === 'down') {
+                        $func = $node->args[0]->value;
+
+                        if ($func instanceof Node\Expr\Closure) {
+                            foreach ($tables as $tableName => $rows) {
+                                if (!in_array($tableName, $existsTables, true)) {
+                                    $func->stmts[] = new Node\Stmt\Expression(
+                                        new Node\Scalar\String_('@drop-' . $tableName)
+                                    );
+                                }
+                            }
+                        }
+                    }
+                }
+
+                return null;
             };
 
             $builder = new CallbackAstBuilder(

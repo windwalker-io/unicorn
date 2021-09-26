@@ -4,7 +4,7 @@
  * Part of starter project.
  *
  * @copyright  Copyright (C) 2021 __ORGANIZATION__.
- * @license    __LICENSE__
+ * @license    MIT
  */
 
 declare(strict_types=1);
@@ -45,16 +45,8 @@ class UnicornScript extends AbstractScript
         if ($this->available()) {
             $version = $this->asset->getVersion();
 
-            $attrs = [];
-
-            if ($this->browser->isIE()) {
-                $attrs['onload'] = "hookSystemJS('$version')";
-            } else {
-                $attrs['data-version'] = $version;
-            }
-
             $this->js('@systemjs', [], ['onload' => 'window.S = System']);
-            $this->js('@unicorn/system-hooks.js', [], $attrs);
+            $this->js('@unicorn/system-hooks.js', [], ['data-version' => $version]);
         }
     }
 
@@ -71,6 +63,7 @@ class UnicornScript extends AbstractScript
     public function main(): void
     {
         $this->translate('unicorn.message.delete.confirm');
+        $this->translate('unicorn.message.grid.checked');
 
         $uri = $this->app->getSystemUri()->all();
         $uri['asset'] = [

@@ -4,7 +4,7 @@
  * Part of starter project.
  *
  * @copyright  Copyright (C) 2021 __ORGANIZATION__.
- * @license    __LICENSE__
+ * @license    MIT
  */
 
 declare(strict_types=1);
@@ -14,9 +14,7 @@ namespace Unicorn\Repository\Actions;
 use Unicorn\Repository\Event\AfterBatchItemEvent;
 use Unicorn\Repository\Event\BeforeBatchItemEvent;
 use Windwalker\Core\Form\Exception\ValidateFailException;
-use Windwalker\Core\Language\LangService;
-use Windwalker\DI\Attributes\Inject;
-use Windwalker\Utilities\Exception\MultiMessagesExceptionTrait;
+use Windwalker\Core\Language\TranslatorTrait;
 use Windwalker\Utilities\Symbol;
 
 /**
@@ -24,12 +22,10 @@ use Windwalker\Utilities\Symbol;
  */
 class BatchAction extends AbstractDatabaseAction
 {
+    use TranslatorTrait;
     use FormAwareActionTrait;
 
     protected ?Symbol $emptySymbol = null;
-
-    #[Inject]
-    protected LangService $lang;
 
     /**
      * update
@@ -58,7 +54,7 @@ class BatchAction extends AbstractDatabaseAction
 
             if ($data === []) {
                 throw new ValidateFailException(
-                    $this->lang->trans('unicorn.message.batch.data.empty')
+                    $this->trans('unicorn.message.batch.data.empty')
                 );
             }
 
@@ -109,7 +105,7 @@ class BatchAction extends AbstractDatabaseAction
         foreach ($ids as $id) {
             if ($data === []) {
                 // throw new ValidateFailException(
-                //     $this->lang->trans('unicorn.message.batch.data.empty')
+                //     $this->trans('unicorn.message.batch.data.empty')
                 // );
             }
 

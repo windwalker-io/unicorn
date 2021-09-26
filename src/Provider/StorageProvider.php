@@ -4,13 +4,14 @@
  * Part of starter project.
  *
  * @copyright  Copyright (C) 2021 __ORGANIZATION__.
- * @license    __LICENSE__
+ * @license    MIT
  */
 
 declare(strict_types=1);
 
 namespace Unicorn\Provider;
 
+use Unicorn\Aws\S3Service;
 use Unicorn\Flysystem\FlysystemFactory;
 use Unicorn\Storage\StorageFactory;
 use Unicorn\Storage\StorageManager;

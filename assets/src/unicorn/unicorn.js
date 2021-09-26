@@ -8,22 +8,22 @@
 export * from './events.js';
 export * from './mixwith.js';
 
-import UnicornAnimate from './animate.js';
-import UnicornCrypto from './crypto.js';
-import UnicornDirective from './directive.js';
-import UnicornLang from './lang.js';
+import UnicornAnimate from './plugin/animate.js';
+import UnicornCrypto from './plugin/crypto.js';
+import UnicornDirective from './plugin/directive.js';
+import UnicornLang from './plugin/lang.js';
 import UnicornValidation from './plugin/validation.js';
-import UnicornRouter from './router.js';
-import UnicornUI from './ui.js';
+import UnicornRouter from './plugin/router.js';
+import UnicornUI from './plugin/ui.js';
 import UnicornGrid from './plugin/grid.js';
 import UnicornForm from './plugin/form.js';
 import UnicornTinymce from './plugin/tinymce.js';
-import UnicornLoader from './loader.js';
-import UnicornHelper from './helper.js';
-import UnicornHttp from './http.js';
+import UnicornLoader from './plugin/loader.js';
+import UnicornHelper from './plugin/helper.js';
+import UnicornHttp from './plugin/http.js';
+import UnicornUri from './plugin/uri.js';
+import UnicornAlpine2 from './plugin/alpine2.js';
 import UnicornApp from './app.js';
-import UnicornUri from './uri.js';
-export { default as helper } from './helper.js';
 
 export function createApp(options = {}) {
   return new UnicornApp(options);
@@ -51,7 +51,10 @@ u.use(UnicornHttp);
 u.use(UnicornDirective);
 u.use(UnicornAnimate);
 u.use(UnicornUI);
+u.use(UnicornAlpine2);
 u.use(UnicornForm);
 u.use(UnicornGrid);
 u.use(UnicornValidation);
 u.use(UnicornTinymce);
+
+u.selectOne('[uni-cloak]')?.removeAttribute('uni-cloak');

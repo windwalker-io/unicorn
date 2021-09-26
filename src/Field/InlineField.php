@@ -4,7 +4,7 @@
  * Part of starter project.
  *
  * @copyright  Copyright (C) 2021 __ORGANIZATION__.
- * @license    __LICENSE__
+ * @license    MIT
  */
 
 declare(strict_types=1);
@@ -35,7 +35,7 @@ class InlineField extends AbstractField implements CompositeFieldInterface
 
     public function getDefaultLayout(): string
     {
-        return '@theme.field.inline';
+        return '@theme::field.inline';
     }
 
     public function prepareInput(DOMElement $input): DOMElement

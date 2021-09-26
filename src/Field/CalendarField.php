@@ -4,7 +4,7 @@
  * Part of starter project.
  *
  * @copyright  Copyright (C) 2021 __ORGANIZATION__.
- * @license    __LICENSE__
+ * @license    MIT
  */
 
 declare(strict_types=1);
@@ -49,7 +49,7 @@ class CalendarField extends TextField
 
     public function getDefaultLayout(): string
     {
-        return '@theme/field/calendar';
+        return '@theme::field/calendar';
     }
 
     public function getDefaultOptions(): array

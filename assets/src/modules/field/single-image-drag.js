@@ -274,8 +274,8 @@ class SingleImageDrag extends HTMLElement {
     }
 
     this.alert(
-      u.__('unidev.field.sid.message.invalid.image.title'),
-      u.__('unidev.field.sid.message.invalid.image.desc'),
+      u.__('unicorn.field.sid.message.invalid.image.title'),
+      u.__('unicorn.field.sid.message.invalid.image.desc'),
       'error'
     );
 
@@ -303,23 +303,23 @@ class SingleImageDrag extends HTMLElement {
   checkSize(image) {
     try {
       if (this.options.max_width !== null && this.options.max_width < image.width) {
-        throw new Error(u.__('unidev.field.sid.message.invalid.size.max.width', this.options.max_width));
+        throw new Error(u.__('unicorn.field.sid.message.invalid.size.max.width', this.options.max_width));
       }
 
       if (this.options.min_width !== null && this.options.min_width > image.width) {
-        throw new Error(u.__('unidev.field.sid.message.invalid.size.min.width', this.options.min_width));
+        throw new Error(u.__('unicorn.field.sid.message.invalid.size.min.width', this.options.min_width));
       }
 
       if (this.options.max_height !== null && this.options.max_height < image.height) {
-        throw new Error(u.__('unidev.field.sid.message.invalid.size.max.height', this.options.max_height));
+        throw new Error(u.__('unicorn.field.sid.message.invalid.size.max.height', this.options.max_height));
       }
 
       if (this.options.min_height !== null && this.options.min_height > image.height) {
-        throw new Error(u.__('unidev.field.sid.message.invalid.size.min.height', this.options.min_height));
+        throw new Error(u.__('unicorn.field.sid.message.invalid.size.min.height', this.options.min_height));
       }
     } catch (e) {
       this.alert(
-        u.__('unidev.field.sid.message.invalid.size.title'),
+        u.__('unicorn.field.sid.message.invalid.size.title'),
         e.message,
         'error'
       );

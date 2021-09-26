@@ -7,10 +7,22 @@
 
 export default class UnicornValidation {
   static install(app, options = {}) {
-    app.formValidation = (selector = 'uni-form-validate') => {
-      app.import('@unicorn/ui/validation-components.js');
+    const $validation = app.$validation = new this(app);
 
-      return app.selectOne(selector);
+    app.formValidation = (selector = '[uni-form-validation]') => {
+      return $validation.import().then(() => $validation.get(selector));
     };
+  }
+
+  constructor(app) {
+    this.app = app;
+  }
+
+  import() {
+    return this.app.import('@unicorn/ui/validation-components.js');
+  }
+
+  get(selector) {
+    return this.app.getBoundedInstance(selector, 'form.validation');
   }
 }

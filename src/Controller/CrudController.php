@@ -4,7 +4,7 @@
  * Part of starter project.
  *
  * @copyright  Copyright (C) 2021 __ORGANIZATION__.
- * @license    __LICENSE__
+ * @license    MIT
  */
 
 declare(strict_types=1);
@@ -32,6 +32,8 @@ class CrudController implements EventAwareInterface
 {
     use EventAwareTrait;
 
+    protected ?string $formNamespace = 'item';
+
     /**
      * CrudController constructor.
      */
@@ -57,14 +59,14 @@ class CrudController implements EventAwareInterface
         int $options = 0
     ): RouteUri {
         try {
-            $item = $app->input('item');
+            $item = $app->input($this->getFormNamespace());
 
             /** @var object $item */
             $action = $repository->createSaveAction();
 
             $action->addEventDealer($this);
 
-            $item = $action->processDataAndSave($item, $form, [], $options);
+            $item = $action->processDataAndSave($item, $form, $formArgs, $options);
 
             $app->addMessage(
                 $this->lang->trans('save.success'),
@@ -73,11 +75,23 @@ class CrudController implements EventAwareInterface
 
             return $nav->self()->id($item->getId());
         } catch (\RuntimeException $e) {
-            $item = $app->input('item');
+            $item = $app->input($this->getFormNamespace());
             $repository->getState()->remember('edit.data', $item);
 
             throw $e;
         }
+    }
+
+    public function rememberForClone(AppContext $app, CrudRepositoryInterface $repository): void
+    {
+        $item = $app->input($this->getFormNamespace());
+        $mk = $repository->getEntityMapper()->getMainKey();
+
+        if ($mk) {
+            unset($item[$mk]);
+        }
+
+        $repository->getState()->remember('edit.data', $item);
     }
 
     public function delete(
@@ -124,6 +138,26 @@ class CrudController implements EventAwareInterface
     public function afterSave(callable $handler): static
     {
         $this->on(AfterSaveEvent::class, $handler);
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getFormNamespace(): ?string
+    {
+        return $this->formNamespace;
+    }
+
+    /**
+     * @param  string|null  $formNamespace
+     *
+     * @return  static  Return self to support chaining.
+     */
+    public function setFormNamespace(?string $formNamespace): static
+    {
+        $this->formNamespace = $formNamespace;
 
         return $this;
     }

@@ -23,13 +23,13 @@ use Windwalker\Core\Router\SystemUri;
 
 /**
  * @var \Unicorn\Field\SingleImageDragField $field
- * @var array $options
- * @var \Unicorn\Image\ImageHelper $imageHelper
+ * @var array                               $options
+ * @var \Unicorn\Image\ImagePlaceholder     $imageHelper
  */
 
 $inputElement = $field->getPreparedInput();
 $inputElement->addClass('c-sid');
-$imageHelper = $app->service(\Unicorn\Image\ImageHelper::class);
+$imageHelper = $app->service(\Unicorn\Image\ImagePlaceholder::class);
 
 $image = $field->getValue() ?: $imageHelper->placeholder();
 $previewHandler = $field->getPreviewHandler() ?? fn () => $asset->appendVersion($image, \Windwalker\uid());

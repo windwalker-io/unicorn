@@ -100,7 +100,7 @@ export class UIBootstrap5 {
     );
   }
 
-  tab(seletor, config = {}) {
+  tab(selector, config = {}) {
     return this.app.getBoundedInstance(
       selector,
       'bs.collapse',
@@ -114,5 +114,27 @@ export class UIBootstrap5 {
       'bs.collapse',
       (element) => new bootstrap.Toast(element, config)
     );
+  }
+
+  keepTab(selector = null, options = {}) {
+    return this.app.import('@unicorn/bootstrap/keep-tab.js')
+      .then((m) => {
+        if (selector) {
+          return new m.LoadTab(selector, options);
+        }
+
+        return m;
+      });
+  }
+
+  buttonRadio(selector = null, options = {}) {
+    return this.app.import('@unicorn/bootstrap/button-radio.js')
+      .then((m) => {
+        if (selector) {
+          return m.ButtonRadio.handle(selector, options);
+        }
+
+        return m;
+      });
   }
 }

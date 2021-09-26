@@ -191,11 +191,11 @@ class MenuHelper
     /**
      * getMatchedRoute
      *
-     * @return  Route
+     * @return Route|null
      *
      * @since  1.8
      */
-    public function getMatchedRoute(): Route
+    public function getMatchedRoute(): ?Route
     {
         return $this->request->getMatchedRoute();
     }

@@ -151,17 +151,8 @@ class UnicornFormElement {
       form.setAttribute('method', method);
     }
 
-    // Create a submit button that can fire `submit` event
-    let submitButton = form.querySelector(`button[type=submit][data-submit]`);
-
-    if (!submitButton) {
-      submitButton = this.app.h('button', { type: 'submit' }, 'GO');
-      submitButton.dataset.submit = true;
-      submitButton.style.display = 'none';
-      form.appendChild(submitButton);
-    }
-
-    submitButton.click();
+    // Use requestSubmit() to fire submit event.
+    form.requestSubmit();
 
     return true;
   }

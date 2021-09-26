@@ -6,9 +6,11 @@
  */
 
 import 'construct-style-sheets-polyfill';
+import { defaultsDeep } from 'lodash-es';
 
 export default class UnicornUI {
   theme;
+  aliveHandle;
 
   static get is() {
     return 'ui';
@@ -49,6 +51,36 @@ export default class UnicornUI {
     this.aliveHandle = null;
   }
 
+  loadAlpine(callback = null) {
+    // For V3
+    if (callback) {
+      this.beforeAlpineInit(callback);
+    }
+
+    return this.app.import('@alpinejs')
+      .then((m) => {
+        // For V2
+        if (Alpine.version.startsWith('2.')) {
+          return this.app.$alpine2.loadSpruce()
+            .then((s) => {
+              Alpine.store = Spruce.store.bind(Spruce);
+              callback();
+              return m;
+            })
+            .then(() => {
+              this.app.$alpine2.startAlpine();
+              return m;
+            });
+        }
+
+        return m;
+      });
+  }
+
+  beforeAlpineInit(callback) {
+    document.addEventListener('alpine:initializing', callback);
+  }
+
   renderMessage(messages, type = 'info') {
     this.theme.renderMessage(messages, type);
   }
@@ -63,18 +95,6 @@ export default class UnicornUI {
 
   clearNotifies() {
     this.theme.clearMessages();
-  }
-
-  loadAlpine(callback = null) {
-    if (callback) {
-      this.beforeAlpineInit(callback);
-    }
-
-    return this.app.import('@alpinejs');
-  }
-
-  beforeAlpineInit(callback) {
-    document.addEventListener('alpine:initializing', callback);
   }
 
   webComponentPolyfill() {
@@ -129,6 +149,28 @@ export default class UnicornUI {
   //   });
   // }
 
+  /**
+   * Highlight mark some keywords.
+   *
+   * @param selector
+   * @param keyword
+   * @param options
+   * @returns {Promise}
+   */
+  mark(selector = null, keyword = '', options = {}) {
+    return this.app.import('@vendor/mark.js/dist/mark.min.js')
+      .then((m) => {
+        if (selector != null) {
+          const instance = new Mark(selector);
+          instance.mark(keyword, options);
+        }
+        return m;
+      })
+      .catch(() => {
+        console.error('Package "mark.js" not found.');
+      });
+  }
+
   choices(selector = null, options = {}) {
     return Promise.all([
       this.app.import('@vendor/choices.js/public/assets/scripts/choices.min.js'),
@@ -136,6 +178,11 @@ export default class UnicornUI {
     ])
       .then((m) => {
         if (selector) {
+          options = defaultsDeep(options, {
+            shouldSort: false,
+            removeItemButton: true
+          });
+
           new Choices(selector, options);
         }
 
@@ -147,7 +194,7 @@ export default class UnicornUI {
     return this.app.import('@unicorn/ui/flatpickr-components.js');
   }
 
-  listDependent(element, dependent, options = {}) {
+  listDependent(element = null, dependent = null, options = {}) {
     return this.app.import('@unicorn/ui/list-dependent.js').then((module) => {
       if (element) {
         module.ListDependent.handle(element, dependent, options);
@@ -175,6 +222,16 @@ export default class UnicornUI {
 
   multiUploader() {
     return this.app.import('@unicorn/field/multi-uploader.js');
+  }
+
+  s3Uploader(name = null) {
+    return u.import('@unicorn/aws/s3-uploader.js').then(function (module) {
+      if (name) {
+        return S3Uploader.get(name);
+      }
+
+      return module;
+    });
   }
 
   /**
@@ -236,9 +293,6 @@ export default class UnicornUI {
     }
   }
 
-  /**
-   * @param el
-   */
   fadeOut(el, duration = 500) {
     el = this.app.selectOne(el);
 
@@ -269,6 +323,155 @@ export default class UnicornUI {
     return animation.finished.then(() => {
       return u.animate(element, { backgroundColor: bg }, { duration });
     });
+  }
+
+  /**
+   * Color Picker.
+   * Todo: Move to another file.
+   */
+  colorPicker() {
+    u.directive('color-picker', {
+      mounted(el, binding) {
+        u.getBoundedInstance(el, 'color.picker', () => {
+          const text = el.querySelector('[data-role=color-text]');
+          const preview = el.querySelector('[data-role=color-preview]');
+          const pick = el.querySelector('[data-task=pick-color]');
+          const inputContainer = el.querySelector('[data-role=input-container]');
+
+          pick.addEventListener('click', () => {
+            openPicker();
+          });
+
+          text.addEventListener('focus', () => {
+            openPicker();
+          });
+
+          text.addEventListener('change', () => {
+            updatePreview();
+          });
+
+          text.dispatchEvent(new Event('change'));
+
+          function openPicker() {
+            const input = u.h('input', { type: 'color', value: text.value });
+
+            inputContainer.innerHTML = '';
+            inputContainer.appendChild(input);
+
+            input.addEventListener('change', () => {
+              preview.style.backgroundColor = input.value;
+              text.value = input.value;
+              updatePreview();
+            });
+
+            input.addEventListener('input', () => {
+              preview.style.backgroundColor = input.value;
+              text.value = input.value;
+              updatePreview();
+            });
+
+            setTimeout(() => {
+              input.click();
+            }, 0);
+          }
+
+          function updatePreview() {
+            preview.style.backgroundColor = text.value;
+
+            // @see https://stackoverflow.com/a/12043228
+            const sep = 200;
+            const [, r, g, b] = preview.style.backgroundColor.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+            const luma = Number(r) * 0.2126 + Number(g) * 0.7152 + Number(b) * 0.0722;
+            pick.style.color = luma > sep ? 'black' : 'white';
+          }
+        });
+      }
+    })
+  }
+
+  disableOnSubmit(formSelector = '#admin-form', buttonSelector = null, options = {}) {
+    buttonSelector = buttonSelector || [
+      '#admin-toolbar button',
+      '#admin-toolbar a',
+      formSelector + ' .disable-on-submit',
+      formSelector + ' .js-dos',
+      formSelector + ' [data-dos]',
+    ].join(',');
+
+    const iconSelector = options.iconSelector || [
+      '[class*="fa-"]',
+      '[data-spin]',
+      '[data-spinner]',
+    ].join(',');
+
+    const event = options.event || 'submit';
+    const spinnerClass = options.spinnerClass || 'spinner-border spinner-border-sm';
+
+    this.app.selectAll(buttonSelector, (button) => {
+      button.addEventListener('click', (e) => {
+        button.dataset.clicked = '1';
+
+        setTimeout(() => {
+          delete button.dataset.clicked;
+        }, 1500);
+      });
+    });
+
+    this.app.selectOne(formSelector)?.addEventListener(event, (e) => {
+      setTimeout(() => {
+        this.app.selectAll(buttonSelector, (button) => {
+          button.disabled = true;
+          button.classList.add('disabled');
+          button.href = 'javascript:\/\/';
+          button.onclick = 'return false;';
+
+          if (button.dataset.clicked) {
+            const icon = button.querySelector(iconSelector);
+
+            if (icon) {
+              icon.setAttribute('class', spinnerClass);
+              // icon.styles.width = '1em';
+              // icon.styles.height = '1em';
+              // icon.styles.borderWith = '.15em';
+            }
+          }
+        });
+      }, 0);
+    });
+  }
+
+  checkboxesMultiSelect(selector = null, options = {}) {
+    return this.app.import('@unicorn/ui/checkboxes-multi-select.js')
+      .then((m) => {
+        if (selector) {
+          return m.CheckboxesMultiSelect.handle(selector, options);
+        }
+
+        return m;
+      });
+  }
+
+  /**
+   * Keep alive.
+   *
+   * @param {string} url
+   * @param {Number} time
+   *
+   * @return {number}
+   */
+  keepAlive(url, time = 60000) {
+    return this.aliveHandle = window.setInterval(() => fetch(url), time);
+  }
+
+  /**
+   * Stop keep alive
+   */
+  stopKeepAlive() {
+    clearInterval(this.aliveHandle);
+
+    this.aliveHandle =  null;
+
+    return this;
   }
 
   static prepareInpageCSS() {
