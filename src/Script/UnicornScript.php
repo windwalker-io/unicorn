@@ -40,7 +40,7 @@ class UnicornScript extends AbstractScript
     ) {
     }
 
-    public function systemJS(): void
+    public function systemJS(): static
     {
         if ($this->available()) {
             $version = $this->asset->getVersion();
@@ -48,9 +48,11 @@ class UnicornScript extends AbstractScript
             $this->js('@systemjs', [], ['onload' => 'window.S = System']);
             $this->js('@unicorn/system-hooks.js', [], ['data-version' => $version]);
         }
+
+        return $this;
     }
 
-    public function init(?string $mainJS = null): void
+    public function init(?string $mainJS = null): static
     {
         if ($mainJS) {
             $this->asset->importMap('@main', $mainJS);
@@ -58,9 +60,11 @@ class UnicornScript extends AbstractScript
 
         $this->systemJS();
         $this->main();
+
+        return $this;
     }
 
-    public function main(): void
+    public function main(): static
     {
         $this->translate('unicorn.message.delete.confirm');
         $this->translate('unicorn.message.grid.checked');
@@ -76,6 +80,8 @@ class UnicornScript extends AbstractScript
         $this->data('csrf-token', $this->app->service(CsrfService::class)->getToken());
 
         $this->importScript('@main');
+
+        return $this;
     }
 
     public function importScript(string $uri): static
@@ -195,6 +201,18 @@ JS
         $route = Str::ensureLeft($route, '@');
 
         $this->data('unicorn.routes', [$route => (string) $url], true);
+
+        return $this;
+    }
+
+    public function mark(?string $selector = null, string $keyword = '', array $options = []): static
+    {
+        if ($selector && $this->available($selector)) {
+            $opt = static::getJSObject($options);
+            $this->importMainThen("u.\$ui.mark('$selector', '$keyword', $opt)");
+        } elseif ($this->available()) {
+            $this->importMainThen("u.\$ui.mark()");
+        }
 
         return $this;
     }
