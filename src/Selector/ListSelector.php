@@ -191,7 +191,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
         return $this->compileQuery()->all($class ?? Collection::class, $args);
     }
 
-    public function get(?string $class = null, array $args = []): object
+    public function get(?string $class = null, array $args = []): ?object
     {
         return $this->compileQuery()->get($class, $args);
     }
