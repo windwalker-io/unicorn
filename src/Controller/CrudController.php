@@ -34,6 +34,8 @@ class CrudController implements EventAwareInterface
 
     protected ?string $formNamespace = 'item';
 
+    protected bool $muted = false;
+
     /**
      * CrudController constructor.
      */
@@ -68,10 +70,12 @@ class CrudController implements EventAwareInterface
 
             $item = $action->processDataAndSave($item, $form, $formArgs, $options);
 
-            $app->addMessage(
-                $this->lang->trans('save.success'),
-                'success'
-            );
+            if (!$this->isMuted()) {
+                $app->addMessage(
+                    $this->lang->trans('save.success'),
+                    'success'
+                );
+            }
 
             return $nav->self()->id($item->getId());
         } catch (\RuntimeException $e) {
@@ -108,10 +112,12 @@ class CrudController implements EventAwareInterface
         try {
             $repository->getDb()->transaction(fn() => $repository->delete([$key => $ids]));
 
-            $app->addMessage(
-                $this->lang->trans("batch.delete.success", count($ids)),
-                'success'
-            );
+            if (!$this->isMuted()) {
+                $app->addMessage(
+                    $this->lang->trans("batch.delete.success", count($ids)),
+                    'success'
+                );
+            }
 
             return $nav->back();
         } catch (\Throwable $e) {
@@ -158,6 +164,26 @@ class CrudController implements EventAwareInterface
     public function setFormNamespace(?string $formNamespace): static
     {
         $this->formNamespace = $formNamespace;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isMuted(): bool
+    {
+        return $this->muted;
+    }
+
+    /**
+     * @param  bool  $muted
+     *
+     * @return  static  Return self to support chaining.
+     */
+    public function setMuted(bool $muted): static
+    {
+        $this->muted = $muted;
 
         return $this;
     }

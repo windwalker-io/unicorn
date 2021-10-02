@@ -30,6 +30,8 @@ class GridController implements EventAwareInterface
 {
     use EventAwareTrait;
 
+    protected bool $muted = false;
+
     /**
      * GridController constructor.
      */
@@ -76,13 +78,16 @@ class GridController implements EventAwareInterface
 
         $action->update($ids, $data);
 
-        $task = $app->input('task');
-        $app->addMessage(
-            $task && $this->lang->has("$task.success")
-                ? $this->lang->trans("$task.success", count($ids))
-                : $this->lang->trans('update.success', count($ids)),
-            'success'
-        );
+        if (!$this->isMuted()) {
+            $task = $app->input('task');
+
+            $app->addMessage(
+                $task && $this->lang->has("$task.success")
+                    ? $this->lang->trans("$task.success", count($ids))
+                    : $this->lang->trans('update.success', count($ids)),
+                'success'
+            );
+        }
 
         return $nav->back();
     }
@@ -98,7 +103,9 @@ class GridController implements EventAwareInterface
 
         $action->copy($ids, $data);
 
-        $app->addMessage($this->lang->trans('copy.success', count($ids)), 'success');
+        if (!$this->isMuted()) {
+            $app->addMessage($this->lang->trans('copy.success', count($ids)), 'success');
+        }
 
         return $nav->back();
     }
@@ -109,7 +116,9 @@ class GridController implements EventAwareInterface
 
         $repository->createReorderAction()->move($ids, (int) $app->input('delta'));
 
-        $app->addMessage($this->lang->trans('reorder.success'), 'success');
+        if (!$this->isMuted()) {
+            $app->addMessage($this->lang->trans('reorder.success'), 'success');
+        }
 
         return $nav->back();
     }
@@ -120,8 +129,30 @@ class GridController implements EventAwareInterface
 
         $repository->createReorderAction()->reorder($orders);
 
-        $app->addMessage($this->lang->trans('reorder.success'), 'success');
+        if (!$this->isMuted()) {
+            $app->addMessage($this->lang->trans('reorder.success'), 'success');
+        }
 
         return $nav->back();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isMuted(): bool
+    {
+        return $this->muted;
+    }
+
+    /**
+     * @param  bool  $muted
+     *
+     * @return  static  Return self to support chaining.
+     */
+    public function setMuted(bool $muted): static
+    {
+        $this->muted = $muted;
+
+        return $this;
     }
 }
