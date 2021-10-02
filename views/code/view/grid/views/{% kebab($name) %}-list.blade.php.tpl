@@ -29,7 +29,7 @@ use {% $ns %}\{% pascal($name) %}ListView;
 $workflow = $app->service(\Unicorn\Workflow\BasicStateWorkflow::class);
 {% $phpClose %}
 
-@extends('admin.global.body')
+@extends('admin.global.body-list')
 
 @section('toolbar-buttons')
     @include('list-toolbar')

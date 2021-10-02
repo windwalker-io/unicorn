@@ -29,7 +29,7 @@ use Windwalker\Form\Form;
  */
 {% $phpClose %}
 
-@extends('admin.global.body')
+@extends('admin.global.body-edit')
 
 @section('toolbar-buttons')
     @include('edit-toolbar')
