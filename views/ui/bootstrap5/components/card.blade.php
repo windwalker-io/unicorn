@@ -27,11 +27,13 @@ $attributes = $attributes->class('card');
 
 <div {!! $attributes !!}>
     @if ($header ?? null)
-        {!! $header(headerClass: $headerClass ?? '') !!}
-    @elseif ($title ?? null)
-        <div class="card-header {{ $headerClass ?? '' }}">
-            {!! $title ?? '' !!}
-        </div>
+        @if (is_string($header))
+            <div class="card-header {{ $headerClass ?? '' }}">
+                {!! $title ?? '' !!}
+            </div>
+        @elseif (is_callable($header))
+            {!! $header(headerClass: $headerClass ?? '') !!}
+        @endif
     @endif
 
     @if ($start ?? null)
@@ -43,6 +45,17 @@ $attributes = $attributes->class('card');
     @else
         @if ($slot ?? null)
             <div class="card-body {{ $bodyClass ?? '' }}">
+
+                @if ($title ?? null)
+                    <h4 class="card-title mb-4 {{ $titleClass ?? '' }}">
+                    @if (is_callable($title))
+                        {!! $title(titleClass: $titleClass ?? '') !!}
+                    @else
+                        {!! $title ?? '' !!}
+                    @endif
+                    </h4>
+                @endif
+
                 {!! $slot !!}
             </div>
         @endif
