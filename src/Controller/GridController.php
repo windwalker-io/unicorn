@@ -44,9 +44,9 @@ class GridController implements EventAwareInterface
 
         $state->rememberFromRequest('filter');
         $state->rememberFromRequest('search');
-        $state->rememberFromRequest('page');
         $state->rememberFromRequest('limit');
         $state->rememberFromRequest('list_ordering');
+        $state->forget('page');
 
         return $nav->self();
     }

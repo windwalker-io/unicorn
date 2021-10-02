@@ -46,7 +46,9 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
 
     protected ?SelectorQuery $query = null;
 
-    protected int $page = 1;
+    protected ?int $offset = null;
+
+    protected ?int $page = null;
 
     protected ?int $limit = null;
 
@@ -196,11 +198,28 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
 
     public function page(int|string|null $page): static
     {
-        if ($page < 1 || $page === null) {
+        if ($page === null) {
+            $this->page = $page;
+            return $this;
+        }
+
+        if ($page < 1) {
             $page = 1;
         }
 
         $this->page = (int) $page;
+
+        return $this;
+    }
+
+    public function offset(int|string|null $offset): static
+    {
+        if ($offset === null) {
+            $this->offset = $offset;
+            return $this;
+        }
+
+        $this->offset = (int) $offset;
 
         return $this;
     }
@@ -260,7 +279,17 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
         return $this->once(
             'offset',
             function () {
-                $start = ($this->page - 1) * $this->getLimit();
+                $start = 0;
+
+                if ($this->offset !== null) {
+                    $start = $this->offset;
+                } elseif ($this->page !== null && $this->getLimit()) {
+                    $start = ($this->page - 1) * $this->getLimit();
+                }
+
+                if ($start < 0) {
+                    $start = 0;
+                }
 
                 if ($this->getOption('page_fix') ?? true) {
                     $limit = $this->getLimit();
@@ -517,14 +546,11 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
      */
     public function getPagination(int|callable|null $total = null, ?int $neighbours = null): Pagination
     {
-        // Prepare page fix
-        if ($this->getOption('page_fix') ?? true) {
-            $this->getOffset();
-        }
+        $limit = (int) $this->getLimit();
 
         return $this->paginationFactory->create(
-            $this->getPage(),
-            (int) $this->getLimit(),
+            (int) ceil($this->getOffset() / $limit) + 1,
+            $limit,
             $neighbours
         )
             ->total($total ?? fn() => $this->count());
