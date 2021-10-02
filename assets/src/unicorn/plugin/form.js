@@ -14,7 +14,11 @@ export default class UnicornForm {
   }
 
   static install(app, options = {}) {
-    app.form = (ele, options = {}) => {
+    app.form = (ele = null, options = {}) => {
+      if (ele == null) {
+        return new UnicornFormElement(null, null, options, app);
+      }
+
       const selector = typeof ele === 'string' ? ele : null;
       ele = app.selectOne(ele);
 
@@ -35,14 +39,14 @@ class UnicornFormElement {
    * @param {Object}      options
    * @param {UnicornApp}  app
    */
-  constructor(selector, $form, options, app) {
+  constructor(selector = null, $form = null, options, app) {
     this.app = app;
 
     // If form not found, create one
     if (!$form) {
       $form = document.createElement('form');
 
-      if (selector.indexOf('#') === 0) {
+      if (selector && selector.indexOf('#') === 0) {
         $form.setAttribute('id', selector.substr(1));
         $form.setAttribute('name', selector.substr(1));
       }
