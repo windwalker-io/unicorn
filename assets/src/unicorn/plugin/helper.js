@@ -18,6 +18,7 @@ export default class UnicornHelper {
     app.selectOne = helper.selectOne.bind(helper);
     app.selectAll = helper.selectAll.bind(helper);
     app.getBoundedInstance = helper.getBoundedInstance.bind(helper);
+    app.getBoundedInstanceList = helper.getBoundedInstanceList.bind(helper);
     app.h = helper.h;
     app.html = helper.html;
     app.$get = helper.$get;
@@ -58,7 +59,7 @@ export default class UnicornHelper {
     return resultSet;
   }
 
-  getBoundedInstance(selector, name, callback) {
+  getBoundedInstance(selector, name, callback = () => null) {
     const element = this.selectOne(selector);
 
     if (!element) {
@@ -66,6 +67,12 @@ export default class UnicornHelper {
     }
 
     return element.__unicorn[name] = element.__unicorn[name] || callback(element);
+  }
+
+  getBoundedInstanceList(selector, name, callback = () => null) {
+    return this.app.selectAll(selector, (ele) => {
+      return this.getBoundedInstance(ele, name, callback);
+    });
   }
 
   h(element, attrs = {}, content = null) {

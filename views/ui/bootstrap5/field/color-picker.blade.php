@@ -37,7 +37,7 @@ $input['data-role'] = 'color-text';
     <x-slot name="end">
         <button type="button" class="btn btn-outline-secondary" data-role="color-preview" data-task="pick-color"
             style="min-width: 45px; cursor: pointer;">
-            <i class="fa-regular fa-circle-dot"></i>
+            <i class="fa fa-circle-dot"></i>
         </button>
     </x-slot>
 </x-input-group>

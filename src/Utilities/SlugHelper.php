@@ -8,6 +8,7 @@
 
 namespace Unicorn\Utilities;
 
+use THL\Pinyin;
 use Windwalker\Core\DateTime\Chronos;
 use Windwalker\Filter\OutputFilter;
 
@@ -31,7 +32,7 @@ class SlugHelper
      * @return  string
      * @throws \Exception
      */
-    public static function safe(string $alias, bool $utf8 = false, ?string $default = null, $defaultLimit = 8): string
+    public static function safe(string $alias, bool $utf8 = false, ?string $default = null, int $defaultLimit = 8): string
     {
         $slug = static::slugify($alias, $utf8, $default, $defaultLimit);
 
@@ -56,8 +57,14 @@ class SlugHelper
         string $alias,
         bool $utf8 = false,
         ?string $default = null,
-        $defaultLimit = 8
+        int $defaultLimit = 16
     ): string {
+        if ($utf8) {
+            $alias = $alias ?: mb_substr($default, 0, 16);
+
+            return OutputFilter::stringURLUnicodeSlug($alias);
+        }
+
         if ($alias === '' && (string) $default !== '') {
             $words = static::breakWords($default);
 
@@ -66,11 +73,9 @@ class SlugHelper
             $alias = implode(' ', $words);
         }
 
-        if ($utf8) {
-            return OutputFilter::stringURLUnicodeSlug($alias);
-        }
-
-        if (function_exists('transliterator_transliterate')) {
+        if (class_exists(Pinyin::class)) {
+            $alias = (string) Pinyin::slug($alias, ['split' => 'phrase']);
+        } elseif (function_exists('transliterator_transliterate')) {
             $alias = transliterator_transliterate('Any-Latin; Latin-ASCII; Lower()', $alias);
         }
 

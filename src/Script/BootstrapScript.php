@@ -25,12 +25,36 @@ class BootstrapScript extends AbstractScript
     {
     }
 
-    public function iframeModal(): void
+    public function popover(string $selector = '[data-bs-toggle=popover]', array $options = []): static
+    {
+        if ($this->available($selector)) {
+            $optString = self::getJSObject($options);
+
+            $this->unicornScript->importMainThen("u.\$ui.bootstrap.popover('$selector', $optString)");
+        }
+
+        return $this;
+    }
+
+    public function tooltip(string $selector = '[data-bs-toggle=tooltip]', array $options = []): static
+    {
+        if ($this->available($selector)) {
+            $optString = self::getJSObject($options);
+
+            $this->unicornScript->importMainThen("u.\$ui.bootstrap.tooltip('$selector', $optString)");
+        }
+
+        return $this;
+    }
+
+    public function iframeModal(): static
     {
         if ($this->available()) {
             $this->unicornScript->importMainThen(
                 "u.\$ui.iframeModal()"
             );
         }
+
+        return $this;
     }
 }

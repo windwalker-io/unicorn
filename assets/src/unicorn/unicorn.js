@@ -56,3 +56,5 @@ u.use(UnicornForm);
 u.use(UnicornGrid);
 u.use(UnicornValidation);
 u.use(UnicornTinymce);
+
+u.selectOne('[uni-cloak]')?.removeAttribute('uni-cloak');

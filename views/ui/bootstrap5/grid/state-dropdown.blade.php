@@ -100,7 +100,7 @@ $fieldName = array_map(fn (AbstractWorkflow $w) => $w->getWorkflowController()->
 $buttonId ??= trim('c-state-dropdown-' . implode('-', $fieldName) . '-' . $id, '-');
 ?>
 
-<div class="dropdown c-state-dropdown d-inline-block" {!! $attributes !!}>
+<div class="btn-group dropdown c-state-dropdown d-inline-block" {!! $attributes !!}>
     <button class="btn {{ $buttonColor }} btn-{{ $size }} d-flex align-items-center {{ $textColor }} dropdown-toggle c-state-dropdown__toggle {{ $noTitle ? 'has-tooltip' : '' }}"
         type="button"
         id="{{ $buttonId }}"
@@ -146,7 +146,7 @@ $buttonId ??= trim('c-state-dropdown-' . implode('-', $fieldName) . '-' . $id, '
                     <li>
                         <a class="dropdown-item" href="javascript://"
                             @if ($batch)
-                            @click="$store.{{ $store }}.patch(null, { batch: { '{{ $workflowCtrl->getField() }}': '{{ $state->getValue() }}' } })">
+                            @click="$store.{{ $store }}.form.patch(null, { batch: { '{{ $workflowCtrl->getField() }}': '{{ $state->getValue() }}' } })">
                             @else
                                 @click="$store.{{ $store }}.updateItem('{{ $id }}', null, { batch: { '{{ $workflowCtrl->getField() }}': '{{ $state->getValue() }}' } })">
                             @endif

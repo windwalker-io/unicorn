@@ -18,9 +18,22 @@ use Windwalker\Core\Asset\AbstractScript;
  */
 class ModernScript extends AbstractScript
 {
-    public function ie(): void
+    public function __construct(protected UnicornScript $unicornScript)
+    {
+    }
+
+    public function ie(): static
     {
         $this->asset->js('@core-js');
         $this->asset->js('@current-script-polyfill');
+
+        return $this;
+    }
+
+    public function webComponentPolyfill(): static
+    {
+        $this->unicornScript->importMainThen('u.$ui.webComponentPolyfill()');
+
+        return $this;
     }
 }

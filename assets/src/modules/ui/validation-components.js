@@ -12,7 +12,7 @@
  */
 const handlers = {};
 
-class UnicornFormValidation {
+export class UnicornFormValidation {
   presetFields = [];
   validators = {};
   $form;
@@ -20,7 +20,7 @@ class UnicornFormValidation {
   static is = 'uni-form-validate';
 
   constructor(el, options = {}) {
-    this.$form = el;
+    this.$form = u.selectOne(el);
     this.options = options;
 
     this.registerDefaultValidators();
@@ -37,7 +37,7 @@ class UnicornFormValidation {
   }
 
   get fieldSelector() {
-    return this.options.fieldSelector || '[uni-field-validate]';
+    return this.options.fieldSelector || 'input, select, textarea';
   }
 
   get validatedClass() {
@@ -59,16 +59,50 @@ class UnicornFormValidation {
         return true;
       }, false);
     }
+
+    this.prepareFields(this.findDOMFields());
+    this.prepareFields(this.presetFields);
+  }
+
+  findDOMFields() {
+    return u.selectAll(this.$form.querySelectorAll(this.fieldSelector));
+  }
+
+  prepareFields(inputs) {
+    inputs = inputs.forEach((input) => {
+      this.prepareFieldWrapper(input);
+    });
+
+    // Wait next tick
+    return Promise.resolve();
+  }
+
+  prepareFieldWrapper(input) {
+    if (['INPUT', 'SELECT', 'TEXTAREA'].indexOf(input.tagName) !== -1) {
+      const wrapper = input.closest('.form-group, [uni-field-validate]');
+
+      if (wrapper && !wrapper.getAttribute('uni-field-validate')) {
+        wrapper.setAttribute('uni-field-validate', '{}');
+      }
+
+      return wrapper;
+    }
+
+    return input;
   }
 
   findFields(containsPresets = true) {
-    const inputs = u.selectAll(this.$form.querySelectorAll(this.fieldSelector));
+    let inputs = this.findDOMFields();
 
     if (containsPresets) {
       inputs.push(...this.presetFields);
     }
 
-    return inputs;
+    inputs = inputs.map((input) => {
+      return this.prepareFieldWrapper(input);
+    });
+
+    return inputs.filter(input => input != null);
   }
 
   validateAll(fields = null) {
@@ -79,6 +113,11 @@ class UnicornFormValidation {
 
     fields.forEach((field) => {
       const fv = u.getBoundedInstance(field, 'field.validation');
+
+      if (!fv) {
+        return;
+      }
+
       const result = fv.checkValidity();
 
       if (!result && !firstFail) {
@@ -124,6 +163,9 @@ class UnicornFormValidation {
 
   addField(field) {
     this.presetFields.push(field);
+
+    this.prepareFieldWrapper(field);
+
     return this;
   }
 
@@ -200,11 +242,7 @@ class UnicornFieldValidation {
 
     this.bindEvents();
 
-    if (this.el.querySelector(this.errorSelector)?.classList?.contains('invalid-tooltip')) {
-      if (window.getComputedStyle(this.el).position === 'static') {
-        this.el.style.position = 'relative';
-      }
-    }
+    this.prepareWrapper();
   }
 
   bindEvents() {
@@ -223,6 +261,14 @@ class UnicornFieldValidation {
           this.checkValidity();
         });
       });
+  }
+
+  prepareWrapper() {
+    if (this.el.querySelector(this.errorSelector)?.classList?.contains('invalid-tooltip')) {
+      if (window.getComputedStyle(this.el).position === 'static') {
+        this.el.style.position = 'relative';
+      }
+    }
   }
 
   checkValidity() {
@@ -299,9 +345,61 @@ class UnicornFieldValidation {
       );
     }
 
-    const $help = this.el.querySelector(this.errorSelector);
+    let $help = this.el.querySelector(this.errorSelector);
+
+    if (!$help) {
+      $help = this.createHelpElement();
+      this.el.appendChild($help);
+      this.prepareWrapper();
+    }
 
     $help.textContent = this.$input.validationMessage;
+  }
+
+  createHelpElement() {
+    const className = this.options.errorMessageClass || 'invalid-tooltip';
+    const parsed = this.parseSelector(this.errorSelector);
+
+    const $help = u.html(`<div class="${className}"></div>`);
+
+    $help.classList.add(...parsed.classes);
+
+    parsed.attrs.forEach((attr) => {
+      $help.setAttribute(attr[0], attr[1] || '');
+    });
+
+    parsed.ids.forEach((id) => {
+      $help.id = id;
+    });
+
+    return $help;
+  }
+
+  /**
+   * @see https://stackoverflow.com/a/17888178
+   *
+   * @param subselector
+   * @returns {{classes: *[], ids: *[], tags: *[], attrs: *[]}}
+   */
+  parseSelector(subselector) {
+    var obj = {tags:[], classes:[], ids:[], attrs:[]};
+    subselector.split(/(?=\.)|(?=#)|(?=\[)/).forEach(function(token){
+      switch (token[0]) {
+        case '#':
+          obj.ids.push(token.slice(1));
+          break;
+        case '.':
+          obj.classes.push(token.slice(1));
+          break;
+        case '[':
+          obj.attrs.push(token.slice(1,-1).split('='));
+          break;
+        default :
+          obj.tags.push(token);
+          break;
+      }
+    });
+    return obj;
   }
 
   clearInvalidResponse() {

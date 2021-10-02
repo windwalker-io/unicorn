@@ -61,11 +61,12 @@ export default class UnicornUI {
       .then((m) => {
         // For V2
         if (Alpine.version.startsWith('2.')) {
-          return this.app.$alpine2.loadSpruce().then((s) => {
-            Alpine.store = Spruce.store.bind(Spruce);
-            callback();
-            return m;
-          })
+          return this.app.$alpine2.loadSpruce()
+            .then((s) => {
+              Alpine.store = Spruce.store.bind(Spruce);
+              callback();
+              return m;
+            })
             .then(() => {
               this.app.$alpine2.startAlpine();
               return m;
@@ -178,7 +179,8 @@ export default class UnicornUI {
       .then((m) => {
         if (selector) {
           options = defaultsDeep(options, {
-            shouldSort: false
+            shouldSort: false,
+            removeItemButton: true
           });
 
           new Choices(selector, options);
@@ -192,7 +194,7 @@ export default class UnicornUI {
     return this.app.import('@unicorn/ui/flatpickr-components.js');
   }
 
-  listDependent(element, dependent, options = {}) {
+  listDependent(element = null, dependent = null, options = {}) {
     return this.app.import('@unicorn/ui/list-dependent.js').then((module) => {
       if (element) {
         module.ListDependent.handle(element, dependent, options);
@@ -220,6 +222,16 @@ export default class UnicornUI {
 
   multiUploader() {
     return this.app.import('@unicorn/field/multi-uploader.js');
+  }
+
+  s3Uploader(name = null) {
+    return u.import('@unicorn/aws/s3-uploader.js').then(function (module) {
+      if (name) {
+        return S3Uploader.get(name);
+      }
+
+      return module;
+    });
   }
 
   /**

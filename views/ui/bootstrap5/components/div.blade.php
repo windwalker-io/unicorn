@@ -21,19 +21,15 @@ use Windwalker\Core\Language\LangService;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\SystemUri;
 
-/** @var \Windwalker\Edge\Component\ComponentAttributes $attributes */
-$attributes = $attributes->class('card');
 ?>
 
 <div {!! $attributes !!}>
     @if ($header ?? null)
-        @if (is_string($header))
-            <div class="card-header {{ $headerClass ?? '' }}">
-                {!! $title ?? '' !!}
-            </div>
-        @elseif (is_callable($header))
-            {!! $header(headerClass: $headerClass ?? '') !!}
-        @endif
+        {!! $header(headerClass: $headerClass ?? '') !!}
+    @elseif ($title ?? null)
+        <h3 class="{{ $headerClass ?? '' }}">
+            {!! $title ?? '' !!}
+        </h3>
     @endif
 
     @if ($start ?? null)
@@ -44,20 +40,7 @@ $attributes = $attributes->class('card');
         {!! $body(bodyClass: $bodyClass) !!}
     @else
         @if ($slot ?? null)
-            <div class="card-body {{ $bodyClass ?? '' }}">
-
-                @if ($title ?? null)
-                    <h4 class="card-title mb-4 {{ $titleClass ?? '' }}">
-                    @if (is_callable($title))
-                        {!! $title(titleClass: $titleClass ?? '') !!}
-                    @else
-                        {!! $title ?? '' !!}
-                    @endif
-                    </h4>
-                @endif
-
                 {!! $slot !!}
-            </div>
         @endif
     @endif
 
@@ -67,9 +50,5 @@ $attributes = $attributes->class('card');
 
     @if ($footer ?? null)
         {!! $footer(footerClass: $footerClass ?? '') !!}
-    @elseif ($footerTitle ?? null)
-        <div class="card-footer {{ $footerClass ?? '' }}">
-            {!! $footerTitle ?? '' !!}
-        </div>
     @endif
 </div>

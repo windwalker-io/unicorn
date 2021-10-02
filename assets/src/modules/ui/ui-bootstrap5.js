@@ -54,10 +54,11 @@ export class UIBootstrap5 {
    * @param config
    */
   tooltip(selector = '[data-bs-toggle="tooltip"]', config = {}) {
-    const tooltipTriggerList = [].slice.call(document.querySelectorAll(selector))
-    return tooltipTriggerList.map(function (tooltipTriggerEl) {
-      return new bootstrap.Tooltip(tooltipTriggerEl, config);
-    });
+    return this.app.getBoundedInstanceList(
+      selector,
+      'bs.tooltip',
+      (ele) => new bootstrap.Tooltip(ele, config)
+    );
   }
 
   modal(selector, config = {}) {
@@ -68,50 +69,50 @@ export class UIBootstrap5 {
     );
   }
 
-  collapse(seletor, config = {}) {
-    return this.app.getBoundedInstance(
+  collapse(seletor = '[data-bs-toggle=collapse]', config = {}) {
+    return this.app.getBoundedInstanceList(
       selector,
       'bs.collapse',
-      (element) => new bootstrap.Collapse(element, config)
+      (ele) => new bootstrap.Collapse(ele, config)
     );
   }
 
-  offcanvas(seletor, config = {}) {
-    return this.app.getBoundedInstance(
+  offcanvas(seletor = '[data-bs-toggle="offcanvas"]', config = {}) {
+    return this.app.getBoundedInstanceList(
       selector,
-      'bs.collapse',
-      (element) => new bootstrap.Offcanvas(element, config)
+      'bs.offcanvas',
+      (ele) => new bootstrap.Offcanvas(ele, config)
     );
   }
 
-  popover(seletor, config = {}) {
-    return this.app.getBoundedInstance(
+  popover(selector = '[data-bs-toggle="popover"]', config = {}) {
+    return this.app.getBoundedInstanceList(
       selector,
-      'bs.collapse',
-      (element) => new bootstrap.Popover(element, config)
+      'bs.popover',
+      (ele) => new bootstrap.Popover(ele, config)
     );
   }
 
-  scrollspy(seletor, config = {}) {
-    return this.app.getBoundedInstance(
+  scrollspy(seletor = '[data-bs-spy="scroll"]', config = {}) {
+    return this.app.getBoundedInstanceList(
       selector,
-      'bs.collapse',
+      'bs.scrollspy',
       (element) => new bootstrap.ScrollSpy(element, config)
     );
   }
 
-  tab(selector, config = {}) {
-    return this.app.getBoundedInstance(
+  tab(selector = '[data-bs-toggle="tab"]', config = {}) {
+    return this.app.getBoundedInstanceList(
       selector,
-      'bs.collapse',
+      'bs.tab',
       (element) => new bootstrap.Tab(element, config)
     );
   }
 
-  toast(seletor, config = {}) {
-    return this.app.getBoundedInstance(
+  toast(seletor = '[data-bs-toggle="toast"]', config = {}) {
+    return this.app.getBoundedInstanceList(
       selector,
-      'bs.collapse',
+      'bs.toast',
       (element) => new bootstrap.Toast(element, config)
     );
   }

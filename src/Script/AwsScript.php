@@ -23,7 +23,7 @@ class AwsScript extends AbstractScript
     /**
      * AwsScript constructor.
      */
-    public function __construct(protected S3Service $s3, protected UnicornScript $unicornScript)
+    public function __construct(protected UnicornScript $unicornScript, protected ?S3Service $s3 = null)
     {
     }
 
@@ -31,8 +31,12 @@ class AwsScript extends AbstractScript
         string $name,
         string $acl = S3Service::ACL_PUBLIC_READ,
         array $options = []
-    ) {
+    ): void {
         if ($this->available(get_defined_vars())) {
+            if (!class_exists(PostObjectV4::class)) {
+                throw new \DomainException('Please install aws/aws-sdk-php ^3.0');
+            }
+
             $options = static::mergeOptions(
                 [
                     'starts_with' => [
@@ -75,7 +79,7 @@ class AwsScript extends AbstractScript
 
             $formInputs = $postObject->getFormInputs();
 
-            $viewerHost = (string) $s3->getViewerHost();
+            $viewerHost = rtrim((string) $s3->getViewerHost(), '/');
 
             $optionString = static::getJSObject(
                 $options,
@@ -89,8 +93,8 @@ class AwsScript extends AbstractScript
 
             $this->unicornScript->importMainThen(
                 <<<JS
-                u.import('@unicorn/aws/s3-uploader.js').then(function (module) {
-                  S3Uploader.getInstance('$name', $optionString);
+                u.\$ui.s3Uploader().then(function () {
+                  return S3Uploader.getInstance('$name', $optionString);
                 });
                 JS
             );

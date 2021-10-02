@@ -56,7 +56,8 @@ class TinymceEditorField extends AbstractEditorField
     protected static array $defaultOptions = [
         'height' => 450,
         'convert_urls' => true,
-        'fontsize_formats' => '12px 13px 14px 15px 16px 18px 20px 24px 28px 32px'
+        'fontsize_formats' => '12px 13px 14px 15px 16px 18px 20px 24px 28px 32px',
+        'entity_encoding' => 'raw'
     ];
 
     /**
@@ -106,6 +107,7 @@ class TinymceEditorField extends AbstractEditorField
         $defaultOptions['plugins'] = [];
 
         $toolbar = $this->getToolbar() ?: static::TOOLBAR_FULL;
+        $defaultOptions['toolbar1'] = '';
 
         if ($toolbar === static::TOOLBAR_FULL) {
             $defaultOptions['plugins'] = [
@@ -121,6 +123,13 @@ class TinymceEditorField extends AbstractEditorField
                 '| link image media | table code | fullscreen';
 
             $defaultOptions['image_advtab'] = true;
+        }
+
+        if ($options['extra_buttons'] ?? null) {
+            $defaultOptions['toolbar1'] .= ' ' . implode(
+                ' ',
+                (array) $options['extra_buttons']
+            );
         }
 
         if ($this->getEnableImageUpload() ?? true) {
