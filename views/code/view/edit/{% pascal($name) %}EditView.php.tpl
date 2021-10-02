@@ -62,6 +62,9 @@ class {% pascal($name) %}EditView implements ViewModelInterface
                     ?: $this->orm->extractEntity($item)
             );
 
+        // Browser Title
+        $view->setTitle('{% pascal($name) %} Edit');
+
         return compact('form', 'id', 'item');
     }
 }

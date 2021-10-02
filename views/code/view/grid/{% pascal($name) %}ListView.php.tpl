@@ -80,7 +80,7 @@ class {% pascal($name) %}ListView implements ViewModelInterface
         $showFilters = $this->showFilterBar($filter);
 
         // Browser Title
-        $view->setTitle('{% pascal($name) %} Edit');
+        $view->setTitle('{% pascal($name) %} List');
 
         return compact('items', 'pagination', 'form', 'showFilters', 'ordering');
     }
