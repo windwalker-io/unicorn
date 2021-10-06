@@ -8,6 +8,8 @@
 export * from './events.js';
 export * from './mixwith.js';
 
+import './polyfill.js';
+
 import UnicornAnimate from './plugin/animate.js';
 import UnicornCrypto from './plugin/crypto.js';
 import UnicornDirective from './plugin/directive.js';
