@@ -241,6 +241,10 @@ export default class UnicornUI {
   slideUp(target, duration = 300) {
     target = this.app.selectOne(target);
 
+    if (!target) {
+      return Promise.resolve();
+    }
+
     target.style.overflow = 'hidden';
 
     const animation = u.animate(
@@ -257,6 +261,10 @@ export default class UnicornUI {
 
   slideDown(target, duration = 300, display = 'block') {
     target = this.app.selectOne(target);
+
+    if (!target) {
+      return Promise.resolve();
+    }
 
     target.style.display = display;
 
@@ -285,6 +293,10 @@ export default class UnicornUI {
 
   slideToggle(target, duration = 500, display = 'block') {
     target = this.app.selectOne(target);
+
+    if (!target) {
+      return Promise.resolve();
+    }
 
     if (window.getComputedStyle(target).display === 'none') {
       return this.slideDown(target, duration, display);
