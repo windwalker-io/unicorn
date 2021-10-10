@@ -116,14 +116,14 @@ $noLabel ??= $options['no_label'] ?? false;
             @endif
         @endif
 
+        @if ($help = $field->get('help'))
+            <div class="small text-muted mt-2">{!! $help !!}</div>
+        @endif
+
         @if ($error ?? null)
             {!! $error(field: $field, input: $inputElement) !!}
         @else
             <div data-field-error class="{{ $attributes['error-class'] ?? 'invalid-tooltip' }}"></div>
         @endif
     </div>
-
-    @if ($help = $field->get('help'))
-        <div class="small text-muted mt-2">{!! $help !!}</div>
-    @endif
 </div>

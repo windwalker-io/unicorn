@@ -34,12 +34,22 @@ $ns ??= '';
 $is ??= 'div';
 $title ??= $fieldset?->getTitle();
 $floating ??= false;
+$horizon ??= null;
 
 $attributes = $attributes->exceptProps(
     [
-        'form'
+        'form',
+        'horizon'
     ]
 );
+
+$attrs = [];
+
+if ($horizon) {
+    [$labelCols, $inputCols] = explode(':', $horizon) + [null, null];
+    $attrs['label-cols'] = $labelCols;
+    $attrs['input-cols'] = $inputCols;
+}
 ?>
 
 <x-component :is="$is" :="$attributes">
@@ -63,10 +73,12 @@ $attributes = $attributes->exceptProps(
             {!! $$startSlot(field: $field) !!}
         @endif
 
-        @if ($$slotName ?? null)
+        @if ($main ?? null)
+            {!! $main(field: $field) !!}
+        @elseif ($$slotName ?? null)
             {!! $$slotName(field: $field) !!}
         @else
-            <x-field :field="$field" class="mb-3" :floating="$floating">
+            <x-field :field="$field" class="mb-3" :floating="$floating" :="$attrs">
                 @if ($fieldSlot ?? null)
                     @scope($field)
                     {!! $fieldSlot(field: $field) !!}
