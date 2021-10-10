@@ -178,6 +178,7 @@ class UnicornPackage extends AbstractPackage implements
                 '@bool-icon' => '@theme::bool-icon',
                 '@card' => '@theme::components.card',
                 '@input-group' => '@theme::components.input-group',
+                '@breadcrumb' => '@theme::components.breadcrumb',
             ]
         );
 
@@ -202,6 +203,7 @@ class UnicornPackage extends AbstractPackage implements
                 'card' => '@card',
                 'div' => '@theme::components.div',
                 'input-group' => '@input-group',
+                'breadcrumb' => '@breadcrumb'
             ]
         );
 

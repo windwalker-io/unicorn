@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\View;
 
+use Unicorn\Html\Breadcrumb;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Asset\AssetService;
 use Windwalker\Core\Attributes\ViewModel;
@@ -11,6 +12,7 @@ use Windwalker\Core\DateTime\ChronosService;
 use Windwalker\Core\Language\LangService;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\SystemUri;
+use Windwalker\Edge\Component\ComponentAttributes;
 
 /**
  * Global variables
@@ -24,14 +26,23 @@ use Windwalker\Core\Router\SystemUri;
  * @var $lang      LangService         The language.
  */
 
+/** @var Breadcrumb $breadcrumb */
+$items = $items ?? $breadcrumb->getItems();
+
+$attributes ??= null;
+
+/** @var ComponentAttributes $attributes */
+if ($attributes) {
+    $attributes = $attributes->except(['breadcrumb', 'items']);
+}
 ?>
 
-<nav class="{{ $class ?? '' }}" aria-label="breadcrumb">
-    <ol class="breadcrumb">
-        @foreach ($paths as $i => $path)
+<nav aria-label="breadcrumb" {!! $attributes !!}>
+    <ol class="breadcrumb mb-0">
+        @foreach ($items as $i => $path)
             <li class="breadcrumb-item {{ $path['active'] ? 'active' : '' }} {{ $itemClass ?? '' }}"
                 aria-current="page">
-                <a @attr('href', $path->link ?: null) >
+                <a @attr('href', $path['link'] ?: null) >
                     {{ $path['title'] }}
                 </a>
             </li>
