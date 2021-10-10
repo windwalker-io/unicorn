@@ -16,7 +16,9 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Reader\IReader;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use Psr\Http\Message\StreamInterface;
 use Traversable;
+use Windwalker\Filesystem\FileObject;
 use Windwalker\Filesystem\Filesystem;
 use Windwalker\Filesystem\Path;
 
@@ -51,34 +53,37 @@ class ExcelImporter
     /**
      * ExcelImporter constructor.
      *
-     * @param string|null $file
-     * @param string|null $format
+     * @param  string|StreamInterface|\SplFileInfo|null  $file
+     * @param  string|null                               $format
      *
      * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
      */
-    public function __construct(?string $file = null, string $format = null)
+    public function __construct(mixed $file = null, string $format = null)
     {
-        if (strlen($file) < PHP_MAXPATHLEN && is_file($file)) {
-            $this->loadFile($file, $format);
-        } elseif ($file) {
-            $this->load($file, $format);
+        if ($file !== null) {
+            if (strlen($file) < PHP_MAXPATHLEN && is_file($file)) {
+                $this->loadFile($file, $format);
+            } elseif ($file) {
+                $this->load($file, $format);
+            }
         }
     }
 
     /**
      * loadFile
      *
-     * @param string      $file
-     * @param string|null $format
+     * @param  string|\SplFileInfo  $file
+     * @param  string|null          $format
      *
      * @return  ExcelImporter
      *
      * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
-     *
      * @since  1.5.13
      */
-    public function loadFile(string $file, ?string $format = null): self
+    public function loadFile(string|\SplFileInfo $file, ?string $format = null): self
     {
+        $file = FileObject::unwrap($file);
+
         $format = $format ?? Path::getExtension($file);
 
         $reader = $this->createReader($format);
@@ -91,15 +96,15 @@ class ExcelImporter
     /**
      * getSheetIterator
      *
-     * @param bool            $asValue
-     * @param int|string|null $sheet
+     * @param  bool             $asValue
+     * @param  int|string|null  $sheet
      *
      * @return  \Generator
      *
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      * @since  1.5.13
      */
-    public function getRowIterator(bool $asValue = false, $sheet = null): \Generator
+    public function getRowIterator(bool $asValue = false, mixed $sheet = null): \Generator
     {
         if (is_int($sheet)) {
             $worksheet = $this->spreadsheet->getSheet($sheet);
@@ -115,8 +120,8 @@ class ExcelImporter
     /**
      * getColumnIterator
      *
-     * @param bool            $asValue
-     * @param int|string|null $sheet
+     * @param  bool             $asValue
+     * @param  int|string|null  $sheet
      *
      * @return  \Generator
      *
@@ -140,7 +145,7 @@ class ExcelImporter
     /**
      * getSheetsIterator
      *
-     * @param bool $asValue
+     * @param  bool  $asValue
      *
      * @return  \Generator
      *
@@ -162,7 +167,7 @@ class ExcelImporter
     /**
      * getSheetData
      *
-     * @param int|string|null $sheet
+     * @param  int|string|null  $sheet
      *
      * @return  array
      *
@@ -193,8 +198,8 @@ class ExcelImporter
     /**
      * iterateSheet
      *
-     * @param Worksheet $sheet
-     * @param bool      $asValue
+     * @param  Worksheet  $sheet
+     * @param  bool       $asValue
      *
      * @return  \Generator|null
      *
@@ -227,7 +232,7 @@ class ExcelImporter
                 continue;
             }
 
-            $item         = [];
+            $item = [];
             $cellIterator = $row->getCellIterator();
             $cellIterator->setIterateOnlyExistingCells(false);
 
@@ -250,8 +255,8 @@ class ExcelImporter
     /**
      * iterateSheetColumns
      *
-     * @param Worksheet $sheet
-     * @param bool      $asValue
+     * @param  Worksheet  $sheet
+     * @param  bool       $asValue
      *
      * @return  \Generator|null
      *
@@ -285,7 +290,7 @@ class ExcelImporter
                 }
             }
 
-            $item         = [];
+            $item = [];
             $cellIterator = $row->getCellIterator();
             $cellIterator->setIterateOnlyExistingCells(false);
 
@@ -308,9 +313,9 @@ class ExcelImporter
     /**
      * eachSheet
      *
-     * @param callable        $handler
-     * @param bool            $asValue
-     * @param int|string|null $sheet
+     * @param  callable         $handler
+     * @param  bool             $asValue
+     * @param  int|string|null  $sheet
      *
      * @return  void
      *
@@ -328,8 +333,8 @@ class ExcelImporter
     /**
      * eachAll
      *
-     * @param callable $handler
-     * @param bool     $asValue
+     * @param  callable  $handler
+     * @param  bool      $asValue
      *
      * @return  void
      *
@@ -348,8 +353,8 @@ class ExcelImporter
     /**
      * load
      *
-     * @param string $data
-     * @param string $format
+     * @param  string  $data
+     * @param  string  $format
      *
      * @return  ExcelImporter
      *
@@ -357,15 +362,15 @@ class ExcelImporter
      *
      * @since  1.5.13
      */
-    public function load(string $data, string $format = 'Xlsx'): self
+    public function load(string|StreamInterface $data, string $format = 'Xlsx'): self
     {
-        $temp = File::createTemp();
+        $temp = Filesystem::createTemp();
 
-        File::write($temp, $data);
+        $temp->write($data);
 
         $this->loadFile($temp, $format);
 
-        File::delete($temp);
+        register_shutdown_function(fn () => $temp->delete());
 
         return $this;
     }
@@ -373,7 +378,7 @@ class ExcelImporter
     /**
      * createReader
      *
-     * @param string|null $format
+     * @param  string|null  $format
      *
      * @return  IReader
      *
@@ -383,6 +388,10 @@ class ExcelImporter
      */
     public function createReader(string $format = null): IReader
     {
+        if (!class_exists(Spreadsheet::class)) {
+            throw new \DomainException('Please install phpoffice/phpspreadsheet first.');
+        }
+
         $format = $format ?? 'xlsx';
 
         $reader = IOFactory::createReader(ucfirst($format));
@@ -394,7 +403,7 @@ class ExcelImporter
     /**
      * Method to set property ignoreHeader
      *
-     * @param int $ignoreHeader
+     * @param  int  $ignoreHeader
      *
      * @return  static  Return self to support chaining.
      *
@@ -412,7 +421,7 @@ class ExcelImporter
     /**
      * startFromRow
      *
-     * @param int $start
+     * @param  int  $start
      *
      * @return  static
      *
@@ -428,7 +437,7 @@ class ExcelImporter
     /**
      * Method to set property headerAsField
      *
-     * @param bool $headerAsField
+     * @param  bool  $headerAsField
      *
      * @return  static  Return self to support chaining.
      *
@@ -469,7 +478,7 @@ class ExcelImporter
     /**
      * Method to set property spreadsheet
      *
-     * @param Spreadsheet $spreadsheet
+     * @param  Spreadsheet  $spreadsheet
      *
      * @return  static  Return self to support chaining.
      *
