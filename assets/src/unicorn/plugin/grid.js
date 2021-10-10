@@ -68,11 +68,13 @@ class UnicornGridElement {
   }
 
   initComponent(store = 'grid', custom = {}) {
-    this.ordering = this.element.dataset.ordering;
+    this.ordering = this.element?.dataset?.ordering;
 
-    if (!this.ordering.toLowerCase().endsWith(' asc')
-      && !this.ordering.toLowerCase().endsWith(' desc')) {
-      this.ordering += ' ASC';
+    if (this.ordering) {
+      if (!this.ordering.toLowerCase().endsWith(' asc')
+        && !this.ordering.toLowerCase().endsWith(' desc')) {
+        this.ordering += ' ASC';
+      }
     }
 
     return this.app.loadAlpine((m) => {
@@ -187,6 +189,9 @@ class UnicornGridElement {
   }
 
   orderingEquals(a, b) {
+    a = a || '';
+    b = b || '';
+
     a = a.replace(/\s+/g, ' ').trim().toLowerCase();
     b = b.replace(/\s+/g, ' ').trim().toLowerCase();
 
