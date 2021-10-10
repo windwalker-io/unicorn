@@ -6,6 +6,8 @@
  */
 
 export class LoadTab {
+  static TAB_ITEM_SELECTOR = '[data-toggle=tab],[data-bs-toggle=tab],[data-toggle=pill],[data-bs-toggle=pill]';
+
   /**
    * Class init.
    *
@@ -29,7 +31,7 @@ export class LoadTab {
     }
 
     this.$element = $element;
-    this.tabButtons = $element.querySelectorAll('[data-toggle=tab],[data-bs-toggle=tab]');
+    this.tabButtons = $element.querySelectorAll(this.constructor.TAB_ITEM_SELECTOR);
 
     this.storageKey = 'tab-href-' + this.hashCode(location.href + ':' + uid);
     this.options = options;
@@ -55,7 +57,7 @@ export class LoadTab {
   }
 
   findTabButtonByHref(href) {
-    return u.selectAll(this.$element.querySelectorAll(`[data-toggle="tab"],[data-bs-toggle="tab"]`))
+    return u.selectAll(this.$element.querySelectorAll(this.constructor.TAB_ITEM_SELECTOR))
       .filter((button) => {
         if (button.href === href) {
           return true;
@@ -77,7 +79,10 @@ export class LoadTab {
    */
   activateTab(href) {
     const tabTrigger = this.findTabButtonByHref(href);
-    u.$ui.bootstrap.tab(tabTrigger).show();
+
+    if (tabTrigger) {
+      (new bootstrap.Tab(tabTrigger)).show();
+    }
   }
 
   /**
@@ -114,14 +119,14 @@ export class LoadTab {
       this.activateTab(tabhref);
 
       // Check whether internal tab is selected (in format <tabname>-<id>)
-      const seperatorIndex = tabhref.indexOf('-');
-
-      if (seperatorIndex !== -1) {
-        const singular = tabhref.substring(0, seperatorIndex);
-        const plural = singular + 's';
-
-        this.activateTab(plural);
-      }
+      // const seperatorIndex = tabhref.indexOf('-');
+      //
+      // if (seperatorIndex !== -1) {
+      //   const singular = tabhref.substring(0, seperatorIndex);
+      //   const plural = singular + 's';
+      //
+      //   this.activateTab(plural);
+      // }
     }
   }
 
