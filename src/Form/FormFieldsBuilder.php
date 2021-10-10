@@ -139,7 +139,8 @@ class FormFieldsBuilder extends AbstractAstBuilder implements EventAwareInterfac
         $colName = $column->getColumnName();
 
         if ($this->langPrefix) {
-            $label = "\$this->trans('" . $this->langPrefix . '.' . $colName . "')";
+            $lang = $this->getLangKey($this->langPrefix, $colName);
+            $label = "\$this->trans('" . $lang . "')";
         } else {
             $label = Str::surrounds(
                 StrNormalize::toSpaceSeparated(
@@ -263,5 +264,16 @@ PHP;
         if (!in_array($ns, $this->uses, true)) {
             $this->newUses[] = $ns;
         }
+    }
+
+    protected function getLangKey(string $langPrefix, string $colName): string
+    {
+        return match ($colName) {
+            'id', 'title', 'alias', 'description', 'ordering', 'parent', 'delete', 'created', 'modified',
+                'modified_by', 'image', 'images', 'type' => 'unicorn.field.' . $colName,
+            'state' => 'unicorn.field.published',
+            'created_by' => 'unicorn.field.author',
+            default => $langPrefix . '.' . $colName
+        };
     }
 }

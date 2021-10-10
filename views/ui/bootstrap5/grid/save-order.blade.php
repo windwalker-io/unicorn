@@ -16,12 +16,18 @@
 declare(strict_types=1);
 
 $store ??= 'grid';
+
+/** @var \Windwalker\Edge\Component\ComponentAttributes $attributes */
+$attributes = $attributes->except('grid');
+$attributes = $attributes->class('btn btn-default btn-outline-secondary btn-sm px-1 py-0');
 ?>
 
-<button type="button" class="btn btn-default btn-outline-secondary btn-sm px-1 py-0"
+<button type="button"
     :x-id="grid.getId('__save-order')"
     x-data="{ grid: $store.{{ $store }} }"
     @click="grid.reorderAll();"
-    title="@lang('unicorn.grid.ordering.saveorder')">
+    title="@lang('unicorn.grid.ordering.saveorder')"
+    {!! $attributes !!}
+>
     <span class="fa fa-save"></span>
 </button>

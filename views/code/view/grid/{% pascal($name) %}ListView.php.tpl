@@ -16,6 +16,7 @@ use App\Repository\{% pascal($name) %}Repository;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Attributes\ViewModel;
 use Windwalker\Core\Form\FormFactory;
+use Windwalker\Core\Html\HtmlFrame;
 use Windwalker\Core\View\View;
 use Windwalker\Core\View\ViewModelInterface;
 use Windwalker\Data\Collection;
@@ -79,8 +80,7 @@ class {% pascal($name) %}ListView implements ViewModelInterface
 
         $showFilters = $this->showFilterBar($filter);
 
-        // Browser Title
-        $view->setTitle('{% pascal($name) %} List');
+        $this->prepareMetadata($app, $view->getHtmlFrame());
 
         return compact('items', 'pagination', 'form', 'showFilters', 'ordering');
     }
@@ -142,5 +142,20 @@ class {% pascal($name) %}ListView implements ViewModelInterface
         }
 
         return false;
+    }
+
+    /**
+     * Prepare Metadata and HTML Frame.
+     *
+     * @param  AppContext  $app
+     * @param  HtmlFrame   $htmlFrame
+     *
+     * @return  void
+     */
+    protected function prepareMetadata(AppContext $app, HtmlFrame $htmlFrame): void
+    {
+        $htmlFrame->setTitle(
+            $this->trans('unicorn.title.edit', title: '{% pascal($name) %}')
+        );
     }
 }

@@ -14,6 +14,7 @@ namespace Unicorn\Workflow;
 use Unicorn\Attributes\StateMachine;
 use Unicorn\Enum\BasicState;
 use Unicorn\Enum\PublishingState;
+use Windwalker\Core\Language\TranslatorTrait;
 
 /**
  * The BasicStateWorkflow class.
@@ -25,10 +26,22 @@ use Unicorn\Enum\PublishingState;
 )]
 class BasicStateWorkflow extends AbstractWorkflow
 {
+    use TranslatorTrait;
+
     public function configure(WorkflowController $workflow): void
     {
-        $workflow->setStateMeta(BasicState::PUBLISHED(), 'Published', 'fa fa-fw fa-check', 'success');
-        $workflow->setStateMeta(BasicState::UNPUBLISHED(), 'Unpublished', 'fa fa-fw fa-xmark', 'danger');
+        $workflow->setStateMeta(
+            BasicState::PUBLISHED(),
+            BasicState::PUBLISHED()->trans($this->lang),
+            'fa fa-fw fa-check',
+            'success'
+        );
+        $workflow->setStateMeta(
+            BasicState::UNPUBLISHED(),
+            BasicState::UNPUBLISHED()->trans($this->lang),
+            'fa fa-fw fa-xmark',
+            'danger'
+        );
 
         $workflow->setInitialStates(
             [

@@ -13,6 +13,7 @@ namespace Unicorn\Workflow;
 
 use Unicorn\Attributes\StateMachine;
 use Unicorn\Enum\PublishingState;
+use Windwalker\Core\Language\TranslatorTrait;
 
 /**
  * The BasicStateWorkflow class.
@@ -24,12 +25,32 @@ use Unicorn\Enum\PublishingState;
 )]
 class PublishingStateWorkflow extends AbstractWorkflow
 {
+    use TranslatorTrait;
+
     public function configure(WorkflowController $workflow): void
     {
-        $workflow->setStateMeta(PublishingState::PUBLISHED(), 'Published', 'fa fa-fw fa-check', 'success');
-        $workflow->setStateMeta(PublishingState::UNPUBLISHED(), 'Unpublished', 'fa fa-fw fa-xmark', 'danger');
-        $workflow->setStateMeta(PublishingState::TRASHED(), 'Trashed', 'fa fa-fw fa-trash');
-        $workflow->setStateMeta(PublishingState::ARCHIVED(), 'Archived', 'fa fa-fw fa-file-zipper');
+        $workflow->setStateMeta(
+            PublishingState::PUBLISHED(),
+            PublishingState::PUBLISHED()->trans($this->lang),
+            'fa fa-fw fa-check',
+            'success'
+        );
+        $workflow->setStateMeta(
+            PublishingState::UNPUBLISHED(),
+            PublishingState::UNPUBLISHED()->trans($this->lang),
+            'fa fa-fw fa-xmark',
+            'danger'
+        );
+        $workflow->setStateMeta(
+            PublishingState::TRASHED(),
+            PublishingState::TRASHED()->trans($this->lang),
+            'fa fa-fw fa-trash'
+        );
+        $workflow->setStateMeta(
+            PublishingState::ARCHIVED(),
+            PublishingState::ARCHIVED()->trans($this->lang),
+            'fa fa-fw fa-file-zipper'
+        );
 
         $workflow->setInitialStates(
             [

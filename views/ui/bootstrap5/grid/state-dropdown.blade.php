@@ -101,7 +101,7 @@ $buttonId ??= trim('c-state-dropdown-' . implode('-', $fieldName) . '-' . $id, '
 ?>
 
 <div class="btn-group dropdown c-state-dropdown d-inline-block" {!! $attributes !!}>
-    <button class="btn {{ $buttonColor }} btn-{{ $size }} d-flex align-items-center {{ $textColor }} dropdown-toggle c-state-dropdown__toggle {{ $noTitle ? 'has-tooltip' : '' }}"
+    <button class="btn {{ $buttonColor }} btn-{{ $size }} d-flex align-items-center {{ $textColor }} dropdown-toggle c-state-dropdown__toggle w-100 {{ $noTitle ? 'has-tooltip' : '' }}"
         type="button"
         id="{{ $buttonId }}"
         data-bs-toggle="dropdown"
