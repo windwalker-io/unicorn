@@ -32,9 +32,28 @@ $searchInput ??= 'search/*';
 
 $searchBlock ??= null;
 $filterBlock ??= null;
+$size ??= null;
+
+$fieldsCount = $form->countFields(null, 'filter');
+
+if ($fieldsCount === 0 && $filterBlock === null) {
+    $fieldsCount = false;
+}
+
+/** @var \Windwalker\Edge\Component\ComponentAttributes $attributes */
+$attributes = $attributes->except(
+    [
+        'searchBlock',
+        'filterBlock',
+        'size',
+        'open',
+        'searchInput'
+    ]
+);
+$attributes = $attributes->class('c-filter-bar mb-4');
 ?>
 
-<div class="c-filter-bar mb-4"
+<div
     data-open="{{ (int) $open }}"
     x-cloak
     x-id="filter-bar"
@@ -45,26 +64,25 @@ $filterBlock ??= null;
         grid.toggleFilters(open, $refs.filterForm);
     });
     grid.toggleFilters(open, $refs.filterForm);
+    $watch('grid.chcked', function (v) { consoloe.log(v) }, { deep: true })
     "
+    {!! $attributes !!}
 >
     <div class="c-filter-bar-top d-flex">
         <div class="c-filter-bar__top-start d-flex">
             {{-- Search --}}
             @if ($searchBlock !== false)
                 @if ($searchBlock === null)
-                    <x-input-group class="" tag-name="span">
+                    <x-input-group class="mr-3 me-3 input-group-{{ $size }}" tag-name="span">
                         <?php $searchField = $form->getField($searchInput); ?>
 
-                        <x-input :field="$searchField"
-                            x-on:keyup.enter="$store.grid.sendFilter()"
-                        ></x-input>
+                        <x-input :field="$searchField"></x-input>
 
                         <x-slot name="end">
-                            <button type="button" class="btn btn-outline-secondary"
+                            <button type="submit" class="btn btn-outline-secondary"
                                 data-search-button
                                 data-bs-toggle="tooltip"
                                 title="@lang('unicorn.grid.search.button.desc')"
-                                @click="$store.grid.sendFilter()"
                             >
                                 <i class="fa fa-magnifying-glass"></i>
                             </button>
@@ -76,10 +94,11 @@ $filterBlock ??= null;
             @endif
 
             {{-- Buttons --}}
-            @if ($filterBlock !== false)
-                <div class="btn-group ms-3 ml-3">
-                    <button type="button" class="btn text-nowrap"
-                        :class="[ open ? 'btn-dark' : 'btn-outline-secondary' ]"
+            @if ($filterBlock !== false || $searchBlock !== false)
+            <div class="btn-group btn-group-{{ $size }}">
+                @if ($filterBlock !== false)
+                    <button type="button" class="btn text-nowrap btn-outline-secondary"
+                        :class="{ active: open }"
                         @click="open = !open"
                         data-bs-toggle="tooltip"
                         title="@lang('unicorn.grid.filter.button.desc')"
@@ -89,14 +108,16 @@ $filterBlock ??= null;
                             :class="[ open ? 'fa-angle-up' : 'fa-angle-down' ]"
                         ></span>
                     </button>
-                    <button type="button" class="btn btn-outline-secondary"
-                        @click="$store.grid.clearFilters($refs.filterbar)"
-                        data-bs-toggle="tooltip"
-                        title="@lang('unicorn.grid.clear.button.desc')"
-                    >
-                        <span class="fa fa-times"></span>
-                    </button>
-                </div>
+                @endif
+
+                <button type="button" class="btn btn-outline-secondary"
+                    @click="$store.grid.clearFilters($refs.filterbar)"
+                    data-bs-toggle="tooltip"
+                    title="@lang('unicorn.grid.clear.button.desc')"
+                >
+                    <span class="fa fa-times"></span>
+                </button>
+            </div>
             @endif
         </div>
 
@@ -108,38 +129,42 @@ $filterBlock ??= null;
 
     {{-- Filters --}}
     @if ($filterBlock !== false)
-    <div class="c-filter-bar__filters" x-ref="filterForm" style="display: none;">
-        <div class="pt-3">
-            @php($fields = iterator_to_array($form->getFields(\Windwalker\Utilities\Symbol::none(), 'filter')))
+        @if ($filterBlock === null)
+            <div class="c-filter-bar__filters" x-ref="filterForm" style="display: none;">
+                <div class="pt-3">
+                    @php($fields = iterator_to_array($form->getFields(\Windwalker\Utilities\Symbol::none(), 'filter')))
 
-            @if (count($fields))
-                <div class="row c-filter-bar__filter-group">
-                    @foreach ($fields as $field)
-                        <div class="col-lg-3 col-sm-6 mb-3">
-                            <x-field :field="$field"></x-field>
-                        </div>
-                    @endforeach
-                </div>
-            @endif
-
-            @foreach ($form->getFieldsets() as $fieldset)
-                @php($fields = iterator_to_array($form->getFields($fieldset->getName(), 'filter')))
-
-                @if (count($fields))
-                    <div class="mt-3">
-                        <h4>{{ $fieldset->getTitle() }}</h4>
-
+                    @if (count($fields))
                         <div class="row c-filter-bar__filter-group">
                             @foreach ($fields as $field)
                                 <div class="col-lg-3 col-sm-6 mb-3">
-                                    <x-field :field="$field" floating></x-field>
+                                    <x-field :field="$field"></x-field>
                                 </div>
                             @endforeach
                         </div>
-                    </div>
-                @endif
-            @endforeach
-        </div>
-    </div>
+                    @endif
+
+                    @foreach ($form->getFieldsets() as $fieldset)
+                        @php($fields = iterator_to_array($form->getFields($fieldset->getName(), 'filter')))
+
+                        @if (count($fields))
+                            <div class="mt-3">
+                                <h4>{{ $fieldset->getTitle() }}</h4>
+
+                                <div class="row c-filter-bar__filter-group">
+                                    @foreach ($fields as $field)
+                                        <div class="col-lg-3 col-sm-6 mb-3">
+                                            <x-field :field="$field" floating></x-field>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+                    @endforeach
+                </div>
+            </div>
+        @else
+            {!! $filterBlock !!}
+        @endif
     @endif
 </div>

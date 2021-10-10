@@ -29,6 +29,7 @@ export default class UnicornGrid {
 
 class UnicornGridElement {
   ordering = '';
+  state = {};
 
   static get defaultOptions() {
     return {
@@ -45,6 +46,25 @@ class UnicornGridElement {
     if (!this.form) {
       throw new Error('UnicornGrid is dependent on UnicornForm');
     }
+
+    this.bindEvents();
+  }
+
+  bindEvents() {
+    this.app.selectAll('input[data-role=grid-checkbox]', (ch) => {
+      ch.addEventListener('click', () => {
+        ch.dispatchEvent(new CustomEvent('change'));
+      });
+      ch.addEventListener('change', () => {
+        if (this.form) {
+          const event = new CustomEvent('unicorn:checked', {
+            detail: { grid: this }
+          });
+
+          this.form.element.dispatchEvent(event);
+        }
+      });
+    });
   }
 
   initComponent(store = 'grid', custom = {}) {
@@ -64,7 +84,7 @@ class UnicornGridElement {
 
   useState(custom = {}) {
     const state = {
-      form: this.form.useState(custom)
+      form: this.form.useState(custom),
     };
     Object.getOwnPropertyNames(Object.getPrototypeOf(this))
       .map(item => state[item] = this[item].bind(this));
@@ -79,20 +99,20 @@ class UnicornGridElement {
     return this.element;
   }
 
-  sendFilter($event) {
+  sendFilter($event, method = null) {
     if ($event) {
       $event.preventDefault();
     }
 
-    this.form.put();
+    this.form.submit(null, null, method);
   }
 
-  clearFilters(element) {
+  clearFilters(element, method = null) {
     element.querySelectorAll('input, textarea, select').forEach((ele) => {
       ele.value = '';
     });
 
-    this.form.put();
+    this.form.submit(null, null, method);
   }
 
   toggleFilters(open, filterForm) {
@@ -187,6 +207,8 @@ class UnicornGridElement {
     }
 
     ch.checked = value;
+    ch.dispatchEvent(new Event('input'));
+    ch.dispatchEvent(new Event('change'));
   }
 
   getCheckboxByRow(row) {
@@ -375,6 +397,9 @@ class UnicornGridElement {
     )
       .map((input) => {
         input.checked = value;
+
+        input.dispatchEvent(new Event('input'));
+        input.dispatchEvent(new Event('change'));
       });
 
     return this;
