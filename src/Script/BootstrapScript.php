@@ -47,6 +47,87 @@ class BootstrapScript extends AbstractScript
         return $this;
     }
 
+    public function collapse(string $selector = '[data-bs-toggle=collapse]', array $options = []): static
+    {
+        if ($this->available($selector)) {
+            $optString = self::getJSObject($options);
+
+            $this->unicornScript->importMainThen("u.\$ui.bootstrap.collapse('$selector', $optString)");
+        }
+
+        return $this;
+    }
+
+    public function offcanvas(string $selector = '[data-bs-toggle=offcanvas]', array $options = []): static
+    {
+        if ($this->available($selector)) {
+            $optString = self::getJSObject($options);
+
+            $this->unicornScript->importMainThen("u.\$ui.bootstrap.offcanvas('$selector', $optString)");
+        }
+
+        return $this;
+    }
+
+    public function scrollspy(string $selector = '[data-bs-spy="scroll"]', array $options = []): static
+    {
+        if ($this->available($selector)) {
+            $optString = self::getJSObject($options);
+
+            $this->unicornScript->importMainThen("u.\$ui.bootstrap.scrollspy('$selector', $optString)");
+        }
+
+        return $this;
+    }
+
+    public function tab(string $selector = '[data-bs-toggle=tab]', array $options = []): static
+    {
+        if ($this->available($selector)) {
+            $optString = self::getJSObject($options);
+
+            $this->unicornScript->importMainThen("u.\$ui.bootstrap.tab('$selector', $optString)");
+        }
+
+        return $this;
+    }
+
+    public function toast(string $selector = '[data-bs-toggle=toast]', array $options = []): static
+    {
+        if ($this->available($selector)) {
+            $optString = self::getJSObject($options);
+
+            $this->unicornScript->importMainThen("u.\$ui.bootstrap.toast('$selector', $optString)");
+        }
+
+        return $this;
+    }
+
+    public function keepTab(?string $selector = null, array $options = []): static
+    {
+        if ($this->available($selector)) {
+            $optString = self::getJSObject($options);
+            $selector = json_encode($selector);
+
+            $this->unicornScript->importMainThen("u.\$ui.bootstrap.keepTab($selector, $optString)");
+        }
+
+        return $this;
+    }
+
+    public function buttonRadio(?string $selector = null, array $options = []): static
+    {
+        if ($this->available($selector)) {
+            $optString = self::getJSObject($options);
+            $selector = json_encode($selector);
+
+            $this->unicornScript->importMainThen("u.\$ui.bootstrap.buttonRadio($selector, $optString)");
+        }
+
+        return $this;
+    }
+
+
+
     public function iframeModal(): static
     {
         if ($this->available()) {
