@@ -28,11 +28,14 @@ $app->service(\Unicorn\Script\FormScript::class)->flatpickr();
     selector="[data-calendar]">
     <div class="input-group flatpickr" data-calendar>
         {!! $input !!}
-        <button class="btn btn-secondary" type="button" data-toggle>
-            <span class="fa fa-calendar"></span>
-        </button>
-        <button class="btn btn-secondary" type="button" data-clear>
-            <span class="fa fa-times"></span>
-        </button>
+
+        @if ($field->canModify())
+            <button class="btn btn-secondary" type="button" data-toggle>
+                <span class="fa fa-calendar"></span>
+            </button>
+            <button class="btn btn-secondary" type="button" data-clear>
+                <span class="fa fa-times"></span>
+            </button>
+        @endif
     </div>
 </uni-flatpickr>

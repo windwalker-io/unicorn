@@ -500,9 +500,6 @@ class ModalField extends AbstractField
                 'hasImage',
                 'sortable',
                 'placeholder',
-                'onchange',
-                'onfocus',
-                'onblur',
                 'height',
                 'max',
             ]
