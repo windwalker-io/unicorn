@@ -237,7 +237,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
 
     public function count(Query $query = null): int
     {
-        if ($this->cacheStorage['count'] ?? null) {
+        if (($this->cacheStorage['count'] ?? null) !== null) {
             return $this->cacheStorage['count'];
         }
 
