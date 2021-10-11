@@ -18,6 +18,7 @@ use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Attributes\ViewModel;
 use Windwalker\Core\Form\FormFactory;
 use Windwalker\Core\Html\HtmlFrame;
+use Windwalker\Core\Language\TranslatorTrait;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\View\View;
 use Windwalker\Core\View\ViewModelInterface;
@@ -33,6 +34,8 @@ use Windwalker\ORM\ORM;
 )]
 class {% pascal($name) %}EditView implements ViewModelInterface
 {
+    use TranslatorTrait;
+
     public function __construct(
         protected ORM $orm,
         protected FormFactory $formFactory,
@@ -63,7 +66,7 @@ class {% pascal($name) %}EditView implements ViewModelInterface
                     ?: $this->orm->extractEntity($item)
             );
 
-        $this->prepareMetadata($app, $view->getHtmlFrame());
+        $this->prepareMetadata($app, $view);
 
         return compact('form', 'id', 'item');
     }
@@ -72,14 +75,15 @@ class {% pascal($name) %}EditView implements ViewModelInterface
      * Prepare Metadata and HTML Frame.
      *
      * @param  AppContext  $app
-     * @param  HtmlFrame   $htmlFrame
+     * @param  View        $view
      *
      * @return  void
      */
-    protected function prepareMetadata(AppContext $app, HtmlFrame $htmlFrame): void
+    protected function prepareMetadata(AppContext $app, View $view): void
     {
-        $htmlFrame->setTitle(
-            $this->trans('unicorn.title.grid', title: '{% pascal($name) %}')
-        );
+        $view->getHtmlFrame()
+            ->setTitle(
+                $this->trans('unicorn.title.grid', title: '{% pascal($name) %}')
+            );
     }
 }
