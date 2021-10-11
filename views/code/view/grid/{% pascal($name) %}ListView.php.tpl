@@ -16,7 +16,7 @@ use App\Repository\{% pascal($name) %}Repository;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Attributes\ViewModel;
 use Windwalker\Core\Form\FormFactory;
-use Windwalker\Core\Html\HtmlFrame;
+use Windwalker\Core\Language\TranslatorTrait;
 use Windwalker\Core\View\View;
 use Windwalker\Core\View\ViewModelInterface;
 use Windwalker\Data\Collection;
@@ -35,6 +35,8 @@ use Windwalker\ORM\ORM;
 )]
 class {% pascal($name) %}ListView implements ViewModelInterface
 {
+    use TranslatorTrait;
+
     public function __construct(
         protected ORM $orm,
         #[Autowire]
@@ -80,7 +82,7 @@ class {% pascal($name) %}ListView implements ViewModelInterface
 
         $showFilters = $this->showFilterBar($filter);
 
-        $this->prepareMetadata($app, $view->getHtmlFrame());
+        $this->prepareMetadata($app, $view);
 
         return compact('items', 'pagination', 'form', 'showFilters', 'ordering');
     }
@@ -148,14 +150,15 @@ class {% pascal($name) %}ListView implements ViewModelInterface
      * Prepare Metadata and HTML Frame.
      *
      * @param  AppContext  $app
-     * @param  HtmlFrame   $htmlFrame
+     * @param  View        $view
      *
      * @return  void
      */
-    protected function prepareMetadata(AppContext $app, HtmlFrame $htmlFrame): void
+    protected function prepareMetadata(AppContext $app, View $view): void
     {
-        $htmlFrame->setTitle(
-            $this->trans('unicorn.title.edit', title: '{% pascal($name) %}')
-        );
+        $view->getHtmlFrame()
+            ->setTitle(
+                $this->trans('unicorn.title.edit', title: '{% pascal($name) %}')
+            );
     }
 }
