@@ -555,8 +555,14 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
     {
         $limit = (int) $this->getLimit();
 
+        if ($limit <= 0) {
+            $page = 1;
+        } else {
+            $page = (int) ceil($this->getOffset() / $limit) + 1;
+        }
+
         return $this->paginationFactory->create(
-            (int) ceil($this->getOffset() / $limit) + 1,
+            $page,
             $limit,
             $neighbours
         )
