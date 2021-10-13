@@ -120,7 +120,7 @@ class BatchAction extends AbstractDatabaseAction
                 ]
             );
 
-            $data = $mapper->copy(
+            $result = $mapper->copy(
                 [$key => $event->getId()],
                 fn(array $item) => array_merge($item, $event->getData())
             );
@@ -129,7 +129,7 @@ class BatchAction extends AbstractDatabaseAction
                 AfterBatchItemEvent::class,
                 [
                     'id' => $id,
-                    'data' => $data,
+                    'data' => $result,
                     'task' => 'copy',
                     'action' => $this,
                     'orm' => $mapper->getORM()
