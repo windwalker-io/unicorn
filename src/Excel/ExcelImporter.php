@@ -61,9 +61,11 @@ class ExcelImporter
     public function __construct(mixed $file = null, string $format = null)
     {
         if ($file !== null) {
-            if (strlen($file) < PHP_MAXPATHLEN && is_file($file)) {
+            if (is_string($file) && strlen($file) < PHP_MAXPATHLEN && is_file($file)) {
                 $this->loadFile($file, $format);
-            } elseif ($file) {
+            } elseif ($file instanceof \SplFileInfo) {
+                $this->loadFile($file, $format);
+            } else {
                 $this->load($file, $format);
             }
         }
@@ -364,7 +366,7 @@ class ExcelImporter
      */
     public function load(string|StreamInterface $data, string $format = 'Xlsx'): self
     {
-        $temp = Filesystem::createTemp();
+        $temp = Filesystem::createTemp(WINDWALKER_TEMP);
 
         $temp->write($data);
 
