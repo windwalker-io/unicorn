@@ -54,6 +54,8 @@ $uniScript->importMainThen("u.\$ui.bootstrap.buttonRadio('#{$field->getId()}');"
         $option['checked'] = $checked = (string) $option['value'] === (string) $field->getValue();
         $option['name'] = $field->getInputName();
         $option['type'] = 'radio';
+        $option['disabled'] = $field->isDisabled();
+        $option['readonly'] = $field->isReadonly();
         ?>
         <div class="radio" style="display: none;">
             <input type="radio" {!! $option::buildAttributes($option) !!}/>

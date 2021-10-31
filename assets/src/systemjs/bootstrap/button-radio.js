@@ -123,11 +123,12 @@ export class ButtonRadio {
     
     this.colors.push(color);
 
-    if (input.disabled) {
+    if (input.disabled || input.getAttribute('readonly') != null) {
       button.classList.add('disabled');
+      button.disabled = true;
     }
 
-    if (input.getAttribute('readonly')) {
+    if (input.getAttribute('readonly') != null) {
       button.classList.add('readonly');
     }
 
