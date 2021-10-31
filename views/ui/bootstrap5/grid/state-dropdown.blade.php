@@ -114,9 +114,9 @@ $buttonId ??= trim('c-state-dropdown-' . implode('-', $fieldName) . '-' . $id, '
         @if ($batch)
             {!! $slot ?? '' !!}
         @else
-            <i class="{{ $currentState?->getIcon() ?? 'fa fa-question-circle' }} mr-1 me-1"></i>
+            <i class="{{ $currentState?->getIcon() ?? 'fa fa-question-circle' }}"></i>
             @if (!$noTitle)
-                <span class="mr-auto me-auto pr-1 pe-1">{{ $currentState?->getTitle() ?? 'Unknown State' }}</span>
+                <span class="mr-auto me-auto ml-1 ms-1">{{ $currentState?->getTitle() ?? 'Unknown State' }}</span>
             @endif
         @endif
     </button>
