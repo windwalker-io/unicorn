@@ -17,6 +17,7 @@ u.loadAlpine(() => {
       placeholder: '- Select -',
       ajaxUrl: '',
       ajaxValueField: 'value',
+      source: [],
       labels: [],
       labelWidth: 'col-md-3',
       fieldWidth: 'col',
@@ -26,7 +27,10 @@ u.loadAlpine(() => {
       textField: 'title',
       horizontal: null,
       horizontalColWidth: null,
+      onSelectInit: () => {},
+      onChange: () => {},
     },
+    el: null,
     canModify: true,
     lists: [],
     ajaxUrl: '',
@@ -42,22 +46,24 @@ u.loadAlpine(() => {
       let values = this.options.path.slice();
 
       if (values.length === 0) {
-        values = [1];
+        values = [null];
       } else {
-        values.unshift(1);
+        values.unshift(null);
       }
 
       let promise = Promise.resolve();
 
-      values.forEach((v) => {
+      values.forEach((v, i) => {
         promise = promise.then(() => {
-          return this.loadItems(v).then((res) => {
-            if (res.data.data.length > 0) {
-              this.lists.push(res.data.data);
+          return this.loadItems(v, i).then((list) => {
+            if (list.length > 0) {
+              this.lists.push(list);
             }
           });
         });
       });
+
+      this.el = this.$el;
     },
 
     getLabel(i) {
@@ -86,6 +92,8 @@ u.loadAlpine(() => {
 
       this.values[i] = el.value;
 
+      this.options.onChange(event);
+
       if (el.value === '') {
         // Clear child
         this.lists.splice(i + 1);
@@ -94,29 +102,78 @@ u.loadAlpine(() => {
       }
 
       // Get child list
-      this.loadItems(el.value)
-        .then((res) => {
-
+      this.loadItems(el.value, i)
+        .then((list) => {
           // Clear child
           this.lists.splice(i + 1);
           this.values.splice(i + 1);
 
-          if (res.data.data.length > 0) {
-            this.lists.push(res.data.data);
+          if (list.length > 0) {
+            this.lists.push(list);
           }
         });
     },
 
-    loadItems(parentId) {
-      return u.$http.get(
-        this.ajaxUrl,
-        {
-          params: {
-            [this.options.ajaxValueField]: parentId,
-            self: this.options.ignoreSelf || null
+    loadItems(parentId, i) {
+      // Ajax
+      if (this.ajaxUrl) {
+        return u.$http.get(
+          this.ajaxUrl,
+          {
+            params: {
+              [this.options.ajaxValueField]: parentId,
+              self: this.options.ignoreSelf || null
+            }
           }
+        ).then((res) => res.data.data);
+      }
+
+      // Source
+      if (parentId) {
+        return Promise.resolve(
+          this.handleSourceItems(
+            this.findFromList(this.lists[i - 1] || [], parentId)?.children || []
+          )
+        );
+      }
+      
+      return Promise.resolve(this.handleSourceItems(this.options.source));
+    },
+
+    selectInit($select) {
+      const event = new CustomEvent('select.init', {
+        detail: {
+          el: $select,
+          component: this,
         }
-      );
+      });
+
+      this.options.onSelectInit(event);
+
+      this.el.dispatchEvent(event);
+    },
+
+    handleSourceItems(items) {
+      return items.map(item => {
+        return {
+          [this.options.valueField]: item.value[this.options.valueField],
+          [this.options.textField]: item.value[this.options.textField],
+          children: item.children
+        };
+      })
+        .filter(item => {
+          if (this.options.ignoreSelf) {
+            return item[this.options.valueField] != this.options.ignoreSelf;
+          }
+
+          return item;
+        });
+    },
+
+    findFromList(items, value) {
+      const found = items.filter(item => item[this.options.valueField] == value);
+
+      return found.shift();
     }
   }));
 });

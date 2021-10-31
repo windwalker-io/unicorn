@@ -11,11 +11,14 @@ declare(strict_types=1);
 
 namespace Unicorn\Field;
 
+use Lyrasoft\Luna\Tree\Node;
 use Unicorn\Field\LayoutFieldTrait;
 use Windwalker\DOM\DOMElement;
 use Windwalker\Form\Field\AbstractField;
+use Windwalker\Utilities\Arr;
 use Windwalker\Utilities\Assert\TypeAssert;
 use Windwalker\Utilities\Cache\InstanceCacheTrait;
+use Windwalker\Utilities\Wrapper\RawWrapper;
 
 /**
  * The AbstractCascadeSelectField class.
@@ -36,6 +39,10 @@ use Windwalker\Utilities\Cache\InstanceCacheTrait;
  * @method mixed getHorizontal()
  * @method $this horizontalColWidth(mixed $value)
  * @method mixed getHorizontalColWidth()
+ * @method $this source(mixed $value)
+ * @method mixed getSource()
+ * @method $this cascadeSelectOptions(array $value)
+ * @method mixed getCascadeSelectOptions()
  */
 class CascadeSelectField extends AbstractField
 {
@@ -100,7 +107,45 @@ class CascadeSelectField extends AbstractField
 
     protected function getValuePath(mixed $value): array
     {
-        throw new \LogicException('Please set pathHandler to get value path');
+        if ($this->getAjaxUrl()) {
+            throw new \LogicException('Please set pathHandler to get value path');
+        }
+
+        $source = $this->getSource();
+
+        if ($source instanceof Node) {
+            /** @var Node $node */
+            foreach ($source->iterate() as $node) {
+                $v = $node->getValue();
+                $v = Arr::get($v, $this->getValueField());
+
+                if ((string) $v === (string) $value) {
+                    $result = [];
+                    $segments = $node->getAncestorsAndSelf();
+                    array_shift($segments);
+
+                    foreach ($segments as $segment) {
+                        $sv = $segment->getValue();
+                        $result[] = Arr::get($sv, $this->getValueField());
+                    }
+
+                    return $result;
+                }
+            }
+        }
+
+        return [];
+    }
+
+    public function getSourceValues(): mixed
+    {
+        $source = $this->getSource();
+
+        if ($source instanceof Node) {
+            return json_decode(json_encode($source), true)['children'] ?? [];
+        }
+
+        return $source;
     }
 
     /**
@@ -195,6 +240,8 @@ class CascadeSelectField extends AbstractField
                 'labels',
                 'labelWidth',
                 'fieldWidth',
+                'source',
+                'cascadeSelectOptions'
             ]
         );
     }

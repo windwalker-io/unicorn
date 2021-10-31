@@ -33,8 +33,9 @@ $config = [
     'path' => $path,
     'placeholder' => $field->getPlaceholder() ?: $lang('unicorn.select.placeholder'),
     'ignoreSelf' => $field->getIgnoreSelfValue(),
-    'ajaxUrl' => (string) $field->getAjaxUrl(),
+    'ajaxUrl' => ((string) $field->getAjaxUrl()) ?: null,
     'ajaxValueField' => $field->getAjaxValueField() ?: 'value',
+    'source' => $field->getSourceValues(),
     'labels' => (array) $field->getLabels(),
     'labelWidth' => $field->getLabelWidth(),
     'fieldWidth' => $field->getFieldWidth(),
@@ -45,6 +46,7 @@ $config = [
     'horizontal' => (bool) $field->getHorizontal(),
     'horizontalColWidth' => $field->getHorizontalColWidth(),
 ];
+$config = array_merge($config, (array) $field->getCascadeSelectOptions());
 $configString = AssetService::getJSObject($config);
 $inputElement ??= $field->getPreparedInput();
 
@@ -68,6 +70,7 @@ $inputElement->setAttribute(':value', 'getFinalValue')
             <div class="col c-cascade-select__input">
                 <select :id="getId(i)" :disabled="!canModify"
                     class="form-select custom-select"
+                    x-init="selectInit($el)"
                     x-on:change="onChange(i, $event)"
                 >
                     <option value="" x-text="options.placeholder"></option>
