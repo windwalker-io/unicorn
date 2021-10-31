@@ -4,7 +4,7 @@
  * Global variables
  * --------------------------------------------------------------
  * @var  $app       AppContext      Application context.
- * @var  $vm        object          The view model object.
+ * @var  $vm        {% pascal($name) %}EditView  The view model object.
  * @var  $uri       SystemUri       System Uri information.
  * @var  $chronos   ChronosService  The chronos datetime service.
  * @var  $nav       Navigator       Navigator object to build route.
@@ -15,6 +15,7 @@
 declare(strict_types=1);
 
 use App\Entity\{% pascal($name) %};
+use {% $ns %}\{% pascal($name) %}EditView;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Asset\AssetService;
 use Windwalker\Core\DateTime\ChronosService;
