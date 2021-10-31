@@ -55,7 +55,7 @@ class NestedSaveAction extends SaveAction
 
         $entity = $this->getEntityMapper()
             ->saveOne(
-                $event->getData(),
+                $mapper->hydrate($event->getData(), $entity),
                 $event->getCondFields(),
                 $event->getOptions()
             );
