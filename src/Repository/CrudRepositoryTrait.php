@@ -16,7 +16,9 @@ use Unicorn\Repository\Actions\BatchAction;
 use Unicorn\Repository\Actions\ReorderAction;
 use Unicorn\Repository\Actions\SaveAction;
 use Unicorn\Selector\ListSelector;
+use Windwalker\Core\Router\Exception\RouteNotFoundException;
 use Windwalker\DI\Attributes\Inject;
+use Windwalker\ORM\Exception\NoResultException;
 use Windwalker\ORM\SelectorQuery;
 
 /**
@@ -49,7 +51,7 @@ trait CrudRepositoryTrait
      * @param  array        $conditions
      * @param  string|null  $className
      *
-     * @return  object
+     * @return  ?object
      *
      * @psalm-template T
      * @psalm-param T $className
@@ -59,6 +61,28 @@ trait CrudRepositoryTrait
     {
         return $this->getEntityMapper()
             ->findOne($conditions, $className);
+    }
+
+    /**
+     * getItem
+     *
+     * @param  array        $conditions
+     * @param  string|null  $className
+     *
+     * @return  object
+     *
+     * @psalm-template T
+     * @psalm-param T $className
+     * @psalm-return T
+     */
+    public function mustGetItem(mixed $conditions = null, ?string $className = null): object
+    {
+        try {
+            return $this->getEntityMapper()
+                ->mustFindOne($conditions, $className);
+        } catch (NoResultException $e) {
+            throw new RouteNotFoundException($e->getMessage(), $e->getCode(), $e);
+        }
     }
 
     public function delete(array $conditions = []): array
