@@ -23,6 +23,7 @@ use Windwalker\Core\Router\SystemUri;
 
 /** @var \Windwalker\Edge\Component\ComponentAttributes $attributes */
 $attributes = $attributes->class('card');
+$titleTag ??= 'h4';
 ?>
 
 <div {!! $attributes !!}>
@@ -47,13 +48,13 @@ $attributes = $attributes->class('card');
             <div class="card-body {{ $bodyClass ?? '' }}">
 
                 @if ($title ?? null)
-                    <h4 class="card-title mb-4 {{ $titleClass ?? '' }}">
                     @if (is_callable($title))
                         {!! $title(titleClass: $titleClass ?? '') !!}
                     @else
-                        {!! $title ?? '' !!}
+                        <{{ $titleTag }} class="card-title mb-4 {{ $titleClass ?? '' }}">
+                            {!! $title ?? '' !!}
+                        </{{ $titleTag }}>
                     @endif
-                    </h4>
                 @endif
 
                 {!! $slot !!}
