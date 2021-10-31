@@ -59,7 +59,7 @@ $inputElement->setAttribute(':value', 'getFinalValue')
     >
     <template x-for="(items, i) of lists" :key="items?.map(item => item[options.valueField]).join(',')">
 
-        <div class="form-group row mb-3"
+        <div class="form-group row mb-2"
             :class="[options.horizontal ? (options.horizontalColWidth || 'col') : '']"
             :data-level="i"
         >
