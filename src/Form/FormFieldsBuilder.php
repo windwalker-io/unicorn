@@ -174,6 +174,13 @@ PHP;
             case $colName === 'state' && $column->getDataType() === 'tinyint':
                 $this->addUse(SwitcherField::class);
 
+                if ($this->langPrefix) {
+                    $lang = $this->getLangKey($this->langPrefix, 'published');
+                    $label = "\$this->trans('" . $lang . "')";
+                } else {
+                    $label = Str::surrounds('Published', "'");
+                }
+
                 return <<<PHP
         \$form->add('$colName', SwitcherField::class)
             ->label($label)
