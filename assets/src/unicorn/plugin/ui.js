@@ -180,7 +180,8 @@ export default class UnicornUI {
         if (selector) {
           options = defaultsDeep(options, {
             shouldSort: false,
-            removeItemButton: true
+            removeItemButton: true,
+            renderSelectedChoices: 'always',
           });
 
           new Choices(selector, options);
@@ -202,6 +203,10 @@ export default class UnicornUI {
       
       return module;
     });
+  }
+
+  cascadeSelect() {
+    return this.app.import('@unicorn/field/cascade-select.js');
   }
 
   sid() {

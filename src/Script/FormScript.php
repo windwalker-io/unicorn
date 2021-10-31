@@ -38,12 +38,19 @@ class FormScript extends AbstractScript
         return $this;
     }
 
+    public function cascadeSelect(): static
+    {
+        if ($this->available()) {
+            $this->unicornScript->importMainThen("u.\$ui.cascadeSelect()");
+        }
+
+        return $this;
+    }
+
     public function flatpickr(): static
     {
         if ($this->available()) {
-            $this->unicornScript->importMainThen(
-                "u.\$ui.flatpickr()"
-            );
+            $this->unicornScript->importMainThen("u.\$ui.flatpickr()");
         }
 
         return $this;
@@ -63,9 +70,7 @@ class FormScript extends AbstractScript
         if ($this->available()) {
             $this->unicornScript->translate('unicorn.field.sid.*');
 
-            $this->unicornScript->importMainThen(
-                "u.\$ui.sid()"
-            );
+            $this->unicornScript->importMainThen("u.\$ui.sid()");
         }
 
         return $this;

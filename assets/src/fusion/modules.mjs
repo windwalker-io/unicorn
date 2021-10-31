@@ -56,6 +56,18 @@ export async function listDependent() {
   });
 }
 
+export async function cascadeSelect() {
+  watch(
+    ['src/modules/**/*.js', 'scss/**/*.scss']
+  );
+
+  webpack('./src/modules/field/cascade-select.js', './dist/field/', {
+    override: (options) => {
+      options.output.libraryTarget = 'umd';
+    }
+  });
+}
+
 export async function sid() {
   watch(
     ['src/modules/**/*.js', 'scss/**/*.scss']
