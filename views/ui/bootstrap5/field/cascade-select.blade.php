@@ -53,7 +53,8 @@ $inputElement ??= $field->getPreparedInput();
 $inputElement->setAttribute(':value', 'getFinalValue')
 ?>
 
-<div class="c-cascade-select"
+<div id="{{ $field->getId('-select-wrapper') }}"
+    class="c-cascade-select"
     x-data="CascadeSelect({{ $configString}})"
     :class="[options.horizontal ? 'row' : '']"
     >

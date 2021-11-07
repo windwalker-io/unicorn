@@ -58,6 +58,10 @@ class FileDragField extends FileField
             $this->getStates()
         );
 
+        if ($this->isMultiple()) {
+            $input['name'] = $this->getInputName('[]');
+        }
+
         return $this->renderLayout(
             $this->getLayout(),
             [
