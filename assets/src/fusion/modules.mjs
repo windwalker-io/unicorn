@@ -140,3 +140,13 @@ export async function s3Uploader() {
     }
   });
 }
+
+export async function showOn() {
+  watch(
+    ['src/modules/**/*.js', 'scss/**/*.scss']
+  );
+
+  fusion.vue('./src/modules/ui/show-on.js', './dist/ui/', {
+    override: (options) => {}
+  });
+}

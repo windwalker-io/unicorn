@@ -5,12 +5,22 @@
  * @license    __LICENSE__
  */
 
+import { defaultsDeep } from 'lodash-es';
+
 /**
  * Default handlers
  *
  * @type {Object}
  */
 const handlers = {};
+
+const defaultOptions = {
+  scroll: false,
+  scrollOffset: -100,
+  enabled: true,
+  fieldSelector: null,
+  validatedClass: null,
+};
 
 export class UnicornFormValidation {
   presetFields = [];
@@ -21,11 +31,15 @@ export class UnicornFormValidation {
 
   constructor(el, options = {}) {
     this.$form = u.selectOne(el);
-    this.options = options;
+    this.setOptions(options);
 
     this.registerDefaultValidators();
 
     this.init();
+  }
+
+  setOptions(options) {
+    this.options = defaultsDeep(options, defaultOptions);
   }
 
   get scrollEnabled() {
@@ -48,14 +62,14 @@ export class UnicornFormValidation {
     if (this.$form.tagName === 'FORM') {
       this.$form.setAttribute('novalidate', true);
       this.$form.addEventListener('submit', (event) => {
-        if (!this.validateAll()) {
+        if (this.options.enabled && !this.validateAll()) {
           event.stopImmediatePropagation(); // Stop following events
           event.stopPropagation();
           event.preventDefault();
 
           return false;
         }
-
+        
         return true;
       }, false);
     }
@@ -230,7 +244,7 @@ class UnicornFieldValidation {
   }
 
   get isVisible() {
-    return !!(this.$input.offsetWidth || this.$input.offsetHeight || this.$input.getClientRects().length);
+    return !!(this.el.offsetWidth || this.el.offsetHeight || this.el.getClientRects().length);
   }
 
   selectInput() {
@@ -438,7 +452,7 @@ u.directive('form-validate', {
   },
   updated(el, binding) {
     const instance = u.getBoundedInstance(el, 'form.validation');
-    instance.options = JSON.parse(binding.value || '{}');
+    instance.setOptions(JSON.parse(binding.value || '{}'));
   }
 });
 

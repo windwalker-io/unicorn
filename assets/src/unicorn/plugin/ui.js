@@ -491,6 +491,10 @@ export default class UnicornUI {
     return this;
   }
 
+  initShowOn() {
+    return u.import('@unicorn/ui/show-on.js');
+  }
+
   static prepareInpageCSS() {
     //
   }

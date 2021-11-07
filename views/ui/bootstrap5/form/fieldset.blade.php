@@ -52,14 +52,10 @@ if ($horizon) {
 }
 ?>
 
-<x-component :is="$is" :="$attributes">
+<x-component :is="$is" :="$attributes" :title="$title">
     @if ($header ?? null)
         <x-slot name="header">
             {!! $header(title: $title, fieldset: $fieldset) !!}
-        </x-slot>
-    @elseif ($title)
-        <x-slot name="title">
-            {{ $title }}
         </x-slot>
     @endif
 

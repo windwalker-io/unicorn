@@ -23,6 +23,7 @@ use Windwalker\Core\Router\SystemUri;
 
 /**
  * @var \Unicorn\Field\ModalField $field
+ * @var \Windwalker\DOM\DOMElement $input
  */
 
 $modalId = $field->getId('-modal');
@@ -34,9 +35,11 @@ $app->service(\Unicorn\Script\FormScript::class)
     ->modalField('single', '#' . $field->getId() . '-wrap', '#' . $modalId, $callback);
 
 $disabled = $field->isReadonly() || $field->isDisabled();
+
 ?>
 
-<div id="{{ $field->getId('-wrap') }}" class="c-modal-field c-modal-field--single">
+<div id="{{ $field->getId('-wrap') }}" class="c-modal-field c-modal-field--single"
+    uni-field-validate='{"selector": "[data-field-input]"}'>
     <div class="input-group">
         @if ($field->isHasImage())
             <div class="input-group-text c-modal-field__image">
@@ -77,9 +80,7 @@ $disabled = $field->isReadonly() || $field->isDisabled();
         @endif
     </div>
 
-    <div class="d-none">
-        {!! $input !!}
-    </div>
+    {!! $input !!}
 </div>
 
 @teleport($modalId)

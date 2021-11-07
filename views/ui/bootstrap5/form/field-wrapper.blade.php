@@ -32,8 +32,11 @@ use Windwalker\Utilities\Str;
  */
 
 BootstrapFormRenderer::handleFieldConfiguration($field);
+// JS
+$app->service(\Unicorn\Script\FormScript::class)->showOn($field);
 
 $wrapper ??= $field->getPreparedWrapper();
+// Options
 $options = array_merge($field->getStates(), $options ?? []);
 
 $wrapper->addClass('form-group');

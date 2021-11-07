@@ -13,6 +13,8 @@ namespace Unicorn\Script;
 
 use Psr\Http\Message\UriInterface;
 use Windwalker\Core\Asset\AbstractScript;
+use Windwalker\DOM\DOMElement;
+use Windwalker\Form\Field\AbstractField;
 
 /**
  * The FormScript class.
@@ -163,5 +165,33 @@ class FormScript extends AbstractScript
         }
 
         return $this;
+    }
+
+    public function showOn(AbstractField $field): void
+    {
+        $showOn = $field->get('showon');
+
+        if ($showOn && is_array($showOn)) {
+            if ($this->available()) {
+                $this->unicornScript->importMainThen('u.$ui.initShowOn();');
+            }
+
+            $conditions = [];
+
+            foreach ($showOn as $path => $value) {
+                $form = $field->getForm();
+                $target = $form->getField($path);
+
+                if (!$target) {
+                    throw new \UnexpectedValueException("Field: {$path} not found.");
+                }
+
+                $conditions['#' . $target->getId()] = $value;
+            }
+
+            if ($conditions !== []) {
+                $field->wrapperAttr('uni-show-on', json_encode($conditions));
+            }
+        }
     }
 }
