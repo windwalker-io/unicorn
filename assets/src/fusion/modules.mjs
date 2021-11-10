@@ -128,6 +128,18 @@ export async function multiUploader() {
   });
 }
 
+export async function repeatable() {
+  watch(
+    ['src/modules/**/*.js', 'scss/**/*.scss']
+  );
+
+  fusion.vue('./src/modules/field/repeatable.js', './dist/field/', {
+    override: (options) => {
+      // options.resolve.alias['vue$'] = 'vue/dist/vue.esm-bundler.js';
+    }
+  });
+}
+
 export async function s3Uploader() {
   watch(
     ['src/modules/**/*.js', 'scss/**/*.scss']

@@ -138,6 +138,7 @@ class S3Uploader extends Unicorn.EventMixin(class {}) {
           + this.constructor.trimSlashes(path);
 
         this.trigger('success', url, res);
+        return res;
       })
       .finally(() => {
         this.trigger('end');

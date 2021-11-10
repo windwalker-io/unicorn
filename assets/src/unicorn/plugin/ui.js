@@ -229,6 +229,10 @@ export default class UnicornUI {
     return this.app.import('@unicorn/field/multi-uploader.js');
   }
 
+  repeatable() {
+    return this.app.import('@unicorn/field/repeatable.js');
+  }
+
   s3Uploader(name = null) {
     return u.import('@unicorn/aws/s3-uploader.js').then(function (module) {
       if (name) {

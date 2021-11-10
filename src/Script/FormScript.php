@@ -114,6 +114,15 @@ class FormScript extends AbstractScript
         return $this;
     }
 
+    public function repeatable(): static
+    {
+        if ($this->available()) {
+            $this->unicornScript->importMainThen("u.\$ui.repeatable()");
+        }
+
+        return $this;
+    }
+
     public function colorPicker(): static
     {
         if ($this->available()) {
