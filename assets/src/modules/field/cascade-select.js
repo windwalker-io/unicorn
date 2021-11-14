@@ -92,7 +92,16 @@ S.import('@main').then(() => {
           return this.options.defaultValue;
         }
 
-        return values.filter(v => v != null).pop();
+        const v = values
+          .filter(v => v != null)
+          .filter(v => v !== '')
+          .pop();
+
+        if (v == undefined) {
+          return this.options.defaultValue;
+        }
+
+        return v;
       },
 
       onChange(i, event) {
