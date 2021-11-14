@@ -60,6 +60,8 @@ class CascadeSelectField extends AbstractField
 
     protected string $textField = 'title';
 
+    protected array $placeholders = [];
+
     public function getDefaultLayout(): string
     {
         return '@theme::field.cascade-select';
@@ -103,6 +105,26 @@ class CascadeSelectField extends AbstractField
         $input['data-role'] = 'value';
 
         return $input;
+    }
+
+    /**
+     * @return array
+     */
+    public function getPlaceholders(): array
+    {
+        return $this->placeholders;
+    }
+
+    /**
+     * @param  array  $placeholders
+     *
+     * @return  static  Return self to support chaining.
+     */
+    public function placeholders(array $placeholders): static
+    {
+        $this->placeholders = $placeholders;
+
+        return $this;
     }
 
     protected function getValuePath(mixed $value): array

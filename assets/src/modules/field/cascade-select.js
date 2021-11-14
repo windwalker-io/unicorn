@@ -16,6 +16,7 @@ S.import('@main').then(() => {
         path: [],
         ignoreSelf: null,
         placeholder: '- Select -',
+        placeholders: [],
         ajaxUrl: '',
         ajaxValueField: 'value',
         source: [],
@@ -181,6 +182,14 @@ S.import('@main').then(() => {
         const found = items.filter(item => item[this.options.valueField] == value);
 
         return found.shift();
+      },
+
+      getPlaceholder(i) {
+        if (this.options.placeholders[i]) {
+          return this.options.placeholders[i];
+        }
+
+        return this.options.placeholder;
       }
     }));
   });

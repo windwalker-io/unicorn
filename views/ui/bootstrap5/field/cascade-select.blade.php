@@ -32,6 +32,7 @@ $config = [
     'selected' => $selected,
     'path' => $path,
     'placeholder' => $field->getPlaceholder() ?: $lang('unicorn.select.placeholder'),
+    'placeholders' => $field->getPlaceholders(),
     'ignoreSelf' => $field->getIgnoreSelfValue(),
     'ajaxUrl' => ((string) $field->getAjaxUrl()) ?: null,
     'ajaxValueField' => $field->getAjaxValueField() ?: 'value',
@@ -76,7 +77,7 @@ $inputElement->setAttribute(':value', 'getFinalValue')
                     x-init="selectInit($el)"
                     x-on:change="onChange(i, $event)"
                 >
-                    <option value="" x-text="options.placeholder"></option>
+                    <option value="" x-text="getPlaceholder(i)"></option>
                     <template x-for="item of items" x-key="item[options.valueField]">
                         <option :value="item[options.valueField]" x-text="item[options.textField]"
                             :selected="isSelected(i, item)"
@@ -87,6 +88,5 @@ $inputElement->setAttribute(':value', 'getFinalValue')
         </div>
     </template>
 
-    <div x-text="getFinalValue"></div>
     {!! $inputElement !!}
 </div>
