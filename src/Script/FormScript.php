@@ -43,7 +43,7 @@ class FormScript extends AbstractScript
     public function cascadeSelect(): static
     {
         if ($this->available()) {
-            $this->unicornScript->importMainThen("u.\$ui.cascadeSelect()");
+            $this->js('@unicorn/field/cascade-select.js');
         }
 
         return $this;

@@ -45,6 +45,7 @@ $config = [
     'textField' => $field->getTextField(),
     'horizontal' => (bool) $field->getHorizontal(),
     'horizontalColWidth' => $field->getHorizontalColWidth(),
+    'defaultValue' => $field->getDefaultValue() ?? ''
 ];
 $config = array_merge($config, (array) $field->getCascadeSelectOptions());
 $configString = AssetService::getJSObject($config);
@@ -55,6 +56,7 @@ $inputElement->setAttribute(':value', 'getFinalValue')
 
 <div id="{{ $field->getId('-select-wrapper') }}"
     class="c-cascade-select"
+    x-id="cascade-select"
     x-data="CascadeSelect({{ $configString}})"
     :class="[options.horizontal ? 'row' : '']"
     >
@@ -85,5 +87,6 @@ $inputElement->setAttribute(':value', 'getFinalValue')
         </div>
     </template>
 
+    <div x-text="getFinalValue"></div>
     {!! $inputElement !!}
 </div>
