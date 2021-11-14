@@ -16,11 +16,11 @@ use Windwalker\Event\AbstractEvent;
 use Windwalker\ORM\ORM;
 
 /**
- * The AbstractBatchItemEvent class.
+ * The AbstractBatchEvent class.
  */
-abstract class AbstractBatchItemEvent extends AbstractEvent
+abstract class AbstractBatchEvent extends AbstractEvent
 {
-    protected mixed $id;
+    protected array $ids = [];
 
     protected string $task = '';
 
@@ -73,7 +73,7 @@ abstract class AbstractBatchItemEvent extends AbstractEvent
     /**
      * @return ORM
      */
-    public function getOrm(): ORM
+    public function getORM(): ORM
     {
         return $this->orm;
     }
@@ -83,7 +83,7 @@ abstract class AbstractBatchItemEvent extends AbstractEvent
      *
      * @return  static  Return self to support chaining.
      */
-    public function setOrm(ORM $orm): static
+    public function setORM(ORM $orm): static
     {
         $this->orm = $orm;
 
@@ -111,21 +111,21 @@ abstract class AbstractBatchItemEvent extends AbstractEvent
     }
 
     /**
-     * @return mixed
+     * @return array
      */
-    public function getId(): mixed
+    public function &getIds(): array
     {
-        return $this->id;
+        return $this->ids;
     }
 
     /**
-     * @param  mixed  $id
+     * @param  array  $ids
      *
      * @return  static  Return self to support chaining.
      */
-    public function setId(mixed $id): static
+    public function setIds(array $ids): static
     {
-        $this->id = $id;
+        $this->ids = $ids;
 
         return $this;
     }

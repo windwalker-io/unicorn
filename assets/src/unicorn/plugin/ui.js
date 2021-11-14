@@ -78,7 +78,7 @@ export default class UnicornUI {
   }
 
   beforeAlpineInit(callback) {
-    document.addEventListener('alpine:initializing', callback);
+    document.addEventListener('alpine:init', callback);
   }
 
   renderMessage(messages, type = 'info') {

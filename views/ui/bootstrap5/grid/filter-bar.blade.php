@@ -95,7 +95,7 @@ $attributes = $attributes->class('c-filter-bar mb-4');
 
             {{-- Buttons --}}
             @if ($filterBlock !== false || $searchBlock !== false)
-            <div class="btn-group btn-group-{{ $size }}">
+            <div class="btn-group btn-group-{{ $size }} mr-3 me-3">
                 @if ($filterBlock !== false)
                     <button type="button" class="btn text-nowrap btn-outline-secondary"
                         :class="{ active: open }"
@@ -118,6 +118,13 @@ $attributes = $attributes->class('c-filter-bar mb-4');
                     <span class="fa fa-times"></span>
                 </button>
             </div>
+            @endif
+
+            {{-- Start --}}
+            @if ($start ?? null)
+                <div class="c-filter-bar__top-start">
+                    {!! $start !!}
+                </div>
             @endif
         </div>
 

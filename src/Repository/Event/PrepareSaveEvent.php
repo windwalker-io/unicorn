@@ -16,6 +16,7 @@ use Windwalker\Event\AbstractEvent;
 /**
  * The PrepareSaveEvent class.
  */
+#[\Attribute]
 class PrepareSaveEvent extends AbstractEvent
 {
     protected array $data = [];

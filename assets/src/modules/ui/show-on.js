@@ -9,11 +9,16 @@ import { difference, each } from 'lodash-es';
 
 class ShowOn {
   el = null;
+  input = null;
   conditions = {};
   targets = {};
+  readonly = false;
 
   constructor(el, conditions) {
     this.el = el;
+    this.input = this.el.querySelector(
+      this.el.dataset.inputSelector || '[data-field-input]'
+    );
     this.conditions = conditions;
 
     this.init();
@@ -22,6 +27,10 @@ class ShowOn {
   init() {
     each(this.conditions, (value, selector) => {
       const target = u.selectOne(selector);
+
+      if (this.input) {
+        this.readonly = this.input.hasAttribute('readonly');
+      }
 
       target.addEventListener('change', () => {
         this.updateShowState(target, value);
@@ -35,9 +44,17 @@ class ShowOn {
     const matched = this.isValueMatched(target, value);
 
     if (matched) {
-      u.$ui.fadeOut(this.el, duration);
-    } else {
       u.$ui.fadeIn(this.el, duration);
+    } else {
+      u.$ui.fadeOut(this.el, duration);
+    }
+
+    if (this.input) {
+      if (matched) {
+        this.input.removeAttribute('readonly');
+      } else {
+        this.input.setAttribute('readonly', 'readonly');
+      }
     }
   }
 
@@ -109,7 +126,7 @@ class ShowOn {
 
 u.directive('show-on', {
   mounted(el, { value }) {
-    u.getBoundedInstance(el, 'show.on', (el) => {
+    u.module(el, 'show.on', (el) => {
       return new ShowOn(el, JSON.parse(value));
     });
   }

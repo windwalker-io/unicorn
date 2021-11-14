@@ -18,28 +18,90 @@ function prepareItem(item) {
   return item;
 }
 
-u.$ui.loadAlpine(() => {
-  Alpine.data(
-    'RepeatableField',
-    ({ items, defaultValues, attrs }, options) => ({
+S.import('@main').then(() => {
+  u.importCSS('@vue2-animate');
+  u.loadAlpine(() => {
+    Alpine.data('RepeatableField', ({ items, defaultValues, attrs }, options) => ({
       items,
       defaultValues,
       attrs,
       options: u.defaultsDeep(options, defaultOptions),
       init() {
+        if (this.options.sortable) {
+          u.import('@sortablejs').then(() => {
+            // @see https://github.com/alpinejs/alpine/discussions/1635
+            Sortable.create(this.$refs.tbody, {
+              handle: '.h-handle',
+              animation: 300,
+              onEnd: (event) => {
+                // V3 helper to unwrap the proxy
+                const items = Alpine.raw(this.items);
+
+                // splice mutates the original object, which
+                // you want to avoid. In this case it works because we
+                // created a temporary object that we can control
+                // That way we know there are no side effects
+                const droppedAtItem = items.splice(event.oldIndex, 1)[0];
+                items.splice(event.newIndex, 0, droppedAtItem);
+                //
+                // // Alpine will update when you modify the state,
+                // // so we need to set it back to our new state
+                this.items = items;
+
+                // HACK update prevKeys to new sort order
+                let keys = [];
+                for (let item of items) {
+                  keys.push(item.uid);
+                }
+
+                // HACK update index of dataStack
+                this.$refs.steps_template._x_prevKeys = keys;
+                const elements = this.$refs.steps_template
+                  .parentElement
+                  .querySelectorAll('tr');
+
+                [].slice.call(elements).forEach((ele, i) => {
+                  if (ele?._x_dataStack[0]?.i) {
+                    ele._x_dataStack[0].i = i;
+                  }
+                });
+              }
+            });
+          });
+        }
+
         items.forEach((item) => {
           prepareItem(item);
         });
       },
 
       addItem(i) {
-        this.items.splice(i + 1, 0, prepareItem(this.getEmptyItem()));
+        const item = prepareItem(this.getEmptyItem());
 
-        this.$nextTick(() => {
-          // const el = this.$refs['repeat-item-' + (i + 1)][0];
+        this.items.splice(i + 1, 0, item);
+      },
 
-          // $(el).css('display', 'none').fadeIn();
+      delItem(i) {
+        const el = this.getItemElementByUID(this.items[i].uid);
+
+        el.classList.add('fadeOut');
+        el.addEventListener('animationend', () => {
+          this.items.splice(i, 1);
+
+          if (this.options.ensureFirstRow) {
+            this.makeSureDefaultItem();
+          }
         });
+      },
+
+      makeSureDefaultItem() {
+        if (this.items.length === 0) {
+          this.items.push(prepareItem(this.getEmptyItem()));
+        }
+      },
+
+      getItemElementByUID(uid) {
+        return this.$root.querySelector(`[data-item="${uid}"]`);
       },
 
       getId(i, item, field) {
@@ -81,17 +143,10 @@ u.$ui.loadAlpine(() => {
       get fieldName() {
         return this.options.fieldName;
       },
-    })
-  );
-})
 
-// u.directive('repeatable-field', {
-//   mounted(el, { value }) {
-//     u.getBoundedInstance(el, 'repeatable.field', () => {
-//       return new RepeatableField(el, JSON.parse(value || '{}'));
-//     });
-//   },
-//   updated() {
-//     u.getBoundedInstance(el, 'repeatable.field').setOptions(JSON.parse(value || '{}'));
-//   }
-// });
+      get id() {
+        return this.options.id;
+      }
+    }));
+  });
+});

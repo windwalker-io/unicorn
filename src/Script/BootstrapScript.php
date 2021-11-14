@@ -126,14 +126,21 @@ class BootstrapScript extends AbstractScript
         return $this;
     }
 
-
-
     public function iframeModal(): static
     {
         if ($this->available()) {
             $this->unicornScript->importMainThen(
                 "u.\$ui.iframeModal()"
             );
+        }
+
+        return $this;
+    }
+
+    public function multiLevelMenu(): static
+    {
+        if ($this->available()) {
+            $this->css('@unicorn/bootstrap/multi-level-menu.min.css');
         }
 
         return $this;

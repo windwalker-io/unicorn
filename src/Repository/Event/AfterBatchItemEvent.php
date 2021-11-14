@@ -14,6 +14,7 @@ namespace Unicorn\Repository\Event;
 /**
  * The AfterBatchItemEvent class.
  */
+#[\Attribute]
 class AfterBatchItemEvent extends AbstractBatchItemEvent
 {
     //

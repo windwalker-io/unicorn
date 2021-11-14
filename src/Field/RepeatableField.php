@@ -42,7 +42,7 @@ class RepeatableField extends AbstractField implements CompositeFieldInterface
 
     public function getDefaultLayout(): string
     {
-        return static::LAYOUT_FLEX;
+        return static::LAYOUT_TABLE;
     }
 
     /**

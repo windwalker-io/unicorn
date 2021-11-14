@@ -53,11 +53,14 @@ $data = AssetService::getJSObject($field->prepareJSData());
             <template x-if="options.sortable">
                 <th width="1%">#</th>
             </template>
-            <th width="">
-                {{ $field->getPlaceholder() }}
-            </th>
+            @foreach ($form->getFields() as $subField)
+                <th class="{{ $subField->get('subfield_class') }}" width="{{ $subField->get('subfield_width') }}">
+                    {{ $subField->getLabelName() }}
+                </th>
+            @endforeach
+
             <template x-if="canModify">
-                <th class="text-right" width="1%">
+                <th class="text-right" width="1%" style="min-width: 80px">
                     <button type="button" class="btn btn-sm btn-success btn-primary"
                         :disabled="!canAdd"
                         @click="addItem(-1)">
@@ -67,11 +70,7 @@ $data = AssetService::getJSObject($field->prepareJSData());
             </template>
         </tr>
         </thead>
-        <tbody x-ref="tbody"
-{{--            is="{{ $field->isSortable() ? 'draggable' : 'tbody' }}" --}}
-{{--            element="tbody"--}}
-{{--            :options="{ handle: '.drag-handle', animation: 300 }"--}}
-        >
+        <tbody x-ref="tbody">
         <template x-for="(item, i) of items" :key="item.uid" x-ref="steps_template">
             <tr :data-item="item.uid" class="fadeIn" style="animation-duration: .3s">
                 <template x-if="options.sortable">
@@ -81,15 +80,11 @@ $data = AssetService::getJSObject($field->prepareJSData());
                         </div>
                     </td>
                 </template>
-                <td class="">
-                    <div class="row">
-                        @foreach ($form->getFields() as $subField)
-                            <div class="{{ $subField->get('subfield_class') ?: 'col-lg-4' }}">
-                                <x-field :field="$subField"></x-field>
-                            </div>
-                        @endforeach
-                    </div>
-                </td>
+                @foreach ($form->getFields() as $subField)
+                    <td class="{{ $subField->get('subfield_class') }}" width="{{ $subField->get('subfield_width') }}">
+                        <x-field :field="$subField" :no-label="true"></x-field>
+                    </td>
+                @endforeach
                 <template x-if="canModify">
                     <td class="text-nowrap text-right" width="1%">
                         <button type="button" class="btn btn-sm btn-success btn-primary"

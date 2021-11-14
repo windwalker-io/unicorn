@@ -5,8 +5,9 @@
  * @license    __LICENSE__
  */
 
-import { defaultsDeep } from 'lodash-es';
-import { prepareData } from './../utilities.js';
+import { NodeList } from 'core-js/internals/dom-iterables';
+import { defaultsDeep, each } from 'lodash-es';
+import { prepareData, defData } from './../utilities.js';
 import 'sprintf-js';
 
 export default class UnicornHelper {
@@ -17,16 +18,16 @@ export default class UnicornHelper {
 
     app.selectOne = helper.selectOne.bind(helper);
     app.selectAll = helper.selectAll.bind(helper);
+    app.each = helper.selectAll.bind(helper);
     app.getBoundedInstance = helper.getBoundedInstance.bind(helper);
     app.getBoundedInstanceList = helper.getBoundedInstanceList.bind(helper);
+    app.module = helper.module.bind(helper);
     app.h = helper.h;
     app.html = helper.html;
     app.$get = helper.$get;
     app.$set = helper.$set;
     app.isDebug = helper.isDebug.bind(helper);
     app.confirm = helper.confirm.bind(helper);
-    app.isNullDate = helper.isNullDate.bind(helper);
-    app.getNullDate = helper.getNullDate.bind(helper);
     app.numberFormat = helper.numberFormat;
     app.sprintf = sprintf;
     app.vsprintf = vsprintf;
@@ -59,6 +60,10 @@ export default class UnicornHelper {
     return resultSet;
   }
 
+  each(collection, iteratee) {
+    return each(collection, iteratee);
+  }
+
   getBoundedInstance(selector, name, callback = () => null) {
     const element = this.selectOne(selector);
 
@@ -66,13 +71,25 @@ export default class UnicornHelper {
       return null;
     }
 
-    return element.__unicorn[name] = element.__unicorn[name] || callback(element);
+    return defData(element, name, callback);
   }
 
   getBoundedInstanceList(selector, name, callback = () => null) {
     return this.app.selectAll(selector, (ele) => {
       return this.getBoundedInstance(ele, name, callback);
     });
+  }
+
+  module(ele, name, callback = () => null) {
+    if (typeof ele === 'string') {
+      return this.getBoundedInstanceList(ele, name, callback);
+    }
+
+    if (ele instanceof HTMLElement) {
+      return this.getBoundedInstance(ele, name, callback);
+    }
+
+    return this.getBoundedInstanceList(ele, name, callback);
   }
 
   h(element, attrs = {}, content = null) {
@@ -152,45 +169,9 @@ export default class UnicornHelper {
     });
   }
 
-  // loadScript(urls, autoConvert = true) {
-  //   if (typeof urls === 'string') {
-  //     urls = [urls];
-  //   }
-  //
-  //   const promises = [];
-  //   const data = {};
-  //   const endsWith = (str, suffix) => str.indexOf(suffix, str.length - suffix.length) >= 0;
-  //   data[this.app.asset('version')] = '1';
-  //
-  //   urls.forEach(url => {
-  //     const ext = url.split('.').pop();
-  //     let loadUri = url;
-  //
-  //     if (autoConvert) {
-  //       let assetFile, assetMinFile;
-  //
-  //       if (endsWith(url, '.min.' + ext)) {
-  //         assetMinFile = url;
-  //         assetFile = url.slice(0, -`.min.${ext}`.length) + '.' + ext;
-  //       } else {
-  //         assetFile = url;
-  //         assetMinFile = url.slice(0, -`.${ext}`.length) + '.min.' + ext;
-  //       }
-  //
-  //       loadUri = this.app.data('windwalker.debug') ? assetFile : assetMinFile;
-  //     }
-  //
-  //     promises.push(
-  //       $.getScript({
-  //         url: this.addUriBase(loadUri),
-  //         cache: true,
-  //         data
-  //       })
-  //     );
-  //   });
-  //
-  //   return $.when(...promises);
-  // }
+  nextTick(callback = () => { }) {
+    return Promise.resolve().then(callback);
+  }
 
   addUriBase(uri, type = 'path') {
     if (uri.substr(0, 2) === '/\/' || uri.substr(0, 4) === 'http') {
@@ -198,34 +179,6 @@ export default class UnicornHelper {
     }
 
     return this.app.asset(type) + '/' + uri;
-  }
-
-  /**
-   * Notify information.
-   * @param {string|Array} message
-   * @param {string}       type
-   * @returns {*}
-   */
-  // notify(message, type = 'info') {
-  //   return this.app.addMessage(message, type);
-  // }
-
-  /**
-   * Is NULL date from default SQL.
-   *
-   * @param {string} date
-   */
-  isNullDate(date) {
-    return ['0000-00-00 00:00:00', this.getNullDate()].indexOf(date) !== -1;
-  }
-
-  /**
-   * Get NULL date from default SQL.
-   *
-   * @returns {string}
-   */
-  getNullDate() {
-    return this.app.data('unicorn.date')['empty'];
   }
 
   /**

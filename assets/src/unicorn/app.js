@@ -8,6 +8,7 @@
 import { EventMixin } from './events.js';
 import { mix } from './mixwith.js';
 import { defaultsDeep } from 'lodash-es';
+import { getData, defData, setData, removeData } from './utilities.js';
 
 export default class UnicornApp extends mix(class {}).with(EventMixin) {
   plugins = {};
@@ -78,36 +79,41 @@ export default class UnicornApp extends mix(class {}).with(EventMixin) {
   //   });
   // }
 
-  data(name, value) {
+  data(ele, name = undefined, value = undefined) {
+    if (!(ele instanceof HTMLElement)) {
+      value = name;
+      name = ele;
+      ele = document;
+    }
+
     this.trigger('unicorn.data', name, value);
 
-    document.__unicorn = document.__unicorn || {};
-
     if (name === undefined) {
-      return document.__unicorn;
+      return getData(ele);
     }
 
     if (value === undefined) {
-      const res = document.__unicorn[name];
+      const res = getData(ele, name);
 
       this.trigger('unicorn.data.get', name, res);
 
       return res;
     }
 
-    document.__unicorn[name] = value;
+    setData(ele, name, value);
 
     this.trigger('unicorn.data.set', name, value);
 
     return this;
   }
 
-  removeData(name) {
-    document.__unicorn = document.__unicorn || {};
+  removeData(ele, name) {
+    if (!(ele instanceof HTMLElement)) {
+      name = ele;
+      ele = document;
+    }
 
-    delete document.__unicorn[name];
-
-    $(document).removeData(name);
+    removeData(ele, name);
 
     return this;
   }

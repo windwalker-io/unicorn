@@ -37,6 +37,7 @@ trait SubformFieldTrait
 
         if ($parent) {
             $form->setRenderer($parent->getRenderer());
+            $form->setObjectBuilder($parent->getObjectBuilder());
         }
 
         return $form;

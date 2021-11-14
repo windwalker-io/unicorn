@@ -290,6 +290,10 @@ class UnicornFieldValidation {
       return true;
     }
 
+    if (this.$input.hasAttribute('readonly')) {
+      return true;
+    }
+
     this.$input.classList.remove(this.invalidClass);
     this.$input.classList.remove(this.validClass);
 

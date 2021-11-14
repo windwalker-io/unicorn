@@ -1,10 +1,10 @@
 <?php
 
 /**
- * Part of datavideo project.
+ * Part of earth project.
  *
  * @copyright  Copyright (C) 2021 __ORGANIZATION__.
- * @license    MIT
+ * @license    __LICENSE__
  */
 
 declare(strict_types=1);
@@ -12,10 +12,9 @@ declare(strict_types=1);
 namespace Unicorn\Repository\Event;
 
 /**
- * The BeforeBatchItemEvent class.
+ * The BeforeBatchEvent class.
  */
 #[\Attribute]
-class BeforeBatchItemEvent extends AbstractBatchItemEvent
+class BeforeBatchEvent extends AbstractBatchEvent
 {
-    //
 }

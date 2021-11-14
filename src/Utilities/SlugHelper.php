@@ -95,7 +95,7 @@ class SlugHelper
     {
         // @see https://stackoverflow.com/a/43882448
         preg_match_all(
-            '/\p{Hangul}|\p{Hiragana}|\p{Han}|\p{Katakana}|(\p{Latin}+)|(\p{Cyrillic}+)/u',
+            '/\p{Hangul}|\p{Hiragana}|\p{Han}|\p{Katakana}|(\p{Latin}+)|(\p{Cyrillic}+)|\d+/u',
             str($text)->collapseWhitespaces()->__toString(),
             $matches
         );

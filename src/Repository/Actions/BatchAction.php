@@ -11,7 +11,9 @@ declare(strict_types=1);
 
 namespace Unicorn\Repository\Actions;
 
+use Unicorn\Repository\Event\AfterBatchEvent;
 use Unicorn\Repository\Event\AfterBatchItemEvent;
+use Unicorn\Repository\Event\BeforeBatchEvent;
 use Unicorn\Repository\Event\BeforeBatchItemEvent;
 use Windwalker\Core\Form\Exception\ValidateFailException;
 use Windwalker\Core\Language\TranslatorTrait;
@@ -48,6 +50,20 @@ class BatchAction extends AbstractDatabaseAction
         $data = $this->cleanData($data);
         $mapper = $this->getEntityMapper();
         $items = [];
+
+        $event = $this->emit(
+            BeforeBatchEvent::class,
+            [
+                'ids' => $ids,
+                'data' => $data,
+                'task' => 'update',
+                'action' => $this,
+                'orm' => $mapper->getORM()
+            ]
+        );
+
+        $ids = $event->getIds();
+        $data = $event->getData();
 
         foreach ($ids as $id) {
             $item = $data;
@@ -87,7 +103,19 @@ class BatchAction extends AbstractDatabaseAction
             $items[] = $event->getData();
         }
 
-        return $items;
+        $event = $this->emit(
+            AfterBatchEvent::class,
+            [
+                'ids' => $ids,
+                'data' => $data,
+                'task' => 'update',
+                'action' => $this,
+                'orm' => $mapper->getORM(),
+                'items' => $items
+            ]
+        );
+
+        return $event->getItems();
     }
 
     public function copy(array $ids, array $data, mixed $form = null, array $args = []): array
@@ -101,6 +129,20 @@ class BatchAction extends AbstractDatabaseAction
         $data = $this->cleanData($data);
         $mapper = $this->getEntityMapper();
         $items = [];
+
+        $event = $this->emit(
+            BeforeBatchEvent::class,
+            [
+                'ids' => $ids,
+                'data' => $data,
+                'task' => 'copy',
+                'action' => $this,
+                'orm' => $mapper->getORM()
+            ]
+        );
+
+        $ids = $event->getIds();
+        $data = $event->getData();
 
         foreach ($ids as $id) {
             if ($data === []) {
@@ -139,7 +181,19 @@ class BatchAction extends AbstractDatabaseAction
             $items[] = $event->getData();
         }
 
-        return $items;
+        $event = $this->emit(
+            AfterBatchEvent::class,
+            [
+                'ids' => $ids,
+                'data' => $data,
+                'task' => 'update',
+                'action' => $this,
+                'orm' => $mapper->getORM(),
+                'items' => $items
+            ]
+        );
+
+        return $event->getItems();
     }
 
     public function cleanData(array $data): array
@@ -176,5 +230,25 @@ class BatchAction extends AbstractDatabaseAction
         $this->emptySymbol = $emptySymbol;
 
         return $this;
+    }
+
+    public function beforeBatch(callable $listener): static
+    {
+        return $this->on(BeforeBatchEvent::class, $listener);
+    }
+
+    public function afterBatch(callable $listener): static
+    {
+        return $this->on(AfterBatchEvent::class, $listener);
+    }
+
+    public function beforeBatchItem(callable $listener): static
+    {
+        return $this->on(BeforeBatchItemEvent::class, $listener);
+    }
+
+    public function afterBatchItem(callable $listener): static
+    {
+        return $this->on(AfterBatchItemEvent::class, $listener);
     }
 }

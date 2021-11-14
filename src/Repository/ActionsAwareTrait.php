@@ -15,7 +15,9 @@ use Unicorn\Attributes\ConfigureAction;
 use Unicorn\Repository\Actions\ActionsFactory;
 use Unicorn\Repository\Actions\BatchAction;
 use Unicorn\Repository\Actions\SaveAction;
+use Unicorn\Repository\Event\AfterBatchEvent;
 use Unicorn\Repository\Event\AfterBatchItemEvent;
+use Unicorn\Repository\Event\BeforeBatchEvent;
 use Unicorn\Repository\Event\BeforeBatchItemEvent;
 use Windwalker\Attributes\AttributesAccessor;
 use Windwalker\DI\Attributes\Inject;
@@ -108,6 +110,8 @@ trait ActionsAwareTrait
             $this->runEventAttr($ref, SaveAction::class, AfterSaveEvent::class);
             $this->runEventAttr($ref, BatchAction::class, BeforeBatchItemEvent::class);
             $this->runEventAttr($ref, BatchAction::class, AfterBatchItemEvent::class);
+            $this->runEventAttr($ref, BatchAction::class, BeforeBatchEvent::class);
+            $this->runEventAttr($ref, BatchAction::class, AfterBatchEvent::class);
             $this->runEventAttr($ref, BatchAction::class, BeforeCopyEvent::class);
             $this->runEventAttr($ref, BatchAction::class, AfterCopyEvent::class);
         }
