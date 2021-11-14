@@ -83,7 +83,7 @@ class {% pascal($name) %}EditView implements ViewModelInterface
     {
         $view->getHtmlFrame()
             ->setTitle(
-                $this->trans('unicorn.title.grid', title: '{% pascal($name) %}')
+                $this->trans('unicorn.title.edit', title: '{% pascal($name) %}')
             );
     }
 }

@@ -158,7 +158,7 @@ class {% pascal($name) %}ListView implements ViewModelInterface
     {
         $view->getHtmlFrame()
             ->setTitle(
-                $this->trans('unicorn.title.edit', title: '{% pascal($name) %}')
+                $this->trans('unicorn.title.grid', title: '{% pascal($name) %}')
             );
     }
 }
