@@ -23,6 +23,6 @@ export default class UnicornValidation {
   }
 
   get(selector) {
-    return this.app.getBoundedInstance(selector, 'form.validation');
+    return this.app.module(selector, 'form.validation');
   }
 }

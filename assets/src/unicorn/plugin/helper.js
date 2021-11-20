@@ -5,13 +5,14 @@
  * @license    __LICENSE__
  */
 
-import { NodeList } from 'core-js/internals/dom-iterables';
 import { defaultsDeep, each } from 'lodash-es';
-import { prepareData, defData } from './../utilities.js';
 import 'sprintf-js';
+import { defData, prepareData } from './../utilities.js';
 
 export default class UnicornHelper {
-  static get is() { return 'helper'; }
+  static get is() {
+    return 'helper';
+  }
 
   static install(app, options = {}) {
     const helper = app.$helper = new this(app);
@@ -26,6 +27,7 @@ export default class UnicornHelper {
     app.html = helper.html;
     app.$get = helper.$get;
     app.$set = helper.$set;
+    app.delegate = helper.delegate.bind(helper);
     app.isDebug = helper.isDebug.bind(helper);
     app.confirm = helper.confirm.bind(helper);
     app.numberFormat = helper.numberFormat;
@@ -39,11 +41,11 @@ export default class UnicornHelper {
   }
 
   selectOne(ele) {
-   if (typeof ele === 'string') {
-     ele = document.querySelector(ele);
-   }
+    if (typeof ele === 'string') {
+      ele = document.querySelector(ele);
+    }
 
-   return prepareData(ele);
+    return prepareData(ele);
   }
 
   selectAll(ele, callback) {
@@ -150,6 +152,77 @@ export default class UnicornHelper {
     return value;
   }
 
+  /**
+   * Pure JS version of jQuery delegate()
+   *
+   * @see https://gist.github.com/iagobruno/4db2ed62dc40fa841bb9a5c7de92f5f8
+   *
+   * @param wrapper
+   * @param selector
+   * @param eventName
+   * @param callback
+   * @returns {(function(): void)|*}
+   */
+  delegate(wrapper, selector, eventName, callback) {
+    if (typeof selector === 'undefined' || selector === '') {
+      throw new Error('The provided selector is empty.');
+    }
+
+    if (typeof callback === 'undefined' || typeof callback !== 'function') {
+      throw new Error('Please specify an callback.');
+    }
+
+    const delegationSelectorsMap = {};
+
+    wrapper = this.app.selectOne(wrapper);
+
+    wrapper.addEventListener(eventName, function (event) {
+      let element = event.target;
+      let forceBreak = false;
+
+      while (element && element !== wrapper) {
+        for (const selector in delegationSelectorsMap) {
+          if (element.matches(selector)) {
+            event.stopPropagation = function () {
+              forceBreak = true;
+            };
+
+            const callbackList = delegationSelectorsMap[selector];
+
+            callbackList.forEach(function (callback) {
+              callback(event);
+            });
+          }
+        }
+
+        if (forceBreak) {
+          break;
+        }
+
+        element = element.parentElement;
+      }
+    });
+
+    if (!delegationSelectorsMap[selector]) {
+      // Add new selector to the list
+      delegationSelectorsMap[selector] = [callback];
+    } else {
+      delegationSelectorsMap[selector].push(callback);
+    }
+
+    return function unsubscribe() {
+      if (!delegationSelectorsMap[selector]) {
+        return;
+      }
+
+      if (delegationSelectorsMap[selector].length >= 2) {
+        delegationSelectorsMap[selector] = delegationSelectorsMap[selector].filter(cb => cb !== callback);
+      } else {
+        delete delegationSelectorsMap[selector];
+      }
+    };
+  }
+
   isDebug() {
     return Boolean(this.app.data('windwalker.debug'));
   }
@@ -169,7 +242,8 @@ export default class UnicornHelper {
     });
   }
 
-  nextTick(callback = () => { }) {
+  nextTick(callback = () => {
+  }) {
     return Promise.resolve().then(callback);
   }
 
@@ -197,7 +271,7 @@ export default class UnicornHelper {
     let roundedNumber = Math.round(Math.abs(number) * ('1e' + decimals)) + '';
     let numbersString = decimals ? roundedNumber.slice(0, decimals * -1) : roundedNumber;
     let decimalsString = decimals ? roundedNumber.slice(decimals * -1) : '';
-    let formattedNumber = "";
+    let formattedNumber = '';
 
     while (numbersString.length > 3) {
       formattedNumber += thousandsSep + numbersString.slice(-3);
