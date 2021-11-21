@@ -242,6 +242,16 @@ export default class UnicornHelper {
     });
   }
 
+  alert(title, text = '', type = 'info') {
+    if (text) {
+      title += ' | ' + text;
+    }
+
+    alert(title);
+
+    return Promise.resolve(true);
+  }
+
   nextTick(callback = () => {
   }) {
     return Promise.resolve().then(callback);
