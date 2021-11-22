@@ -121,6 +121,20 @@ class ReorderAction extends AbstractDatabaseAction
         return true;
     }
 
+    public function reorderAllForItem(object $item, ?string $orderField = null): bool
+    {
+        $mapper = $this->getEntityMapper();
+        $orderField ??= $this->getOrderField();
+
+        $query = $mapper->select();
+
+        $this->groupConditions($query, $mapper->toCollection($item));
+
+        $this->reorderByQuery($query, $orderField);
+
+        return true;
+    }
+
     public function getMaxOrdering(Collection|array $item, ?string $orderField = null): ?string
     {
         $orderField ??= $this->getOrderField();
