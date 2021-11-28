@@ -34,8 +34,8 @@ $id ??= 'batch-modal';
 $size ??= 'lg';
 $update ??= true;
 $copy ??= true;
-$updateButtonText ??= 'Update';
-$copyButtonText ??= 'Duplicate';
+$updateButtonText ??= $lang('unicorn.core.update');
+$copyButtonText ??= $lang('unicorn.core.duplicate');
 ?>
 
 <div class="modal fade c-batch-modal"
