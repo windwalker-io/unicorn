@@ -50,4 +50,14 @@ class BasicState extends Enum implements EnumTranslatableInterface
     {
         return $lang->trans('unicorn.state.' . $this->getKey());
     }
+
+    public function isPublished(): bool
+    {
+        return $this->equals(static::PUBLISHED());
+    }
+
+    public function isUnpublished(): bool
+    {
+        return $this->equals(static::UNPUBLISHED());
+    }
 }

@@ -25,4 +25,14 @@ class PublishingState extends BasicState
 
     public const TRASHED = -2;
     public const ARCHIVED = -1;
+
+    public function isTrashed(): bool
+    {
+        return $this->equals(static::TRASHED());
+    }
+
+    public function isArchived(): bool
+    {
+        return $this->equals(static::ARCHIVED());
+    }
 }
