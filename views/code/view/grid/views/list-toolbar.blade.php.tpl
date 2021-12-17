@@ -24,7 +24,7 @@ use Windwalker\Core\Router\SystemUri;
 
 {% $phpClose %}
 
-<div x-id="toolbar" x-data="{ form: $store.grid.form, grid: $store.grid }">
+<div x-title="toolbar" x-data="{ form: $store.grid.form, grid: $store.grid }">
     <a class="btn btn-primary btn-sm"
         href="{{ $nav->to('{% snake($name) %}_edit')->var('new', 1) }}"
         style="min-width: 150px"

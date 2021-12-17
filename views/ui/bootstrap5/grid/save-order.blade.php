@@ -23,7 +23,7 @@ $attributes = $attributes->class('btn btn-default btn-outline-secondary btn-sm p
 ?>
 
 <button type="button"
-    :x-id="grid.getId('__save-order')"
+    :x-title="grid.getId('__save-order')"
     x-data="{ grid: $store.{{ $store }} }"
     @click="grid.reorderAll();"
     title="@lang('unicorn.grid.ordering.saveorder')"

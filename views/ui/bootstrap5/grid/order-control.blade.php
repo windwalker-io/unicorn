@@ -33,7 +33,7 @@ $row ?? \Windwalker\uid();
 
 @if ($enabled)
 <div class="input-group c-order-control flex-nowrap"
-    x-id="order-control-{{ $row }}"
+    x-title="order-control-{{ $row }}"
     x-data="{ grid: $store.{{ $store ?? 'grid' }} }"
 >
     <input type="text" class="form-control form-control-sm"

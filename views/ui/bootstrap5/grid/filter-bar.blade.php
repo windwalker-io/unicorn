@@ -56,7 +56,7 @@ $attributes = $attributes->class('c-filter-bar mb-4');
 <div
     data-open="{{ (int) $open }}"
     x-cloak
-    x-id="filter-bar"
+    x-title="filter-bar"
     x-ref="filterbar"
     x-data="{ open: $el.dataset.open === '1', grid: $store.{{ $store ?? 'grid' }} }"
     x-init="

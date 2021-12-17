@@ -43,7 +43,7 @@ $copyButtonText ??= $lang('unicorn.core.duplicate');
     tabindex="-1" role="dialog"
     aria-labelledby="{{ $id }}-label"
     aria-hidden="true"
-    x-id="batch-modal"
+    x-title="batch-modal"
     x-data="{ grid: $store.{{ $store ?? 'grid' }} }"
 >
     <div class="modal-dialog {{ $size ? 'modal-' . $size : '' }}" role="document">

@@ -57,7 +57,7 @@ $inputElement->setAttribute(':value', 'getFinalValue')
 
 <div id="{{ $field->getId('-select-wrapper') }}"
     class="c-cascade-select"
-    x-id="cascade-select"
+    x-title="cascade-select"
     x-data="CascadeSelect({{ $configString}})"
     :class="[options.horizontal ? 'row' : '']"
     >
