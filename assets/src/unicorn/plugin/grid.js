@@ -449,18 +449,26 @@ class UnicornGridElement {
   /**
    * Validate there has one or more checked boxes.
    *
-   * @param   {string}    msg
+   * @param   {Event}     event
    * @param   {Function}  callback
+   * @param   {string}    msg
    *
-   * @returns {UnicornGridElement}
+   * @returns {boolean}
    */
-  validateChecked(msg = null, callback = null) {
+  validateChecked(event= null, callback = null, msg = null) {
     msg = msg || this.app.__('unicorn.message.grid.checked');
 
     if (!this.hasChecked()) {
-      alert(msg);
+      if (msg !== '') {
+        this.app.alert(msg);
+      }
 
-      throw new Error(msg);
+      if (event) {
+        event.stopPropagation();
+        event.preventDefault();
+      }
+
+      return false;
     }
 
     if (callback) {

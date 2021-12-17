@@ -7,7 +7,6 @@
 
 import 'construct-style-sheets-polyfill';
 import { defaultsDeep } from 'lodash-es';
-import TomSelect from 'tom-select';
 
 export default class UnicornUI {
   theme;
@@ -220,6 +219,7 @@ export default class UnicornUI {
             'tom.select',
             (ele) => {
               options = defaultsDeep(options, {
+                allowEmptyOption: true,
                 plugins: {
                   caret_position: {},
                   clear_button: {},

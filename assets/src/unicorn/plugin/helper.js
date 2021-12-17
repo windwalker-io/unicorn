@@ -30,6 +30,7 @@ export default class UnicornHelper {
     app.delegate = helper.delegate.bind(helper);
     app.isDebug = helper.isDebug.bind(helper);
     app.confirm = helper.confirm.bind(helper);
+    app.alert = helper.alert.bind(helper);
     app.numberFormat = helper.numberFormat;
     app.sprintf = sprintf;
     app.vsprintf = vsprintf;
