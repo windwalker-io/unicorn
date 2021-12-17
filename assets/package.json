@@ -29,12 +29,11 @@
     "alpinejs": "^2.0||^3.0",
     "awesome-bootstrap-checkbox": "^1.0.1",
     "axios": "^0.21.1",
-    "choices.js": "^9.0.1",
     "cropperjs": "^1.5.11",
     "flatpickr": "^4.6.9",
-    "sortablejs": "^1.13.0",
     "systemjs": "^6.8.3",
     "tinymce": "^5.8.0",
+    "tom-select": "^2.0.0",
     "vue2-animate": "^2.1.4"
   },
   "devDependencies": {
@@ -43,9 +42,9 @@
     "@babel/plugin-proposal-decorators": "^7.13.5",
     "@babel/plugin-proposal-optional-chaining": "^7.13.12",
     "@babel/preset-env": "^7.13.12",
+    "@ryangjchandler/spruce": "^2.0",
     "@vue/compiler-sfc": "^3.1.1",
     "@windwalker-io/fusion": "^1.0",
-    "@ryangjchandler/spruce": "^2.0",
     "babel-loader": "^8.2.2",
     "construct-style-sheets-polyfill": "^3.0.0-0",
     "core-js": "3",
@@ -69,7 +68,8 @@
     "vuedraggable": "^4.0.3",
     "webpack-comment-remover-loader": "^0.0.3",
     "webpack-stream": "^6.1.2",
-    "bootstrap": "^5.0"
+    "choices.js": "^9.0.1",
+    "sortablejs": "^1.13.0"
   },
   "windwalker": {
     "vendors": [
@@ -92,6 +92,7 @@
       "vuedraggable",
       "vue2-animate",
       "choices.js",
+      "tom-select",
       "mark.js",
       "core-js-bundle",
       "jquery",

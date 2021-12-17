@@ -18,6 +18,10 @@ export default class UnicornValidation {
     this.app = app;
   }
 
+  /**
+   * Import
+   * @returns Promise<any>
+   */
   import() {
     return this.app.import('@unicorn/ui/validation-components.js');
   }

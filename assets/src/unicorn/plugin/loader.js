@@ -7,12 +7,24 @@
 
 export default class UnicornLoader {
   static install(app) {
-    app.import = this.import;
-    app.importSync = this.importSync;
-    app.importCSS = this.importCSS;
+    const loader = app.$loader = new this(app);
+
+    app.import = loader.import;
+    app.importSync = loader.importSync;
+    app.importCSS = loader.importCSS;
+    app.minFileName = loader.minFileName.bind(loader);
   }
 
-  static import(...src) {
+  constructor(app) {
+    this.app = app;
+  }
+
+  /**
+   * Import modules or scripts.
+   * @param {string} ...src
+   * @returns {Promise<any[]|any>}
+   */
+  import(...src) {
     const s = window.System;
 
     if (src.length === 1) {
@@ -22,13 +34,20 @@ export default class UnicornLoader {
     const promises = [];
 
     src.forEach((link) => {
-      promises.push(s.import(link));
+      promises.push(
+        link instanceof Promise ? link : s.import(link)
+      );
     });
 
     return Promise.all(promises);
   }
 
-  static importSync(...src) {
+  /**
+   * Import sync.
+   * @param src
+   * @returns {Promise<void>}
+   */
+  importSync(...src) {
     let promise = Promise.resolve();
     let url = null;
     const modules = [];
@@ -50,8 +69,13 @@ export default class UnicornLoader {
     return promise;
   }
 
-  static importCSS(...src) {
-    return u.import(...src).then((modules) => {
+  /**
+   * Import CSS files.
+   * @param src
+   * @returns {Promise<*>}
+   */
+  importCSS(...src) {
+    return this.import(...src).then((modules) => {
       if (!Array.isArray(modules)) {
         modules = [ modules ];
       }
@@ -60,5 +84,20 @@ export default class UnicornLoader {
 
       document.adoptedStyleSheets = [...document.adoptedStyleSheets, ...styles];
     });
+  }
+
+  /**
+   * @param {string} fileName
+   * @returns {string}
+   */
+  minFileName(fileName) {
+    const segments = fileName.split('.');
+    const ext = segments.pop();
+
+    if (this.app.isDebug()) {
+      return segments.join('.') + '.min.' + ext;
+    }
+
+    return fileName;
   }
 }

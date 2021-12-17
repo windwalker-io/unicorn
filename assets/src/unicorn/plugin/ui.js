@@ -7,15 +7,19 @@
 
 import 'construct-style-sheets-polyfill';
 import { defaultsDeep } from 'lodash-es';
+import TomSelect from 'tom-select';
 
 export default class UnicornUI {
   theme;
-  aliveHandle;
 
   static get is() {
     return 'ui';
   }
 
+  /**
+   * @param {UnicornApp} app
+   * @param {object} options
+   */
   static install(app, options = {}) {
     const ui = app.$ui = new this(app);
     app.addMessage = ui.renderMessage.bind(ui);
@@ -27,11 +31,6 @@ export default class UnicornUI {
     app.beforeAlpineInit = ui.beforeAlpineInit.bind(ui);
     app.webComponentPolyfill = ui.webComponentPolyfill.bind(ui);
     app.defineCustomElement = ui.defineCustomElement.bind(ui);
-    // app.loadSpruce = ui.loadSpruce.bind(ui);
-    // app.initAlpine = ui.initAlpine.bind(ui);
-    // app.startAlpine = ui.startAlpine.bind(ui);
-    // app.startAlpineSpruce = ui.startAlpineSpruce.bind(ui);
-    // app.initAlpineSpruce = ui.initAlpineSpruce.bind(ui);
 
     this.prepareInpageCSS();
   }
@@ -77,28 +76,52 @@ export default class UnicornUI {
       });
   }
 
+  /**
+   * Before Alpine init
+   * @param {function} callback
+   */
   beforeAlpineInit(callback) {
     document.addEventListener('alpine:init', callback);
   }
 
+  /**
+   * Render Messages.
+   * @param {string|string[]} messages
+   * @param {string} type
+   */
   renderMessage(messages, type = 'info') {
     this.theme.renderMessage(messages, type);
   }
 
+  /**
+   * Clear messages.
+   */
   clearMessages() {
     this.theme.clearMessages();
   }
 
+  /**
+   * Show notify.
+   * @param {string|string[]} messages
+   * @param {string} type
+   */
   notify(messages, type = 'info') {
     this.theme.renderMessage(messages, type);
   }
 
+  /**
+   * Clear notifies.
+   */
   clearNotifies() {
     this.theme.clearMessages();
   }
 
+  /**
+   * webComponentPolyfill
+   * @returns Promise<*>
+   */
   webComponentPolyfill() {
-    return u.import('@vendor/@webcomponents/webcomponentsjs/webcomponents-bundle.js')
+    return this.app.import('@vendor/@webcomponents/webcomponentsjs/webcomponents-bundle.js')
       .then((m) => new Promise((resolve) => {
         window.addEventListener('WebComponentsReady', function() {
           resolve(m);
@@ -106,8 +129,14 @@ export default class UnicornUI {
       }));
   }
 
+  /**
+   *
+   * @param {string} is
+   * @param {*} target
+   * @returns Promise<*>
+   */
   defineCustomElement(is, target) {
-    const promise = u.import('@vendor/@webcomponents/webcomponentsjs/custom-elements-es5-adapter.js');
+    const promise = this.app.import('@vendor/@webcomponents/webcomponentsjs/custom-elements-es5-adapter.js');
 
     return promise.then(m => {
       customElements.define(is, target);
@@ -155,7 +184,7 @@ export default class UnicornUI {
    * @param selector
    * @param keyword
    * @param options
-   * @returns {Promise}
+   * @returns Promise<any>
    */
   mark(selector = null, keyword = '', options = {}) {
     return this.app.import('@vendor/mark.js/dist/mark.min.js')
@@ -171,11 +200,60 @@ export default class UnicornUI {
       });
   }
 
+  /**
+   * @see https://tom-select.js.org/
+   * @param {string} selector
+   * @param {object} options
+   * @param {string} theme
+   */
+  tomSelect(selector, options = {}, theme = 'bootstrap5') {
+    return this.app.import(
+      this.app.minFileName('@vendor/tom-select/dist/js/tom-select.complete.js'),
+      this.app.importCSS(
+        this.app.minFileName(`@vendor/tom-select/dist/css/tom-select.${theme}.css`)
+      )
+    )
+      .then((m) => {
+        if (selector) {
+          this.app.getBoundedInstanceList(
+            selector,
+            'tom.select',
+            (ele) => {
+              options = defaultsDeep(options, {
+                plugins: {
+                  caret_position: {},
+                  clear_button: {},
+                }
+              });
+
+              if (ele.multiple) {
+                options.plugins.remove_button = {};
+              } else {
+                options.plugins.dropdown_input = {};
+              }
+
+              return new TomSelect(ele, options);
+            }
+          );
+        }
+
+        return m;
+      });
+  }
+
+  /**
+   * Choices.js
+   * @param {string} selector
+   * @param {object} options
+   * @returns {Promise<T>}
+   *
+   * @deprecated Use TomSelect() instead.
+   */
   choices(selector = null, options = {}) {
-    return Promise.all([
-      this.app.import('@vendor/choices.js/public/assets/scripts/choices.min.js'),
+    return this.app.import(
+      '@vendor/choices.js/public/assets/scripts/choices.min.js',
       this.app.importCSS('@vendor/choices.js/public/assets/styles/choices.min.css')
-    ])
+    )
       .then((m) => {
         if (selector) {
           options = defaultsDeep(options, {
@@ -188,13 +266,27 @@ export default class UnicornUI {
         }
 
         return m;
+      })
+      .catch(() => {
+        console.error('Package "choices.js" not found.');
       });
   }
 
+  /**
+   * Flatpickr
+   * @returns {Promise<*>}
+   */
   flatpickr() {
     return this.app.import('@unicorn/ui/flatpickr-components.js');
   }
 
+  /**
+   *
+   * @param {string|Element} element
+   * @param {string|Element} dependent
+   * @param {object} options
+   * @returns {Promise<*>}
+   */
   listDependent(element = null, dependent = null, options = {}) {
     return this.app.import('@unicorn/ui/list-dependent.js').then((module) => {
       if (element) {
@@ -205,34 +297,67 @@ export default class UnicornUI {
     });
   }
 
+  /**
+   * Cascade Select
+   * @returns {Promise<*>}
+   */
   cascadeSelect() {
     return this.app.import('@unicorn/field/cascade-select.js');
   }
 
+  /**
+   * Single Drag Image
+   * @returns {Promise<*>}
+   */
   sid() {
     return this.app.import('@unicorn/field/single-image-drag.js');
   }
 
+  /**
+   * File Drag
+   * @returns {Promise<*>}
+   */
   fileDrag() {
     return this.app.import('@unicorn/field/file-drag.js');
   }
 
+  /**
+   * Iframe Modal
+   * @returns {Promise<*>}
+   */
   iframeModal() {
     return this.app.import('@unicorn/ui/iframe-modal.js');
   }
 
+  /**
+   * Modal Field
+   * @returns {Promise<*>}
+   */
   modalField() {
     return this.app.import('@unicorn/field/modal-field.js');
   }
 
+  /**
+   * Miltuple Uploader
+   * @returns {Promise<*>}
+   */
   multiUploader() {
     return this.app.import('@unicorn/field/multi-uploader.js');
   }
 
+  /**
+   * Repeatable
+   * @returns {Promise<*>}
+   */
   repeatable() {
     return this.app.import('@unicorn/field/repeatable.js');
   }
 
+  /**
+   * S3 Uploader.
+   * @param {string} name
+   * @returns {Promise<S3Uploader>}
+   */
   s3Uploader(name = null) {
     return u.import('@unicorn/aws/s3-uploader.js').then(function (module) {
       if (name) {
@@ -244,8 +369,8 @@ export default class UnicornUI {
   }
 
   /**
-   * @param target
-   * @param duration
+   * @param {string|Elemet} target
+   * @param {number} duration
    */
   slideUp(target, duration = 300) {
     target = this.app.selectOne(target);
@@ -268,6 +393,12 @@ export default class UnicornUI {
     });
   }
 
+  /**
+   * @param {string|Element} target
+   * @param {number} duration
+   * @param {string} display
+   * @returns {Promise<*}
+   */
   slideDown(target, duration = 300, display = 'block') {
     target = this.app.selectOne(target);
 
@@ -300,6 +431,13 @@ export default class UnicornUI {
     });
   }
 
+  /**
+   * slideToggle
+   * @param {string|Element} target
+   * @param {number} duration
+   * @param {string} display
+   * @returns {Promise<*}
+   */
   slideToggle(target, duration = 500, display = 'block') {
     target = this.app.selectOne(target);
 
@@ -314,6 +452,11 @@ export default class UnicornUI {
     }
   }
 
+  /**
+   * @param {string|Element} el
+   * @param {number} duration
+   * @returns {Promise<*>}
+   */
   fadeOut(el, duration = 500) {
     el = this.app.selectOne(el);
 
@@ -324,6 +467,12 @@ export default class UnicornUI {
     });
   };
 
+  /**
+   * @param {string|Element} el
+   * @param {number} duration
+   * @param {string} display
+   * @returns {Promise<*>}
+   */
   fadeIn(el, duration = 500, display = 'block') {
     el = this.app.selectOne(el);
 
@@ -334,15 +483,21 @@ export default class UnicornUI {
     return animation.finished;
   };
 
+  /**
+   * @param {string|Element} element
+   * @param {string} color
+   * @param {number} duration
+   * @returns {string|Element}
+   */
   highlight(element, color = '#ffff99', duration = 600) {
     element = this.app.selectOne(element);
 
     duration /= 2;
     const bg = window.getComputedStyle(element).backgroundColor;
-    const animation = u.animate(element, { backgroundColor: color }, { duration });
+    const animation = this.app.animate(element, { backgroundColor: color }, { duration });
 
     return animation.finished.then(() => {
-      return u.animate(element, { backgroundColor: bg }, { duration });
+      return this.app.animate(element, { backgroundColor: bg }, { duration });
     });
   }
 
@@ -351,7 +506,7 @@ export default class UnicornUI {
    * Todo: Move to another file.
    */
   colorPicker() {
-    u.directive('color-picker', {
+    this.app.directive('color-picker', {
       mounted(el, binding) {
         u.getBoundedInstance(el, 'color.picker', () => {
           const text = el.querySelector('[data-role=color-text]');
@@ -401,7 +556,8 @@ export default class UnicornUI {
 
             // @see https://stackoverflow.com/a/12043228
             const sep = 200;
-            const [, r, g, b] = preview.style.backgroundColor.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+            const [, r, g, b] = preview.style.backgroundColor?.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/)
+              || ['', 255, 255, 255];
             const luma = Number(r) * 0.2126 + Number(g) * 0.7152 + Number(b) * 0.0722;
             pick.style.color = luma > sep ? 'black' : 'white';
           }
@@ -410,6 +566,11 @@ export default class UnicornUI {
     })
   }
 
+  /**
+   * @param {string|Element} formSelector
+   * @param {string|Element} buttonSelector
+   * @param {object} options
+   */
   disableOnSubmit(formSelector = '#admin-form', buttonSelector = null, options = {}) {
     buttonSelector = buttonSelector || [
       '#admin-toolbar button',
@@ -461,6 +622,11 @@ export default class UnicornUI {
     });
   }
 
+  /**
+   * @param {string|Element} selector
+   * @param {object} options
+   * @returns {Promise<*>}
+   */
   checkboxesMultiSelect(selector = null, options = {}) {
     return this.app.import('@unicorn/ui/checkboxes-multi-select.js')
       .then((m) => {
@@ -481,20 +647,17 @@ export default class UnicornUI {
    * @return {number}
    */
   keepAlive(url, time = 60000) {
-    return this.aliveHandle = window.setInterval(() => fetch(url), time);
+    const aliveHandle = window.setInterval(() => fetch(url), time);
+
+    return () => {
+      clearInterval(aliveHandle)
+    };
   }
 
   /**
-   * Stop keep alive
+   * Init Form Show On
+   * @returns {Promise<*>}
    */
-  stopKeepAlive() {
-    clearInterval(this.aliveHandle);
-
-    this.aliveHandle =  null;
-
-    return this;
-  }
-
   initShowOn() {
     return u.import('@unicorn/ui/show-on.js');
   }
