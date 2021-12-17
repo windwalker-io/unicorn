@@ -38,10 +38,14 @@ trait ManageRepositoryTrait
     {
         $action->beforeSave(
             function (BeforeSaveEvent $event) {
-                $data = &$event->getData();
                 $reorderAction = $this->createReorderAction();
+                $data = &$event->getData();
 
-                if ($event->isCreate() && empty($data[$reorderAction->getOrderField()])) {
+                if (
+                    $reorderAction->canReorder()
+                    && $event->isCreate()
+                    && empty($data[$reorderAction->getOrderField()])
+                ) {
                     $max = (int) $reorderAction->getMaxOrdering(
                         $event->getORM()->toCollection($event->getSource())
                     );
@@ -56,7 +60,9 @@ trait ManageRepositoryTrait
     {
         $action->afterSave(
             function (AfterSaveEvent $event) {
-                if ($event->isCreate()) {
+                $reorderAction = $this->createReorderAction();
+
+                if ($reorderAction->canReorder() && $event->isCreate()) {
                     $reorderAction = $this->createReorderAction();
                     $reorderAction->reorderAllForItem($event->getEntity());
                 }

@@ -184,6 +184,14 @@ class ReorderAction extends AbstractDatabaseAction
         return $this;
     }
 
+    public function canReorder(?string $field = null): bool
+    {
+        $field ??= $this->getOrderField();
+        $metadata = $this->getEntityMapper()->getMetadata();
+        
+        return $metadata->getColumn($field);
+    }
+
     public function groupConditions(Query $query, Collection $item): Query
     {
         $handler = $this->getReorderGroupHandler();
