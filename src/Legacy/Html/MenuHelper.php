@@ -8,6 +8,7 @@
 
 namespace Unicorn\Legacy\Html;
 
+use Webmozart\Glob\Glob;
 use Windwalker\Core\Http\AppRequest;
 use Windwalker\Core\Router\Route;
 use Windwalker\Data\Collection;
@@ -65,13 +66,13 @@ class MenuHelper
     /**
      * active
      *
-     * @param string|array $path
-     * @param array        $query
-     * @param string       $menu
+     * @param  string|array  $path
+     * @param  array|false   $query
+     * @param  string        $menu
      *
      * @return bool
      */
-    public function is(string|array $path, array $query = [], string $menu = 'mainmenu'): bool
+    public function is(string|array $path, array|false $query = false, string $menu = 'mainmenu'): bool
     {
         if (is_array($path)) {
             foreach ($path as $p) {
@@ -83,42 +84,52 @@ class MenuHelper
             return false;
         }
 
-        // Match route
-        $route = $path;
         $matched = $this->getMatchedRoute();
         
         if (!$matched) {
             return false;
         }
 
-        if (str_contains($path, '::') && $matched->getName() === $route && $this->matchRequest($query)) {
-            return true;
-        }
-
+        $routeName = $matched->getName();
         $shortName = Collection::explode('::', $matched->getName())->last();
 
-        if ($route === $shortName && $this->matchRequest($query)) {
+        // Step (1): Match route with wildcards
+        if (str_contains($path, '*')) {
+            $path2 = ltrim($path, '/');
+
+            $hasMatch = fnmatch($path2, $routeName)
+                || fnmatch($path2, $shortName)
+                || fnmatch($path2, $this->request->getSystemUri()->route());
+
+            if ($hasMatch) {
+                return true;
+            }
+        }
+
+        // Step (2): Match ns::route
+        if ($path === $routeName && str_contains($path, '::') && $this->matchRequest($query)) {
             return true;
         }
 
-        // If route not matched, we match extra values from routing.
-        $routePaths = $matched->getExtraValue('menu')[$menu] ?? null;
-
-        if (!$routePaths) {
-            return false;
+        // Step (3): Match route without ns
+        if ($path === $shortName && $this->matchRequest($query)) {
+            return true;
         }
 
-        foreach ((array) $routePaths as $routePath) {
-            $paths     = array_filter(explode('/', trim($path, '/')), 'strlen');
-            $routePath = array_filter(explode('/', trim($routePath, '/')), 'strlen');
+        $menuDirect = $matched->getExtraValue('menu')[$menu] ?? null;
 
-            foreach ($paths as $key => $pathSegment) {
-                if (isset($routePath[$key]) && $routePath[$key] === $pathSegment && $this->matchRequest($query)
-                    && count($paths) === ($key + 1)) {
+        // Step (4): If route not matched, we match extra values from routing.
+        if ($menuDirect) {
+            if ($menuDirect === $path && $this->matchRequest($query)) {
+                return true;
+            }
+
+            if (str_contains($path, '::')) {
+                $path2 = explode('::', $path, 2);
+
+                if (array_pop($path2) === $menuDirect && $this->matchRequest($query)) {
                     return true;
                 }
-
-                continue;
             }
         }
 
@@ -167,13 +178,13 @@ class MenuHelper
     /**
      * matchRequest
      *
-     * @param array $query
+     * @param  array|false  $query
      *
      * @return  boolean
      */
-    protected function matchRequest(array $query = []): bool
+    protected function matchRequest(array|false $query = []): bool
     {
-        if (!$query) {
+        if ($query === false) {
             return true;
         }
 
