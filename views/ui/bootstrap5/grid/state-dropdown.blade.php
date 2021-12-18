@@ -42,6 +42,7 @@ $size    ??= 'sm';
 $value   ??= '';
 $id   ??= '';
 $noTitle ??= false;
+$readonly ??= false;
 
 $currentState = null;
 
@@ -70,8 +71,11 @@ if (!is_array($workflow)) {
     throw new \InvalidArgumentException('Multiple workflows only supports "batch" mode.');
 }
 
+$color = '';
+
 if ($batch) {
-    $buttonColor = $buttonColor ??= 'btn-secondary';
+    $color = 'secondary';
+    $buttonColor = $buttonColor ??= 'btn-' . $color;
     $textColor = '';
 } else {
     $workflowCtrl = $workflow->getWorkflowController();
@@ -86,12 +90,14 @@ if ($batch) {
         $currentState = $workflowCtrl->getState($value) ?? new \Unicorn\Workflow\State($value);
     }
 
+    $color = $currentState?->getColor();
+
     if ($colorOn === 'button') {
-        $buttonColor = 'btn-' . $currentState?->getColor();
+        $buttonColor = 'btn-' . $color;
         $textColor   = '';
     } elseif ($colorOn === 'text') {
         $buttonColor = $buttonColor ??= 'btn-light';
-        $textColor   = 'text-' . $currentState?->getColor();
+        $textColor   = 'text-' . $color;
     }
 }
 
@@ -100,8 +106,16 @@ $fieldName = array_map(fn (AbstractWorkflow $w) => $w->getWorkflowController()->
 $buttonId ??= trim('c-state-dropdown-' . implode('-', $fieldName) . '-' . $id, '-');
 ?>
 
+@if ($readonly)
+    <div class="d-inline-block text-{{ $color }} text-nowrap">
+        <i class="{{ $currentState?->getIcon() ?? 'fa fa-question-circle' }}"></i>
+        @if (!$noTitle)
+            <span class="mr-auto me-auto ml-1 ms-1">{{ $currentState?->getTitle() ?? 'Unknown State' }}</span>
+        @endif
+    </div>
+@else
 <div class="btn-group dropdown c-state-dropdown d-inline-block" {!! $attributes !!}>
-    <button class="btn {{ $buttonColor }} btn-{{ $size }} d-flex align-items-center {{ $textColor }} dropdown-toggle c-state-dropdown__toggle w-100 {{ $noTitle ? 'has-tooltip' : '' }}"
+    <button class="btn {{ $buttonColor }} btn-{{ $size }} d-flex align-items-center {{ $textColor }} {{ $disabled ? '' : 'dropdown-toggle' }} c-state-dropdown__toggle w-100 {{ $noTitle ? 'has-tooltip' : '' }}"
         type="button"
         id="{{ $buttonId }}"
         data-bs-toggle="dropdown"
@@ -179,3 +193,4 @@ $buttonId ??= trim('c-state-dropdown-' . implode('-', $fieldName) . '-' . $id, '
         @endforeach
     </ul>
 </div>
+@endif
