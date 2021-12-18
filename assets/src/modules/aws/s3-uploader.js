@@ -185,3 +185,5 @@ class S3Uploader extends Unicorn.EventMixin(class {}) {
     return str.replace(/^\/+|\/+$/g, '');
   }
 }
+
+u.$loader.asImported('s3.uploader');
