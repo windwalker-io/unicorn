@@ -26,8 +26,8 @@ class BasicState extends Enum implements EnumTranslatableInterface
 {
     use EnumTranslatableTrait;
 
-    public const UNPUBLISHED = 0;
     public const PUBLISHED = 1;
+    public const UNPUBLISHED = 0;
 
     /**
      * Creates a new value of some type

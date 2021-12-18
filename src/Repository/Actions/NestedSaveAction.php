@@ -29,18 +29,6 @@ class NestedSaveAction extends SaveAction
         /** @var NestedEntityInterface $entity */
         /** @var NestedEntityInterface $oldEntity */
         $mapper = $this->getEntityMapper();
-        $entity = $mapper->toEntity($data);
-
-        $oldEntity = $entity->getPrimaryKeyValue()
-            ? $mapper->findOne($entity->getPrimaryKeyValue())
-            : null;
-
-        if (
-            $mapper->isNew($entity)
-            || ($oldEntity && $oldEntity->getParentId() !== $entity->getParentId())
-        ) {
-            $mapper->setPosition($entity, $entity->getParentId(), Position::LAST_CHILD);
-        }
 
         // If is object, extract it.
         // If is array, do not extract again since EntityMapper::extract() will cast values.
@@ -53,9 +41,22 @@ class NestedSaveAction extends SaveAction
             compact('data', 'source', 'condFields', 'options')
         );
 
+        $entity = $mapper->toEntity($data = $event->getData());
+
+        $oldEntity = $entity->getPrimaryKeyValue()
+            ? $mapper->findOne($entity->getPrimaryKeyValue())
+            : null;
+
+        if (
+            $mapper->isNew($entity)
+            || ($oldEntity && (string) $oldEntity->getParentId() !== (string) $entity->getParentId())
+        ) {
+            $mapper->setPosition($entity, $entity->getParentId(), Position::LAST_CHILD);
+        }
+
         $entity = $this->getEntityMapper()
             ->saveOne(
-                $mapper->hydrate($event->getData(), $entity),
+                $mapper->hydrate($data, $entity),
                 $event->getCondFields(),
                 $event->getOptions()
             );
