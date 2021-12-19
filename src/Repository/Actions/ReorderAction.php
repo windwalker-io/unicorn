@@ -189,7 +189,7 @@ class ReorderAction extends AbstractDatabaseAction
         $field ??= $this->getOrderField();
         $metadata = $this->getEntityMapper()->getMetadata();
         
-        return $metadata->getColumn($field);
+        return $metadata->getColumn($field) !== null;
     }
 
     public function groupConditions(Query $query, Collection $item): Query
