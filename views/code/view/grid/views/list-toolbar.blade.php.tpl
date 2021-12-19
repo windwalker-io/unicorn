@@ -25,6 +25,7 @@ use Windwalker\Core\Router\SystemUri;
 {% $phpClose %}
 
 <div x-title="toolbar" x-data="{ form: $store.grid.form, grid: $store.grid }">
+    {{-- Create --}}
     <a class="btn btn-primary btn-sm"
         href="{{ $nav->to('{% snake($name) %}_edit')->var('new', 1) }}"
         style="min-width: 150px"
@@ -32,12 +33,16 @@ use Windwalker\Core\Router\SystemUri;
         <i class="fa fa-plus"></i>
         @lang('unicorn.toolbar.new')
     </a>
+
+    {{-- Duplicate --}}
     <button type="button" class="btn btn-info btn-sm"
         @click="grid.form.post()"
     >
         <i class="fa fa-clone"></i>
         @lang('unicorn.toolbar.duplicate')
     </button>
+
+    {{-- Change State --}}
     <x-state-dropdown color-on="text"
         button-style="width: 100%"
         use-states
@@ -46,6 +51,8 @@ use Windwalker\Core\Router\SystemUri;
     >
         @lang('unicorn.toolbar.state.change')
     </x-state-dropdown>
+
+    {{-- Batch --}}
     <button type="button" class="btn btn-dark btn-sm"
         @click="grid.validateChecked(null, function () {
             (new bootstrap.Modal('#batch-modal')).show();
@@ -54,6 +61,8 @@ use Windwalker\Core\Router\SystemUri;
         <i class="fa fa-sliders"></i>
         @lang('unicorn.toolbar.batch')
     </button>
+
+    {{-- Delete --}}
     <button type="button" class="btn btn-outline-danger btn-sm"
         @click="grid.deleteList()"
     >

@@ -25,6 +25,8 @@ use Windwalker\Core\Router\SystemUri;
 {% $phpClose %}
 
 <div x-title="toolbar" x-data="{ form: $store.form }">
+
+    {{-- Save --}}
     <div class="btn-group">
         <button type="button" class="btn btn-success btn-sm"
             @click="form.post();"
@@ -33,6 +35,8 @@ use Windwalker\Core\Router\SystemUri;
             <span class="fa fa-save"></span>
             @lang('unicorn.toolbar.save')
         </button>
+
+        {{-- Split Toggle --}}
         <button type="button" class="btn btn-success btn-sm dropdown-toggle dropdown-toggle-split"
             data-bs-toggle="dropdown"
             data-toggle="dropdown"
@@ -43,6 +47,7 @@ use Windwalker\Core\Router\SystemUri;
         </button>
 
         <ul class="dropdown-menu dropdown-menu-end">
+            {{-- Save2Copy --}}
             <li>
                 <a class="dropdown-item"
                     href="javascript://"
@@ -52,6 +57,7 @@ use Windwalker\Core\Router\SystemUri;
                 </a>
             </li>
 
+            {{-- Save2New --}}
             <li>
                 <a class="dropdown-item"
                     href="javascript://"
@@ -63,12 +69,14 @@ use Windwalker\Core\Router\SystemUri;
         </ul>
     </div>
 
+    {{-- Save2Close --}}
     <button type="button" class="btn btn-primary btn-sm"
         @click="form.post(null, { task: 'save2close' });">
         <span class="fa fa-check"></span>
         @lang('unicorn.toolbar.save2close')
     </button>
 
+    {{-- Cancel --}}
     <a class="btn btn-default btn-outline-secondary btn-sm"
         href="{{ $nav->to('{% snake($name) %}_list') }}">
         <span class="fa fa-times"></span>

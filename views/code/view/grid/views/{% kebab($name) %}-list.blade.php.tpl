@@ -93,7 +93,7 @@ $workflow = $app->service(\Unicorn\Workflow\BasicStateWorkflow::class);
                     </th>
 
                     {{-- ID --}}
-                    <th style="width: 1%" class="text-nowrap text-right text-end">
+                    <th style="width: 1%" class="text-nowrap text-end">
                         <x-sort field="{% snake($name) %}.id">
                             @lang('unicorn.field.id')
                         </x-sort>
@@ -153,7 +153,7 @@ $workflow = $app->service(\Unicorn\Workflow\BasicStateWorkflow::class);
                         </td>
 
                         {{-- ID --}}
-                        <td class="text-right text-end">
+                        <td class="text-end">
                             {{ $entity->getId() }}
                         </td>
                     </tr>

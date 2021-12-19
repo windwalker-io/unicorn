@@ -23,6 +23,7 @@ use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\SystemUri;
 
 $callback = $app->input('callback');
+$workflow = $app->service(\Unicorn\Workflow\BasicStateWorkflow::class);
 {% $phpClose %}
 
 @extends('admin.global.pure')
@@ -76,12 +77,13 @@ $callback = $app->input('callback');
                             <x-state-dropdown color-on="text"
                                 button-style="width: 100%"
                                 use-states
+                                readonly
                                 :workflow="$workflow"
                                 :id="$item->id"
                                 :value="$item->state"
                             />
                         </th>
-                        <td>
+                        <td class="text-end">
                             {{ $item->id }}
                         </td>
                     </tr>
@@ -99,6 +101,7 @@ $callback = $app->input('callback');
         </div>
 
         <div class="d-none">
+            <input name="_method" type="hidden" value="PUT" />
             @include('@csrf')
         </div>
 
