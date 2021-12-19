@@ -41,17 +41,17 @@ $callback = $app->input('callback');
                 <tr>
                     <th>
                         <x-sort field="{% snake($name) %}.title">
-                            Title
+                            @lang('unicorn.field.title')
                         </x-sort>
                     </th>
                     <th>
                         <x-sort field="{% snake($name) %}.state">
-                            State
+                            @lang('unicorn.field.state')
                         </x-sort>
                     </th>
-                    <th>
-                        <x-sort field="category.id">
-                            ID
+                    <th class="text-end text-nowrap" style="width: 1%">
+                        <x-sort field="{% snake($name) %}.id">
+                            @lang('unicorn.field.id')
                         </x-sort>
                     </th>
                 </tr>
@@ -73,7 +73,13 @@ $callback = $app->input('callback');
                             </a>
                         </td>
                         <th>
-                            {{ $item->state }}
+                            <x-state-dropdown color-on="text"
+                                button-style="width: 100%"
+                                use-states
+                                :workflow="$workflow"
+                                :id="$item->id"
+                                :value="$item->state"
+                            />
                         </th>
                         <td>
                             {{ $item->id }}

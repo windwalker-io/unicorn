@@ -76,6 +76,7 @@ export async function css() {
   sass('scss/switcher.scss', 'dist/', { minify: 'separate_file' });
   sass('scss/editor.scss', 'dist/', { minify: 'separate_file' });
   sass('scss/bootstrap/multi-level-menu.scss', 'dist/bootstrap/', { minify: 'separate_file' });
+  sass('scss/bootstrap/bs4-adapter.scss', 'dist/bootstrap/', { minify: 'separate_file' });
   sass('scss/field/single-image-drag.scss', 'dist/field/', { minify: 'separate_file' });
   // Compile end
 }
