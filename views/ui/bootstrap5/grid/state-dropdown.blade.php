@@ -110,7 +110,7 @@ $buttonId ??= trim('c-state-dropdown-' . implode('-', $fieldName) . '-' . $id, '
     <div class="d-inline-block text-{{ $color }} text-nowrap">
         <i class="{{ $currentState?->getIcon() ?? 'fa fa-question-circle' }}"></i>
         @if (!$noTitle)
-            <span class="mr-auto me-auto ml-1 ms-1">{{ $currentState?->getTitle() ?? 'Unknown State' }}</span>
+            <span class="mr-auto me-auto ms-1">{{ $currentState?->getTitle() ?? 'Unknown State' }}</span>
         @endif
     </div>
 @else
@@ -130,7 +130,7 @@ $buttonId ??= trim('c-state-dropdown-' . implode('-', $fieldName) . '-' . $id, '
         @else
             <i class="{{ $currentState?->getIcon() ?? 'fa fa-question-circle' }}"></i>
             @if (!$noTitle)
-                <span class="mr-auto me-auto ml-1 ms-1">{{ $currentState?->getTitle() ?? 'Unknown State' }}</span>
+                <span class="mr-auto me-auto ms-1">{{ $currentState?->getTitle() ?? 'Unknown State' }}</span>
             @endif
         @endif
     </button>
