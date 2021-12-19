@@ -145,4 +145,13 @@ class BootstrapScript extends AbstractScript
 
         return $this;
     }
+
+    public function bs4Adapter(): static
+    {
+        if ($this->available()) {
+            $this->css('@unicorn/bootstrap/bs4-adapter.min.css');
+        }
+
+        return $this;
+    }
 }

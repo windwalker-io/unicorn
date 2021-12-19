@@ -57,7 +57,7 @@ $data = AssetService::getJSObject($field->prepareJSData());
                 {{ $field->getPlaceholder() }}
             </th>
             <template x-if="canModify">
-                <th class="text-right" width="1%">
+                <th class="text-end" width="1%">
                     <button type="button" class="btn btn-sm btn-success btn-primary"
                         :disabled="!canAdd"
                         @click="addItem(-1)">
@@ -91,7 +91,7 @@ $data = AssetService::getJSObject($field->prepareJSData());
                     </div>
                 </td>
                 <template x-if="canModify">
-                    <td class="text-nowrap text-right" width="1%">
+                    <td class="text-nowrap text-end" width="1%">
                         <button type="button" class="btn btn-sm btn-success btn-primary"
                             @click="addItem(i)"
                             :disabled="!canAdd"

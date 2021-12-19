@@ -48,7 +48,7 @@ class BootstrapFormRenderer extends FormRenderer
             match (true) {
                 $inputElement->getAttribute('type') === 'checkbox' => 'form-input-check',
                 $field instanceof InputOptionsInterface => '',
-                $inputElement->getName() === 'select' => 'custom-select form-select',
+                $inputElement->getName() === 'select' && !$field->hasAttribute('multiple') => 'custom-select form-select',
                 default => 'form-control'
             }
         );

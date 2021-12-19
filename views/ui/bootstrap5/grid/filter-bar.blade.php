@@ -73,7 +73,7 @@ $attributes = $attributes->class('c-filter-bar mb-4');
             {{-- Search --}}
             @if ($searchBlock !== false)
                 @if ($searchBlock === null)
-                    <x-input-group class="mr-3 me-3 input-group-{{ $size }}" tag-name="span">
+                    <x-input-group class="me-3 input-group-{{ $size }}" tag-name="span">
                         <?php $searchField = $form->getField($searchInput); ?>
 
                         <x-input :field="$searchField"></x-input>
@@ -95,7 +95,7 @@ $attributes = $attributes->class('c-filter-bar mb-4');
 
             {{-- Buttons --}}
             @if ($filterBlock !== false || $searchBlock !== false)
-            <div class="btn-group btn-group-{{ $size }} mr-3 me-3">
+            <div class="btn-group btn-group-{{ $size }} me-3">
                 @if ($filterBlock !== false)
                     <button type="button" class="btn text-nowrap btn-outline-secondary"
                         :class="{ active: open }"
