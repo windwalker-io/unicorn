@@ -53,7 +53,7 @@ class TinymceEditorField extends AbstractEditorField
      *
      * @var  array
      */
-    protected static array $defaultOptions = [
+    public static array $defaultOptions = [
         'height' => 450,
         'convert_urls' => true,
         'fontsize_formats' => '12px 13px 14px 15px 16px 18px 20px 24px 28px 32px',
@@ -114,7 +114,7 @@ class TinymceEditorField extends AbstractEditorField
                 'advlist autolink lists link image charmap print preview hr anchor pagebreak',
                 'searchreplace wordcount visualblocks visualchars code fullscreen',
                 'insertdatetime media nonbreaking save table directionality',
-                'emoticons template paste textpattern imagetools',
+                'emoticons template paste textpattern imagetools textpattern',
             ];
 
             $defaultOptions['toolbar1'] = 'insertfile undo redo | styleselect formatselect fontsizeselect ' .
