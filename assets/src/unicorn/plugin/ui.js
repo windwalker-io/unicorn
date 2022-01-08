@@ -353,6 +353,10 @@ export default class UnicornUI {
     return this.app.import('@unicorn/field/repeatable.js');
   }
 
+  modalTree() {
+    return this.app.import('@unicorn/field/modal-tree.js');
+  }
+
   /**
    * S3 Uploader.
    * @param {string} name

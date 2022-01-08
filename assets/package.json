@@ -31,8 +31,8 @@
     "axios": "^0.21.1",
     "cropperjs": "^1.5.11",
     "flatpickr": "^4.6.9",
-    "systemjs": "^6.8.3",
     "sortablejs": "^1.13.0",
+    "systemjs": "^6.8.3",
     "tinymce": "^5.8.0",
     "tom-select": "^2.0.0",
     "vue2-animate": "^2.1.4"
@@ -47,6 +47,7 @@
     "@vue/compiler-sfc": "^3.1.1",
     "@windwalker-io/fusion": "^1.0",
     "babel-loader": "^8.2.2",
+    "bootstrap": "^5.1.3",
     "choices.js": "^9.0.1",
     "construct-style-sheets-polyfill": "^3.0.0-0",
     "core-js": "3",
@@ -67,10 +68,10 @@
     "vue-demi": "^0.9.1",
     "vue-loader": "^16",
     "vue-style-loader": "^4.1.3",
+    "vue3-slide-up-down": "^1.2.5",
     "vuedraggable": "^4.0.3",
     "webpack-comment-remover-loader": "^0.0.3",
-    "webpack-stream": "^6.1.2",
-    "bootstrap": "^5.1.3"
+    "webpack-stream": "^6.1.2"
   },
   "windwalker": {
     "vendors": [

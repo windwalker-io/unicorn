@@ -128,6 +128,18 @@ export async function multiUploader() {
   });
 }
 
+export async function modalTree() {
+  watch(
+    ['src/modules/**/*.js', 'src/vue/components/modal-tree/**/*', 'scss/**/*.scss']
+  );
+
+  fusion.vue('./src/modules/field/modal-tree.js', './dist/field/', {
+    override: (options) => {
+      options.resolve.alias['vue$'] = 'vue/dist/vue.esm-bundler.js';
+    }
+  });
+}
+
 export async function repeatable() {
   watch(
     ['src/modules/**/*.js', 'scss/**/*.scss']
