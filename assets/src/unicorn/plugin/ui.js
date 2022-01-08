@@ -187,15 +187,15 @@ export default class UnicornUI {
    */
   mark(selector = null, keyword = '', options = {}) {
     return this.app.import('@vendor/mark.js/dist/mark.min.js')
+      .catch((e) => {
+        console.error('Package "mark.js" not found.', e);
+      })
       .then((m) => {
         if (selector != null) {
           const instance = new Mark(selector);
           instance.mark(keyword, options);
         }
         return m;
-      })
-      .catch(() => {
-        console.error('Package "mark.js" not found.');
       });
   }
 
@@ -254,6 +254,10 @@ export default class UnicornUI {
       '@vendor/choices.js/public/assets/scripts/choices.min.js',
       this.app.importCSS('@vendor/choices.js/public/assets/styles/choices.min.css')
     )
+      .catch((e) => {
+        console.error('Package "choices.js" not found.', e);
+      })
+      .then((m) => m[0])
       .then((m) => {
         if (selector) {
           options = defaultsDeep(options, {
@@ -266,9 +270,6 @@ export default class UnicornUI {
         }
 
         return m;
-      })
-      .catch(() => {
-        console.error('Package "choices.js" not found.');
       });
   }
 
