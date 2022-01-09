@@ -10,7 +10,7 @@ use Windwalker\Core\Router\RouteCreator;
 /** @var  RouteCreator $router */
 
 $router->group('{% kebab($name) %}')
-    ->extra('menu', ['sidemanu' => '{% snake($name) %}_list'])
+    ->extra('menu', ['sidemenu' => '{% snake($name) %}_list'])
     ->register(function (RouteCreator $router) {
         $router->any('{% snake($name) %}_list', '/{% kebab($name) %}/list')
             ->controller({% pascal($name) %}Controller::class)

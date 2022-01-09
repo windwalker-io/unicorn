@@ -44,6 +44,8 @@ $id   ??= '';
 $noTitle ??= false;
 $readonly ??= false;
 
+$value = (string) $value;
+
 $currentState = null;
 
 $attributes = $attributes->exceptProps(
