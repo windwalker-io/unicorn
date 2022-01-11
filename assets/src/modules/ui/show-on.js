@@ -72,14 +72,14 @@ class ShowOn {
         if (!target.multiple) {
           targetValue = target.value;
         } else {
-          targetValue = u.selectAll(target.querySelectorAll('option:checked'))
-            .filter(option => option.checked)
+          targetValue = u.selectAll(target.querySelectorAll('option'))
+            .filter(option => option.selected)
             .map(option => option.value);
         }
         break;
 
       case 'checkbox':
-        targetValue = target.cecked ? target.value : null;
+        targetValue = target.checked ? target.value : null;
         break;
     }
 
