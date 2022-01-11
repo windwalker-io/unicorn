@@ -85,7 +85,7 @@ class ShowOn {
 
     if (Array.isArray(value)) {
       if (Array.isArray(targetValue)) {
-        return difference(value, targetValue).lenth === 0;
+        return difference(value, targetValue).length === 0;
       }
 
       return value.indexOf(targetValue) !== -1;
