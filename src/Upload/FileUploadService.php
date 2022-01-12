@@ -249,7 +249,7 @@ class FileUploadService implements EventAwareInterface
         $height = $resizeConfig['height'];
 
         if (!$resizeConfig['enabled']) {
-            return $image->stream(null, 85);
+            return $image->stream(null, $resizeConfig['quality']);
         }
 
         if (!$width || $image->width() >= $width || !$height || $image->height() >= $height) {
@@ -267,7 +267,7 @@ class FileUploadService implements EventAwareInterface
 
         return $image->stream(
             $resizeConfig['output_format'],
-            30
+            $resizeConfig['quality']
         );
     }
 
