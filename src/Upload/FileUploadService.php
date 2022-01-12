@@ -70,11 +70,13 @@ class FileUploadService implements EventAwareInterface
                     $resizeResolver->setDefaults(
                         [
                             'enabled' => true,
+                            'driver' => 'gd',
                             'width' => null,
                             'height' => null,
                             'crop' => false,
                             'quality' => 85,
                             'output_format' => null,
+                            'orientate' => true,
                         ]
                     );
                 }
@@ -144,17 +146,15 @@ class FileUploadService implements EventAwareInterface
         }
 
         $storage = $this->getStorage();
+        $ext = Path::getExtension($file->getClientFilename());
+        $dest ??= $this->getUploadPath($dest, $ext);
+        $dest = static::replaceVariables($dest, $ext);
 
         if ($this->isImage($file)) {
             $stream = $this->resizeImage($file);
         } else {
             $stream = $file->getStream();
         }
-
-        $ext = Path::getExtension($file->getClientFilename());
-        $dest ??= $this->getUploadPath($dest, $ext);
-
-        $dest = static::replaceVariables($dest, $ext);
 
         $options = array_merge($this->getOption('options'), $options);
 
@@ -230,20 +230,26 @@ class FileUploadService implements EventAwareInterface
 
         $resizeConfig = $this->options['resize'];
 
-        $manager = new ImageManager();
+        $manager = new ImageManager(['driver' => $driver = $resizeConfig['driver']]);
         $image = $manager->make($src);
 
-        try {
-            $image->orientate();
-        } catch (NotReadableException $e) {
-            // No actions
+        if ($resizeConfig['orientate']) {
+            try {
+                $image->orientate();
+            } catch (NotReadableException $e) {
+                // No actions
+            }
+        }
+
+        if ($driver === 'imagick') {
+            $image->getCore()->stripImage();
         }
 
         $width = $resizeConfig['width'];
         $height = $resizeConfig['height'];
 
         if (!$resizeConfig['enabled']) {
-            return $image->stream();
+            return $image->stream(null, 85);
         }
 
         if (!$width || $image->width() >= $width || !$height || $image->height() >= $height) {
@@ -261,7 +267,7 @@ class FileUploadService implements EventAwareInterface
 
         return $image->stream(
             $resizeConfig['output_format'],
-            $resizeConfig['quality']
+            30
         );
     }
 

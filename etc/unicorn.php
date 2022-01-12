@@ -37,6 +37,10 @@ return [
                 'default' => [
                     'storage' => env('UPLOAD_STORAGE_DEFAULT') ?: 'local',
                     'accept' => null,
+                    'resize' => [
+                        'enabled' => false,
+                        'driver' => env('IMAGE_RESIZE_DRIVER', 'gd'),
+                    ]
                 ],
                 'image' => [
                     'storage' => env('UPLOAD_STORAGE_DEFAULT') ?: 'local',
@@ -44,6 +48,7 @@ return [
                     'dir' => 'images/{year}/{month}/{day}',
                     'resize' => [
                         'enabled' => true,
+                        'driver' => env('IMAGE_RESIZE_DRIVER', 'gd'),
                         'width' => 1200,
                         'height' => 1200,
                         'crop' => false,

@@ -50,6 +50,7 @@ class FileController
                     'crop' => $request->input('crop'),
                     'quality' => $request->input('quality'),
                     'output_format' => $request->input('output_format'),
+                    'orientate' => $request->input('orientate'),
                 ]
             );
         } elseif ($resize === '0') {
