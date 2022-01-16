@@ -126,16 +126,6 @@ class UnicornPackage extends AbstractPackage implements
             );
         }
 
-        if ($container->has(LangService::class)) {
-            $container->extend(
-                LangService::class,
-                function (LangService $lang) {
-                    return $lang->addPath(__DIR__ . '/../resources/languages')
-                        ->loadFile('unicorn', 'ini');
-                }
-            );
-        }
-
         $container->mergeParameters(
             'asset.import_map.imports',
             [
