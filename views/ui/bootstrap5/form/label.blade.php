@@ -38,6 +38,7 @@ $options = array_merge($field->getStates(), $options ?? []);
 
 $label->addClass('form-label');
 $label->setAttribute('data-bs-toggle', 'tooltip');
+$label->setAttribute('data-toggle', 'tooltip');
 
 if ($desc = $field->get('description')) {
     $label->setAttribute('title', $field->get('description'));

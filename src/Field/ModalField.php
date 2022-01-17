@@ -95,9 +95,12 @@ class ModalField extends AbstractField
     public function prepareInput(DOMElement $input): DOMElement
     {
         $input['type']      = 'text';
-        $input['value']     = $this->escape($this->getValue());
         $input['style']     = 'display: none;';
         $input['data-role'] = 'value';
+
+        if (!$this->isMultiple()) {
+            $input['value'] = $this->escape($this->getValue());
+        }
 
         return $input;
     }
