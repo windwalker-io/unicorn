@@ -38,7 +38,7 @@ use Windwalker\Form\Form;
 
 @section('content')
     <form name="admin-form" id="admin-form"
-        novalidate uni-form-validate='{"scroll": true}'
+        uni-form-validate='{"scroll": true}'
         action="{{ $nav->to('{% snake($name) %}_edit') }}"
         method="POST" enctype="multipart/form-data">
 
