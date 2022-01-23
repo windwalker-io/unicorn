@@ -12,6 +12,7 @@ use Aws\CloudFront\CloudFrontClient;
 use Aws\Result;
 use Aws\S3\S3Client;
 use Psr\Http\Message\UriInterface;
+use Windwalker\Core\DateTime\Chronos;
 use Windwalker\Filesystem\Path;
 use Windwalker\Stream\Stream;
 use Windwalker\Uri\Uri;
@@ -116,12 +117,13 @@ class S3Service
             $url = $cfc->getSignedUrl(
                 [
                     'url' => $cdn . '/' . $this->getPathFromFullUrl($path),
-                    'expires' => $expires,
+                    // Cloudfront expires uses timestamp
+                    'expires' => Chronos::wrap($expires)->toUnix(),
                     'private_key' => $this->options['cdn']['private_key'],
                     'key_pair_id' => $this->options['cdn']['key_pair_id']
                 ]
             );
-            
+
             return new Uri($url);
         }
 
