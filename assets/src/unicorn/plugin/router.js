@@ -107,6 +107,24 @@ export default class UnicornRouter {
       return url;
     }
 
+    const params = {};
+
+    for (let k in query) {
+      const v = query[k];
+
+      if (url.indexOf(`{${k}}`) !== -1) {
+        url = url.replace(
+          new RegExp(`\{${k}\}`, 'g'),
+          v
+        );
+        delete query[k];
+      }
+    }
+
+    if (Object.keys(query).length === 0) {
+      return url;
+    }
+
     const queryString = stringify(query);
 
     return url + (/\?/.test(url) ? `&${queryString}` : `?${queryString}`);
