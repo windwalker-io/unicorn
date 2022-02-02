@@ -65,28 +65,33 @@ $copyButtonText ??= $lang('unicorn.core.duplicate');
                     @endforeach
                 </div>
             </div>
-            <div class="modal-footer d-flex justify-content-end">
-                @if ($update)
-                    <button type="button" class="btn btn-primary ml-2"
-                        @click="grid.form.patch()"
-                    >
-                        <i class="fa fa-square-pen"></i>
-                        {{ $updateButtonText }}
+            <div class="modal-footer d-flex justify-content-between">
+                <div>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        <span class="fa fa-times"></span>
+                        @lang('unicorn.core.close')
                     </button>
-                @endif
-                @if ($copy)
-                    <button type="button" class="btn btn-outline-primary ml-2"
-                        @click="grid.form.post()"
-                    >
-                        <i class="fa fa-clone"></i>
-                        {{ $copyButtonText }}
-                    </button>
-                @endif
-
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                    <span class="fa fa-times"></span>
-                    @translate('unicorn.core.close')
-                </button>
+                </div>
+                <div>
+                    @if ($update)
+                        <button type="button" class="btn btn-primary ml-2"
+                            @click="grid.form.patch()"
+                            style="width: 150px"
+                        >
+                            <i class="fa fa-square-pen"></i>
+                            {{ $updateButtonText }}
+                        </button>
+                    @endif
+                    @if ($copy)
+                        <button type="button" class="btn btn-outline-primary ml-2"
+                            @click="grid.form.post()"
+                            style="width: 150px"
+                        >
+                            <i class="fa fa-clone"></i>
+                            {{ $copyButtonText }}
+                        </button>
+                    @endif
+                </div>
             </div>
         </div>
     </div>
