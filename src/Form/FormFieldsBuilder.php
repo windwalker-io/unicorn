@@ -212,14 +212,14 @@ PHP;
             case 'float':
             case 'decimal':
                 $this->addUse(NumberField::class);
-                $precision = $column->getNumericPrecision();
+                $scale = $column->getNumericScale();
                 $step = 1;
 
-                if ($precision > 0) {
-                    $step = '0.' . (str_repeat('0', $precision - 1)) . '1';
+                if ($scale > 0) {
+                    $step = '0.' . (str_repeat('0', $scale - 1)) . '1';
                 }
 
-            return <<<PHP
+                return <<<PHP
         \$form->add('$colName', NumberField::class)
             ->label($label)
             ->step('$step');

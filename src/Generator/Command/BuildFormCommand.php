@@ -145,7 +145,7 @@ class BuildFormCommand implements CommandInterface, InteractInterface
                 $io->writeln("  - $col");
             }
         } else {
-            $io->writeln('No changes for <info>{$class}</info>');
+            $io->writeln("No changes for <info>{$class}</info>");
         }
 
         $io->newLine();
