@@ -13,12 +13,9 @@ namespace Unicorn\Upload;
 
 use Intervention\Image\Constraint;
 use Intervention\Image\Exception\NotReadableException;
-use Intervention\Image\Facades\Image;
 use Intervention\Image\ImageManager;
-use Intervention\Image\Size;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
-use Symfony\Component\Mime\MimeTypeGuesserInterface;
 use Symfony\Component\Mime\MimeTypesInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Unicorn\Flysystem\Base64DataUri;
@@ -43,6 +40,9 @@ class FileUploadService implements EventAwareInterface
 {
     use EventAwareTrait;
     use OptionsResolverTrait;
+
+    public const DRIVER_GD = 'gd';
+    public const DRIVER_IMAGICK = 'imagick';
 
     /**
      * FileUploadService constructor.
@@ -70,7 +70,8 @@ class FileUploadService implements EventAwareInterface
                     $resizeResolver->setDefaults(
                         [
                             'enabled' => true,
-                            'driver' => 'gd',
+                            'driver' => static::DRIVER_GD,
+                            'strip_exif' => true,
                             'width' => null,
                             'height' => null,
                             'crop' => false,
@@ -168,8 +169,11 @@ class FileUploadService implements EventAwareInterface
         return $event->getResult();
     }
 
-    public function handleFileIfUploaded(?UploadedFileInterface $file, ?string $dest = null, array $options = []): ?PutResult
-    {
+    public function handleFileIfUploaded(
+        ?UploadedFileInterface $file,
+        ?string $dest = null,
+        array $options = []
+    ): ?PutResult {
         if (!$file) {
             return null;
         }
@@ -222,7 +226,7 @@ class FileUploadService implements EventAwareInterface
         if ($src instanceof UploadedFileInterface) {
             $tmp = Filesystem::createTemp(WINDWALKER_TEMP . '/unicorn/upload');
 
-            register_shutdown_function(fn () => Filesystem::delete($tmp->getPathname()));
+            register_shutdown_function(fn() => Filesystem::delete($tmp->getPathname()));
 
             $src->moveTo($tmp->getPathname());
             $src = $tmp->getPathname();
@@ -241,7 +245,7 @@ class FileUploadService implements EventAwareInterface
             }
         }
 
-        if ($driver === 'imagick') {
+        if ($driver === static::DRIVER_IMAGICK && $resizeConfig['strip_exif']) {
             $image->getCore()->stripImage();
         }
 

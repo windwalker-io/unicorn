@@ -91,5 +91,5 @@ if ($horizon) {
         @endif
     @endforeach
 
-        {!! $end ?? '' !!}
+    {!! $end ?? '' !!}
 </x-component>
