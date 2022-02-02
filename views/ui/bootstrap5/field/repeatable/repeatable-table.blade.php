@@ -39,6 +39,7 @@ $optString = AssetService::getJSObject(
         'sortable' => $field->isSortable(),
         'hasKey' => (bool) $form->hasField('key'),
         'singleArray' => $field->isSingleArray(),
+        'ensureFirstRow' => $field->isEnsureFirstRow(),
     ]
 );
 

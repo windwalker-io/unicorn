@@ -4,6 +4,7 @@
  * @copyright  Copyright (C) 2021 __ORGANIZATION__.
  * @license    __LICENSE__
  */
+
 import { cloneDeep } from 'lodash-es';
 
 const defaultOptions = {
@@ -20,7 +21,7 @@ function prepareItem(item) {
 
 S.import('@main').then(() => {
   u.importCSS('@vue2-animate');
-  u.loadAlpine(() => {
+  u.prepareAlpine(() => {
     Alpine.data('RepeatableField', ({ items, defaultValues, attrs }, options) => ({
       items,
       defaultValues,
@@ -73,6 +74,10 @@ S.import('@main').then(() => {
         items.forEach((item) => {
           prepareItem(item);
         });
+
+        if (this.options.ensureFirstRow) {
+          this.makeSureDefaultItem();
+        }
       },
 
       addItem(i) {
@@ -149,4 +154,6 @@ S.import('@main').then(() => {
       }
     }));
   });
+
+  u.loadAlpine();
 });

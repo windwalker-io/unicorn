@@ -27,7 +27,8 @@ export default class UnicornUI {
     app.clearNotifies = ui.clearNotifies.bind(ui);
 
     app.loadAlpine = ui.loadAlpine.bind(ui);
-    app.beforeAlpineInit = ui.beforeAlpineInit.bind(ui);
+    app.beforeAlpineInit = ui.prepareAlpine.bind(ui);
+    app.prepareAlpine = ui.prepareAlpine.bind(ui);
     app.webComponentPolyfill = ui.webComponentPolyfill.bind(ui);
     app.defineCustomElement = ui.defineCustomElement.bind(ui);
 
@@ -52,7 +53,7 @@ export default class UnicornUI {
   loadAlpine(callback = null) {
     // For V3
     if (callback) {
-      this.beforeAlpineInit(callback);
+      this.prepareAlpine(callback);
     }
 
     return this.app.import('@alpinejs')
@@ -79,7 +80,7 @@ export default class UnicornUI {
    * Before Alpine init
    * @param {function} callback
    */
-  beforeAlpineInit(callback) {
+  prepareAlpine(callback) {
     document.addEventListener('alpine:init', callback);
   }
 
