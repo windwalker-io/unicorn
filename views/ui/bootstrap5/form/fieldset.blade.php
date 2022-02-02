@@ -39,7 +39,9 @@ $horizon ??= null;
 $attributes = $attributes->exceptProps(
     [
         'form',
-        'horizon'
+        'horizon',
+        'start',
+        'end'
     ]
 );
 
@@ -58,6 +60,8 @@ if ($horizon) {
             {!! $header(title: $title, fieldset: $fieldset) !!}
         </x-slot>
     @endif
+
+    {!! $start ?? '' !!}
 
     @foreach ($form->getFields($name, $ns) as $field)
         @php($fieldName = \Windwalker\Utilities\StrNormalize::toKebabCase($field->getNamespaceName()))
@@ -86,4 +90,6 @@ if ($horizon) {
             {!! $$endSlot(field: $field) !!}
         @endif
     @endforeach
+
+        {!! $end ?? '' !!}
 </x-component>
