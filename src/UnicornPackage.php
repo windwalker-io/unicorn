@@ -21,6 +21,7 @@ use Unicorn\Controller\GridController;
 use Unicorn\Generator\Command\BuildFormCommand;
 use Unicorn\Generator\SubCommand\ControllerSubCommand;
 use Unicorn\Generator\SubCommand\ModelSubCommand;
+use Unicorn\Generator\SubCommand\MvcAdminSubCommand;
 use Unicorn\Generator\SubCommand\RouteSubCommand;
 use Unicorn\Generator\SubCommand\ViewEditSubCommand;
 use Unicorn\Generator\SubCommand\ViewGridSubCommand;
@@ -217,6 +218,7 @@ class UnicornPackage extends AbstractPackage implements
                     'unicorn:view-grid' => ViewGridSubCommand::class,
                     'unicorn:view-edit' => ViewEditSubCommand::class,
                     'unicorn:route' => RouteSubCommand::class,
+                    'unicorn:mvc-admin' => MvcAdminSubCommand::class,
                     // 'unicorn:workflow' => ModelSubCommand::class,
                 ]
             );
