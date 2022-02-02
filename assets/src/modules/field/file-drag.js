@@ -56,7 +56,7 @@ class FileDrag extends HTMLElement {
     const maxSize = this.options.maxSize;
     let placeholder = this.options.placeholder;
 
-    const accepted = (this.getAttribute('accept') || this.getAttribute('data-accepted') || '')
+    const accepted = (this.element.getAttribute('accept') || this.element.getAttribute('data-accepted') || '')
       .split(',')
       .map(v => v.trim())
       .filter(v => v.length > 0)
@@ -67,6 +67,8 @@ class FileDrag extends HTMLElement {
 
         return v;
       });
+
+    console.log(accepted);
 
     let text;
 
