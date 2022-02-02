@@ -81,6 +81,10 @@ class ShowOn {
       case 'checkbox':
         targetValue = target.checked ? target.value : null;
         break;
+
+      case 'radio':
+        targetValue = target.querySelector('input[type=radio]:checked')?.value;
+        break;
     }
 
     if (Array.isArray(value)) {
@@ -119,7 +123,16 @@ class ShowOn {
       if (type === 'checkbox') {
         return 'checkbox';
       }
+
+      return 'input';
     }
+
+    if (node === 'div') {
+      if (el.querySelector('input[type=radio]')) {
+        return 'radio';
+      }
+    }
+
     return;
   }
 }
