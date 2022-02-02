@@ -114,7 +114,7 @@ class TinymceEditorField extends AbstractEditorField
                 'advlist autolink lists link image charmap print preview hr anchor pagebreak',
                 'searchreplace wordcount visualblocks visualchars code fullscreen',
                 'insertdatetime media nonbreaking save table directionality',
-                'emoticons template paste textpattern imagetools textpattern',
+                'emoticons template paste textpattern textpattern',
             ];
 
             $defaultOptions['toolbar1'] = 'insertfile undo redo | styleselect formatselect fontsizeselect ' .
