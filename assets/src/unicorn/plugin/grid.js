@@ -329,9 +329,7 @@ class UnicornGridElement {
    * @returns {boolean}
    */
   deleteList(message, url, queries) {
-    try {
-      this.validateChecked();
-    } catch (e) {
+    if (!this.validateChecked()) {
       return false;
     }
 

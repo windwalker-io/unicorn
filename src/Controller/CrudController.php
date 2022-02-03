@@ -105,6 +105,10 @@ class CrudController implements EventAwareInterface
     ): RouteUri {
         $ids = (array) $app->input('id');
 
+        if ($ids === []) {
+            return $nav->back();
+        }
+
         /** @var NestedSetMapper $mapper */
         $mapper = $repository->getEntityMapper();
         $key    = $mapper->getMainKey() ?? 'id';

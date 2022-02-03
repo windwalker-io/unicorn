@@ -66,8 +66,12 @@ class GridController implements EventAwareInterface
         return $app->call([$this, 'batchUpdate'], compact('repository', 'data'));
     }
 
-    public function batchUpdate(AppContext $app, Navigator $nav, ManageRepositoryInterface $repository, mixed $data = null): RouteUri
-    {
+    public function batchUpdate(
+        AppContext $app,
+        Navigator $nav,
+        ManageRepositoryInterface $repository,
+        mixed $data = null
+    ): RouteUri {
         $ids = (array) $app->input('id');
         $data ??= (array) $app->input('batch');
         $data = value($data);
