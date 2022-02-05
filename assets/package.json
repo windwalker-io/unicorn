@@ -1,6 +1,6 @@
 {
   "name": "@windwalker-io/unicorn",
-  "version": "1.0.23",
+  "version": "1.0.24",
   "description": "Unicorn framework js library",
   "scripts": {
     "build": "cross-env node_modules/.bin/gulp",
