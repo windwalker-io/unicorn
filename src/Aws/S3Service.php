@@ -14,6 +14,7 @@ use Aws\S3\S3Client;
 use Psr\Http\Message\UriInterface;
 use Windwalker\Core\DateTime\Chronos;
 use Windwalker\Filesystem\Path;
+use Windwalker\Filter\Rule\IPAddress;
 use Windwalker\Stream\Stream;
 use Windwalker\Uri\Uri;
 use Windwalker\Utilities\Str;
@@ -424,6 +425,14 @@ class S3Service
         $uri = $this->client->getEndpoint();
 
         $bucket = $this->getBucketName();
+
+        $host = $uri->getHost();
+
+        $isIP = (new IPAddress())->test($host);
+
+        if ($isIP) {
+            $pathStyle = true;
+        }
 
         if ($pathStyle || ($uri->getScheme() === 'https' && str_contains($bucket, '.'))) {
             // Use path-style URLs

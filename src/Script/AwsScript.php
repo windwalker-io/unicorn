@@ -48,7 +48,7 @@ class AwsScript extends AbstractScript
                 $options
             );
 
-            $s3 = $this->s3;
+            $s3 = $options['s3Service'] ?? $this->s3;
 
             $bucket = $s3->getBucketName();
             $subfolder = $s3->getSubfolder();
