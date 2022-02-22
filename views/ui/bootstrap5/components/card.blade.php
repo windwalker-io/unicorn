@@ -30,7 +30,7 @@ $titleTag ??= 'h4';
     @if ($header ?? null)
         @if (is_string($header))
             <div class="card-header {{ $headerClass ?? '' }}">
-                {!! $title ?? '' !!}
+                {!! $header ?? '' !!}
             </div>
         @elseif (is_callable($header))
             {!! $header(headerClass: $headerClass ?? '') !!}
