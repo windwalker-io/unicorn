@@ -5,7 +5,6 @@
  * @license    __LICENSE__
  */
 
-// TODO: This module not completed yet for 4.x
 import { defaultsDeep, each } from 'lodash-es';
 
 const nope = (value, ele, dep) => {
@@ -80,7 +79,7 @@ export class ListDependent {
    * @param {bool} initial
    */
   changeList(value, initial = null) {
-    value = value || this.dependent.val();
+    value = value || this.dependent.value;
 
     // Empty mark
     if (value === '') {
