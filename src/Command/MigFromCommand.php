@@ -138,9 +138,6 @@ class MigFromCommand implements CommandInterface
                     WINDWALKER_MIGRATIONS,
                     $groupName . 'Init',
                     __DIR__ . '/../../../core/resources/templates/migration/*',
-                    [
-                        'version_format' => 'YmdHisu'
-                    ]
                 );
 
                 $dest = $files->getResults()[0];
