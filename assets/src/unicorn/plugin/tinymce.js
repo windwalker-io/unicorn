@@ -149,13 +149,13 @@ export class TinymceEditor {
     xhr.addEventListener('load', () => {
       element.dispatchEvent(new CustomEvent('upload-complete'));
 
+      const json = JSON.parse(xhr.responseText);
+
       if (xhr.status !== 200 && xhr.status !== 204) {
-        failure('HTTP Error: ' + decodeURIComponent(xhr.statusText), { remove: true });
+        failure('HTTP Error: ' + decodeURIComponent(json?.message || xhr.statusText), { remove: true });
         element.dispatchEvent(new CustomEvent('upload-error'));
         return;
       }
-
-      const json = JSON.parse(xhr.responseText);
 
       if (!json || typeof json.data.url !== 'string') {
         failure('Invalid JSON: ' + xhr.responseText, { remove: true });

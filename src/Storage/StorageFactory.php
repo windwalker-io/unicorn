@@ -66,7 +66,8 @@ class StorageFactory
         );
     }
 
-    public function s3Service(array $options = []): S3Service {
+    public function s3Service(array $options = []): S3Service
+    {
         $s3Client = $this->s3Client($options);
 
         return new S3Service($s3Client, $options);
@@ -74,6 +75,10 @@ class StorageFactory
 
     public function s3Client(array $options = []): S3Client
     {
+        if (!class_exists(S3Client::class)) {
+            throw new \DomainException('Please install `aws/aws-sdk-php` first.');
+        }
+
         $credentials = $options['credentials']
             ?? new Credentials($options['access_key'] ?? '', $options['secret'] ?? '');
 
