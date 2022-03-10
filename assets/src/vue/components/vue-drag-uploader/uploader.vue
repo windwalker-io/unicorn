@@ -75,7 +75,7 @@
     },
     props: {
       url: String,
-      value: Array,
+      modelValue: Array,
       maxFiles: [String, Number],
       thumbSize: Number,
       placeholder: String,
@@ -96,19 +96,19 @@
         items: [],
         uploadQueue: {}
       });
-      const value = computed(() => props.value);
+      const value = computed(() => props.modelValue);
 
       onMounted(() => {
         prepareSelectEvents(el, uploadFiles);
       });
 
       // Created
-      props.value.map(item => {
+      props.modelValue.map(item => {
         item.key = item.key || getKey();
         item.uploadState = itemStates.COMPLETED;
       });
 
-      state.items.push(...props.value);
+      state.items.push(...props.modelValue);
 
       if (props.maxFiles != null) {
         if (props.maxFiles < state.items.length) {
@@ -292,8 +292,7 @@
       }, { deep: true });
 
       watch(() => state.items, (items) => {
-        emit('change', items);
-        emit('input', items);
+        emit('update:modelValue', items);
       }, { deep: true });
 
       watch(uploading, (val) => {
