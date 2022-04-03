@@ -11,7 +11,6 @@ declare(strict_types=1);
 
 namespace Unicorn\Enum;
 
-use Windwalker\Core\Enum\EnumWrappableTrait;
 use Windwalker\Utilities\Contract\LanguageInterface;
 use Windwalker\Utilities\Enum\EnumTranslatableInterface;
 use Windwalker\Utilities\Enum\EnumTranslatableTrait;
@@ -19,10 +18,9 @@ use Windwalker\Utilities\Enum\EnumTranslatableTrait;
 /**
  * The BaseState class.
  */
-enum BaseState: int  implements EnumTranslatableInterface
+enum BaseState: int implements EnumTranslatableInterface
 {
     use EnumTranslatableTrait;
-    use EnumWrappableTrait;
 
     case PUBLISHED = 1;
     case UNPUBLISHED = 0;

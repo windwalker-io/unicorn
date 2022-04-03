@@ -17,6 +17,7 @@ use Unicorn\Workflow\WorkflowController;
 use Windwalker\Core\Language\LangService;
 use Windwalker\DI\Attributes\AttributeHandler;
 use Windwalker\DI\Attributes\ContainerAttributeInterface;
+use Windwalker\Utilities\Enum\EnumMetaInterface;
 use Windwalker\Utilities\Enum\EnumTranslatableInterface;
 
 /**
@@ -32,8 +33,8 @@ class StateMachine implements ContainerAttributeInterface
         public string $field,
         public ?string $enum = null,
         public bool $strict = false,
-    )
-    {
+    ) {
+        //
     }
 
     public function __invoke(AttributeHandler $handler): callable
@@ -53,6 +54,17 @@ class StateMachine implements ContainerAttributeInterface
                 if (is_subclass_of($class, EnumTranslatableInterface::class)) {
                     $lang = $container->get(LangService::class);
                     $workflow->setStateTitles($class::getTransItems($lang));
+                }
+
+                if (is_subclass_of($class, EnumMetaInterface::class)) {
+                    show($class::getIcons());
+                    foreach ($class::getIcons() as $state => $icon) {
+                        $workflow->getState($state)?->icon($icon);
+                    }
+
+                    foreach ($class::getColors() as $state => $icon) {
+                        $workflow->getState($state)?->color($icon);
+                    }
                 }
             }
 
