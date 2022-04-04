@@ -209,6 +209,8 @@ class SingleImageDrag extends HTMLElement {
   toolbarClicked(button, event) {
     const cropper = this.getCropper();
 
+    const data = cropper.getData();
+
     switch (button.dataset.sidToolbar) {
       case 'zoom-in':
         cropper.zoom(0.1);
@@ -227,11 +229,11 @@ class SingleImageDrag extends HTMLElement {
         break;
 
       case 'scale-x':
-        cropper.scale(-1, 1);
+        cropper.scaleX(-data.scaleX);
         break;
 
       case 'scale-y':
-        cropper.scale(1, -1);
+        cropper.scaleY(-data.scaleY);
         break;
     }
   }
@@ -248,7 +250,8 @@ class SingleImageDrag extends HTMLElement {
       'image/jpeg',
       'image/png',
       'image/webp',
-      'image/gif'
+      'image/avif',
+      'image/gif',
     ];
 
     accept = this.options.accept || accept;
