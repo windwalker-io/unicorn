@@ -221,9 +221,13 @@ class FileUploadService implements EventAwareInterface
 
     public function resizeImage(StreamInterface|UploadedFileInterface $src): StreamInterface
     {
+        $outputFormat = null;
+
         // Must sve image to temp file to support image exif.
         // @see https://github.com/Intervention/image/issues/745
         if ($src instanceof UploadedFileInterface) {
+            $outputFormat = Path::getExtension($src->getClientFilename());
+
             $tmp = Filesystem::createTemp(WINDWALKER_TEMP . '/unicorn/upload');
 
             register_shutdown_function(fn() => Filesystem::delete($tmp->getPathname()));
@@ -270,7 +274,7 @@ class FileUploadService implements EventAwareInterface
         }
 
         return $image->stream(
-            $resizeConfig['output_format'],
+            $resizeConfig['output_format'] ?? $outputFormat,
             $resizeConfig['quality']
         );
     }

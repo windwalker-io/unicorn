@@ -11,6 +11,7 @@ class SingleImageDrag extends HTMLElement {
   static is = 'uni-sid';
 
   currentImage = '';
+  currentFile;
   lastZoom = 0;
   valueBackup = '';
 
@@ -160,6 +161,7 @@ class SingleImageDrag extends HTMLElement {
       reader.addEventListener('load', (event) => {
         this.cropContainer.style.visibility = 'hidden';
         this.currentImage = event.target.result;
+        this.currentFile = file;
 
         // After modal shown, cropper will auto load.
         this.modal.show();
@@ -179,7 +181,7 @@ class SingleImageDrag extends HTMLElement {
         imageSmoothingEnabled: true
       })
       .toBlob((blob) => {
-        const file = new File([ blob ], 'image.png');
+        const file = new File([ blob ], this.currentFile.name, { type: 'image/png' });
         this.saveImage(file);
       }, 'image/png');
   }

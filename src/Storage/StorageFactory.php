@@ -60,6 +60,10 @@ class StorageFactory
 
     public function s3Storage(array $options = []): S3Storage
     {
+        if (!class_exists(S3Client::class) || !interface_exists(MimeTypesInterface::class)) {
+            throw new \DomainException('Please install `aws/aws-sdk-php symfony/mime` first.');
+        }
+
         return new S3Storage(
             $this->s3Service($options),
             $this->container->get(MimeTypesInterface::class)
