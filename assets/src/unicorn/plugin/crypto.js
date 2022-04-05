@@ -37,7 +37,10 @@ export default class UnicornCrypto {
    * @returns {string}
    */
   base64Encode(string) {
-    return btoa(string);
+    return btoa(String(string))
+      .replace(/\+/, '-')
+      .replace(new RegExp('\\/'), '_')
+      .replace(/=+$/, '');
   }
 
   /**
@@ -48,7 +51,11 @@ export default class UnicornCrypto {
    * @returns {string}
    */
   base64Decode(string) {
-    return atob(string);
+    return atob(
+      String(string)
+        .replace(/-/, '+')
+        .replace(/_/, '/')
+    );
   }
 
   /**
