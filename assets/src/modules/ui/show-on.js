@@ -32,8 +32,18 @@ class ShowOn {
         this.readonly = this.input.hasAttribute('readonly');
       }
 
-      target.addEventListener('change', () => {
-        this.updateShowState(target, value);
+      let listenTarget;
+
+      if (target.nodeName === 'DIV') {
+        listenTarget = target.querySelectorAll('input, sellect, textarea');
+      } else {
+        listenTarget = [target];
+      }
+
+      u.selectAll(listenTarget, (ele) => {
+        ele.addEventListener('change', () => {
+          this.updateShowState(target, value);
+        });
       });
 
       this.updateShowState(target, value, 1);

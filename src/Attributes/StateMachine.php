@@ -57,13 +57,12 @@ class StateMachine implements ContainerAttributeInterface
                 }
 
                 if (is_subclass_of($class, EnumMetaInterface::class)) {
-                    show($class::getIcons());
                     foreach ($class::getIcons() as $state => $icon) {
-                        $workflow->getState($state)?->icon($icon);
+                        $workflow->getState((string) $state)?->icon($icon);
                     }
 
                     foreach ($class::getColors() as $state => $icon) {
-                        $workflow->getState($state)?->color($icon);
+                        $workflow->getState((string) $state)?->color($icon);
                     }
                 }
             }
