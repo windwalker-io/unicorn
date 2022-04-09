@@ -23,6 +23,7 @@ use Unicorn\Storage\PutResult;
 use Unicorn\Storage\StorageInterface;
 use Unicorn\Storage\StorageManager;
 use Unicorn\Upload\Event\FileUploadedEvent;
+use Unicorn\Upload\Exception\FileUploadException;
 use Windwalker\Event\EventAwareInterface;
 use Windwalker\Event\EventAwareTrait;
 use Windwalker\Filesystem\Filesystem;
@@ -149,10 +150,7 @@ class FileUploadService implements EventAwareInterface
     public function handleFile(UploadedFileInterface $file, ?string $dest = null, array $options = []): PutResult
     {
         if ($file->getError() !== UPLOAD_ERR_OK) {
-            throw new \RuntimeException(
-                'Upload error: ' . UploadedFileHelper::getUploadMessage($file->getError()),
-                400
-            );
+            $this->throwUploadError($file);
         }
 
         $storage = $this->getStorage();
@@ -352,6 +350,32 @@ class FileUploadService implements EventAwareInterface
                 '{second}' => $chronos->format('s'),
                 '{ext}' => $ext,
             ]
+        );
+    }
+
+    /**
+     * throwUploadError
+     *
+     * @param  UploadedFileInterface  $file
+     *
+     * @return  void
+     */
+    protected function throwUploadError(UploadedFileInterface $file): void
+    {
+        $msg = 'Upload error: ' . UploadedFileHelper::getUploadMessage($file->getError());
+
+        if ($file->getError() === UPLOAD_ERR_INI_SIZE) {
+            $msg .= ' - The upload max file size is: ' . ini_get('upload_max_filesize');
+        }
+
+        if ($file->getError() === UPLOAD_ERR_FORM_SIZE) {
+            $msg .= ' - The form post size is: ' . ini_get('post_max_size');
+        }
+
+        throw new FileUploadException(
+            $msg,
+            400,
+            $file
         );
     }
 }

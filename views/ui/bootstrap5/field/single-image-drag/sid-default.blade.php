@@ -198,10 +198,14 @@ $options['modalTarget'] = '#' . $field->getId('__modal');
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default btn-outline-secondary" data-bs-dismiss="modal">
+                    <i class="fa fa-times"></i>
                     @lang('unicorn.field.sid.close')
                 </button>
                 <button type="button" class="btn btn-primary"
-                    data-sid="save-button">
+                    data-sid="save-button"
+                    style="width: 150px"
+                >
+                    <i class="fa fa-check"></i>
                     @lang('unicorn.field.sid.ok')
                 </button>
             </div>
