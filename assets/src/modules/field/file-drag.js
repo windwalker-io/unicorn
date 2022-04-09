@@ -48,6 +48,13 @@ class FileDrag extends HTMLElement {
     });
 
     this.onChange();
+
+    this.element.addEventListener('change', (e) => {
+      this.onChange(e);
+    });
+    this.element.addEventListener('input', (e) => {
+      this.onChange(e);
+    });
   }
 
   onChange(e) {
@@ -67,8 +74,6 @@ class FileDrag extends HTMLElement {
 
         return v;
       });
-
-    console.log(accepted);
 
     let text;
 
