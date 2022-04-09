@@ -78,16 +78,7 @@ class UnicornPackage extends AbstractPackage implements
      */
     public function bootDeferred(Container $container): void
     {
-        // if ($container->getParam('unicorn.csrf.auto_set_cookie')) {
-        //     $name = $container->getParam('unicorn.csrf.cookie_name') ?? 'XSRF-TOKEN';
-        //     $csrf = $container->get(CsrfService::class);
         //
-        //     if ($container->has(Cookies::class)) {
-        //         $container->get(Cookies::class)->set($name, $csrf->getToken());
-        //     } else {
-        //         setcookie($name, $csrf);
-        //     }
-        // }
     }
 
     /**
@@ -228,7 +219,7 @@ class UnicornPackage extends AbstractPackage implements
     public function install(PackageInstaller $installer): void
     {
         $installer->installConfig(__DIR__ . '/../etc/*.php', 'config');
-        $installer->installRoutes(__DIR__ . '/../routes/*.php', 'routes');
+        $installer->installRoutes(__DIR__ . '/../routes/**/*.php', 'routes');
         $installer->installLanguages(__DIR__ . '/../resources/languages/**/*', 'lang');
     }
 }

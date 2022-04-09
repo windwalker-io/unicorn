@@ -13,6 +13,7 @@ namespace Unicorn\Controller;
 
 use Unicorn\Repository\DatabaseRepositoryInterface;
 use Windwalker\Core\Application\AppContext;
+use Windwalker\Core\Language\TranslatorTrait;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\RouteUri;
 use Windwalker\ORM\NestedSetMapper;
@@ -22,6 +23,8 @@ use Windwalker\ORM\NestedSetMapper;
  */
 class NestedSetController
 {
+    use TranslatorTrait;
+
     public function rebuild(AppContext $app, DatabaseRepositoryInterface $repository, Navigator $nav): RouteUri
     {
         /** @var NestedSetMapper $mapper */
@@ -29,7 +32,7 @@ class NestedSetController
 
         $mapper->rebuild(1);
 
-        $app->addMessage('Rebuild tree success', 'success');
+        $app->addMessage($this->trans('unicorn.message.batch.rebuild.success'), 'success');
 
         return $nav->back();
     }

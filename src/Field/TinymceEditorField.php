@@ -13,10 +13,11 @@ namespace Unicorn\Field;
 
 use Unicorn\Script\EditorScript;
 use Windwalker\Core\Asset\AssetService;
-use Windwalker\Core\Router\Navigator;
+use Windwalker\Core\Language\TranslatorTrait;
 use Windwalker\Core\Router\SystemUri;
 use Windwalker\DI\Attributes\Inject;
 use Windwalker\DOM\DOMElement;
+use Windwalker\Language\LanguageNormalizer;
 use Windwalker\Uri\UriNormalizer;
 use Windwalker\Utilities\Arr;
 
@@ -33,6 +34,7 @@ use Windwalker\Utilities\Arr;
  */
 class TinymceEditorField extends AbstractEditorField
 {
+    use TranslatorTrait;
     use FileUploadFieldTrait;
 
     public const TOOLBAR_SIMPLE = 'simple';
@@ -107,26 +109,30 @@ class TinymceEditorField extends AbstractEditorField
         $defaultOptions['plugins'] = [];
 
         $toolbar = $this->getToolbar() ?: static::TOOLBAR_FULL;
-        $defaultOptions['toolbar1'] = '';
+        $defaultOptions['font_size_formats'] = '13px 14px 15px 16px 18px 20px 22px 28px 36px 48px';
+        $defaultOptions['toolbar_mode'] = 'sliding';
+        $defaultOptions['toolbar'] = '';
 
         if ($toolbar === static::TOOLBAR_FULL) {
             $defaultOptions['plugins'] = [
-                'advlist autolink lists link image charmap print preview hr anchor pagebreak',
-                'searchreplace wordcount visualblocks visualchars code fullscreen',
-                'insertdatetime media nonbreaking save table directionality',
-                'emoticons template paste textpattern textpattern',
+                'advlist', 'autolink', 'lists', 'link', 'image', 'charmap',
+                'preview', 'anchor', 'pagebreak', 'searchreplace', 'wordcount',
+                'visualblocks', 'visualchars', 'code', 'fullscreen', 'insertdatetime',
+                'media', 'nonbreaking', 'save', 'table', 'directionality',
+                'emoticons', 'template',
             ];
 
-            $defaultOptions['toolbar1'] = 'insertfile undo redo | styleselect formatselect fontsizeselect ' .
-                '| bold italic strikethrough forecolor backcolor | removeformat ' .
-                '| alignleft aligncenter alignright alignjustify | bullist numlist outdent indent ' .
-                '| link image media | table code | fullscreen';
+            $defaultOptions['toolbar'] = 'undo redo ' .
+                'bold italic strikethrough forecolor backcolor removeformat | ' .
+                'alignleft aligncenter alignright alignjustify bullist numlist outdent indent | ' .
+                'blocks fontsize styles styleselect formatselect fontsizeselect | ' .
+                'link image media table code | fullscreen';
 
             $defaultOptions['image_advtab'] = true;
         }
 
         if ($options['extra_buttons'] ?? null) {
-            $defaultOptions['toolbar1'] .= ' ' . implode(
+            $defaultOptions['toolbar'] .= ' ' . implode(
                 ' ',
                 (array) $options['extra_buttons']
             );
@@ -139,18 +145,29 @@ class TinymceEditorField extends AbstractEditorField
 
         $defaultOptions['readonly'] = (bool) ($this->isReadonly() || $this->isDisabled());
 
+        //Tables
+        $defaultOptions['table_class_list'] = [
+            ['title' => 'BS Simple', 'value' => 'table'],
+            ['title' => 'BS Striped', 'value' => 'table table-striped'],
+            ['title' => 'BS Bordered', 'value' => 'table table-bordered'],
+            ['title' => 'BS Striped Bordered', 'value' => 'table table-striped table-bordered'],
+            ['title' => 'None', 'value' => ''],
+        ];
+
+        // Templates
+        // $defaultOptions['templates'] = [];
+
         $options = Arr::mergeRecursive($defaultOptions, static::$defaultOptions, $options);
 
         // Language
-        // $this->loadLanguage($options);
+        $options = $this->loadLanguage($options);
 
         // Set global settings
         $contentCss = (array) ($options['content_css'] ?? $this->getContentCss());
 
-        array_unshift(
-            $contentCss,
-            $this->assetService->handleUri('@unicorn/editor.css')
-        );
+        if ($contentCss === []) {
+            $contentCss = [$this->assetService->handleUri('@unicorn/editor.css')];
+        }
 
         $options['content_css'] = implode(',', $contentCss);
 
@@ -184,5 +201,46 @@ class TinymceEditorField extends AbstractEditorField
                 'imageUploadUrl',
             ]
         );
+    }
+
+    /**
+     * Please install `tinymce-i18n` from npm first.
+     *
+     * @param  array  $options
+     *
+     * @return  array
+     *
+     * @throws \Exception
+     */
+    protected function loadLanguage(array $options): array
+    {
+        if ($options['language_url'] ?? null) {
+            return $options;
+        }
+
+        $lang = $this->lang->getLocale() ?: $this->lang->getFallback();
+        [$first] = explode('-', $lang, 2);
+        $lang = LanguageNormalizer::shortLangCode($lang);
+
+        $assetFolder = $this->assetService->getAssetFolder();
+
+        // Check vendor path
+        $langPath = WINDWALKER_PUBLIC . '/' . $assetFolder . '/vendor/tinymce-i18n/langs5/' . $lang . '.js';
+        $langUrl = $this->assetService->root('vendor/tinymce-i18n/langs5/' . $lang . '.js');
+
+        if (!is_file($langPath)) {
+            $langPath = WINDWALKER_PUBLIC . '/' . $assetFolder . '/vendor/tinymce-i18n/langs5/' . $first . '.js';
+            $langUrl = $this->assetService->root('vendor/tinymce-i18n/langs5/' . $first . '.js');
+            $lang = $first;
+        }
+
+        if (is_file($langPath)) {
+            $options['language'] = $lang;
+            $options['language_url'] = $langUrl;
+        } elseif (!str_starts_with($lang, 'en') && WINDWALKER_DEBUG) {
+            $this->assetService->internalJS("console.warn('Install `tinymce-i18n` to support $lang.');");
+        }
+
+        return $options;
     }
 }

@@ -24,7 +24,6 @@ use Windwalker\Utilities\Symbol;
  */
 class BatchAction extends AbstractDatabaseAction
 {
-    use TranslatorTrait;
     use FormAwareActionTrait;
 
     protected ?Symbol $emptySymbol = null;

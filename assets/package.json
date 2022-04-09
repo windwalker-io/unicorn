@@ -33,7 +33,7 @@
     "flatpickr": "^4.6.9",
     "sortablejs": "^1.13.0",
     "systemjs": "^6.8.3",
-    "tinymce": "^5.8.0",
+    "tinymce": "^5.8.0||^6.0",
     "tom-select": "^2.0.0",
     "vue2-animate": "^2.1.4"
   },
@@ -89,6 +89,7 @@
       "systemjs",
       "sortablejs",
       "tinymce",
+      "tinymce-i18n",
       "vue",
       "sortablejs",
       "vuedraggable",

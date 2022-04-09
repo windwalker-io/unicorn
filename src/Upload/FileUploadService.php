@@ -23,6 +23,7 @@ use Unicorn\Storage\PutResult;
 use Unicorn\Storage\StorageInterface;
 use Unicorn\Storage\StorageManager;
 use Unicorn\Upload\Event\FileUploadedEvent;
+use Unicorn\Upload\Exception\FileUploadException;
 use Windwalker\Event\EventAwareInterface;
 use Windwalker\Event\EventAwareTrait;
 use Windwalker\Filesystem\Filesystem;
@@ -42,6 +43,7 @@ class FileUploadService implements EventAwareInterface
     use OptionsResolverTrait;
 
     public const DRIVER_GD = 'gd';
+
     public const DRIVER_IMAGICK = 'imagick';
 
     /**
@@ -87,6 +89,14 @@ class FileUploadService implements EventAwareInterface
             ->allowedTypes('string', 'null')
             ->default(null);
 
+        $resolver->define('force_redraw')
+            ->allowedTypes('bool')
+            ->default(false);
+
+        $resolver->define('raw_gif')
+            ->allowedTypes('bool')
+            ->default(false);
+
         $resolver->define('storage')
             ->allowedTypes('string', 'null')
             ->default('local');
@@ -115,12 +125,12 @@ class FileUploadService implements EventAwareInterface
     {
         $storage = $this->getStorage();
         $stream = Base64DataUri::toStream($file, $mime);
+        $ext = $this->mimeTypes->getExtensions($mime)[0] ?? null;
 
-        if (str_starts_with($mime, 'image/')) {
+        if (str_starts_with($mime, 'image/') && $this->shouldResize($ext)) {
             $stream = $this->resizeImage($stream);
         }
 
-        $ext = $this->mimeTypes->getExtensions($mime)[0] ?? null;
         $dest ??= $this->getUploadPath($dest, $ext);
 
         $dest = static::replaceVariables($dest, (string) $ext);
@@ -140,10 +150,7 @@ class FileUploadService implements EventAwareInterface
     public function handleFile(UploadedFileInterface $file, ?string $dest = null, array $options = []): PutResult
     {
         if ($file->getError() !== UPLOAD_ERR_OK) {
-            throw new \RuntimeException(
-                'Upload error: ' . UploadedFileHelper::getUploadMessage($file->getError()),
-                400
-            );
+            $this->throwUploadError($file);
         }
 
         $storage = $this->getStorage();
@@ -151,7 +158,7 @@ class FileUploadService implements EventAwareInterface
         $dest ??= $this->getUploadPath($dest, $ext);
         $dest = static::replaceVariables($dest, $ext);
 
-        if ($this->isImage($file)) {
+        if ($this->isImage($file) && $this->shouldResize($ext)) {
             $stream = $this->resizeImage($file);
         } else {
             $stream = $file->getStream();
@@ -219,8 +226,19 @@ class FileUploadService implements EventAwareInterface
         return $type !== null && str_starts_with($type, 'image/');
     }
 
-    public function resizeImage(StreamInterface|UploadedFileInterface $src): StreamInterface
+    protected function shouldResize(string $ext): bool
     {
+        if ($this->options['raw_gif'] && strtolower($ext) === 'gif') {
+            return false;
+        }
+
+        return $this->options['resize']['enabled'] || $this->options['force_redraw'];
+    }
+
+    public function resizeImage(
+        StreamInterface|UploadedFileInterface $src,
+        array $resizeConfig = []
+    ): StreamInterface {
         $outputFormat = null;
 
         // Must sve image to temp file to support image exif.
@@ -236,7 +254,10 @@ class FileUploadService implements EventAwareInterface
             $src = $tmp->getPathname();
         }
 
-        $resizeConfig = $this->options['resize'];
+        $resizeConfig = array_merge(
+            $this->options['resize'],
+            $resizeConfig
+        );
 
         $manager = new ImageManager(['driver' => $driver = $resizeConfig['driver']]);
         $image = $manager->make($src);
@@ -329,6 +350,32 @@ class FileUploadService implements EventAwareInterface
                 '{second}' => $chronos->format('s'),
                 '{ext}' => $ext,
             ]
+        );
+    }
+
+    /**
+     * throwUploadError
+     *
+     * @param  UploadedFileInterface  $file
+     *
+     * @return  void
+     */
+    protected function throwUploadError(UploadedFileInterface $file): void
+    {
+        $msg = 'Upload error: ' . UploadedFileHelper::getUploadMessage($file->getError());
+
+        if ($file->getError() === UPLOAD_ERR_INI_SIZE) {
+            $msg .= ' - The upload max file size is: ' . ini_get('upload_max_filesize');
+        }
+
+        if ($file->getError() === UPLOAD_ERR_FORM_SIZE) {
+            $msg .= ' - The form post size is: ' . ini_get('post_max_size');
+        }
+
+        throw new FileUploadException(
+            $msg,
+            400,
+            $file
         );
     }
 }
