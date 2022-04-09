@@ -13,18 +13,24 @@ namespace Unicorn\Repository\Actions;
 
 use Windwalker\Core\Form\Exception\ValidateFailException;
 use Windwalker\Core\Form\FormFactory;
+use Windwalker\Core\Language\TranslatorTrait;
 use Windwalker\Core\Service\FilterService;
 use Windwalker\DI\Attributes\Inject;
 use Windwalker\Filter\Exception\ValidateException;
 use Windwalker\Form\FieldDefinitionInterface;
 use Windwalker\Form\Form;
+use Windwalker\Form\ValidateResult;
 use Windwalker\Utilities\Arr;
+
+use function Windwalker\collect;
 
 /**
  * Trait FormAwareActionTrait
  */
 trait FormAwareActionTrait
 {
+    use TranslatorTrait;
+
     #[Inject]
     protected FormFactory $formFactory;
 
@@ -84,15 +90,21 @@ trait FormAwareActionTrait
             $resultSet = $form->validate($data);
 
             if ($resultSet->isFailure()) {
-                $first = $resultSet->getFirstFailure();
+                $messages = collect($resultSet->getResults())
+                    ->filter(fn (ValidateResult $result) => $result->isFailure())
+                    ->map(function (ValidateResult $result) {
+                        $field = $result->getField();
+                        $name = $field->getName();
 
-                if ($first) {
-                    throw new ValidateFailException(
-                        sprintf(
-                            'Field: %s validate fail.',
-                            $first->getField()->getName()
-                        )
-                    );
+                        if ($field->getLabelName()) {
+                            $name .= " ({$field->getLabelName()})";
+                        }
+
+                        return $this->trans('unicorn.message.validation.failure', $name);
+                    });
+
+                if (count($messages)) {
+                    throw new ValidateFailException($messages->dump());
                 }
             }
 

@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace Unicorn\Repository\Actions;
 
 use Unicorn\Repository\Event\PrepareSaveEvent;
+use Windwalker\Core\Language\TranslatorTrait;
 use Windwalker\Form\FieldDefinitionInterface;
 use Windwalker\ORM\Event\AfterSaveEvent;
 use Windwalker\ORM\Event\BeforeSaveEvent;
