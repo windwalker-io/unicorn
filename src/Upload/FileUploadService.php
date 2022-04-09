@@ -42,6 +42,7 @@ class FileUploadService implements EventAwareInterface
     use OptionsResolverTrait;
 
     public const DRIVER_GD = 'gd';
+
     public const DRIVER_IMAGICK = 'imagick';
 
     /**
@@ -87,6 +88,14 @@ class FileUploadService implements EventAwareInterface
             ->allowedTypes('string', 'null')
             ->default(null);
 
+        $resolver->define('force_redraw')
+            ->allowedTypes('bool')
+            ->default(false);
+
+        $resolver->define('raw_gif')
+            ->allowedTypes('bool')
+            ->default(false);
+
         $resolver->define('storage')
             ->allowedTypes('string', 'null')
             ->default('local');
@@ -115,12 +124,12 @@ class FileUploadService implements EventAwareInterface
     {
         $storage = $this->getStorage();
         $stream = Base64DataUri::toStream($file, $mime);
+        $ext = $this->mimeTypes->getExtensions($mime)[0] ?? null;
 
-        if (str_starts_with($mime, 'image/')) {
+        if (str_starts_with($mime, 'image/') && $this->shouldResize($ext)) {
             $stream = $this->resizeImage($stream);
         }
 
-        $ext = $this->mimeTypes->getExtensions($mime)[0] ?? null;
         $dest ??= $this->getUploadPath($dest, $ext);
 
         $dest = static::replaceVariables($dest, (string) $ext);
@@ -151,7 +160,7 @@ class FileUploadService implements EventAwareInterface
         $dest ??= $this->getUploadPath($dest, $ext);
         $dest = static::replaceVariables($dest, $ext);
 
-        if ($this->isImage($file)) {
+        if ($this->isImage($file) && $this->shouldResize($ext)) {
             $stream = $this->resizeImage($file);
         } else {
             $stream = $file->getStream();
@@ -219,8 +228,19 @@ class FileUploadService implements EventAwareInterface
         return $type !== null && str_starts_with($type, 'image/');
     }
 
-    public function resizeImage(StreamInterface|UploadedFileInterface $src): StreamInterface
+    protected function shouldResize(string $ext): bool
     {
+        if ($this->options['raw_gif'] && strtolower($ext) === 'gif') {
+            return false;
+        }
+
+        return $this->options['resize']['enabled'] || $this->options['force_redraw'];
+    }
+
+    public function resizeImage(
+        StreamInterface|UploadedFileInterface $src,
+        array $resizeConfig = []
+    ): StreamInterface {
         $outputFormat = null;
 
         // Must sve image to temp file to support image exif.
@@ -236,7 +256,10 @@ class FileUploadService implements EventAwareInterface
             $src = $tmp->getPathname();
         }
 
-        $resizeConfig = $this->options['resize'];
+        $resizeConfig = array_merge(
+            $this->options['resize'],
+            $resizeConfig
+        );
 
         $manager = new ImageManager(['driver' => $driver = $resizeConfig['driver']]);
         $image = $manager->make($src);
