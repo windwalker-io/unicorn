@@ -21,7 +21,9 @@ use Windwalker\Core\View\View;
 use Windwalker\Event\EventAwareInterface;
 use Windwalker\Event\EventAwareTrait;
 use Windwalker\Form\FieldDefinitionInterface;
+use Windwalker\ORM\Event\AfterDeleteEvent;
 use Windwalker\ORM\Event\AfterSaveEvent;
+use Windwalker\ORM\Event\BeforeDeleteEvent;
 use Windwalker\ORM\Event\BeforeSaveEvent;
 use Windwalker\ORM\NestedSetMapper;
 
@@ -113,22 +115,18 @@ class CrudController implements EventAwareInterface
         $mapper = $repository->getEntityMapper();
         $key    = $mapper->getMainKey() ?? 'id';
 
-        try {
-            $repository->getDb()->transaction(fn() => $repository->delete([$key => $ids]));
+        $mapper->getORM()->addEventDealer($this);
 
-            if (!$this->isMuted()) {
-                $app->addMessage(
-                    $this->lang->trans("batch.delete.success", count($ids)),
-                    'success'
-                );
-            }
+        $repository->getDb()->transaction(fn() => $repository->delete([$key => $ids]));
 
-            return $nav->back();
-        } catch (\Throwable $e) {
-            $app->addMessage($e->getMessage());
-
-            throw $e;
+        if (!$this->isMuted()) {
+            $app->addMessage(
+                $this->lang->trans("batch.delete.success", count($ids)),
+                'success'
+            );
         }
+
+        return $nav->back();
     }
 
     public function prepareSave(callable $handler): static
@@ -148,6 +146,20 @@ class CrudController implements EventAwareInterface
     public function afterSave(callable $handler): static
     {
         $this->on(AfterSaveEvent::class, $handler);
+
+        return $this;
+    }
+
+    public function beforeDelete(callable $handler): static
+    {
+        $this->on(BeforeDeleteEvent::class, $handler);
+
+        return $this;
+    }
+
+    public function afterDelete(callable $handler): static
+    {
+        $this->on(AfterDeleteEvent::class, $handler);
 
         return $this;
     }
