@@ -89,6 +89,7 @@
       "systemjs",
       "sortablejs",
       "tinymce",
+      "tinymce-i18n",
       "vue",
       "sortablejs",
       "vuedraggable",

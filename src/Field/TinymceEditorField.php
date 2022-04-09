@@ -13,10 +13,11 @@ namespace Unicorn\Field;
 
 use Unicorn\Script\EditorScript;
 use Windwalker\Core\Asset\AssetService;
-use Windwalker\Core\Router\Navigator;
+use Windwalker\Core\Language\TranslatorTrait;
 use Windwalker\Core\Router\SystemUri;
 use Windwalker\DI\Attributes\Inject;
 use Windwalker\DOM\DOMElement;
+use Windwalker\Language\LanguageNormalizer;
 use Windwalker\Uri\UriNormalizer;
 use Windwalker\Utilities\Arr;
 
@@ -33,6 +34,7 @@ use Windwalker\Utilities\Arr;
  */
 class TinymceEditorField extends AbstractEditorField
 {
+    use TranslatorTrait;
     use FileUploadFieldTrait;
 
     public const TOOLBAR_SIMPLE = 'simple';
@@ -142,7 +144,7 @@ class TinymceEditorField extends AbstractEditorField
         $options = Arr::mergeRecursive($defaultOptions, static::$defaultOptions, $options);
 
         // Language
-        // $this->loadLanguage($options);
+        $options = $this->loadLanguage($options);
 
         // Set global settings
         $contentCss = (array) ($options['content_css'] ?? $this->getContentCss());
@@ -184,5 +186,46 @@ class TinymceEditorField extends AbstractEditorField
                 'imageUploadUrl',
             ]
         );
+    }
+
+    /**
+     * Please install `tinymce-i18n` from npm first.
+     *
+     * @param  array  $options
+     *
+     * @return  array
+     *
+     * @throws \Exception
+     */
+    protected function loadLanguage(array $options): array
+    {
+        if ($options['language_url'] ?? null) {
+            return $options;
+        }
+
+        $lang = $this->lang->getLocale() ?: $this->lang->getFallback();
+        [$first] = explode('-', $lang, 2);
+        $lang = LanguageNormalizer::shortLangCode($lang);
+
+        $assetFolder = $this->assetService->getAssetFolder();
+
+        // Check vendor path
+        $langPath = WINDWALKER_PUBLIC . '/' . $assetFolder . '/vendor/tinymce-i18n/langs5/' . $lang . '.js';
+        $langUrl = $this->assetService->root('vendor/tinymce-i18n/langs5/' . $lang . '.js');
+
+        if (!is_file($langPath)) {
+            $langPath = WINDWALKER_PUBLIC . '/' . $assetFolder . '/vendor/tinymce-i18n/langs5/' . $first . '.js';
+            $langUrl = $this->assetService->root('vendor/tinymce-i18n/langs5/' . $first . '.js');
+            $lang = $first;
+        }
+
+        if (is_file($langPath)) {
+            $options['language'] = $lang;
+            $options['language_url'] = $langUrl;
+        } elseif (!str_starts_with($lang, 'en') && WINDWALKER_DEBUG) {
+            $this->assetService->internalJS("console.warn('Install `tinymce-i18n` to support $lang.');");
+        }
+
+        return $options;
     }
 }
