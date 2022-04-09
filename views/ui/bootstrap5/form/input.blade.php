@@ -57,9 +57,50 @@ if ($floating) {
 }
 
 $fieldElement = $field->buildFieldElement($inputElement, $options);
+
+// Append / Prepend
+$prepend = (array) $field->get('prepend');
+$append = (array) $field->get('append');
+
+$inputGroup = $append || $prepend;
 ?>
 
-{!! $fieldElement !!}
+@if ($inputGroup)
+    <?php
+    if (is_string($prepend)) {
+        $prepend = \Windwalker\DOM\h('div', ['class' => 'input-group-text'], $prepend);
+    }
+
+    ?>
+    <x-input-group class="c-field-input-group">
+        <x-slot name="start">
+        @foreach ($prepend as $h)
+            <?php
+                if (is_string($h)) {
+                    $h = \Windwalker\DOM\h('div', ['class' => 'input-group-text'], $h);
+                }
+
+                echo $h;
+            ?>
+        @endforeach
+
+        </x-slot>
+        {!! $fieldElement !!}
+        <x-slot name="end">
+            @foreach ($append as $h)
+                <?php
+                if (is_string($h)) {
+                    $h = \Windwalker\DOM\h('div', ['class' => 'input-group-text'], $h);
+                }
+
+                echo $h;
+                ?>
+            @endforeach
+        </x-slot>
+    </x-input-group>
+@else
+    {!! $fieldElement !!}
+@endif
 
 @if ($end ?? null)
     {!! $end(field: $field, input: $inputElement) !!}
