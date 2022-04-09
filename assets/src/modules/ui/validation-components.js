@@ -336,7 +336,7 @@ class UnicornFieldValidation {
           }
 
           if (this.$input.validationMessage === '') {
-            this.$input.setCustomValidity('Value type mismatch');
+            this.$input.setCustomValidity(u.__('unicorn.message.validation.custom.error'));
           }
 
           result = false;
