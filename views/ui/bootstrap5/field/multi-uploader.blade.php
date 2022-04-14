@@ -47,7 +47,7 @@ $data['tmplSelector'] ??= '#' . $tmplId;
 <script id="{{ $tmplId }}" type="x-template">
     <vue-drag-uploader
         id="{{ $field->getId() }}"
-        :value="value"
+        :model-value="value"
         :url="uploadUrl"
         :max-files="maxFiles"
         :thumb-size="thumbSize"
@@ -56,6 +56,7 @@ $data['tmplSelector'] ??= '#' . $tmplId;
         accept="{{ $field->getAccept() }}"
         placeholder="{{ $field->getPlaceholder() ?? $lang('unicorn.field.multi.uploader.placeholder') }}"
         @change="value = $event"
+        @update:modelValue="value = $event"
         @attr('v-on:item-click', $hasEditForm ? 'itemClick' : 'openFile')
         ref="app"
     >
