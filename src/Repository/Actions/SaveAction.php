@@ -45,7 +45,6 @@ class SaveAction extends AbstractDatabaseAction
         int $options = 0
     ): object {
         if (is_object($data)) {
-            $entity = $data;
             $data = $this->getEntityMapper()->extract($data);
         }
 

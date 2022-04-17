@@ -38,11 +38,11 @@ use Windwalker\Utilities\Arr;
  */
 class CalendarField extends TextField
 {
+    use LayoutFieldTrait;
+
     public const FORMAT_DATE = 'Y-m-d';
     public const FORMAT_DATETIME_FULL = 'Y-m-d H:i:S';
     public const FORMAT_DATETIME_MINUTE = 'Y-m-d H:i';
-
-    use LayoutFieldTrait;
 
     #[Inject]
     protected ChronosService $chronosService;
@@ -115,6 +115,10 @@ class CalendarField extends TextField
      */
     public function prepareStore(mixed $value): mixed
     {
+        if ((string) $value === '') {
+            return null;
+        }
+
         $value = parent::prepareStore($value);
 
         return $this->chronosService->toServer($value);
