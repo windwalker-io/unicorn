@@ -215,7 +215,7 @@ export default class UnicornUI {
     )
       .then((m) => {
         if (selector) {
-          this.app.getBoundedInstanceList(
+          this.app.module(
             selector,
             'tom.select',
             (ele) => {
@@ -233,7 +233,15 @@ export default class UnicornUI {
                 options.plugins.dropdown_input = {};
               }
 
-              return new TomSelect(ele, options);
+              const t = new TomSelect(ele, options);
+
+              ele.addEventListener('list:updated', () => {
+                t.clear();
+                t.clearOptions();
+                t.sync();
+              });
+
+              return t;
             }
           );
         }

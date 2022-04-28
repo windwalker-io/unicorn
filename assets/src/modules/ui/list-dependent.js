@@ -194,6 +194,7 @@ export class ListDependent {
     });
 
     this.element.dispatchEvent(new CustomEvent('change'));
+    this.element.dispatchEvent(new CustomEvent('list:updated'));
   }
 
   appendOptionTo(item, parent) {
