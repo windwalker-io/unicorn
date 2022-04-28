@@ -41,6 +41,10 @@ export default class UnicornHelper {
     this.app = app;
   }
 
+  /**
+   * @param {Element|string} ele
+   * @returns {Element|null}
+   */
   selectOne(ele) {
     if (typeof ele === 'string') {
       ele = document.querySelector(ele);
@@ -49,6 +53,11 @@ export default class UnicornHelper {
     return prepareData(ele);
   }
 
+  /**
+   * @param {NodeListOf<Element>|string} ele
+   * @param {Function} callback
+   * @returns {Element[]|NodeListOf<Element>}
+   */
   selectAll(ele, callback) {
     if (typeof ele === 'string') {
       ele = document.querySelectorAll(ele);

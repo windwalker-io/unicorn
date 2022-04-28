@@ -45,7 +45,7 @@ export default class UnicornHttp {
    * @return {Promise}
    */
   createHttp() {
-    return this.getGlobalAxios().then((axios) => {
+    return this.getGlobalAxios().then(() => {
       this.cancelToken = axios.CancelToken;
       return this.axios = axios.create(this.options.axios || {});
     });
