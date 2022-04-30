@@ -56,8 +56,8 @@ class CalendarField extends TextField
     {
         return [
             'dateFormat' => $this->getFormat() ?? self::FORMAT_DATETIME_FULL,
-            'enableTime' => $this->getEnableTime(),
-            'enableSeconds' => $this->getEnableTime(),
+            'enableTime' => $this->getEnableTime() ?? true,
+            'enableSeconds' => $this->getEnableTime() ?? true,
             'allowInput' => true,
             'time_24hr' => true,
             'wrap' => true,

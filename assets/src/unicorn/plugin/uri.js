@@ -13,11 +13,11 @@ export default class UnicornUri {
   static install(app, options = {}) {
     const $uri = app.$uri = new this(app, options);
 
-    $uri.asset.path = (path) => {
+    $uri.asset.path = (path = '') => {
       return app.asset('path') + path;
     };
 
-    $uri.asset.root = (path) => {
+    $uri.asset.root = (path = '') => {
       return app.asset('root') + path;
     };
   }

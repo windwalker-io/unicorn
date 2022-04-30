@@ -47,18 +47,21 @@ class FlatpickrElement extends HTMLElement {
         options
       );
     });
+
+    this.querySelector('[data-toggle]')?.addEventListener('click', () => {
+      setTimeout(() => {
+        this.querySelector('[data-input]').focus();
+      }, 0);
+    });
   }
 
   handleOptions(options) {
     if (options.monthSelect) {
       return Promise.all([
           u.import('@flatpickr/plugins/monthSelect/index.js'),
-          u.import('@flatpickr/plugins/monthSelect/style.css'),
+          u.importCSS('@flatpickr/plugins/monthSelect/style.css'),
         ])
         .then((modules) => {
-          const styleSheet = modules[1].default; // A CSSStyleSheet object
-          document.adoptedStyleSheets = [...document.adoptedStyleSheets, styleSheet];
-
           options.plugins = options.plugins || [];
 
           if (typeof options.monthSelect === 'boolean') {
