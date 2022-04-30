@@ -48,7 +48,7 @@ export class TinymceEditor {
 
     this.selector = selector;
     this.element = app.selectOne(selector);
-    this.options = defaultsDeep({}, this.prepareOptions(options));
+    this.options = defaultsDeep({}, this.prepareOptions(options, tinymce.majorVersion));
 
     tinymce.init(this.options).then((editor) => {
       this.editor = editor[0];
@@ -59,7 +59,7 @@ export class TinymceEditor {
     return this.editor;
   }
 
-  prepareOptions(options) {
+  prepareOptions(options, verion = '6') {
     const defaults = {};
 
     if (options.images_upload_url) {
@@ -67,7 +67,22 @@ export class TinymceEditor {
       defaults.remove_script_host = false;
       defaults.relative_urls = false;
 
-      defaults.images_upload_handler = (...args) => this.imageUploadHandler(...args);
+      if (Number(verion) >= 6) {
+        defaults.images_upload_handler = (...args) => this.imageUploadHandler(...args);
+      } else {
+        options.plugins.push('paste');
+
+        defaults.images_upload_handler = (blobInfo, success, failure, progress) =>
+          this.imageUploadHandler(blobInfo, progress)
+            .then((url) => {
+              success(url);
+              return url;
+            })
+            .catch((e) => {
+              failure(e.message);
+              throw e;
+            });
+      }
     }
 
     // defaults.file_picker_callback = (...args) => this.filePickerCallback(...args);
@@ -133,46 +148,38 @@ export class TinymceEditor {
   //   input.click();
   // }
 
-  imageUploadHandler(blobInfo, success, failure, progress) {
+  imageUploadHandler(blobInfo, progress) {
     const element = this.element;
 
     element.dispatchEvent(new CustomEvent('upload-start'));
 
-    const xhr = new XMLHttpRequest();
-    xhr.withCredentials = false;
-    xhr.open('POST', this.options.images_upload_url);
-
-    xhr.upload.onprogress = function (e) {
-      progress(e.loaded / e.total * 100);
-    };
-
-    xhr.addEventListener('load', () => {
-      element.dispatchEvent(new CustomEvent('upload-complete'));
-
-      const json = JSON.parse(xhr.responseText);
-
-      if (xhr.status !== 200 && xhr.status !== 204) {
-        failure('HTTP Error: ' + decodeURIComponent(json?.message || xhr.statusText), { remove: true });
-        element.dispatchEvent(new CustomEvent('upload-error'));
-        return;
-      }
-
-      if (!json || typeof json.data.url !== 'string') {
-        failure('Invalid JSON: ' + xhr.responseText, { remove: true });
-        console.error('Invalid JSON: ' + xhr.responseText);
-        element.dispatchEvent(new CustomEvent('upload-error'));
-        return;
-      }
-
-      success(json.data.url);
-
-      element.dispatchEvent(new CustomEvent('upload-success'));
-    });
-
     const formData = new FormData();
     formData.append('file', blobInfo.blob(), blobInfo.filename());
 
-    xhr.send(formData);
+    return u.$http.post(
+      this.options.images_upload_url,
+      formData,
+      {
+        withCredentials: false,
+        onUploadProgress: (e) => {
+          progress(e.loaded / e.total * 100);
+        }
+      }
+    )
+      .then((res) => {
+        element.dispatchEvent(new CustomEvent('upload-success'));
+
+        return res.data.data.url;
+      })
+      .catch((e) => {
+        console.error(e?.response?.data?.message || e.message, e);
+        element.dispatchEvent(new CustomEvent('upload-error', { detail: e }));
+
+        throw e;
+      })
+      .finally(() => {
+        element.dispatchEvent(new CustomEvent('upload-complete'));
+      });
   }
 }
 
