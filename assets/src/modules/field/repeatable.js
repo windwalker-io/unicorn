@@ -62,7 +62,7 @@ S.import('@main').then(() => {
                   .querySelectorAll('tr');
 
                 [].slice.call(elements).forEach((ele, i) => {
-                  if (ele?._x_dataStack[0]?.i) {
+                  if (ele?._x_dataStack[0]?.i != null) {
                     ele._x_dataStack[0].i = i;
                   }
                 });
