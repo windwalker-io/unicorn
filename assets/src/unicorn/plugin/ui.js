@@ -133,13 +133,14 @@ export default class UnicornUI {
    *
    * @param {string} is
    * @param {*} target
+   * @param {*} options
    * @returns Promise<*>
    */
-  defineCustomElement(is, target) {
+  defineCustomElement(is, target, options) {
     const promise = this.app.import('@vendor/@webcomponents/webcomponentsjs/custom-elements-es5-adapter.js');
 
     return promise.then(m => {
-      customElements.define(is, target);
+      customElements.define(is, target, options);
 
       return m;
     });
