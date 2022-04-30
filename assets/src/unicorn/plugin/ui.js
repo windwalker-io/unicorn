@@ -451,7 +451,7 @@ export default class UnicornUI {
    * @param {string|Element} target
    * @param {number} duration
    * @param {string} display
-   * @returns {Promise<*}
+   * @returns {Promise<*>}
    */
   slideToggle(target, duration = 500, display = 'block') {
     target = this.app.selectOne(target);

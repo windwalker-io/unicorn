@@ -76,6 +76,12 @@ export default class UnicornHelper {
     return each(collection, iteratee);
   }
 
+  /**
+   * @param {string|Element} selector
+   * @param {string} name
+   * @param { (ele: Element) => any } callback
+   * @returns {*}
+   */
   getBoundedInstance(selector, name, callback = () => null) {
     const element = this.selectOne(selector);
 
@@ -86,6 +92,12 @@ export default class UnicornHelper {
     return defData(element, name, callback);
   }
 
+  /**
+   * @param {string|NodeListOf<Element>} selector
+   * @param {string} name
+   * @param { (ele: Element) => any } callback
+   * @returns {*}
+   */
   getBoundedInstanceList(selector, name, callback = () => null) {
     return this.app.selectAll(selector, (ele) => {
       return this.getBoundedInstance(ele, name, callback);
@@ -104,6 +116,12 @@ export default class UnicornHelper {
     return this.getBoundedInstanceList(ele, name, callback);
   }
 
+  /**
+   * @param {string} element
+   * @param {{ [name: string]: any }} attrs
+   * @param {string|Element} content
+   * @returns {Element}
+   */
   h(element, attrs = {}, content = null) {
     const ele = document.createElement(element);
 
@@ -120,12 +138,21 @@ export default class UnicornHelper {
     return ele;
   }
 
-  html(text) {
+  /**
+   * @param {string} html
+   * @returns {Element}
+   */
+  html(html) {
     const div = document.createElement('div');
     div.innerHTML = text;
     return div.children[0];
   }
 
+  /**
+   * @param {*} obj
+   * @param {string} path
+   * @returns {*}
+   */
   get(obj, path) {
     const keys = Array.isArray(path) ? path : path.split('.');
 
@@ -143,6 +170,12 @@ export default class UnicornHelper {
     return obj;
   }
 
+  /**
+   * @param {*} obj
+   * @param {string} path
+   * @param {*} value
+   * @returns {*}
+   */
   set(obj, path, value) {
     const keys = Array.isArray(path) ? path : path.split('.');
     let i;
@@ -167,11 +200,11 @@ export default class UnicornHelper {
    *
    * @see https://gist.github.com/iagobruno/4db2ed62dc40fa841bb9a5c7de92f5f8
    *
-   * @param wrapper
-   * @param selector
-   * @param eventName
-   * @param callback
-   * @returns {(function(): void)|*}
+   * @param {Element|string} wrapper
+   * @param {Element|string} selector
+   * @param {string} eventName
+   * @param { (e: Event) => void } callback
+   * @returns {(function(): void)}
    */
   delegate(wrapper, selector, eventName, callback) {
     if (typeof selector === 'undefined' || selector === '') {
@@ -252,6 +285,12 @@ export default class UnicornHelper {
     });
   }
 
+  /**
+   * @param {string} title
+   * @param {string} text
+   * @param {string} type
+   * @returns {Promise<boolean>}
+   */
   alert(title, text = '', type = 'info') {
     if (text) {
       title += ' | ' + text;
@@ -262,8 +301,7 @@ export default class UnicornHelper {
     return Promise.resolve(true);
   }
 
-  nextTick(callback = () => {
-  }) {
+  nextTick(callback = () => {}) {
     return Promise.resolve().then(callback);
   }
 

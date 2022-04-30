@@ -26,6 +26,10 @@ export default class UnicornValidation {
     return this.app.import('@unicorn/ui/validation-components.js');
   }
 
+  /**
+   * @param {string|Element} selector
+   * @returns {UnicornFormValidation}
+   */
   get(selector) {
     return this.app.module(selector, 'form.validation');
   }

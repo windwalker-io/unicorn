@@ -21,6 +21,11 @@ export default class UnicornLang {
     this.app = app;
   }
 
+  /**
+   * @param {string} text
+   * @param {Array}  args
+   * @returns {string}
+   */
   __(text, ...args) {
     return this.trans(text, ...args);
   }
@@ -56,7 +61,7 @@ export default class UnicornLang {
   /**
    * Find text.
    * @param {string} key
-   * @returns {*}
+   * @returns {string|null}
    */
   find(key) {
     const langs = this.app.data('unicorn.languages') || {};
@@ -108,6 +113,11 @@ export default class UnicornLang {
     return text.replace(/[^A-Z0-9]+/ig, '.');
   }
 
+  /**
+   * @param {string} text
+   * @param {boolean} success
+   * @returns {string}
+   */
   wrapDebug(text, success) {
     if (this.app.isDebug()) {
       if (success) {

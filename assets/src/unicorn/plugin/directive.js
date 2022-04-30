@@ -53,6 +53,10 @@ export default class UnicornDirective {
     directive.listen();
   }
 
+  /**
+   * @param {string} name
+   * @param {UnicornDirectiveHandler} handler
+   */
   register(name, handler) {
     if (!this.discountCallback) {
       this.listen();
@@ -69,6 +73,9 @@ export default class UnicornDirective {
     );
   }
 
+  /**
+   * @param {string} name
+   */
   remove(name) {
     const directive = this.getDirectiveAttrName(name);
 
@@ -83,10 +90,18 @@ export default class UnicornDirective {
     delete this.directives[directive];
   }
 
+  /**
+   * @param {string} name
+   * @returns {string}
+   */
   getDirectiveAttrName(name) {
     return `uni-${name}`;
   }
 
+  /**
+   * @param {Element} element
+   * @returns {() => void}
+   */
   observeRoot(element) {
     const observer = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
@@ -122,6 +137,10 @@ export default class UnicornDirective {
     };
   }
 
+  /**
+   * @param {Element} element
+   * @returns {() => void}
+   */
   observeChildren(element) {
     const observer = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
@@ -153,10 +172,16 @@ export default class UnicornDirective {
     };
   }
 
+  /**
+   * @param {Element} target
+   */
   listenTo(target) {
     this.listenTarget = target;
   }
 
+  /**
+   * @returns {function(): void}
+   */
   listen() {
     return this.discountCallback = this.observeRoot(this.listenTarget);
   }
@@ -186,10 +211,20 @@ export default class UnicornDirective {
   //   document.body.appendChild(ele);
   // }
 
+  /**
+   * @param {string} directive
+   * @returns {UnicornDirectiveHandler}
+   */
   getDirective(directive) {
     return this.directives[directive];
   }
 
+  /**
+   * @param {string} directive
+   * @param {Element} node
+   * @param {string} task
+   * @param {MutationRecord} mutation
+   */
   runDirectiveIfExists(directive, node, task, mutation) {
     const handler = this.getDirective(directive);
 
@@ -213,6 +248,10 @@ export default class UnicornDirective {
     }
   }
 
+  /**
+   * @param {Element} node
+   * @returns {UnicornDirectiveHandler[]}
+   */
   findDirectivesFromNode(node) {
     const directives = [];
 

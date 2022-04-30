@@ -16,6 +16,13 @@ export default class UnicornAnimate {
     this.app = app;
   }
 
+  /**
+   *
+   * @param {Element} element
+   * @param {{ [name: string]: any }} styles
+   * @param {number | KeyframeAnimationOptions} options
+   * @returns {Animation}
+   */
   to(element, styles, options = {}) {
     element = this.app.selectOne(element);
 
@@ -50,6 +57,12 @@ export default class UnicornAnimate {
     );
   }
 
+  /**
+   *
+   * @param {Element} element
+   * @param {string} name
+   * @returns {*}
+   */
   getCurrentStyle(element, name) {
     return window.getComputedStyle(element)[name];
   }

@@ -142,6 +142,10 @@ export default class UnicornCrypto {
     return this.uid(prefix, true);
   }
 
+  /**
+   * @param {number} n
+   * @returns {string}
+   */
   randomString(n = 12) {
     const QUOTA = 65536;
     const crypto = (window.crypto || window.msCrypto);
@@ -161,10 +165,17 @@ export default class UnicornCrypto {
       .join('');
   }
 
+  /**
+   * @param {string} str
+   * @returns {string}
+   */
   md5(str) {
     return md5(str);
   }
 
+  /**
+   * @returns {number}
+   */
   serial() {
     return globalSerial++;
   }
