@@ -5,9 +5,15 @@
  * @license    GNU General Public License version 2 or later.
  */
 
+import axios from 'axios';
+
 export default class UnicornHttp {
   globalAxios;
   cancelToken;
+
+  /**
+   * @type {AxiosInstance}
+   */
   axios;
 
   static get is() { return 'http'; }
@@ -31,7 +37,7 @@ export default class UnicornHttp {
   }
 
   /**
-   * @return {Promise}
+   * @return {Promise<any>}
    */
   getGlobalAxios() {
     if (!this.globalAxios) {
@@ -42,7 +48,7 @@ export default class UnicornHttp {
   }
 
   /**
-   * @return {Promise}
+   * @return {Promise<any>}
    */
   createHttp() {
     return this.getGlobalAxios().then(() => {
@@ -51,6 +57,9 @@ export default class UnicornHttp {
     });
   }
 
+  /**
+   * @returns {Promise<AxiosInstance>}
+   */
   getHttp() {
     if (this.axios) {
       return Promise.resolve(this.axios);
@@ -59,6 +68,9 @@ export default class UnicornHttp {
     return this.createHttp().then((axios) => this.axios = axios);
   }
 
+  /**
+   * @param {AxiosInstance} axios
+   */
   prepareAxios(axios) {
     axios.interceptors.request.use((config) => {
       config.headers['X-CSRF-Token'] = this.app.data('csrf-token');
@@ -87,9 +99,9 @@ export default class UnicornHttp {
    * Send a GET request.
    *
    * @param {string} url
-   * @param {Object} options
+   * @param {AxiosRequestConfig} options
    *
-   * @returns {AxiosResponse}
+   * @returns {Promise<AxiosResponse>}
    */
   get(url, options = {}) {
     options.url = url;
@@ -102,8 +114,8 @@ export default class UnicornHttp {
    * Send a POST request.
    *
    * @param {string} url
-   * @param {Object|string} data
-   * @param {Object} options
+   * @param {any} data
+   * @param {AxiosRequestConfig} options
    *
    * @returns {AxiosResponse}
    */
@@ -119,8 +131,8 @@ export default class UnicornHttp {
    * Send a PUT request.
    *
    * @param {string} url
-   * @param {Object|string} data
-   * @param {Object} options
+   * @param {any} data
+   * @param {AxiosRequestConfig} options
    *
    * @returns {AxiosResponse}
    */
@@ -136,8 +148,8 @@ export default class UnicornHttp {
    * Send a PATCH request.
    *
    * @param {string} url
-   * @param {Object|string} data
-   * @param {Object} options
+   * @param {any} data
+   * @param {Validator} options
    *
    * @returns {AxiosResponse}
    */
@@ -153,8 +165,8 @@ export default class UnicornHttp {
    * Send a DELETE request.
    *
    * @param {string} url
-   * @param {Object|string} data
-   * @param {Object} options
+   * @param {any} data
+   * @param {AxiosRequestConfig} options
    *
    * @returns {AxiosResponse}
    */
@@ -170,7 +182,7 @@ export default class UnicornHttp {
    * Send a HEAD request.
    *
    * @param {string} url
-   * @param {Object} options
+   * @param {AxiosRequestConfig} options
    *
    * @returns {AxiosResponse}
    */
@@ -185,7 +197,7 @@ export default class UnicornHttp {
    * Send a OPTIONS request.
    *
    * @param {string} url
-   * @param {Object} options
+   * @param {AxiosRequestConfig} options
    *
    * @returns {AxiosResponse}
    */
@@ -199,7 +211,7 @@ export default class UnicornHttp {
   /**
    * Send request.
    *
-   * @param {Object} options
+   * @param {AxiosRequestConfig} options
    *
    * @returns {Promise<AxiosResponse>}
    */
@@ -288,6 +300,8 @@ export default class UnicornHttp {
    * Set custom method with _method parameter.
    *
    * This method will return a clone of this object to help us send request once.
+   *
+   * @param {boolean} useHeader
    *
    * @returns {Promise<this>}
    */

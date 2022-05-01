@@ -42,8 +42,8 @@ export default class UnicornRouter {
   /**
    * Get route.
    *
-   * @param route
-   * @param query
+   * @param {string} route
+   * @param {*} query
    * @returns {String|UnicornRouter}
    */
   route(route, query = null) {
@@ -85,6 +85,11 @@ export default class UnicornRouter {
     return this.addQuery(url, query);
   }
 
+  /**
+   * @param {string} route
+   * @param {string} sep
+   * @returns {{ path: string; route: string }}
+   */
   extractRoute(route, sep = '/') {
     if (route.indexOf(sep) === -1) {
       return { route, path: '' }
@@ -98,10 +103,19 @@ export default class UnicornRouter {
     return { route, path };
   }
 
+  /**
+   * @param {string} route
+   * @returns {boolean}
+   */
   has(route) {
     return undefined !== this.app.data('unicorn.routes')[route];
   }
 
+  /**
+   * @param {string} url
+   * @param {*} query
+   * @returns {string}
+   */
   addQuery(url, query = null) {
     if (query === null) {
       return url;
@@ -130,14 +144,26 @@ export default class UnicornRouter {
     return url + (/\?/.test(url) ? `&${queryString}` : `?${queryString}`);
   }
 
+  /**
+   * @param {string} queryString
+   * @returns {object}
+   */
   parseQuery(queryString) {
     return parse(queryString);
   }
 
+  /**
+   * @param {object} query
+   * @returns {string}
+   */
   buildQuery(query) {
     return stringify(query);
   }
 
+  /**
+   * @param {object|string} data
+   * @returns {this}
+   */
   push(data) {
     if (typeof data === 'string') {
       // eslint-disable-next-line no-param-reassign
@@ -153,6 +179,10 @@ export default class UnicornRouter {
     return this;
   }
 
+  /**
+   * @param {object|string} data
+   * @returns {UnicornRouter}
+   */
   replace(data) {
     if (typeof data === 'string') {
       // eslint-disable-next-line no-param-reassign
@@ -168,6 +198,9 @@ export default class UnicornRouter {
     return this;
   }
 
+  /**
+   * @returns {any}
+   */
   state() {
     return window.history.state;
   }
@@ -180,6 +213,9 @@ export default class UnicornRouter {
     window.history.forward();
   }
 
+  /**
+   * @param {number} num
+   */
   go(num) {
     window.history.go(num);
   }

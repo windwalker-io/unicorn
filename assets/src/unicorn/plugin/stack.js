@@ -7,7 +7,7 @@
 
 export default class UnicornStack {
   /**
-   * @type Stack[]
+   * @type {{ [name: string]: Stack }}
    */
   stacks = {};
 
@@ -24,6 +24,11 @@ export default class UnicornStack {
     this.$options = options;
   }
 
+  /**
+   * @param {string} name
+   * @param {*[]} store
+   * @returns {Stack}
+   */
   create(name, store = []) {
     if (name == null) {
       throw new Error('Please provide a name.');
@@ -32,6 +37,11 @@ export default class UnicornStack {
     return new Stack(name, store);
   }
 
+  /**
+   * @param {string} name
+   * @param {*[]} store
+   * @returns {Stack}
+   */
   get(name, store = []) {
     if (name == null) {
       throw new Error('Please provide a name.');
@@ -44,6 +54,11 @@ export default class UnicornStack {
     return this.stacks[name];
   }
 
+  /**
+   * @param {string} name
+   * @param {Stack} stack
+   * @returns {UnicornStack}
+   */
   set(name, stack) {
     if (name == null) {
       throw new Error('Please provide a name.');
@@ -54,18 +69,25 @@ export default class UnicornStack {
     return this;
   }
 
+  /**
+   * @param {string} name
+   * @returns {UnicornStack}
+   */
   remove(name) {
     delete this.stacks[name];
 
     return this;
   }
 
+  /**
+   * @returns {{[p: string]: Stack}}
+   */
   all() {
     return this.stacks;
   }
 }
 
-class Stack {
+export class Stack {
   name = '';
   store = [];
   observers = [];
@@ -75,6 +97,10 @@ class Stack {
     this.store = store;
   }
 
+  /**
+   * @param {boolean} value
+   * @returns {number}
+   */
   push(value = true) {
     const r = this.store.push(value);
 
@@ -83,6 +109,9 @@ class Stack {
     return r;
   }
 
+  /**
+   * @returns {*}
+   */
   pop() {
     const r = this.store.pop();
 
@@ -91,6 +120,9 @@ class Stack {
     return r;
   }
 
+  /**
+   * @returns {Stack}
+   */
   clear() {
     this.store = [];
 
@@ -99,18 +131,31 @@ class Stack {
     return this;
   }
 
+  /**
+   * @returns {boolean}
+   */
   isEmpty() {
     return this.store.length === 0;
   }
 
+  /**
+   * @returns {number}
+   */
   get length() {
     return this.store.length;
   }
 
+  /**
+   * @returns {*[]}
+   */
   peek() {
     return this.store;
   }
 
+  /**
+   * @param {(function(stack: Stack, length: number): void)} handler
+   * @returns {(function(): void)}
+   */
   observe(handler) {
     this.observers.push({
       handler
@@ -121,6 +166,10 @@ class Stack {
     };
   }
 
+  /**
+   * @param {(function(stack: Stack, length: number): void)} handler
+   * @returns {(function(): void)}
+   */
   once(handler) {
     this.observers.push({
       handler,
@@ -132,6 +181,9 @@ class Stack {
     };
   }
 
+  /**
+   * @returns {Stack}
+   */
   notice() {
     this.observers.forEach((observer) => {
       observer.handler(this, this.length);
@@ -142,6 +194,10 @@ class Stack {
     return this;
   }
 
+  /**
+   * @param {*} callback
+   * @returns {Stack}
+   */
   off(callback = null) {
     this.observers = this.observers.filter((observer) => observer.handler !== callback);
     return this;

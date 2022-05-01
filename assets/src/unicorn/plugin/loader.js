@@ -114,6 +114,9 @@ export default class UnicornLoader {
     return fileName;
   }
 
+  /**
+   * @param {string} name
+   */
   asImported(name) {
     if (!imports[name]) {
       imports[name] = {
@@ -125,6 +128,12 @@ export default class UnicornLoader {
     }
   }
 
+  /**
+   * Add after import hook for some url or id.
+   * @param {string} name
+   * @param {function(resolve: function, reject?: function): void} callback
+   * @returns {Promise<any>}
+   */
   afterImported(name, callback) {
     if (!imports[name]) {
       let r;

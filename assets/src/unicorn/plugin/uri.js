@@ -35,18 +35,30 @@ export default class UnicornUri {
     return this.app.uri('root') + path;
   }
 
+  /**
+   * @returns {string}
+   */
   current() {
     return this.app.uri('current');
   }
 
+  /**
+   * @returns {string}
+   */
   full() {
     return this.app.uri('full');
   }
 
+  /**
+   * @returns {string}
+   */
   route() {
     return this.app.uri('route');
   }
 
+  /**
+   * @returns {string}
+   */
   script() {
     return this.app.uri('script');
   }

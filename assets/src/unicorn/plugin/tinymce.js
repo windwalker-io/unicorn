@@ -8,6 +8,9 @@
 import { defaultsDeep } from 'lodash-es';
 
 export default class UnicornTinymce {
+  /**
+   * @type {{ [name: string]: TinymceEditor }}
+   */
   instances = {};
 
   static install(app) {
@@ -19,6 +22,9 @@ export default class UnicornTinymce {
     this.app = ui.app;
   }
 
+  /**
+   * @returns {Editor}
+   */
   loadTinymce() {
     return this.app.import('@tinymce')
       .then((tinymce) => {
@@ -26,12 +32,21 @@ export default class UnicornTinymce {
       });
   }
 
+  /**
+   * @param {string} selector
+   * @param {object} options
+   * @returns {TinymceEditor}
+   */
   init(selector, options = {}) {
     return this.loadTinymce().then(() => {
       return this.instances[selector] = new TinymceEditor(selector, options, this.app);
     });
   }
 
+  /**
+   * @param {string} selector
+   * @returns {TinymceEditor}
+   */
   get(selector) {
     return this.instances[selector];
   }
@@ -41,6 +56,11 @@ export class TinymceEditor {
   static defaultOptions = {
 
   };
+
+  /**
+   * @type {Editor}
+   */
+  editor;
 
   constructor(selector, options, app) {
     this.app = app;
@@ -55,6 +75,9 @@ export class TinymceEditor {
     });
   }
 
+  /**
+   * @returns {Editor}
+   */
   getEditor() {
     return this.editor;
   }
@@ -104,14 +127,24 @@ export class TinymceEditor {
     return options;
   }
 
+  /**
+   * @param {string} text
+   */
   insert(text) {
     return this.editor.insertContent(text);
   }
 
+  /**
+   * @returns {string}
+   */
   getValue() {
     return this.editor.getContent();
   }
 
+  /**
+   * @param {string} text
+   * @returns {string}
+   */
   setValue(text) {
     return this.editor.setContent(text);
   }
@@ -148,6 +181,11 @@ export class TinymceEditor {
   //   input.click();
   // }
 
+  /**
+   * @param {object} blobInfo
+   * @param {Function} progress
+   * @returns {Promise<string>}
+   */
   imageUploadHandler(blobInfo, progress) {
     const element = this.element;
 

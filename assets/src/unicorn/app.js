@@ -38,6 +38,11 @@ export default class UnicornApp extends mix(class {}).with(EventMixin) {
     });
   }
 
+  /**
+   * @param {UnicornPlugin} plugin
+   * @param {*} options
+   * @returns {UnicornApp}
+   */
   use(plugin, options = {}) {
     if (Array.isArray(plugin)) {
       plugin.forEach(p => this.use(p));
@@ -55,6 +60,10 @@ export default class UnicornApp extends mix(class {}).with(EventMixin) {
     return this;
   }
 
+  /**
+   * @param {UnicornPlugin} plugin
+   * @returns {UnicornApp}
+   */
   detach(plugin) {
     if (plugin.uninstall) {
       plugin.uninstall(this);
@@ -65,6 +74,11 @@ export default class UnicornApp extends mix(class {}).with(EventMixin) {
     return this;
   }
 
+  /**
+   * @param {*} value
+   * @param {function(): *} callback
+   * @returns {*}
+   */
   tap(value, callback) {
     callback(value);
 

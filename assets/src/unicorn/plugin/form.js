@@ -31,7 +31,7 @@ export default class UnicornForm {
   }
 }
 
-class UnicornFormElement {
+export class UnicornFormElement {
   /**
    * Constructor.
    * @param {string}      selector

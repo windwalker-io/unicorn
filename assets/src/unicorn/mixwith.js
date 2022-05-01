@@ -239,7 +239,7 @@ export const Mixin = (mixin) => DeDupe(Cached(BareMixin(mixin)));
  */
 export const mix = (superclass) => new MixinBuilder(superclass);
 
-class MixinBuilder {
+export class MixinBuilder {
 
   constructor(superclass) {
     this.superclass = superclass || class {};

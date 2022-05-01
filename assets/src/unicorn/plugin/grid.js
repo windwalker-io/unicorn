@@ -27,7 +27,7 @@ export default class UnicornGrid {
   }
 }
 
-class UnicornGridElement {
+export class UnicornGridElement {
   ordering = '';
   state = {};
 
