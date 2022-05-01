@@ -48,7 +48,7 @@ export interface Unicorn extends UnicornApp {
 
   // animate.js
   $animate: UnicornAnimate;
-  animate(element: Element, styles: { [name: string]: any }, options?: number | KeyframeAnimationOptions): Animation;
+  animate(element: Element|string, styles: { [name: string]: any }, options?: number | KeyframeAnimationOptions): Animation;
 
   // crypto.js
   $crypto: UnicornCrypto;
