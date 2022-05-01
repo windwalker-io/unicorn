@@ -13,19 +13,25 @@ namespace Unicorn\Script;
 
 use Psr\Http\Message\UriInterface;
 use Windwalker\Core\Asset\AbstractScript;
+use Windwalker\Core\Language\TranslatorTrait;
 use Windwalker\DOM\DOMElement;
 use Windwalker\Form\Field\AbstractField;
+use Windwalker\Language\LanguageNormalizer;
 
 /**
  * The FormScript class.
  */
 class FormScript extends AbstractScript
 {
+    use TranslatorTrait;
+
     /**
      * FormScript constructor.
      */
-    public function __construct(protected UnicornScript $unicornScript, protected VueScript $vueScript)
-    {
+    public function __construct(
+        protected UnicornScript $unicornScript,
+        protected VueScript $vueScript,
+    ) {
     }
 
     public function choices(?string $selector = null, array $options = []): static
@@ -56,6 +62,28 @@ class FormScript extends AbstractScript
         }
 
         return $this;
+    }
+
+    public function flatpickrLocale(): ?string
+    {
+        $long = strtolower($this->lang->getLocale());
+        $first = explode($long, '-')[0] ?? '';
+
+        $locale = $long;
+        $defaultLocale = null;
+
+        $langFile = $this->asset->addSysPath('vendor/flatpickr/dist/l10n/' . $locale . '.js');
+
+        if (!is_file($langFile) && $first) {
+            $locale = $first;
+            $langFile = $this->asset->addSysPath('vendor/flatpickr/dist/l10n/' . $first . '.js');
+        }
+
+        if (is_file($langFile)) {
+            $defaultLocale = $locale;
+        }
+
+        return $defaultLocale;
     }
 
     public function switcher(): static

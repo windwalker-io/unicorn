@@ -21,10 +21,14 @@ use Windwalker\Core\Language\LangService;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\SystemUri;
 
-$app->service(\Unicorn\Script\FormScript::class)->flatpickr();
+$formScript = $app->service(\Unicorn\Script\FormScript::class);
+
+$formScript->flatpickr();
+$locale = $formScript->flatpickrLocale();
 ?>
 
 <uni-flatpickr options="{{ json_encode($options ?? []) }}"
+    locale="{{ $locale }}"
     selector="[data-calendar]">
     <div class="input-group flatpickr" data-calendar>
         {!! $input !!}
