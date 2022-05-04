@@ -144,7 +144,7 @@ export default class UnicornHelper {
    */
   html(html) {
     const div = document.createElement('div');
-    div.innerHTML = text;
+    div.innerHTML = html;
     return div.children[0];
   }
 
