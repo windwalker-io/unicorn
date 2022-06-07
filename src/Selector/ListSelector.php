@@ -74,6 +74,8 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
 
     protected ?SearchHelper $searchHelper = null;
 
+    protected string $itemClass = Collection::class;
+
     /**
      * ListSelector constructor.
      *
@@ -127,7 +129,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
     public function getIterator(?string $class = null, array $args = []): \Traversable
     {
         return $this->compileQuery()->getIterator(
-            $class ?? Collection::class,
+            $class ?? $this->getItemClass(),
             $args
         );
     }
@@ -834,6 +836,26 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
     public function disablePageFix(bool $value): static
     {
         $this->setOption('page_fix', !$value);
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getItemClass(): string
+    {
+        return $this->itemClass;
+    }
+
+    /**
+     * @param  string  $itemClass
+     *
+     * @return  static  Return self to support chaining.
+     */
+    public function setItemClass(string $itemClass): static
+    {
+        $this->itemClass = $itemClass;
 
         return $this;
     }
