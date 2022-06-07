@@ -55,8 +55,8 @@ export interface Unicorn extends UnicornApp {
   base64Encode(string: string):  string;
   base64Decode(string: string): string;
   uuid4(): string;
-  uid(prefix: string, timebase: boolean): string;
-  tid(prefix: string): string;
+  uid(prefix?: string, timebase?: boolean): string;
+  tid(prefix?: string): string;
   md5(str: string): string;
   serial(): number;
 
@@ -71,23 +71,23 @@ export interface Unicorn extends UnicornApp {
 
   // validation.js
   $validation: UnicornValidation;
-  formValidation(selector: string): Promise<UnicornFormValidation|null>;
+  formValidation(selector?: string): Promise<UnicornFormValidation|null>;
 
   // router.js
   $router: UnicornRouter;
   route(route: string, query: any): string;
 
   $grid: UnicornGrid;
-  grid(ele: string|Element, options: object): UnicornGridElement;
+  grid(ele: string|Element, options?: object): UnicornGridElement;
 
   $form: UnicornForm;
-  form(ele: string|Element, options: object): UnicornFormElement;
+  form(ele: string|Element, options?: object): UnicornFormElement;
 
   // ui.js
   $ui: UnicornUIExtended|UnicornUI;
-  addMessage(messages: string[]|string, type: string): void;
+  addMessage(messages: string[]|string, type?: string): void;
   clearMessages(): void;
-  notify(messages: string|string[], type: string): void;
+  notify(messages: string|string[], type?: string): void;
   clearNotifies(): void;
   loadAlpine(callback?: () => void): Promise<any>;
   beforeAlpineInit(callback: () => void): void;
@@ -129,8 +129,8 @@ export interface Unicorn extends UnicornApp {
   delegate(wrapper: Element|string, selector: Element|string, eventName: string, callback: (e: Event) => void): (() => void);
   isDebug(): boolean;
   confirm(message: string): Promise<boolean>;
-  alert(title: string, text: string, type: string): Promise<boolean>;
-  numberFormat(number: number|string, decimals: number, decPoint: string, thousandsSep: string): string
+  alert(title: string, text?: string, type?: string): Promise<boolean>;
+  numberFormat(number: number|string, decimals?: number, decPoint?: string, thousandsSep?: string): string
   sprintf(tmpl: string, ...args: string[]);
   vsprintf(tmpl: string, args: string[]);
   defaultsDeep(...args: any): any;
