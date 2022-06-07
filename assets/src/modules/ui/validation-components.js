@@ -244,7 +244,7 @@ export class UnicornFormValidation {
   }
 }
 
-class UnicornFieldValidation {
+export class UnicornFieldValidation {
   $input;
 
   static is = 'uni-field-validate';
