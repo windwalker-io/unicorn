@@ -12,8 +12,8 @@ declare(strict_types=1);
 namespace Unicorn\Repository\Actions;
 
 use Unicorn\Repository\Event\PrepareSaveEvent;
-use Windwalker\Core\Language\TranslatorTrait;
 use Windwalker\Form\FieldDefinitionInterface;
+use Windwalker\ORM\EntityMapper;
 use Windwalker\ORM\Event\AfterSaveEvent;
 use Windwalker\ORM\Event\BeforeSaveEvent;
 
@@ -25,8 +25,11 @@ class SaveAction extends AbstractDatabaseAction
     use FormAwareActionTrait;
 
     public const FILTER_KEEP_FULL_DATA = 1 << 0;
+
     public const IGNORE_FILTER = 1 << 1;
+
     public const IGNORE_VALIDATE = 1 << 2;
+
     public const IGNORE_FORM_PREPARE = 1 << 3;
 
     /**
@@ -35,6 +38,7 @@ class SaveAction extends AbstractDatabaseAction
      * @param  array|object  $data
      * @param  mixed|null    $form
      * @param  array         $args
+     * @param  int           $options
      *
      * @return  object
      */
@@ -59,6 +63,7 @@ class SaveAction extends AbstractDatabaseAction
      * @param  array|object  $data
      * @param  mixed|null    $form
      * @param  array         $args
+     * @param  int           $options
      *
      * @return  array
      */
@@ -80,14 +85,18 @@ class SaveAction extends AbstractDatabaseAction
     /**
      * save
      *
-     * @param  array|object  $data
+     * @param  array|object       $data
      * @param  array|string|null  $condFields
-     * @param  int  $options
+     * @param  int                $options
      *
      * @return  object
+     * @throws \ReflectionException
      */
-    public function save(array|object $data, array|string $condFields = null, int $options = 0): object
-    {
+    public function save(
+        array|object $data,
+        array|string $condFields = null,
+        int $options = EntityMapper::UPDATE_NULLS
+    ): object {
         $source = $data;
 
         // If is object, extract it.
@@ -134,6 +143,7 @@ class SaveAction extends AbstractDatabaseAction
      * @param  array                                 $data
      * @param  FieldDefinitionInterface|string|null  $definition
      * @param  array                                 $args
+     * @param  int                                   $options
      *
      * @return  array
      */
@@ -158,7 +168,6 @@ class SaveAction extends AbstractDatabaseAction
     {
         return $this->on(PrepareSaveEvent::class, $listener);
     }
-
 
     public function beforeSave(callable $listener): static
     {
