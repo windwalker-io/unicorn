@@ -659,6 +659,16 @@ export default class UnicornUI {
     });
   }
 
+  disableIfStackNotEmpty(buttonSelector = '[data-task=save]', stackName = 'uploading') {
+    const stack = u.stack(stackName);
+
+    stack.observe((stack, length) => {
+      for (const button of u.selectAll(buttonSelector)) {
+        button.disabled = length > 0;
+      }
+    });
+  }
+
   /**
    * @param {string|Element} selector
    * @param {object} options

@@ -102,7 +102,7 @@ export class TinymceEditor {
               return url;
             })
             .catch((e) => {
-              failure(e.message);
+              failure(e.message, { remove: true });
               throw e;
             });
       }
@@ -194,6 +194,9 @@ export class TinymceEditor {
     const formData = new FormData();
     formData.append('file', blobInfo.blob(), blobInfo.filename());
 
+    const stack = u.stack('uploading');
+    stack.push(true);
+
     return u.$http.post(
       this.options.images_upload_url,
       formData,
@@ -210,13 +213,15 @@ export class TinymceEditor {
         return res.data.data.url;
       })
       .catch((e) => {
+        const message = e?.response?.data?.message || e.message;
         console.error(e?.response?.data?.message || e.message, e);
         element.dispatchEvent(new CustomEvent('upload-error', { detail: e }));
 
-        throw e;
+        return Promise.reject({ message, remove: true });
       })
       .finally(() => {
         element.dispatchEvent(new CustomEvent('upload-complete'));
+        stack.pop();
       });
   }
 }
