@@ -1,8 +1,9 @@
 
 import { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
-import { UnicornFormValidation } from './modules/ui/validation-components';
+import { UIBootstrap5 } from './modules/ui/ui-bootstrap5';
+import { UnicornFormValidation, UnicornFieldValidation } from './modules/ui/validation-components';
 import { EventMixin } from './unicorn/events';
-import UnicornApp from './unicorn/js';
+import UnicornApp from './unicorn/app.js';
 import { MixinBuilder, Mixin } from './unicorn/mixwith';
 import UnicornAnimate from './unicorn/plugin/animate';
 import UnicornCrypto from './unicorn/plugin/crypto';
@@ -18,11 +19,10 @@ import UnicornTinymce from './unicorn/plugin/tinymce';
 import UnicornUI from './unicorn/plugin/ui';
 import UnicornUri from './unicorn/plugin/uri';
 import UnicornValidation from './unicorn/plugin/validation';
-import { createApp, noConflict } from './unicorn/unicorn';
 
 declare global {
   var u: Unicorn;
-  var Unicorn: Unicorn.constructor;
+  var Unicorn: Unicorn['constructor'];
 }
 
 export interface Unicorn extends UnicornApp {
@@ -55,8 +55,8 @@ export interface Unicorn extends UnicornApp {
   base64Encode(string: string):  string;
   base64Decode(string: string): string;
   uuid4(): string;
-  uid(prefix: string = '', timebase: boolean = false): string;
-  tid(prefix: string = ''): string;
+  uid(prefix?: string, timebase?: boolean): string;
+  tid(prefix?: string): string;
   md5(str: string): string;
   serial(): number;
 
@@ -71,23 +71,23 @@ export interface Unicorn extends UnicornApp {
 
   // validation.js
   $validation: UnicornValidation;
-  formValidation(selector: string = '[uni-form-validation]'): Promise<UnicornFormValidation|null>;
+  formValidation(selector?: string): Promise<UnicornFormValidation|null>;
 
   // router.js
   $router: UnicornRouter;
   route(route: string, query: any): string;
 
   $grid: UnicornGrid;
-  grid(ele: string|Element, options: object = {}): UnicornGridElement;
+  grid(ele: string|Element, options?: object): UnicornGridElement;
 
   $form: UnicornForm;
-  form(ele: string|Element, options: object = {}): UnicornFormElement;
+  form(ele: string|Element, options?: object): UnicornFormElement;
 
   // ui.js
-  $ui: UnicornUIExtended;
-  addMessage(messages: string[]|string, type: string = 'info'): void;
+  $ui: UnicornUIExtended|UnicornUI;
+  addMessage(messages: string[]|string, type?: string): void;
   clearMessages(): void;
-  notify(messages: string|string[], type: string = 'info'): void;
+  notify(messages: string|string[], type?: string): void;
   clearNotifies(): void;
   loadAlpine(callback?: () => void): Promise<any>;
   beforeAlpineInit(callback: () => void): void;
@@ -106,21 +106,21 @@ export interface Unicorn extends UnicornApp {
   // helper.js
   $helper: UnicornHelper;
   selectOne<E extends Element = Element>(ele: E): E;
-  selectOne<K extends keyof HTMLElementTagNameMap = Element>(ele: K): HTMLElementTagNameMap[K]|null;
+  selectOne<K extends keyof HTMLElementTagNameMap>(ele: K): HTMLElementTagNameMap[K]|null;
   selectOne(ele: string): Element;
   selectAll<E extends Element = Element>(ele: NodeListOf<E>|E[], callback: ((ele: E) => any)): E[];
-  selectAll<E extends keyof HTMLElementTagNameMap = Element>(ele: E, callback: ((ele: HTMLElementTagNameMap[E]) => any)): HTMLElementTagNameMap[E][];
+  selectAll<E extends keyof HTMLElementTagNameMap>(ele: E, callback: ((ele: HTMLElementTagNameMap[E]) => any)): HTMLElementTagNameMap[E][];
   selectAll(ele: string, callback: ((ele: Element) => any)): Element[];
   each(collection: any, iteratee: (item: any, i: number|string) => void): void;
-  getBoundedInstance<E extends Element = Element, M>(selector: E, name: string, callback?: ((ele: E) => M)): M;
-  getBoundedInstance<E extends keyof HTMLElementTagNameMap = Element, M>(selector: E, name: string, callback?: ((ele: HTMLElementTagNameMap[E]) => M)): M;
+  getBoundedInstance<M, E extends Element = Element>(selector: E, name: string, callback?: ((ele: E) => M)): M;
+  getBoundedInstance<M, E extends keyof HTMLElementTagNameMap>(selector: E, name: string, callback?: ((ele: HTMLElementTagNameMap[E]) => M)): M;
   getBoundedInstance<M>(selector: string, name: string, callback?: ((ele: Element) => M)): M;
-  getBoundedInstanceList<E extends Element = Element, M>(selector: NodeListOf<E>|E[], name: string, callback?: ((ele: E) => M)): M[];
-  getBoundedInstanceList<E extends keyof HTMLElementTagNameMap = Element, M>(selector: E, name: string, callback?: ((ele: HTMLElementTagNameMap[E]) => M)): M[];
+  getBoundedInstanceList<M, E extends Element = Element>(selector: NodeListOf<E>|E[], name: string, callback?: ((ele: E) => M)): M[];
+  getBoundedInstanceList<M, E extends keyof HTMLElementTagNameMap>(selector: E, name: string, callback?: ((ele: HTMLElementTagNameMap[E]) => M)): M[];
   getBoundedInstanceList<M>(selector: string, name: string, callback?: ((ele: M) => M)): M[];
-  module<E extends Element = Element, M>(selector: E[]|NodeListOf<E>, name: string, callback?: ((ele: E) => M)): M[];
-  module<E extends Element = Element, M>(selector: E, name: string, callback?: ((ele: E) => M)): M;
-  module<E extends keyof HTMLElementTagNameMap = Element, M>(selector: E, name: string, callback?: ((ele: HTMLElementTagNameMap[E]) => M)): M;
+  module<M, E extends Element = Element>(selector: E[]|NodeListOf<E>, name: string, callback?: ((ele: E) => M)): M[];
+  module<M, E extends Element = Element>(selector: E, name: string, callback?: ((ele: E) => M)): M;
+  module<M, E extends keyof HTMLElementTagNameMap>(selector: E, name: string, callback?: ((ele: HTMLElementTagNameMap[E]) => M)): M;
   module<M>(selector: string, name: string, callback?: ((ele: Element) => M)): M;
   h(element: string, attrs?: { [name: string]: any }, content?: string|Element): Element;
   html(html: string): Element;
@@ -129,8 +129,8 @@ export interface Unicorn extends UnicornApp {
   delegate(wrapper: Element|string, selector: Element|string, eventName: string, callback: (e: Event) => void): (() => void);
   isDebug(): boolean;
   confirm(message: string): Promise<boolean>;
-  alert(title: string, text: string = '', type: string = 'info'): Promise<boolean>;
-  numberFormat(number: number|string, decimals: number = 0, decPoint: string = '.', thousandsSep: string = ','): string
+  alert(title: string, text?: string, type?: string): Promise<boolean>;
+  numberFormat(number: number|string, decimals?: number, decPoint?: string, thousandsSep?: string): string
   sprintf(tmpl: string, ...args: string[]);
   vsprintf(tmpl: string, args: string[]);
   defaultsDeep(...args: any): any;
@@ -147,11 +147,11 @@ export interface Unicorn extends UnicornApp {
 }
 
 export interface UnicornPlugin {
-  contructor: {
+  constructor: {
     is?: string;
   }
-  install?(app: UnicornApp, options?: any = {}): void;
-  uninstall?(app: UnicornApp, options?: any = {}): void;
+  install?(app: UnicornApp, options?: any): void;
+  uninstall?(app: UnicornApp, options?: any): void;
 }
 
 // Directive
@@ -181,8 +181,10 @@ export interface ValidationOptions {
 }
 
 // UI
-export interface UnicornUIExtended extends UnicornUI {
-  tinymce: UnicornTinymce
+export interface UnicornUIExtended {
+  tinymce: UnicornTinymce;
+  bootstrap: UIBootstrap5;
+  theme: UIBootstrap5;
 }
 
 // Http
@@ -200,12 +202,12 @@ export interface UnicornHttp {
   head(url: string, options?: AxiosRequestConfig): Promise<AxiosResponse>;
   options(url: string, options?: AxiosRequestConfig): Promise<AxiosResponse>;
   request(options: AxiosRequestConfig): Promise<AxiosResponse>;
-};
+}
 
 // Uri
 export interface UnicornUri {
-  aset: {
-    path(path: string = ''): string;
-    root(path: string = ''): string;
+  asset: {
+    path(path: string): string;
+    root(path: string): string;
   }
 }

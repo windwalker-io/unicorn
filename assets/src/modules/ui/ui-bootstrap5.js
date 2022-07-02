@@ -50,8 +50,8 @@ export class UIBootstrap5 {
   /**
    * @see https://getbootstrap.com/docs/5.0/components/tooltips/#example-enable-tooltips-everywhere
    *
-   * @param selector
-   * @param config
+   * @param {string|Element|Element[]} selector
+   * @param {object} config
    */
   tooltip(selector = '[data-bs-toggle="tooltip"]', config = {}) {
     return this.app.getBoundedInstanceList(
@@ -61,6 +61,10 @@ export class UIBootstrap5 {
     );
   }
 
+  /**
+   * @param {string|Element} selector
+   * @param {object} config
+   */
   modal(selector, config = {}) {
     return this.app.getBoundedInstance(
       selector,
@@ -69,7 +73,11 @@ export class UIBootstrap5 {
     );
   }
 
-  collapse(seletor = '[data-bs-toggle=collapse]', config = {}) {
+  /**
+   * @param {string|Element|Element[]} selector
+   * @param {object} config
+   */
+  collapse(selector = '[data-bs-toggle=collapse]', config = {}) {
     return this.app.getBoundedInstanceList(
       selector,
       'bs.collapse',
@@ -77,7 +85,11 @@ export class UIBootstrap5 {
     );
   }
 
-  offcanvas(seletor = '[data-bs-toggle="offcanvas"]', config = {}) {
+  /**
+   * @param {string|Element|Element[]} selector
+   * @param {object} config
+   */
+  offcanvas(selector = '[data-bs-toggle="offcanvas"]', config = {}) {
     return this.app.getBoundedInstanceList(
       selector,
       'bs.offcanvas',
@@ -85,6 +97,10 @@ export class UIBootstrap5 {
     );
   }
 
+  /**
+   * @param {string|Element|Element[]} selector
+   * @param {object} config
+   */
   popover(selector = '[data-bs-toggle="popover"]', config = {}) {
     return this.app.getBoundedInstanceList(
       selector,
@@ -93,7 +109,11 @@ export class UIBootstrap5 {
     );
   }
 
-  scrollspy(seletor = '[data-bs-spy="scroll"]', config = {}) {
+  /**
+   * @param {string|Element|Element[]} selector
+   * @param {object} config
+   */
+  scrollspy(selector = '[data-bs-spy="scroll"]', config = {}) {
     return this.app.getBoundedInstanceList(
       selector,
       'bs.scrollspy',
@@ -101,6 +121,10 @@ export class UIBootstrap5 {
     );
   }
 
+  /**
+   * @param {string|Element|Element[]} selector
+   * @param {object} config
+   */
   tab(selector = '[data-bs-toggle="tab"]', config = {}) {
     return this.app.getBoundedInstanceList(
       selector,
@@ -109,7 +133,11 @@ export class UIBootstrap5 {
     );
   }
 
-  toast(seletor = '[data-bs-toggle="toast"]', config = {}) {
+  /**
+   * @param {string|Element|Element[]} selector
+   * @param {object} config
+   */
+  toast(selector = '[data-bs-toggle="toast"]', config = {}) {
     return this.app.getBoundedInstanceList(
       selector,
       'bs.toast',
@@ -117,22 +145,30 @@ export class UIBootstrap5 {
     );
   }
 
-  keepTab(selector = null, options = {}) {
+  /**
+   * @param {string|Element} selector
+   * @param {object} config
+   */
+  keepTab(selector = null, config = {}) {
     return this.app.import('@unicorn/bootstrap/keep-tab.js')
       .then((m) => {
         if (selector) {
-          return new m.LoadTab(selector, options);
+          return new m.LoadTab(selector, config);
         }
 
         return m;
       });
   }
 
-  buttonRadio(selector = null, options = {}) {
+  /**
+   * @param {string|Element} selector
+   * @param {object} config
+   */
+  buttonRadio(selector = null, config = {}) {
     return this.app.import('@unicorn/bootstrap/button-radio.js')
       .then((m) => {
         if (selector) {
-          return m.ButtonRadio.handle(selector, options);
+          return m.ButtonRadio.handle(selector, config);
         }
 
         return m;

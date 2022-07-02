@@ -429,7 +429,7 @@ export class UnicornGridElement {
   /**
    * Get Checked boxes.
    *
-   * @returns {Element[]}
+   * @returns {HTMLInputElement[]}
    */
   getChecked() {
     return this.app.selectAll(
