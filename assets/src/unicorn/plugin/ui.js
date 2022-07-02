@@ -222,6 +222,7 @@ export default class UnicornUI {
             (ele) => {
               options = defaultsDeep(options, {
                 allowEmptyOption: true,
+                maxOptions: null,
                 plugins: {
                   caret_position: {},
                   clear_button: {},
@@ -234,12 +235,33 @@ export default class UnicornUI {
                 options.plugins.dropdown_input = {};
               }
 
-              const t = new TomSelect(ele, options);
+              // Auto select first if options changed.
+              // @see https://github.com/orchidjs/tom-select/issues/362
+              class UnicornTomSelect extends TomSelect {
+                syncOptionsWithoutKeepSelected() {
+                  let item;
+                  
+                  for(item of this.items) {
+                    var option = this.options[item].$option;
+
+                    if(!this.input.contains(option)) {
+                      this.removeItem(item, true);
+                      delete this.options[item];
+                      const first = Object.keys(this.options).shift();
+
+                      this.setValue(first);
+                    }
+                  }
+                  
+                  this.clearOptions();
+                  this.sync();
+                }
+              }
+
+              const t = new UnicornTomSelect(ele, options);
 
               ele.addEventListener('list:updated', () => {
-                t.clear();
-                t.clearOptions();
-                t.sync();
+                t.syncOptionsWithoutKeepSelected();
               });
 
               return t;
