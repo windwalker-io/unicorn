@@ -70,6 +70,8 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
 
     protected array $fieldAliases = [];
 
+    protected ?string $defaultItemClass = null;
+
     protected ?FilterHelper $filterHelper = null;
 
     protected ?SearchHelper $searchHelper = null;
@@ -127,7 +129,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
     public function getIterator(?string $class = null, array $args = []): \Traversable
     {
         return $this->compileQuery()->getIterator(
-            $class ?? Collection::class,
+            $class ?? $this->getDefaultItemClass(),
             $args
         );
     }
@@ -170,6 +172,10 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
             // Count first to cache
             $this->count($query);
             $query->offset($this->getOffset());
+        }
+
+        if ($this->defaultItemClass) {
+            $query->setDefaultItemClass($this->defaultItemClass);
         }
 
         // $this->afterCompileQuery($query);
@@ -834,6 +840,26 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
     public function disablePageFix(bool $value): static
     {
         $this->setOption('page_fix', !$value);
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getDefaultItemClass(): ?string
+    {
+        return $this->defaultItemClass;
+    }
+
+    /**
+     * @param  string|null  $defaultItemClass
+     *
+     * @return  static  Return self to support chaining.
+     */
+    public function setDefaultItemClass(?string $defaultItemClass): static
+    {
+        $this->defaultItemClass = $defaultItemClass;
 
         return $this;
     }
