@@ -118,7 +118,7 @@ export async function modalField() {
 
 export async function multiUploader() {
   watch(
-    ['src/modules/**/*.js', 'scss/**/*.scss']
+    ['src/modules/**/*.js', 'scss/**/*.scss', 'src/vue/components/vue-drag-uploader/*']
   );
 
   fusion.vue('./src/modules/field/multi-uploader.js', './dist/field/', {

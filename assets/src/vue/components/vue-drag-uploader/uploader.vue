@@ -259,6 +259,7 @@
       });
 
       const uploading = computed(() => {
+        Object.keys(state.uploadQueue);
         return Object.keys(state.uploadQueue).length > 0;
       });
 
@@ -294,11 +295,13 @@
         emit('update:modelValue', items);
       }, { deep: true });
 
-      watch(() => uploading, (val) => {
+      watch(uploading, (val) => {
         if (val) {
           emit('uploading');
+          u.stack('uploading').push(true);
         } else {
           emit('uploaded');
+          u.stack('uploading').pop();
         }
       });
 
