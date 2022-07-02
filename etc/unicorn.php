@@ -67,7 +67,7 @@ return [
                 'image' => [
                     'storage' => env('UPLOAD_STORAGE_DEFAULT') ?: 'local',
                     'accept' => 'image/*',
-                    'dir' => 'files/{year}/{month}/{day}',
+                    'dir' => 'images/{year}/{month}/{day}',
                     'raw_gif' => true,
                     'resize' => [
                         'enabled' => true,
