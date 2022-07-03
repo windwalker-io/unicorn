@@ -14,6 +14,7 @@ namespace Unicorn\Workflow;
 use Windwalker\Event\EventAwareInterface;
 use Windwalker\Event\EventAwareTrait;
 use Windwalker\ORM\Event\WatchEvent;
+use Windwalker\Utilities\TypeCast;
 
 /**
  * The Workflow class.
@@ -128,10 +129,10 @@ class WorkflowController implements EventAwareInterface
         return $this->findTransition($froms, $to) !== null;
     }
 
-    public function addState(string|\Stringable|State $state, ?string $name = null, bool $isInitial = false): static
+    public function addState(mixed $state, ?string $name = null, bool $isInitial = false): static
     {
         if (!$state instanceof State) {
-            $state = new State((string) $state, $name, $isInitial);
+            $state = new State(TypeCast::toString($state), $name, $isInitial);
         }
 
         $this->states[$state->getValue()] = $state;
@@ -151,7 +152,7 @@ class WorkflowController implements EventAwareInterface
     public function addTransition(
         string|Transition $transition,
         mixed $froms = null,
-        string $to = null,
+        string|\UnitEnum $to = null,
         bool $enabled = true,
     ): Transition {
         if (!$transition instanceof Transition) {
@@ -162,6 +163,10 @@ class WorkflowController implements EventAwareInterface
             if ($froms instanceof \Stringable) {
                 $froms = (string) $froms;
             }
+
+            $froms = AbstractWorkflow::toStrings($froms);
+
+            $to = TypeCast::toString($to);
 
             $transition = new Transition($transition, $froms, $to, $enabled);
         }

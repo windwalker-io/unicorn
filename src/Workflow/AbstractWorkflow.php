@@ -18,6 +18,7 @@ use Windwalker\ORM\Event\AfterSaveEvent;
 use Windwalker\ORM\Event\BeforeSaveEvent;
 use Windwalker\ORM\Event\WatchEvent;
 use Windwalker\ORM\Metadata\EntityMetadata;
+use Windwalker\Utilities\TypeCast;
 
 /**
  * The Workflow class.
@@ -33,10 +34,10 @@ abstract class AbstractWorkflow
     public static function toStrings(mixed $value): string|array
     {
         if (is_array($value)) {
-            return array_map('strval', $value);
+            return array_map([TypeCast::class, 'toString'], $value);
         }
 
-        return (string) $value;
+        return TypeCast::toString($value);
     }
 
     public function listen(EntityMetadata $metadata): void

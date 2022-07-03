@@ -47,7 +47,7 @@ class StateMachine implements ContainerAttributeInterface
             $workflow = new WorkflowController();
             $workflow->setField($this->field);
 
-            if (is_a($this->enum, Enum::class, true)) {
+            if (is_a($this->enum, \UnitEnum::class, true) || is_a($this->enum, Enum::class, true)) {
                 $class = $this->enum;
                 $workflow->setStates($class::values());
 
