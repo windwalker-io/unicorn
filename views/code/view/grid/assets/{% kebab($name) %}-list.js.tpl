@@ -5,12 +5,17 @@
  * @license    __LICENSE__
  */
 
-import u from '@main';
+import '@main';
 
 u.$ui.bootstrap.tooltip();
 
-const form = '#admin-form';
+const formId = '#admin-form';
 
-u.grid(form).initComponent();
-u.$ui.disableOnSubmit(form);
-u.$ui.checkboxesMultiSelect(form);
+// Init Grid
+u.grid(formId).initComponent();
+
+// Disable on submit
+u.$ui.disableOnSubmit(formId);
+
+// Checkbox Multi-select
+u.$ui.checkboxesMultiSelect(formId);

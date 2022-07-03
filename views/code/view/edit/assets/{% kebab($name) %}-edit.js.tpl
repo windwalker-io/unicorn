@@ -5,13 +5,21 @@
  * @license    __LICENSE__
  */
 
-import u from '@main';
+import '@main';
 
 u.$ui.bootstrap.tooltip();
 
-const form = '#admin-form';
+const formId = '#admin-form';
 
+// Validation
 u.formValidation()
-  .then(() => u.$ui.disableOnSubmit(form));
-u.form(form).initComponent();
+  .then(() => u.$ui.disableOnSubmit(formId));
+
+// Init form
+u.form(formId).initComponent();
+
+// Disable if uploading
+u.$ui.disableIfStackNotEmpty();
+
+// Keep Alive
 u.$ui.keepAlive(location.href);
