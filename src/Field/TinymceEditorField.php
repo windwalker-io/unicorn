@@ -31,6 +31,8 @@ use Windwalker\Utilities\Arr;
  * @method  $this  enableImageUpload(bool|string $value = null)
  * @method  mixed  getEnableImageUpload()
  * @method  $this  imageUploadUrl(string $value = null)
+ * @method  $this  stackName(string $value)
+ * @method  mixed  getStackName()
  */
 class TinymceEditorField extends AbstractEditorField
 {
@@ -171,6 +173,10 @@ class TinymceEditorField extends AbstractEditorField
 
         $options['content_css'] = implode(',', $contentCss);
 
+        $options['unicorn'] = [
+            'stack_name' => $this->getStackName() ?: 'uploading'
+        ];
+
         $this->editorScript->tinymce(
             '#' . $this->getId(),
             $options
@@ -199,6 +205,7 @@ class TinymceEditorField extends AbstractEditorField
                 'langFolder',
                 'enableImageUpload',
                 'imageUploadUrl',
+                'stackName',
             ]
         );
     }

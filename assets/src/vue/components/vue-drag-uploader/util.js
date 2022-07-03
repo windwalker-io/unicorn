@@ -5,6 +5,8 @@
  * @license    __LICENSE__
  */
 
+import { SimpleQueue } from '../../../unicorn/plugin/queue.js';
+
 export let swal;
 
 // Polyfill sweetalert
@@ -33,4 +35,12 @@ export function isImage(filePath) {
   ];
 
   return allow.indexOf(ext.toLowerCase()) !== -1;
+}
+
+const queues = {};
+
+export function getQueue(name, maxRunning = 2) {
+  queues[name] = queues[name] || new SimpleQueue(maxRunning);
+
+  return queues[name];
 }

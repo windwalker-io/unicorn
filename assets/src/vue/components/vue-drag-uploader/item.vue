@@ -35,7 +35,7 @@
 </template>
 
 <script>
-  import { isImage as isImageType, itemStates, swal } from './util';
+  import { isImage as isImageType, itemStates, swal, getQueue } from './util';
   import * as Vue from 'vue';
   const { ref, reactive, computed, watch, toRefs, onMounted } = Vue;
 
@@ -47,7 +47,12 @@
       initState: String,
       uploadUrl: String,
       size: Number,
-      isReadonly: Boolean
+      isReadonly: Boolean,
+      queueName: {
+        type: String,
+        default: 'uploading'
+      },
+      maxConcurrent: [String, Number],
     },
     setup(props, { emit }) {
       const state = reactive({
@@ -73,7 +78,11 @@
 
           reader.readAsDataURL(props.item.file);
 
-          upload();
+          const queue = getQueue(props.queueName, Number(props.maxConcurrent) || 2);
+
+          queue.push(() => {
+            return upload();
+          });
         }
       });
 

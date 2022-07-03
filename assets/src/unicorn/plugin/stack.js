@@ -11,7 +11,7 @@ export default class UnicornStack {
    */
   stacks = {};
 
-  static is = 'crypto';
+  static is = 'stack';
 
   static install(app, options = {}) {
     const $stack = app.$stack = new this(app, options);

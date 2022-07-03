@@ -20,6 +20,8 @@
             :upload-url="url"
             :size="thumbSize"
             :is-readonly="isReadonly"
+            :queue-name="id"
+            :max-concurrent="maxConcurrent"
             @delete="deleteItem"
             @upload-start="uploadStart"
             @upload-end="uploadEnd"
@@ -74,9 +76,11 @@
       VueDragUploaderItem
     },
     props: {
+      id: String,
       url: String,
       modelValue: Array,
       maxFiles: [String, Number],
+      maxConcurrent: [String, Number],
       thumbSize: Number,
       placeholder: String,
       accept: {
@@ -298,10 +302,8 @@
       watch(uploading, (val) => {
         if (val) {
           emit('uploading');
-          u.stack('uploading').push(true);
         } else {
           emit('uploaded');
-          u.stack('uploading').pop();
         }
       });
 

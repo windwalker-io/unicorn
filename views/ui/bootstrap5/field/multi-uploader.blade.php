@@ -40,7 +40,9 @@ $data['tmplSelector'] ??= '#' . $tmplId;
 ?>
 
 <multi-uploader id="{{ $field->getId('-wrap') }}" options="{{ json_encode($data) }}">
-    <app></app>
+    <app
+        stack-name="{{ $field->getStackName() ?: 'uploading' }}"
+    />
 </multi-uploader>
 
 @teleport($tmplId)
@@ -53,10 +55,13 @@ $data['tmplSelector'] ??= '#' . $tmplId;
         :thumb-size="thumbSize"
         :disabled="disabled"
         :readonly="readonly"
+        :max-concurrent="{{ (int) ($field->getMaxConcurrent() ?: 2) }}"
         accept="{{ $field->getAccept() }}"
         placeholder="{{ $field->getPlaceholder() ?? $lang('unicorn.field.multi.uploader.placeholder') }}"
         @change="value = $event"
         @update:modelValue="value = $event"
+        @uploading="uploading"
+        @uploaded="uploaded"
         @attr('v-on:item-click', $hasEditForm ? 'itemClick' : 'openFile')
         ref="app"
     >

@@ -13,6 +13,7 @@ import UnicornGrid, { UnicornGridElement } from './unicorn/plugin/grid';
 import UnicornHelper from './unicorn/plugin/helper';
 import UnicornLang from './unicorn/plugin/lang';
 import UnicornLoader from './unicorn/plugin/loader';
+import UnicornQueue, { SimpleQueue } from './unicorn/plugin/queue';
 import UnicornRouter from './unicorn/plugin/router';
 import UnicornStack, { Stack } from './unicorn/plugin/stack';
 import UnicornTinymce from './unicorn/plugin/tinymce';
@@ -143,7 +144,11 @@ export interface Unicorn extends UnicornApp {
 
   // stack.js
   $stack: UnicornStack;
-  stack(name: string): Stack;
+  stack(name: string, store?: any[]): Stack;
+
+  // queue.js
+  $queue: UnicornQueue;
+  queue(name: string, maxRunning?: number): SimpleQueue;
 }
 
 export interface UnicornPlugin {

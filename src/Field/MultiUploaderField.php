@@ -47,6 +47,10 @@ use Windwalker\Utilities\TypeCast;
  * @method  mixed  getAccept()
  * @method  $this  canReplace(bool $value)
  * @method  mixed  isCanReplace()
+ * @method  $this  maxConcurrent(int $value)
+ * @method  mixed  getMaxConcurrent()
+ * @method  $this  stackName(string $value)
+ * @method  mixed  getStackName()
  */
 class MultiUploaderField extends AbstractField
 {
@@ -192,6 +196,8 @@ class MultiUploaderField extends AbstractField
                 'thumbSize',
                 'accept',
                 'canReplace',
+                'maxConcurrent',
+                'stackName',
             ]
         );
     }

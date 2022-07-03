@@ -68,7 +68,16 @@ export class TinymceEditor {
 
     this.selector = selector;
     this.element = app.selectOne(selector);
-    this.options = defaultsDeep({}, this.prepareOptions(options, tinymce.majorVersion));
+
+    this.options = defaultsDeep(
+      {},
+      this.prepareOptions(options, tinymce.majorVersion),
+      {
+        unicorn: {
+          stack_name: 'uploading'
+        }
+      }
+    );
 
     tinymce.init(this.options).then((editor) => {
       this.editor = editor[0];
@@ -91,7 +100,8 @@ export class TinymceEditor {
       defaults.relative_urls = false;
 
       if (Number(verion) >= 6) {
-        defaults.images_upload_handler = (...args) => this.imageUploadHandler(...args);
+        defaults.images_upload_handler = (blobInfo, progress) =>
+          this.imageUploadHandler(blobInfo, progress);
       } else {
         options.plugins.push('paste');
 
@@ -194,7 +204,7 @@ export class TinymceEditor {
     const formData = new FormData();
     formData.append('file', blobInfo.blob(), blobInfo.filename());
 
-    const stack = u.stack('uploading');
+    const stack = u.stack(this.options.unicorn.stack_name);
     stack.push(true);
 
     return u.$http.post(

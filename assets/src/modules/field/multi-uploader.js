@@ -39,6 +39,9 @@ function createAppInstance(data, tmpl) {
   return {
     name: 'multi-uploader-field-app',
     template: tmpl,
+    props: {
+      stackName: String,
+    },
     setup(props, ctx) {
       const state = reactive({
         ...data,
@@ -76,9 +79,9 @@ function createAppInstance(data, tmpl) {
         state.current = null;
         state.currentIndex = null;
 
-        nextTick().then(() => {
+        // nextTick().then(() => {
           // new bootstrap.Modal(modal.value).hide();
-        });
+        // });
         // this.$options.metaModal.modal('hide');
       }
 
@@ -133,6 +136,14 @@ function createAppInstance(data, tmpl) {
         });
       }
 
+      function uploading() {
+        u.stack(props.stackName).push(true);
+      }
+
+      function uploaded() {
+        u.stack(props.stackName).pop();
+      }
+
       return {
         app,
         modal,
@@ -147,7 +158,9 @@ function createAppInstance(data, tmpl) {
         isImage,
         dragover,
         dragleave,
-        drop
+        drop,
+        uploading,
+        uploaded,
       };
     }
   };

@@ -25,6 +25,7 @@ import UnicornHelper from './plugin/helper.js';
 import UnicornHttp from './plugin/http.js';
 import UnicornUri from './plugin/uri.js';
 import UnicornStack from './plugin/stack.js';
+import UnicornQueue from './plugin/queue.js';
 import UnicornAlpine2 from './plugin/alpine2.js';
 import UnicornApp from './app.js';
 
@@ -60,5 +61,6 @@ u.use(UnicornGrid);
 u.use(UnicornValidation);
 u.use(UnicornTinymce);
 u.use(UnicornStack);
+u.use(UnicornQueue);
 
 u.selectOne('[uni-cloak]')?.removeAttribute('uni-cloak');
