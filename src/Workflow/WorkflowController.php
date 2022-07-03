@@ -151,19 +151,19 @@ class WorkflowController implements EventAwareInterface
     public function addTransition(
         string|Transition $transition,
         mixed $froms = null,
-        mixed $tos = null,
+        string $to = null,
         bool $enabled = true,
     ): Transition {
         if (!$transition instanceof Transition) {
+            if ($froms === null) {
+                $froms = $this->getStateValues();
+            }
+
             if ($froms instanceof \Stringable) {
                 $froms = (string) $froms;
             }
 
-            if ($tos instanceof \Stringable) {
-                $tos = (string) $tos;
-            }
-
-            $transition = new Transition($transition, $froms, $tos, $enabled);
+            $transition = new Transition($transition, $froms, $to, $enabled);
         }
 
         return $this->transitions[$transition->getName()] = $transition;
@@ -181,11 +181,6 @@ class WorkflowController implements EventAwareInterface
         }
 
         return null;
-    }
-
-    protected function validateTransition(Transition $transition)
-    {
-        //
     }
 
     public function triggerBeforeTransition(string $name, WatchEvent $event): object
