@@ -16,6 +16,7 @@ declare(strict_types=1);
 
 use Unicorn\Html\State\StateButton;
 use Unicorn\Workflow\AbstractWorkflow;
+use Unicorn\Workflow\Transition;
 use Unicorn\Workflow\WorkflowController;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Asset\AssetService;
@@ -31,6 +32,7 @@ use Windwalker\Core\Router\SystemUri;
  * @var AbstractWorkflow    $workflow
  * @var AbstractWorkflow[]  $workflows
  * @var WorkflowController  $workflowCtrl
+ * @var Transition  $transition
  */
 
 $batch   ??= false;
@@ -178,10 +180,10 @@ $buttonId ??= trim('c-state-dropdown-' . implode('-', $fieldName) . '-' . $id, '
                             @if ($batch)
                             @click="$store.{{ $store }}.batch('{{ $transition->getName() }}', null, { batch: { '{{ $workflowCtrl->getField() }}': '{{ $state->getValue() }}' } })">
                             @else
-                                @click="$store.{{ $store }}.doTask('{{ $transition->getName() }}', '{{ $id }}')"
+                                @click="$store.{{ $store }}.updateItem('{{ $id }}', null, { batch: { '{{ $workflowCtrl->getField() }}': '{{ $transition->getTo() }}' } })"
                             @endif
                             >
-                            <i class="{{ $transition->getIcon() }} text-{{ $state->getColor() }}"></i>
+                            <i class="{{ $transition->getIcon() }}"></i>
                             {{ $transition->getTitle() ?? $transition->getName() }}
                         </a>
                     </li>

@@ -28,7 +28,7 @@ class Transition
     public function __construct(
         protected string $name,
         protected string|array $froms,
-        protected string|array $tos,
+        protected string $to,
         protected $enabled = true
     ) {
     }
@@ -69,26 +69,6 @@ class Transition
     public function setFroms(array|string $froms): static
     {
         $this->froms = $froms;
-
-        return $this;
-    }
-
-    /**
-     * @return array|string
-     */
-    public function getTos(): array|string
-    {
-        return $this->tos;
-    }
-
-    /**
-     * @param  array|string  $tos
-     *
-     * @return  static  Return self to support chaining.
-     */
-    public function setTos(array|string $tos): static
-    {
-        $this->tos = $tos;
 
         return $this;
     }
@@ -178,5 +158,25 @@ class Transition
         return $this->icon($icon)
             ->title($title)
             ->description($description);
+    }
+
+    /**
+     * @return string
+     */
+    public function getTo(): string
+    {
+        return $this->to;
+    }
+
+    /**
+     * @param  string  $to
+     *
+     * @return  static  Return self to support chaining.
+     */
+    public function setTo(string $to): static
+    {
+        $this->to = $to;
+
+        return $this;
     }
 }

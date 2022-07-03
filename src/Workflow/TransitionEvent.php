@@ -21,7 +21,7 @@ class TransitionEvent extends AbstractEvent
 {
     protected string|array $froms = [];
 
-    protected string|array $tos = [];
+    protected string $to = '';
 
     protected ?Transition $transition = null;
 
@@ -48,21 +48,21 @@ class TransitionEvent extends AbstractEvent
     }
 
     /**
-     * @return array|string
+     * @return string
      */
-    public function getTos(): array|string
+    public function getTo(): string
     {
-        return $this->tos;
+        return $this->to;
     }
 
     /**
-     * @param  array|string  $tos
+     * @param  string  $to
      *
      * @return  static  Return self to support chaining.
      */
-    public function setTos(array|string $tos): static
+    public function setTo(string $to): static
     {
-        $this->tos = $tos;
+        $this->to = $to;
 
         return $this;
     }

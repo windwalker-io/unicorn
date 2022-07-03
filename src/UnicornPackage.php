@@ -25,6 +25,7 @@ use Unicorn\Generator\SubCommand\MvcAdminSubCommand;
 use Unicorn\Generator\SubCommand\RouteSubCommand;
 use Unicorn\Generator\SubCommand\ViewEditSubCommand;
 use Unicorn\Generator\SubCommand\ViewGridSubCommand;
+use Unicorn\Generator\SubCommand\WorkflowSubCommand;
 use Unicorn\Image\ImagePlaceholder;
 use Unicorn\Script\FormScript;
 use Unicorn\Script\ModernScript;
@@ -210,6 +211,7 @@ class UnicornPackage extends AbstractPackage implements
                     'unicorn:view-edit' => ViewEditSubCommand::class,
                     'unicorn:route' => RouteSubCommand::class,
                     'unicorn:mvc-admin' => MvcAdminSubCommand::class,
+                    'unicorn:workflow' => WorkflowSubCommand::class,
                     // 'unicorn:workflow' => ModelSubCommand::class,
                 ]
             );
