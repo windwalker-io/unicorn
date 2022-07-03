@@ -261,7 +261,7 @@ class WorkflowController implements EventAwareInterface
         $transition = $this->getTransition($name);
 
         if ($transition) {
-            $this->onAfterChanged($transition->getFroms(), $transition->getTo(), $listener);
+            $this->onBeforeChanged($transition->getFroms(), $transition->getTo(), $listener);
 
             $this->on(
                 'before_transition__' . $transition->getName(),
@@ -328,6 +328,42 @@ class WorkflowController implements EventAwareInterface
         }
 
         return $this;
+    }
+
+    public function onBeforeFrom(string|array|\Stringable $froms, callable $listener): static
+    {
+        return $this->onBeforeChanged(
+            $froms,
+            $this->getStateValues(),
+            $listener
+        );
+    }
+
+    public function onAfterFrom(string|array|\Stringable $froms, callable $listener): static
+    {
+        return $this->onAfterChanged(
+            $froms,
+            $this->getStateValues(),
+            $listener
+        );
+    }
+
+    public function onBeforeTo(string|array|\Stringable $tos, callable $listener): static
+    {
+        return $this->onBeforeChanged(
+            $this->getStateValues(),
+            $tos,
+            $listener
+        );
+    }
+
+    public function onAfterTo(string|array|\Stringable $tos, callable $listener): static
+    {
+        return $this->onAfterChanged(
+            $this->getStateValues(),
+            $tos,
+            $listener
+        );
     }
 
     /**
