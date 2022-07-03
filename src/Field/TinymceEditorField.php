@@ -168,7 +168,11 @@ class TinymceEditorField extends AbstractEditorField
         $contentCss = (array) ($options['content_css'] ?? $this->getContentCss());
 
         if ($contentCss === []) {
-            $contentCss = [$this->assetService->handleUri('@unicorn/editor.css')];
+            $contentCss = [
+                $this->assetService->appendVersion(
+                    $this->assetService->handleUri('@unicorn/editor.css')
+                )
+            ];
         }
 
         $options['content_css'] = implode(',', $contentCss);
