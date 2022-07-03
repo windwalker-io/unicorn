@@ -12,7 +12,7 @@ declare(strict_types=1);
 namespace Unicorn\Workflow;
 
 use Unicorn\Html\State\StateButton;
-use Unicorn\Workflow\Exception\TransitionException;
+use Unicorn\Workflow\Exception\TransitionDisallowException;
 use Windwalker\DOM\DOMElement;
 use Windwalker\ORM\Event\AfterSaveEvent;
 use Windwalker\ORM\Event\BeforeSaveEvent;
@@ -46,27 +46,30 @@ abstract class AbstractWorkflow
         $metadata->watchBefore(
             $workflow->getField(),
             function (WatchEvent $event) use ($metadata, $workflow) {
-                $val = static::toStrings($event->getValue());
-                $oldVal = static::toStrings($event->getOldValue());
+                $to = static::toStrings($event->getValue());
+                $from = static::toStrings($event->getOldValue());
 
-                if (!$workflow->isAllow($oldVal, $val)) {
-                    throw new TransitionException(
+                if (!$workflow->isAllow($from, $to)) {
+                    throw new TransitionDisallowException(
+                        $from,
+                        $to,
+                        $this,
                         sprintf(
-                            'Unallow transition from %s to %s',
-                            json_encode($oldVal),
-                            json_encode($val)
+                            'Transition from "%s" to "%s" is disallow.',
+                            json_encode($from),
+                            json_encode($to)
                         )
                     );
                 }
 
                 // Find transition
-                $transition = $workflow->findTransition($oldVal, $val);
+                $transition = $workflow->findTransition($from, $to);
 
                 if ($transition) {
                     $workflow->triggerBeforeTransition($transition->getName(), $event);
                 }
 
-                $workflow->triggerAfterChanged($oldVal, $val, $event);
+                $workflow->triggerAfterChanged($from, $to, $event);
             }
         );
 
