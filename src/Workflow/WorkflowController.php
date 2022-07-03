@@ -152,7 +152,7 @@ class WorkflowController implements EventAwareInterface
     public function addTransition(
         string|Transition $transition,
         mixed $froms = null,
-        string|\UnitEnum $to = null,
+        mixed $to = null,
         bool $enabled = true,
     ): Transition {
         if (!$transition instanceof Transition) {
