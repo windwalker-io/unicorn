@@ -636,8 +636,13 @@ export default class UnicornUI {
       });
     });
 
-    this.app.selectOne(formSelector)?.addEventListener(event, (e) => {
+    const form = this.app.selectOne(formSelector);
+    form?.addEventListener(event, (e) => {
       setTimeout(() => {
+        if (!form.checkValidity()) {
+          return;
+        }
+
         this.app.selectAll(buttonSelector, (button) => {
           button.disabled = true;
           button.classList.add('disabled');

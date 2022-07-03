@@ -12,9 +12,10 @@ declare(strict_types=1);
 namespace Unicorn\Workflow;
 
 use Unicorn\Html\State\StateButton;
-use Unicorn\Workflow\Exception\TransitionException;
+use Unicorn\Workflow\Exception\TransitionDisallowException;
 use Windwalker\DOM\DOMElement;
 use Windwalker\ORM\Event\AfterSaveEvent;
+use Windwalker\ORM\Event\BeforeSaveEvent;
 use Windwalker\ORM\Event\WatchEvent;
 use Windwalker\ORM\Metadata\EntityMetadata;
 
@@ -42,29 +43,50 @@ abstract class AbstractWorkflow
     {
         $workflow = $this->getWorkflowController();
 
-        $metadata->watch(
+        $metadata->watchBefore(
             $workflow->getField(),
             function (WatchEvent $event) use ($metadata, $workflow) {
-                $originEvent = $event->getOriginEvent();
+                $to = static::toStrings($event->getValue());
+                $from = static::toStrings($event->getOldValue());
 
-                if (!$originEvent instanceof AfterSaveEvent) {
-                    return;
-                }
-
-                $val = static::toStrings($event->getValue());
-                $oldVal = static::toStrings($event->getOldValue());
-
-                if (!$workflow->isAllow($oldVal, $val)) {
-                    throw new TransitionException(
+                if (!$workflow->isAllow($from, $to)) {
+                    throw new TransitionDisallowException(
+                        $from,
+                        $to,
+                        $this,
                         sprintf(
-                            'Unallow transition from %s to %s',
-                            json_encode($val),
-                            json_encode($oldVal)
+                            'Transition from "%s" to "%s" is disallow.',
+                            json_encode($from),
+                            json_encode($to)
                         )
                     );
                 }
 
-                $workflow->triggerChanged($oldVal, $val, $event);
+                // Find transition
+                $transition = $workflow->findTransition($from, $to);
+
+                if ($transition) {
+                    $workflow->triggerBeforeTransition($transition->getName(), $event);
+                }
+
+                $workflow->triggerAfterChanged($from, $to, $event);
+            }
+        );
+
+        $metadata->watchAfter(
+            $workflow->getField(),
+            function (WatchEvent $event) use ($metadata, $workflow) {
+                $val = static::toStrings($event->getValue());
+                $oldVal = static::toStrings($event->getOldValue());
+
+                // Find transition
+                $transition = $workflow->findTransition($oldVal, $val);
+
+                if ($transition) {
+                    $workflow->triggerAfterTransition($transition->getName(), $event);
+                }
+
+                $workflow->triggerAfterChanged($oldVal, $val, $event);
             }
         );
     }

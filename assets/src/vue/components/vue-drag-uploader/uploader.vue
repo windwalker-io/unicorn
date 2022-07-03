@@ -78,7 +78,12 @@
     props: {
       id: String,
       url: String,
-      modelValue: Array,
+      modelValue: {
+        type: Array,
+        default() {
+          return [];
+        }
+      },
       maxFiles: [String, Number],
       maxConcurrent: [String, Number],
       thumbSize: Number,

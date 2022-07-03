@@ -40,14 +40,14 @@ $workflow = $app->service(\Unicorn\Workflow\BasicStateWorkflow::class);
             <table class="table table-striped table-hover">
                 <thead>
                 <tr>
-                    <th>
-                        <x-sort field="{% snake($name) %}.title">
-                            @lang('unicorn.field.title')
+                    <th style="width: 10%">
+                        <x-sort field="{% snake($name) %}.state">
+                            @lang('unicorn.field.state')
                         </x-sort>
                     </th>
                     <th>
-                        <x-sort field="{% snake($name) %}.state">
-                            @lang('unicorn.field.state')
+                        <x-sort field="{% snake($name) %}.title">
+                            @lang('unicorn.field.title')
                         </x-sort>
                     </th>
                     <th class="text-end text-nowrap" style="width: 1%">
@@ -67,13 +67,6 @@ $workflow = $app->service(\Unicorn\Workflow\BasicStateWorkflow::class);
                     ])
                     <tr>
                         <td>
-                            <a href="javascript://"
-                                onclick="parent.{{ $callback }}({{ json_encode($data) }})">
-                                <span class="fa fa-angle-right text-muted"></span>
-                                {{ $item->title }}
-                            </a>
-                        </td>
-                        <th>
                             <x-state-dropdown color-on="text"
                                 button-style="width: 100%"
                                 use-states
@@ -82,7 +75,13 @@ $workflow = $app->service(\Unicorn\Workflow\BasicStateWorkflow::class);
                                 :id="$item->id"
                                 :value="$item->state"
                             />
-                        </th>
+                        </td>
+                        <td>
+                            <a href="javascript://"
+                                onclick="parent.{{ $callback }}({{ json_encode($data) }})">
+                                {{ $item->title }}
+                            </a>
+                        </td>
                         <td class="text-end">
                             {{ $item->id }}
                         </td>

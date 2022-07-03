@@ -14,7 +14,6 @@ namespace Unicorn\Workflow;
 use Windwalker\Event\EventAwareInterface;
 use Windwalker\Event\EventAwareTrait;
 use Windwalker\ORM\Event\WatchEvent;
-use Windwalker\Utilities\Arr;
 
 /**
  * The Workflow class.
@@ -51,13 +50,16 @@ class WorkflowController implements EventAwareInterface
         $tos = [];
 
         foreach ($transitions as $transition) {
-            $tos[] = (array) $transition->getTos();
+            $tos[] = $transition->getTo();
         }
 
         // Add self
-        $tos[] = (array) $froms;
+        $tos = [
+            ...$tos,
+            ...((array) $froms)
+        ];
 
-        $tos = array_unique(array_merge(...$tos));
+        $tos = array_unique($tos);
         $states = [];
 
         foreach ($tos as $to) {
@@ -73,7 +75,7 @@ class WorkflowController implements EventAwareInterface
     {
         return array_filter(
             $this->getStates(),
-            fn (State $state) => $state->isInitial()
+            fn(State $state) => $state->isInitial()
         );
     }
 
@@ -89,14 +91,19 @@ class WorkflowController implements EventAwareInterface
         if ($this->isAllowFreeTransitions()) {
             return array_filter(
                 $this->getTransitions(),
-                fn (Transition $transition) => $transition->isEnabled()
+                fn(Transition $transition) => $transition->isEnabled()
             );
         }
 
         return array_filter(
             $this->transitions,
-            fn(Transition $transition) => $transition->isEnabled()
-                && Arr::arrayEquals((array) $transition->getFroms(), (array) $froms),
+            static function (Transition $transition) use ($froms) {
+                return $transition->isEnabled()
+                    && array_intersect(
+                        (array) AbstractWorkflow::toStrings($transition->getFroms()),
+                        (array) AbstractWorkflow::toStrings($froms)
+                    );
+            },
         );
     }
 
@@ -105,28 +112,20 @@ class WorkflowController implements EventAwareInterface
         return $this->getTransition($name) !== null;
     }
 
-    public function isAllow(string|array $froms, string|array $tos): bool
+    public function isAllow(string|array $froms, string $to): bool
     {
-        if ($froms === $tos) {
+        // Is same state, allow.
+        if ($froms === $to || (array) $froms === (array) $to) {
             return true;
         }
 
         if ($this->isAllowFreeTransitions()) {
             $states = $this->getStateValues();
 
-            return !(array_diff((array) $froms, $states) || array_diff((array) $tos, $states));
+            return !(array_diff((array) $froms, $states) || array_diff((array) $to, $states));
         }
 
-        foreach ($this->transitions as $transition) {
-            if (
-                Arr::arrayEquals((array) $transition->getFroms(), (array) $froms)
-                && Arr::arrayEquals((array) $transition->getTos(), (array) $tos)
-            ) {
-                return true;
-            }
-        }
-
-        return false;
+        return $this->findTransition($froms, $to) !== null;
     }
 
     public function addState(string|\Stringable|State $state, ?string $name = null, bool $isInitial = false): static
@@ -170,12 +169,26 @@ class WorkflowController implements EventAwareInterface
         return $this->transitions[$transition->getName()] = $transition;
     }
 
+    public function findTransition(array|string $froms, string $to): ?Transition
+    {
+        foreach ($this->transitions as $transition) {
+            if (
+                $transition->getTo() === $to
+                && !array_diff((array) $froms, (array) $transition->getFroms())
+            ) {
+                return $transition;
+            }
+        }
+
+        return null;
+    }
+
     protected function validateTransition(Transition $transition)
     {
         //
     }
 
-    public function triggerTransition(string $name, WatchEvent $event): object
+    public function triggerBeforeTransition(string $name, WatchEvent $event): object
     {
         $transition = $this->getTransition($name);
 
@@ -190,61 +203,197 @@ class WorkflowController implements EventAwareInterface
 
         return $this->emit(
             (new TransitionEvent())
-                ->setName($this->toEventName($transition->getFroms(), $transition->getTos()))
+                ->setName('before_transition__' . $transition->getName())
                 ->setFroms($transition->getFroms())
-                ->setTos($transition->getTos())
+                ->setTo($transition->getTo())
                 ->setTransition($transition)
                 ->setWatchEvent($event)
         );
     }
 
-    public function triggerChanged(string|array $froms, string|array $tos, WatchEvent $event): object
+    public function triggerAfterTransition(string $name, WatchEvent $event): object
     {
+        $transition = $this->getTransition($name);
+
+        if (!$transition) {
+            throw new \LogicException(
+                sprintf(
+                    'Transition "%s" not found.',
+                    $name
+                )
+            );
+        }
+
         return $this->emit(
             (new TransitionEvent())
-                ->setName($this->toEventName($froms, $tos))
-                ->setFroms($froms)
-                ->setTos($tos)
+                ->setName('after_transition__' . $transition->getName())
+                ->setFroms($transition->getFroms())
+                ->setTo($transition->getTo())
+                ->setTransition($transition)
                 ->setWatchEvent($event)
         );
     }
 
-    public function onTransition(string $name, callable $listener): static
+    public function triggerBeforeChanged(string $from, string $to, WatchEvent $event): object
+    {
+        return $this->emit(
+            (new TransitionEvent())
+                ->setName($this->toEventName('before', $from, $to))
+                ->setFroms($from)
+                ->setTo($to)
+                ->setWatchEvent($event)
+        );
+    }
+
+    public function triggerAfterChanged(string $from, string $to, WatchEvent $event): object
+    {
+        return $this->emit(
+            (new TransitionEvent())
+                ->setName($this->toEventName('after', $from, $to))
+                ->setFroms($from)
+                ->setTo($to)
+                ->setWatchEvent($event)
+        );
+    }
+
+    public function onBeforeTransition(string $name, callable $listener): static
     {
         $transition = $this->getTransition($name);
 
         if ($transition) {
-            $this->onChanged($transition->getFroms(), $transition->getTos(), $listener);
+            $this->onBeforeChanged($transition->getFroms(), $transition->getTo(), $listener);
+
+            $this->on(
+                'before_transition__' . $transition->getName(),
+                $listener
+            );
         }
 
         return $this;
     }
 
-    public function onChanged(
-        string|array|\Stringable $froms,
-        string|array|\Stringable $tos,
-        callable $listener
-    ): static {
-        $this->on(
-            $this->toEventName($froms, $tos),
-            $listener
-        );
+    public function onAfterTransition(string $name, callable $listener): static
+    {
+        $transition = $this->getTransition($name);
+
+        if ($transition) {
+            $this->onAfterChanged($transition->getFroms(), $transition->getTo(), $listener);
+
+            $this->on(
+                'after_transition__' . $transition->getName(),
+                $listener
+            );
+        }
 
         return $this;
     }
 
-    protected function toEventName(string|array|\Stringable $froms, string|array|\Stringable $tos): string
+    public function onBeforeChanged(
+        string|array|\Stringable $froms,
+        string|array|\Stringable $tos,
+        callable $listener
+    ): static {
+        $eventNames = $this->sortEventNames(
+            'before',
+            $froms,
+            $tos
+        );
+
+        foreach ($eventNames as $eventName) {
+            $this->on(
+                $eventName,
+                $listener
+            );
+        }
+
+        return $this;
+    }
+
+    public function onAfterChanged(
+        string|array|\Stringable $froms,
+        string|array|\Stringable $tos,
+        callable $listener
+    ): static {
+        $eventNames = $this->sortEventNames(
+            'after',
+            $froms,
+            $tos
+        );
+
+        foreach ($eventNames as $eventName) {
+            $this->on(
+                $eventName,
+                $listener
+            );
+        }
+
+        return $this;
+    }
+
+    public function onBeforeFrom(string|array|\Stringable $froms, callable $listener): static
     {
-        $froms = AbstractWorkflow::toStrings($froms);
-        $tos   = AbstractWorkflow::toStrings($tos);
+        return $this->onBeforeChanged(
+            $froms,
+            $this->getStateValues(),
+            $listener
+        );
+    }
 
-        $froms = (array) $froms;
-        $tos   = (array) $tos;
+    public function onAfterFrom(string|array|\Stringable $froms, callable $listener): static
+    {
+        return $this->onAfterChanged(
+            $froms,
+            $this->getStateValues(),
+            $listener
+        );
+    }
 
-        sort($froms);
-        sort($tos);
+    public function onBeforeTo(string|array|\Stringable $tos, callable $listener): static
+    {
+        return $this->onBeforeChanged(
+            $this->getStateValues(),
+            $tos,
+            $listener
+        );
+    }
 
-        return implode(';', (array) $froms) . '=>' . implode(';', (array) $tos);
+    public function onAfterTo(string|array|\Stringable $tos, callable $listener): static
+    {
+        return $this->onAfterChanged(
+            $this->getStateValues(),
+            $tos,
+            $listener
+        );
+    }
+
+    /**
+     * @param  string|array|\Stringable  $froms
+     * @param  string|array|\Stringable  $tos
+     *
+     * @return  array<string>
+     */
+    protected function sortEventNames(
+        string $prefix,
+        string|array|\Stringable $froms,
+        string|array|\Stringable $tos
+    ): array {
+        $froms = (array) AbstractWorkflow::toStrings($froms);
+        $tos = (array) AbstractWorkflow::toStrings($tos);
+
+        $eventNames = [];
+
+        foreach ($froms as $from) {
+            foreach ($tos as $to) {
+                $eventNames[] = $this->toEventName($prefix, $from, $to);
+            }
+        }
+
+        return array_unique($eventNames);
+    }
+
+    protected function toEventName(string $prefix, string $from, string $to): string
+    {
+        return "{$prefix}__{$from}__to__{$to}";
     }
 
     public function setStateTitles(array $titles): static
