@@ -87,14 +87,11 @@ export default class UnicornQueue {
 }
 
 export class SimpleQueue {
-  /**
-   * @type {Function[]}
-   */
   items = [];
 
   maxRunning = 1;
 
-  currentRunnging = 0;
+  currentRunning = 0;
 
   running = false;
 
@@ -106,12 +103,12 @@ export class SimpleQueue {
 
   /**
    * @param {Function} callback
-   * @returns {boolean}
+   * @returns {Promise<any>}
    */
   push(callback) {
     const p = new Promise((resolve, reject) => {
       this.items.push(() => {
-        return callback().then(resolve);
+        return Promise.resolve(callback()).then(resolve);
       });
     });
 
@@ -138,33 +135,33 @@ export class SimpleQueue {
     }
 
     // If current running full, set back to queue and leave.
-    if (this.currentRunnging >= this.maxRunning) {
-      console.log('wait');
+    if (this.currentRunning >= this.maxRunning) {
       this.items.unshift(callback);
       return Promise.resolve();
     }
 
-    this.currentRunnging++;
+    this.currentRunning++;
 
     this.notice();
 
-    return Promise.resolve(callback())
+    return callback()
       .then((v) => {
-        this.currentRunnging--;
-        this.pop();
+        this.endPop();
         return v;
       })
       .catch((e) => {
-        this.currentRunnging--;
-        this.pop();
+        this.endPop();
 
         return Promise.reject(e);
       });
   }
 
-  /**
-   * @returns {Stack}
-   */
+  endPop() {
+    this.currentRunning--;
+    this.notice();
+    this.pop();
+  }
+
   clear() {
     this.items = [];
 
@@ -187,35 +184,19 @@ export class SimpleQueue {
     return this.items.length;
   }
 
-  /**
-   * @returns {*[]}
-   */
   peek() {
     return this.items;
   }
 
   /**
-   * @param {(function(stack: Stack, length: number): void)} handler
+   * @param {Function} handler
+   * @param {{ once?: boolean; [ name: string ]: any; }} options
    * @returns {(function(): void)}
    */
-  observe(handler) {
-    this.observers.push({
-      handler
-    });
-
-    return () => {
-      this.off(handler);
-    };
-  }
-
-  /**
-   * @param {(function(stack: Stack, length: number): void)} handler
-   * @returns {(function(): void)}
-   */
-  once(handler) {
+  observe(handler, options = {}) {
     this.observers.push({
       handler,
-      once: true
+      once: options.once || false
     });
 
     return () => {
@@ -224,11 +205,32 @@ export class SimpleQueue {
   }
 
   /**
-   * @returns {SimpleQueue}
+   * @param {Function} handler
+   * @param {{ [ name: string ]: any; }} options
+   * @returns {(function(): void)}
    */
+  once(handler, options = {}) {
+    options.once = true;
+
+    return this.observe(handler, options);
+  }
+
+  /**
+   * @param {Function} handler
+   * @param {{ once?: boolean; [ name: string ]: any; }} options
+   * @returns {(function(): void)}
+   */
+  onEnd(callback, options = {}) {
+    return this.observe((queue, length, running) => {
+      if (length === 0 && running === 0) {
+        callback(queue, length, running);
+      }
+    });
+  }
+
   notice() {
     this.observers.forEach((observer) => {
-      observer.handler(this, this.length, this.currentRunnging);
+      observer.handler(this, this.length, this.currentRunning);
     });
 
     this.observers = this.observers.filter((observer) => observer.once !== true);
@@ -236,11 +238,12 @@ export class SimpleQueue {
     return this;
   }
 
-  /**
-   * @param {*} callback
-   * @returns {SimpleQueue}
-   */
-  off(callback = null) {
+  off(callback = undefined) {
+    if (callback === undefined) {
+      this.observers = [];
+      return this;
+    }
+
     this.observers = this.observers.filter((observer) => observer.handler !== callback);
     return this;
   }
