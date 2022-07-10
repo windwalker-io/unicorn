@@ -8,42 +8,42 @@
 import { defaultsDeep } from 'lodash-es';
 
 const instances = {};
-const promises = {};
-const resolves = {};
 
 /**
  * @param {string} name
- * @param {*}      args
+ * @param {S3UploaderGlobalOptions}      options
  *
  * @returns {S3Uploader}
  */
-export function getInstance(name, ...args) {
+export function getInstance(name, options = {}) {
   if (!instances[name]) {
-    instances[name] = new S3Uploader(name, ...args);
-
-    if (resolves[name]) {
-      resolves[name](instances[name]);
-      delete resolves[name];
-    }
+    instances[name] = create(name, options = {});
   }
 
   return instances[name];
 }
 
+/**
+ * @param {string} name
+ * @returns {Promise<S3Uploader>}
+ * @deprecated No longer needs promise.
+ */
 export function get(name) {
-  if (instances[name]) {
-    return Promise.resolve(instances[name]);
-  }
-
-  if (!promises[name]) {
-    promises[name] = new Promise((resolve) => {
-      resolves[name] = resolve;
-    });
-  }
-
-  return promises[name];
+  return Promise.resolve(create(name));
 }
 
+/**
+ * @param {string} name
+ * @param {S3UploaderGlobalOptions} options
+ * @returns {S3Uploader}
+ */
+export function create(name, options = {}) {
+  return new S3Uploader(name, options);
+}
+
+/**
+ * @param {string} name
+ */
 export function destroy(name) {
   delete instances[name];
 }
@@ -66,11 +66,17 @@ class S3Uploader extends Unicorn.EventMixin(class {}) {
     }
   };
 
+  /**
+   * @param {string} name
+   * @param {S3UploaderGlobalOptions} options
+   */
   constructor(name, options = {}) {
     super();
 
+    const awsOptions = u.data('@s3.uploder.' + name) || {};
+
     this.name = name;
-    this.options = defaultsDeep({}, options, this.constructor.defaultOptions);
+    this.options = defaultsDeep({}, options, awsOptions, this.constructor.defaultOptions);
   }
 
   /**
@@ -78,13 +84,13 @@ class S3Uploader extends Unicorn.EventMixin(class {}) {
    *
    * @param {string|File|Blob} file
    * @param {string}           path
-   * @param {Object}           options
+   * @param {S3UploaderRequestOptions}           options
    *
-   * @returns {Promise}
+   * @returns {Promise<S3UploaderResponse>}
    */
   upload(file, path, options = {}) {
     const fileData = new FormData();
-    const inputs = defaultsDeep({}, this.options.formInputs);
+    const inputs = defaultsDeep({}, options.formInputs || {}, this.options.formInputs);
 
     if (typeof file === 'string') {
       file = new Blob([file], {type: options['Content-Type'] || 'text/plain'});
@@ -125,6 +131,10 @@ class S3Uploader extends Unicorn.EventMixin(class {}) {
       fileData,
       {
         onUploadProgress: (e) => {
+          if (options.onUploadProgress) {
+            options.onUploadProgress(e);
+          }
+
           this.trigger('upload-progress', e);
 
           if (e.lengthComputable) {
@@ -138,47 +148,14 @@ class S3Uploader extends Unicorn.EventMixin(class {}) {
           + this.constructor.trimSlashes(path);
 
         this.trigger('success', url, res);
+
+        res.url = url;
+
         return res;
       })
       .finally(() => {
         this.trigger('end');
       });
-
-    // return $.post({
-    //     url: this.options.endpoint,
-    //     data: fileData,
-    //     processData: false,
-    //     contentType: false,
-    //     type: 'POST',
-    //     xhr: () => {
-    //       const xhr = new XMLHttpRequest();
-    //
-    //       if(xhr.upload){
-    //         xhr.upload.addEventListener('progress', e => {
-    //           this.trigger('upload-progress', e);
-    //
-    //           if (e.lengthComputable) {
-    //             this.trigger('progress', e.loaded / e.total, e);
-    //           }
-    //         }, false);
-    //       }
-    //
-    //       return xhr;
-    //     },
-    //   })
-    //   .done((res, textStatus, xhr) => {
-    //     const url = this.options.endpoint + '/'
-    //       + this.constructor.trimSlashes(this.options.subfolder) + '/'
-    //       + this.constructor.trimSlashes(path);
-    //
-    //     this.trigger('success', url, xhr);
-    //   })
-    //   .fail((xhr) => {
-    //     this.trigger('fail', xhr);
-    //   })
-    //   .always(() => {
-    //     this.trigger('end');
-    //   });
   }
 
   static trimSlashes(str) {

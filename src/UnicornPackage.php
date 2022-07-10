@@ -27,6 +27,7 @@ use Unicorn\Generator\SubCommand\ViewEditSubCommand;
 use Unicorn\Generator\SubCommand\ViewGridSubCommand;
 use Unicorn\Generator\SubCommand\WorkflowSubCommand;
 use Unicorn\Image\ImagePlaceholder;
+use Unicorn\Script\AwsScript;
 use Unicorn\Script\FormScript;
 use Unicorn\Script\ModernScript;
 use Unicorn\Script\UnicornScript;
@@ -97,6 +98,7 @@ class UnicornPackage extends AbstractPackage implements
         $container->prepareSharedObject(VueScript::class);
         $container->prepareSharedObject(FileUploadManager::class);
         $container->prepareSharedObject(ModernScript::class);
+        $container->prepareSharedObject(AwsScript::class);
         $container->prepareSharedObject(MimeTypes::class)
             ->alias(MimeTypesInterface::class, MimeTypes::class);
 

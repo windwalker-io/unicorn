@@ -13,6 +13,8 @@ namespace Unicorn\Script;
 
 use Aws\S3\PostObjectV4;
 use Unicorn\Aws\S3Service;
+use Unicorn\Storage\Adapter\S3Storage;
+use Unicorn\Storage\StorageManager;
 use Windwalker\Core\Asset\AbstractScript;
 
 /**
@@ -23,8 +25,10 @@ class AwsScript extends AbstractScript
     /**
      * AwsScript constructor.
      */
-    public function __construct(protected UnicornScript $unicornScript, protected ?S3Service $s3 = null)
-    {
+    public function __construct(
+        protected UnicornScript $unicornScript,
+        protected StorageManager $storageManager
+    ) {
     }
 
     public function s3BrowserUploader(
@@ -32,6 +36,10 @@ class AwsScript extends AbstractScript
         string $acl = S3Service::ACL_PUBLIC_READ,
         array $options = []
     ): void {
+        if ($this->available()) {
+            $this->unicornScript->importMainThen('u.$ui.s3Uploader();');
+        }
+
         if ($this->available(get_defined_vars())) {
             if (!class_exists(PostObjectV4::class)) {
                 throw new \DomainException('Please install aws/aws-sdk-php ^3.0');
@@ -48,8 +56,20 @@ class AwsScript extends AbstractScript
                 $options
             );
 
-            $s3 = $options['s3Service'] ?? $this->s3;
+            if ($options['s3Service'] ?? null) {
+                $s3 = $options['s3Service'];
+            } else {
+                $profile = $options['profile'] ?? 's3';
+                $storage = $this->storageManager->get($profile);
 
+                if (!$storage instanceof S3Storage) {
+                    throw new \DomainException("Storage profile \"{$profile}\" must be S3Storage.");
+                }
+
+                $s3 = $storage->getS3Service();
+            }
+
+            /** @var S3Service $s3 */
             $bucket = $s3->getBucketName();
             $subfolder = $s3->getSubfolder();
             $endpoint = $s3->getHost(false)->__toString();
@@ -93,9 +113,7 @@ class AwsScript extends AbstractScript
 
             $this->unicornScript->importMainThen(
                 <<<JS
-                u.\$ui.s3Uploader().then(function () {
-                  return S3Uploader.getInstance('$name', $optionString);
-                });
+                u.data('@s3.uploder.{$name}', $optionString);
                 JS
             );
         }
