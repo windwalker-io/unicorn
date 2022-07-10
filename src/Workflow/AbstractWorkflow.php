@@ -13,6 +13,7 @@ namespace Unicorn\Workflow;
 
 use Unicorn\Html\State\StateButton;
 use Unicorn\Workflow\Exception\TransitionDisallowException;
+use Windwalker\Core\Language\TranslatorTrait;
 use Windwalker\DOM\DOMElement;
 use Windwalker\ORM\Event\AfterSaveEvent;
 use Windwalker\ORM\Event\BeforeSaveEvent;
@@ -25,6 +26,8 @@ use Windwalker\Utilities\TypeCast;
  */
 abstract class AbstractWorkflow
 {
+    use TranslatorTrait;
+
     protected ?WorkflowController $workflowController = null;
 
     protected string $property = '';
@@ -50,15 +53,18 @@ abstract class AbstractWorkflow
                 $to = static::toStrings($event->getValue());
                 $from = static::toStrings($event->getOldValue());
 
+                $toTitle = $workflow->getState($to)?->getTitle() ?? $to;
+                $fromTitle = $workflow->getState($from)?->getTitle() ?? $from;
+
                 if (!$workflow->isAllow($from, $to)) {
                     throw new TransitionDisallowException(
                         $from,
                         $to,
                         $this,
-                        sprintf(
-                            'Transition from "%s" to "%s" is disallow.',
-                            json_encode($from),
-                            json_encode($to)
+                        $this->trans(
+                            'unicorn.workflow.error.transition.disallow',
+                            from: $fromTitle,
+                            to: $toTitle
                         )
                     );
                 }
