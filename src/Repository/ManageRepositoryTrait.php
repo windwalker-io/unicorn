@@ -65,6 +65,9 @@ trait ManageRepositoryTrait
                 if ($reorderAction->canReorder() && $event->isCreate()) {
                     $reorderAction = $this->createReorderAction();
                     $reorderAction->reorderAllForItem($event->getEntity());
+
+                    $data = &$event->getData();
+                    $data[$reorderAction->getOrderField()] = 1;
                 }
             }
         );
