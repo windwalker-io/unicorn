@@ -55,10 +55,12 @@ export class UnicornFormElement {
       $form.setAttribute('enctype', 'multipart/form-data');
       $form.setAttribute('novalidate', 'true');
       $form.setAttribute('action', app.data('unicorn.uri')['full']);
-      $form.setAttribute('display', 'none');
+      $form.setAttribute('style', 'display: none;');
 
       const csrf = document.createElement('input');
+      csrf.setAttribute('type', 'hidden');
       csrf.setAttribute('name', app.data('csrf-token'));
+      csrf.setAttribute('value', '1');
 
       $form.appendChild(csrf);
       document.body.appendChild($form);
