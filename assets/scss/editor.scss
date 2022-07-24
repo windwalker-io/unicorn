@@ -2,64 +2,6 @@
  * @link https://www.tinymce.com/css/codepen.min.css
  */
 
-* {
-  border: 0;
-  padding: 0;
-  margin: 0;
-  background: 50% 50% no-repeat;
-  text-decoration: none;
-  color: inherit;
-  box-sizing: border-box;
-  z-index: 1
-}
-
-:focus {
-  outline: 0
-}
-
-b,
-strong {
-  font-weight: 700
-}
-
-ol,
-ul {
-  list-style: none
-}
-
-button,
-input,
-input[type=color],
-input[type=text],
-input[type=time],
-input[type=url],
-input[type=week],
-input[type=button],
-input[type=reset],
-input[type=submit],
-input[type=date],
-input[type=datetime],
-input[type=datetime-local],
-input[type=email],
-input[type=month],
-input[type=number],
-input[type=password],
-input[type=search],
-input[type=tel],
-pre,
-select,
-textarea {
-  font: inherit
-}
-
-.codepen body {
-  margin: 10px 0 0
-}
-
-.codepen body textarea {
-  display: none
-}
-
 .mce-container textarea {
   display: initial !important
 }
@@ -72,17 +14,6 @@ textarea {
 
 .mce-content-body a {
   color: #007bff;
-}
-
-.mce-content-body h1,
-.mce-content-body h2,
-.mce-content-body h3,
-.mce-content-body h4,
-.mce-content-body h5,
-.mce-content-body h6 {
-  font-weight: 200;
-  line-height: 1.4em;
-  margin: 25px 0 15px
 }
 
 .mce-content-body h1 {
@@ -115,7 +46,7 @@ textarea {
 
 .mce-content-body ol,
 .mce-content-body ul {
-  margin-left: 15px;
+  padding-left: 15px;
   list-style-position: outside;
   margin-bottom: 20px
 }
@@ -128,7 +59,7 @@ textarea {
 }
 
 .mce-content-body ul {
-  list-style-type: disc
+  list-style-type: disc;
 }
 
 .mce-content-body ol {
