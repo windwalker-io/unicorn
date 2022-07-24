@@ -39,6 +39,12 @@ $tmplId = 'multi-uploader-field-tmpl-' . $field->getId();
 $data['tmplSelector'] ??= '#' . $tmplId;
 ?>
 
+<input id="{{ $field->getId('-empty') }}"
+    type="hidden"
+    name="{{ $field->getInputName() }}"
+    value="{{ $field->get('empty_array_value', '__EMPTY_ARRAY__') }}"
+/>
+
 <multi-uploader id="{{ $field->getId('-wrap') }}" options="{{ json_encode($data) }}">
     <app
         stack-name="{{ $field->getStackName() ?: 'uploading' }}"

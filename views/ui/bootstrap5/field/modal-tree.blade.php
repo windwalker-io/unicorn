@@ -37,6 +37,14 @@ JS
 $wrapper = $field->getWrapper();
 ?>
 
+@if ($field->isMultiple())
+    <input id="{{ $field->getId('-empty') }}"
+        type="hidden"
+        name="{{ $field->getInputName() }}"
+        value="{{ $field->get('empty_array_value', '__EMPTY_ARRAY__') }}"
+    />
+@endif
+
 <div {!! $wrapper::buildAttributes($wrapper) !!}>
     <modal-tree>
         <modal-tree-app {!! $input::buildAttributes($input) !!}></modal-tree-app>

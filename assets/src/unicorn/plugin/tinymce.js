@@ -39,7 +39,7 @@ export default class UnicornTinymce {
    */
   init(selector, options = {}) {
     return this.loadTinymce().then(() => {
-      return this.instances[selector] = new TinymceEditor(selector, options, this.app);
+      return this.instances[selector] = this.create(document.querySelector(selector), options, this.app);
     });
   }
 
@@ -49,6 +49,14 @@ export default class UnicornTinymce {
    */
   get(selector) {
     return this.instances[selector];
+  }
+
+  /**
+   * @param {string|Element} ele
+   * @returns {TinymceEditor}
+   */
+  create(ele, options = {}) {
+    return new TinymceEditor(ele, options, this.app);
   }
 }
 
@@ -62,12 +70,17 @@ export class TinymceEditor {
    */
   editor;
 
-  constructor(selector, options, app) {
+  /**
+   *
+   * @param {Element} element
+   * @param {object} options
+   * @param {Unicorn} app
+   */
+  constructor(element, options, app) {
     this.app = app;
-    options.selector = selector;
+    this.element = element;
 
-    this.selector = selector;
-    this.element = app.selectOne(selector);
+    options.target = element;
 
     this.options = defaultsDeep(
       {},

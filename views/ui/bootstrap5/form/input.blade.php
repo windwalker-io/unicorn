@@ -65,6 +65,14 @@ $append = (array) $field->get('append');
 $inputGroup = $append || $prepend;
 ?>
 
+@if ($field instanceof \Windwalker\Form\Field\ListField && $field->isMultiple())
+    <input id="{{ $field->getId('-empty') }}"
+        type="hidden"
+        name="{{ $field->getInputName() }}"
+        value="{{ $field->get('empty_array_value', '__EMPTY_ARRAY__') }}"
+    />
+@endif
+
 @if ($inputGroup)
     <?php
     if (is_string($prepend)) {

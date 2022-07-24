@@ -30,7 +30,6 @@ use Windwalker\Utilities\Contract\LanguageInterface;
 class DumpOrphansSubscriber
 {
     public function __construct(
-        protected ApplicationInterface $app,
         protected LangService $lang,
         protected string $format = 'ini',
     ) {
@@ -39,7 +38,9 @@ class DumpOrphansSubscriber
     #[ListenTo(AfterRequestEvent::class)]
     public function afterRequest(AfterRequestEvent $event): void
     {
-        if (!$this->app->isDebug()) {
+        $app = $event->getContainer()->get(ApplicationInterface::class);
+
+        if (!$app->isDebug()) {
             return;
         }
 

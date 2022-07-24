@@ -46,6 +46,12 @@ $optString = AssetService::getJSObject(
 $data = AssetService::getJSObject($field->prepareJSData());
 ?>
 
+<input id="{{ $field->getId('-empty') }}"
+    type="hidden"
+    name="{{ $field->getInputName() }}"
+    value="{{ $field->get('empty_array_value', '__EMPTY_ARRAY__') }}"
+/>
+
 <div id="{{ $field->getId('-wrap') }}" class="c-repeatable-field"
     x-data="RepeatableField({{ $data }}, {{ $optString }})">
     <table class="table">
