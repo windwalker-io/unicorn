@@ -68,7 +68,13 @@ class KeepUrlQueryMiddleware implements MiddlewareInterface
             ->default(null);
 
         $resolver->define('key')
+            ->allowedTypes('string')
             ->required();
+
+        // If provides a uid, then we'll use uid to match same middlewares.
+        $resolver->define('uid')
+            ->allowedTypes('string')
+            ->default('');
 
         $resolver->define('default')
             ->default('');
@@ -173,6 +179,10 @@ class KeepUrlQueryMiddleware implements MiddlewareInterface
 
         if (!$middleware instanceof static) {
             return false;
+        }
+
+        if ($uid = $this->getOption('uid')) {
+            return $middleware->getOption('uid') === $uid;
         }
 
         return $middleware->getOption('key') === $this->getOption('key');

@@ -148,6 +148,7 @@ class TinymceEditorField extends AbstractEditorField
         $defaultOptions['readonly'] = (bool) ($this->isReadonly() || $this->isDisabled());
 
         //Tables
+        $defaultOptions['table_header_type'] = 'sectionCells';
         $defaultOptions['table_class_list'] = [
             ['title' => 'BS Simple', 'value' => 'table'],
             ['title' => 'BS Striped', 'value' => 'table table-striped'],
