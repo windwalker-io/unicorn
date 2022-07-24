@@ -12,7 +12,8 @@ import fusion, {
   sass,
   parallel,
   series,
-  module
+  module,
+  wait
 } from '@windwalker-io/fusion';
 import { babelBasicOptions } from '@windwalker-io/fusion/src/utilities/babel.js';
 import * as moduleTasks from './src/fusion/modules.mjs';
@@ -23,32 +24,14 @@ export async function main() {
   fusion.watch('src/unicorn/**/*.js');
   // Watch end
 
-  // Compile Start
-  // rollup('./src/unicorn/unicorn.js', './dist/', {
-  //   override: (options) => {
-  //     options.output.name = 'Unicorn';
-  //     options.output.format = 'umd';
-  //   }
-  // });
-  // rollup('./src/unicorn/ui/validation-components.js', './dist/ui/', {
-  //   override: (options) => {
-  //     options.output.name = 'UVC';
-  //     options.output.format = 'umd';
-  //   }
-  // });
-  // rollup('./src/unicorn/ui/list-dependent.js', './dist/ui/', {
-  //   override: (options) => {
-  //     options.output.name = 'ListDependent';
-  //     options.output.format = 'umd';
-  //   }
-  // });
-
-  webpack('./src/unicorn/unicorn.js', './dist/', {
-    override: (options) => {
-      options.output.library = 'Unicorn';
-      options.output.libraryTarget = 'umd';
-    }
-  });
+  return wait(
+    webpack('./src/unicorn/unicorn.js', './dist/', {
+      override: (options) => {
+        options.output.library = 'Unicorn';
+        options.output.libraryTarget = 'umd';
+      }
+    })
+  );
   // Compile end
 }
 
@@ -58,8 +41,10 @@ export async function js() {
   // Watch end
 
   // Compile Start
-  babel('src/js/**/*.js', 'dist/');
-  babel('src/systemjs/**/*.js', 'dist/', { module: 'systemjs' });
+  return wait(
+    babel('src/js/**/*.js', 'dist/'),
+    babel('src/systemjs/**/*.js', 'dist/', { module: 'systemjs' })
+  );
   // Compile end
 }
 
@@ -73,11 +58,13 @@ export async function css() {
   // Watch end
 
   // Compile Start
-  sass('scss/switcher.scss', 'dist/', { minify: 'separate_file' });
-  sass('scss/editor.scss', 'dist/', { minify: 'separate_file' });
-  sass('scss/bootstrap/multi-level-menu.scss', 'dist/bootstrap/', { minify: 'separate_file' });
-  sass('scss/bootstrap/bs4-adapter.scss', 'dist/bootstrap/', { minify: 'separate_file' });
-  sass('scss/field/single-image-drag.scss', 'dist/field/', { minify: 'separate_file' });
+  return wait(
+    sass('scss/switcher.scss', 'dist/', { minify: 'separate_file' }),
+    sass('scss/editor.scss', 'dist/', { minify: 'separate_file' }),
+    sass('scss/bootstrap/multi-level-menu.scss', 'dist/bootstrap/', { minify: 'separate_file' }),
+    sass('scss/bootstrap/bs4-adapter.scss', 'dist/bootstrap/', { minify: 'separate_file' }),
+    sass('scss/field/single-image-drag.scss', 'dist/field/', { minify: 'separate_file' }),
+  );
   // Compile end
 }
 
@@ -87,7 +74,9 @@ export async function vue() {
   // Watch end
 
   // Compile Start
-  fusion.vue('src/vue/entries/**/*.js', 'dist/vue/');
+  return wait(
+    fusion.vue('src/vue/entries/**/*.js', 'dist/vue/')
+  );
   // Compile end
 }
 
