@@ -38,10 +38,10 @@ class {% pascal($name) %}Controller
 
         switch ($app->input('task')) {
             case 'save2close':
-                return $nav->to({% pascal($name) %}ListView::class);
+                return $nav->to('{% snake($name) %}_list');
 
             case 'save2new':
-                return $nav->to({% pascal($name) %}EditView::class)->var('new', 1);
+                return $nav->to('{% snake($name) %}_edit')->var('new', 1);
 
             case 'save2copy':
                 $controller->rememberForClone($app, $repository);
