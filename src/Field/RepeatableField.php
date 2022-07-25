@@ -24,11 +24,11 @@ use function Windwalker\collect;
  */
 class RepeatableField extends AbstractField implements CompositeFieldInterface
 {
-    public const LAYOUT_TABLE = '@theme::field.repeatable.repeatable-table';
-    public const LAYOUT_FLEX = '@theme::field.repeatable.repeatable-flex';
-
     use SubformFieldTrait;
     use LayoutFieldTrait;
+
+    public const LAYOUT_TABLE = '@theme::field.repeatable.repeatable-table';
+    public const LAYOUT_FLEX = '@theme::field.repeatable.repeatable-flex';
 
     protected bool $sortable = false;
 

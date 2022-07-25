@@ -81,6 +81,12 @@ class ModalList extends HTMLElement {
     this.options = JSON.parse(this.getAttribute('options') || '{}');
     this.itemTemplate = template(document.querySelector(this.options.itemTemplate).innerHTML);
 
+    const emptyInput = this.querySelector('[data-role=empty]');
+    console.log(emptyInput);
+    if (emptyInput) {
+      emptyInput.name = emptyInput.dataset.name;
+    }
+
     if (this.options.sortable) {
       u.import('@sortablejs').then(() => {
         new Sortable(this.listContainer, { handle: '.h-drag-handle' });

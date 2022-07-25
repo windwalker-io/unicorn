@@ -56,17 +56,16 @@ $uniScript->translate(
 $disabled = $field->isReadonly() || $field->isDisabled();
 ?>
 
-@if ($field->isMultiple())
-    <input id="{{ $field->getId('-empty') }}"
-        type="hidden"
-        name="{{ $field->getInputName() }}"
-        value="{{ $field->get('empty_array_value', '__EMPTY_ARRAY__') }}"
-    />
-@endif
-
 <uni-modal-list id="{{ $field->getId('-wrap') }}"
     class="c-modal-field c-modal-field--list"
     options="{{ json_encode($listOptions) }}">
+    <input id="{{ $field->getId('-empty') }}"
+        type="hidden"
+        data-role="empty"
+        data-name="{{ $field->getInputName() }}"
+        value="{{ $field->get('empty_array_value', '__EMPTY_ARRAY__') }}"
+    />
+
     <div class="card">
         <div class="card-body p-2 d-flex">
             <div class="text-muted pl-2 align-self-center">
