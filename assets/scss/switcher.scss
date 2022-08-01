@@ -29,6 +29,13 @@
     bottom: 0;
     -webkit-transition: .4s;
     transition: .4s;
+
+    // BS variables
+    background-color: var(--bs-btn-bg);
+
+    &:hover {
+      background-color: var(--bs-btn-hover-bg);
+    }
   }
 
   input:focus + .switch-slider {
