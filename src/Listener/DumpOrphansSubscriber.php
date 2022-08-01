@@ -74,6 +74,10 @@ class DumpOrphansSubscriber
                 $orphans = $this->getAutoHandledOrphans();
 
                 foreach ($orphans as $key => $value) {
+                    if ($key === '') {
+                        continue;
+                    }
+
                     $key2 = explode('.', $key);
 
                     if (isset($key2[1])) {
