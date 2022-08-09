@@ -31,10 +31,10 @@
     transition: .4s;
 
     // BS variables
-    background-color: var(--bs-btn-bg);
+    background-color: var(--bs-btn-bg, var(--bs-success, var(--success)));
 
     &:hover {
-      background-color: var(--bs-btn-hover-bg);
+      background-color: var(--bs-btn-hover-bg, var(--bs-success, var(--success)));
     }
   }
 
