@@ -26,9 +26,41 @@
     -webkit-transition: .4s;
     -o-transition: .4s;
     transition: .4s;
-    background-color: var(--bs-btn-bg, var(--bs-success, var(--success))); }
+    background-color: var(--bs-btn-bg); }
     .unicorn-switch .switch-slider:hover {
-      background-color: var(--bs-btn-hover-bg, var(--bs-success, var(--success))); }
+      background-color: var(--bs-btn-hover-bg); }
+    .unicorn-switch .switch-slider.btn-primary {
+      background-color: var(--bs-btn-bg, var(--bs-primary, var(--primary))); }
+      .unicorn-switch .switch-slider.btn-primary:hover {
+        background-color: var(--bs-btn-hover-bg, var(--bs-primary, var(--primary))); }
+    .unicorn-switch .switch-slider.btn-secondary {
+      background-color: var(--bs-btn-bg, var(--bs-secondary, var(--secondary))); }
+      .unicorn-switch .switch-slider.btn-secondary:hover {
+        background-color: var(--bs-btn-hover-bg, var(--bs-secondary, var(--secondary))); }
+    .unicorn-switch .switch-slider.btn-success {
+      background-color: var(--bs-btn-bg, var(--bs-success, var(--success))); }
+      .unicorn-switch .switch-slider.btn-success:hover {
+        background-color: var(--bs-btn-hover-bg, var(--bs-success, var(--success))); }
+    .unicorn-switch .switch-slider.btn-info {
+      background-color: var(--bs-btn-bg, var(--bs-info, var(--info))); }
+      .unicorn-switch .switch-slider.btn-info:hover {
+        background-color: var(--bs-btn-hover-bg, var(--bs-info, var(--info))); }
+    .unicorn-switch .switch-slider.btn-danger {
+      background-color: var(--bs-btn-bg, var(--bs-danger, var(--danger))); }
+      .unicorn-switch .switch-slider.btn-danger:hover {
+        background-color: var(--bs-btn-hover-bg, var(--bs-danger, var(--danger))); }
+    .unicorn-switch .switch-slider.btn-warning {
+      background-color: var(--bs-btn-bg, var(--bs-warning, var(--warning))); }
+      .unicorn-switch .switch-slider.btn-warning:hover {
+        background-color: var(--bs-btn-hover-bg, var(--bs-warning, var(--warning))); }
+    .unicorn-switch .switch-slider.btn-dark {
+      background-color: var(--bs-btn-bg, var(--bs-dark, var(--dark))); }
+      .unicorn-switch .switch-slider.btn-dark:hover {
+        background-color: var(--bs-btn-hover-bg, var(--bs-dark, var(--dark))); }
+    .unicorn-switch .switch-slider.btn-light {
+      background-color: var(--bs-btn-bg, var(--bs-light, var(--light))); }
+      .unicorn-switch .switch-slider.btn-light:hover {
+        background-color: var(--bs-btn-hover-bg, var(--bs-light, var(--light))); }
   .unicorn-switch input:focus + .switch-slider {
     -webkit-box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
             box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); }
