@@ -108,6 +108,7 @@ export interface Unicorn extends UnicornApp {
 
   // helper.js
   $helper: UnicornHelper;
+  domready(callback?: () => any): Promise<any>;
   selectOne<E extends Element = Element>(ele: E): E;
   selectOne<K extends keyof HTMLElementTagNameMap>(ele: K): HTMLElementTagNameMap[K]|null;
   selectOne(ele: string): Element;

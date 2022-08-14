@@ -9,6 +9,8 @@ import { defaultsDeep, each } from 'lodash-es';
 import 'sprintf-js';
 import { defData, prepareData } from './../utilities.js';
 
+const domReady = null;
+
 export default class UnicornHelper {
   static get is() {
     return 'helper';
@@ -17,6 +19,7 @@ export default class UnicornHelper {
   static install(app, options = {}) {
     const helper = app.$helper = new this(app);
 
+    app.domready = helper.domready.bind(helper);
     app.selectOne = helper.selectOne.bind(helper);
     app.selectAll = helper.selectAll.bind(helper);
     app.each = helper.selectAll.bind(helper);
@@ -39,6 +42,30 @@ export default class UnicornHelper {
 
   constructor(app) {
     this.app = app;
+  }
+
+  /**
+   * @see https://stackoverflow.com/a/9899701
+   * @param {Function} callback
+   *
+   * @return {Promise}
+   */
+  domready(callback = null) {
+    let promise = domReady || new Promise((resolve) => {
+      // see if DOM is already available
+      if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        // call on next available tick
+        setTimeout(resolve, 0);
+      } else {
+        document.addEventListener('DOMContentLoaded', resolve);
+      }
+    });
+
+    if (callback) {
+      promise = promise.then(callback);
+    }
+
+    return promise;
   }
 
   /**
