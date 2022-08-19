@@ -13,7 +13,6 @@ namespace Unicorn;
 
 use Symfony\Component\Mime\MimeTypes;
 use Symfony\Component\Mime\MimeTypesInterface;
-use Unicorn\Attributes\ConfigureAction;
 use Unicorn\Attributes\StateMachine;
 use Unicorn\Command\MigFromCommand;
 use Unicorn\Controller\CrudController;
@@ -27,14 +26,16 @@ use Unicorn\Generator\SubCommand\ViewEditSubCommand;
 use Unicorn\Generator\SubCommand\ViewGridSubCommand;
 use Unicorn\Generator\SubCommand\WorkflowSubCommand;
 use Unicorn\Image\ImagePlaceholder;
+use Unicorn\Listener\EmptyArrayFieldSubscriber;
 use Unicorn\Script\AwsScript;
 use Unicorn\Script\FormScript;
 use Unicorn\Script\ModernScript;
 use Unicorn\Script\UnicornScript;
 use Unicorn\Script\VueScript;
 use Unicorn\Upload\FileUploadManager;
+use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Application\ApplicationInterface;
-use Windwalker\Core\Language\LangService;
+use Windwalker\Core\DI\RequestBootableProviderInterface;
 use Windwalker\Core\Package\AbstractPackage;
 use Windwalker\Core\Package\PackageInstaller;
 use Windwalker\Core\Renderer\RendererService;
@@ -43,7 +44,6 @@ use Windwalker\DI\BootableDeferredProviderInterface;
 use Windwalker\DI\BootableProviderInterface;
 use Windwalker\DI\Container;
 use Windwalker\DI\ServiceProviderInterface;
-use Windwalker\Renderer\CompositeRenderer;
 
 /**
  * The UnicornPackage class.
@@ -51,7 +51,8 @@ use Windwalker\Renderer\CompositeRenderer;
 class UnicornPackage extends AbstractPackage implements
     ServiceProviderInterface,
     BootableProviderInterface,
-    BootableDeferredProviderInterface
+    BootableDeferredProviderInterface,
+    RequestBootableProviderInterface
 {
     /**
      * UnicornPackage constructor.
@@ -81,6 +82,12 @@ class UnicornPackage extends AbstractPackage implements
     public function bootDeferred(Container $container): void
     {
         //
+    }
+
+    public function bootBeforeRequest(Container $container): void
+    {
+        $app = $container->get(AppContext::class);
+        $app->subscribe($container->newInstance(EmptyArrayFieldSubscriber::class));
     }
 
     /**
