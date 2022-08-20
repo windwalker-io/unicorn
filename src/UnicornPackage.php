@@ -86,8 +86,10 @@ class UnicornPackage extends AbstractPackage implements
 
     public function bootBeforeRequest(Container $container): void
     {
-        $app = $container->get(AppContext::class);
-        $app->subscribe($container->newInstance(EmptyArrayFieldSubscriber::class));
+        if ($this->app->getClient() === ApplicationInterface::CLIENT_WEB) {
+            $app = $container->get(AppContext::class);
+            $app->subscribe($container->newInstance(EmptyArrayFieldSubscriber::class));
+        }
     }
 
     /**
