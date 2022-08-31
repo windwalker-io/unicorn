@@ -137,6 +137,7 @@ class UnicornPackage extends AbstractPackage implements
                 '@unicorn/'     => 'vendor/@windwalker-io/unicorn/dist/',
                 '@unicorn'      => 'vendor/@windwalker-io/unicorn/dist/unicorn.js',
                 '@main'         => 'vendor/@windwalker-io/unicorn/dist/unicorn.js',
+                '@jquery'       => 'vendor/jquery/dist/jquery.min.js',
                 '@alpinejs'     => 'vendor/alpinejs/dist/cdn.js',
                 '@spruce'       => 'vendor/@ryangjchandler/spruce/dist/spruce.umd.js',
                 '@axios'        => 'vendor/axios/dist/axios.js',
