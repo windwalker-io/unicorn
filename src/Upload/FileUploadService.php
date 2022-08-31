@@ -127,13 +127,18 @@ class FileUploadService implements EventAwareInterface
         $stream = Base64DataUri::toStream($file, $mime);
         $ext = $this->mimeTypes->getExtensions($mime)[0] ?? null;
 
-        if (str_starts_with($mime, 'image/') && $this->shouldResize($ext)) {
-            $stream = $this->resizeImage($stream);
-        }
-
         $dest ??= $this->getUploadPath($dest, $ext);
-
         $dest = static::replaceVariables($dest, (string) $ext);
+
+        if (str_starts_with($mime, 'image/') && $this->shouldResize($ext)) {
+            $resizeConfig = [];
+
+            if (!str_ends_with($dest, '.{ext}')) {
+                $resizeConfig['output_format'] = Path::getExtension($dest);
+            }
+
+            $stream = $this->resizeImage($stream, $resizeConfig);
+        }
 
         $options = array_merge($this->getOption('options'), $options);
 
@@ -154,12 +159,19 @@ class FileUploadService implements EventAwareInterface
         }
 
         $storage = $this->getStorage();
-        $ext = Path::getExtension($file->getClientFilename());
-        $dest ??= $this->getUploadPath($dest, $ext);
-        $dest = static::replaceVariables($dest, $ext);
+        $srcExt = Path::getExtension($file->getClientFilename());
+        $dest ??= $this->getUploadPath($dest, $srcExt);
 
-        if ($this->isImage($file) && $this->shouldResize($ext)) {
-            $stream = $this->resizeImage($file);
+        $dest = static::replaceVariables($dest, $srcExt);
+
+        if ($this->isImage($file) && $this->shouldResize($srcExt)) {
+            $resizeConfig = [];
+
+            if (!str_ends_with($dest, '.{ext}')) {
+                $resizeConfig['output_format'] = Path::getExtension($dest);
+            }
+
+            $stream = $this->resizeImage($file, $resizeConfig);
         } else {
             $stream = $file->getStream();
         }
