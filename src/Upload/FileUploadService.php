@@ -29,6 +29,7 @@ use Windwalker\Event\EventAwareTrait;
 use Windwalker\Filesystem\Filesystem;
 use Windwalker\Filesystem\Path;
 use Windwalker\Http\Helper\UploadedFileHelper;
+use Windwalker\Stream\Stream;
 use Windwalker\Utilities\Options\OptionsResolverTrait;
 
 use function Windwalker\chronos;
@@ -123,7 +124,6 @@ class FileUploadService implements EventAwareInterface
 
     public function handleBase64(string $file, ?string $dest = null, array $options = []): PutResult
     {
-        $storage = $this->getStorage();
         $stream = Base64DataUri::toStream($file, $mime);
         $ext = $this->mimeTypes->getExtensions($mime)[0] ?? null;
 
@@ -140,26 +140,28 @@ class FileUploadService implements EventAwareInterface
             $stream = $this->resizeImage($stream, $resizeConfig);
         }
 
-        $options = array_merge($this->getOption('options'), $options);
-
-        $result = $storage->putStream($stream, $dest, $options);
-
-        $event = $this->emit(
-            FileUploadedEvent::class,
-            compact('file', 'result', 'dest', 'stream', 'options')
-        );
-
-        return $event->getResult();
+        return $this->putToStorage($stream, $file, $dest, $options);
     }
 
-    public function handleFile(UploadedFileInterface $file, ?string $dest = null, array $options = []): PutResult
-    {
-        if ($file->getError() !== UPLOAD_ERR_OK) {
-            $this->throwUploadError($file);
+    public function handleFile(
+        UploadedFileInterface|\SplFileInfo|string $file,
+        ?string $dest = null,
+        array $options = []
+    ): PutResult {
+        if ($file instanceof \SplFileInfo) {
+            $file = $file->getPathname();
         }
 
-        $storage = $this->getStorage();
-        $srcExt = Path::getExtension($file->getClientFilename());
+        if ($file instanceof UploadedFileInterface) {
+            if ($file->getError() !== UPLOAD_ERR_OK) {
+                $this->throwUploadError($file);
+            }
+
+            $srcExt = Path::getExtension($file->getClientFilename());
+        } else {
+            $srcExt = Path::getExtension($file);
+        }
+
         $dest ??= $this->getUploadPath($dest, $srcExt);
 
         $dest = static::replaceVariables($dest, $srcExt);
@@ -172,20 +174,13 @@ class FileUploadService implements EventAwareInterface
             }
 
             $stream = $this->resizeImage($file, $resizeConfig);
-        } else {
+        } elseif ($file instanceof UploadedFileInterface) {
             $stream = $file->getStream();
+        } else {
+            $stream = new Stream($file, Stream::MODE_READ_ONLY_FROM_BEGIN);
         }
 
-        $options = array_merge($this->getOption('options'), $options);
-
-        $result = $storage->putStream($stream, $dest, $options);
-
-        $event = $this->emit(
-            FileUploadedEvent::class,
-            compact('file', 'result', 'dest', 'stream', 'options')
-        );
-
-        return $event->getResult();
+        return $this->putToStorage($stream, $file, $dest, $options);
     }
 
     public function handleFileIfUploaded(
@@ -202,6 +197,61 @@ class FileUploadService implements EventAwareInterface
         }
 
         return $this->handleFile($file, $dest, $options);
+    }
+
+    /**
+     * @param  resource|StreamInterface|string  $file
+     * @param  string|null  $dest
+     * @param  array        $options
+     *
+     * @return  PutResult
+     */
+    public function handleFileData(
+        mixed $file,
+        ?string $dest = null,
+        array $options = []
+    ): PutResult {
+        if (is_resource($file)) {
+            $stream = Stream::wrap($file);
+
+            $dest ??= $this->getUploadPath($dest);
+
+            $ext = Path::getExtension((string) $dest);
+
+            $mime = $this->getMimeTypeByExtension($dest);
+        } elseif (is_string($file)) {
+            $stream = Stream::wrap($file);
+
+            $ext = Path::getExtension($file);
+            $dest ??= $this->getUploadPath($dest, $ext);
+
+            $mime = $this->getMimeType($file);
+        } elseif ($file instanceof StreamInterface) {
+            $stream = $file;
+
+            $dest ??= $this->getUploadPath($dest);
+            $ext = Path::getExtension((string) $dest);
+
+            $mime = $this->getMimeTypeByExtension($dest);
+        } else {
+            throw new \InvalidArgumentException(
+                __METHOD__ . '() argument 1 should be StreamInterface|resource|string.'
+            );
+        }
+
+        $dest = static::replaceVariables($dest, $ext);
+
+        if (str_starts_with($mime, 'image/') && $this->shouldResize($ext)) {
+            $resizeConfig = [];
+
+            if (!str_ends_with($dest, '.{ext}')) {
+                $resizeConfig['output_format'] = Path::getExtension($dest);
+            }
+
+            $stream = $this->resizeImage($stream, $resizeConfig);
+        }
+
+        return $this->putToStorage($stream, $file, $dest, $options);
     }
 
     public function getUploadPath(?string $path, string $ext = '', ?string $dir = null): string
@@ -231,7 +281,7 @@ class FileUploadService implements EventAwareInterface
         return uid($prefix);
     }
 
-    public function isImage(mixed $src): bool
+    public function isImage(UploadedFileInterface|\SplFileInfo|string $src): bool
     {
         $type = $this->getMimeType($src);
 
@@ -253,7 +303,7 @@ class FileUploadService implements EventAwareInterface
     ): StreamInterface {
         $outputFormat = null;
 
-        // Must sve image to temp file to support image exif.
+        // Must save image to temp file to support image exif.
         // @see https://github.com/Intervention/image/issues/745
         if ($src instanceof UploadedFileInterface) {
             $outputFormat = Path::getExtension($src->getClientFilename());
@@ -312,14 +362,22 @@ class FileUploadService implements EventAwareInterface
         );
     }
 
-    public function getMimeType(mixed $src): ?string
+    public function getMimeType(UploadedFileInterface|\SplFileInfo|string $src): ?string
     {
         $type = null;
+
+        if ($src instanceof \SplFileInfo) {
+            $src = $src->getPathname();
+        }
 
         if (is_string($src)) {
             if (Base64DataUri::isDataUri($src)) {
                 $type = Base64DataUri::getMimeType($src);
             } elseif (strlen($src) < PHP_MAXPATHLEN && is_file($src)) {
+                if (!interface_exists(MimeTypesInterface::class)) {
+                    throw new \DomainException('Please install symfony/mime to guess mime type.');
+                }
+
                 $type = $this->mimeTypes->getMimeTypes(Path::getExtension($src))[0] ?? null;
             }
         } elseif ($src instanceof UploadedFileInterface) {
@@ -327,6 +385,11 @@ class FileUploadService implements EventAwareInterface
         }
 
         return $type;
+    }
+
+    public function getMimeTypeByExtension(string $pathOrExt): ?string
+    {
+        return $this->mimeTypes->getMimeTypes(Path::getExtension($pathOrExt))[0] ?? null;
     }
 
     /**
@@ -390,4 +453,27 @@ class FileUploadService implements EventAwareInterface
             $file
         );
     }
+
+    /**
+     * @param  StreamInterface  $stream
+     * @param  mixed            $file
+     * @param  string           $dest
+     * @param  array            $options
+     *
+     * @return  PutResult
+     */
+    protected function putToStorage(StreamInterface $stream, mixed $file, string $dest, array $options): PutResult
+    {
+        $options = array_merge($this->getOption('options'), $options);
+
+        $storage = $this->getStorage();
+        $result = $storage->putStream($stream, $dest, $options);
+
+        $event = $this->emit(
+            FileUploadedEvent::class,
+            compact('file', 'result', 'dest', 'stream', 'options')
+        );
+
+        return $event->getResult();
+}
 }
