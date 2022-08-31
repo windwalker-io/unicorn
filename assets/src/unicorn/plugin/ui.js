@@ -650,9 +650,16 @@ export default class UnicornUI {
           button.onclick = 'return false;';
 
           if (button.dataset.clicked) {
-            const icon = button.querySelector(iconSelector);
+            let icon = button.querySelector(iconSelector);
 
             if (icon) {
+              if (icon.tagName === 'svg') {
+                const span = u.html('<span></span>');
+                icon.parentNode.replaceChild(span, icon);
+
+                icon = span;
+              }
+
               icon.setAttribute('class', spinnerClass);
               // icon.styles.width = '1em';
               // icon.styles.height = '1em';
