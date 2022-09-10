@@ -25,6 +25,7 @@ use Windwalker\Filesystem\Filesystem;
 use Windwalker\Filesystem\Path;
 use Windwalker\Http\Response\Response;
 use Windwalker\Uri\Uri;
+use Windwalker\Utilities\Str;
 
 /**
  * The LocalStorage class.
@@ -36,8 +37,9 @@ class LocalStorage implements StorageInterface
      */
     public function __construct(
         protected ApplicationInterface $app,
-        protected array $options = [])
-    {
+        protected array $options = []
+    ) {
+        //
     }
 
     public function getBasePath(): string
@@ -113,7 +115,7 @@ class LocalStorage implements StorageInterface
         if (is_callable($handler)) {
             return $handler($path);
         }
-        
+
         $su = $this->app->service(SystemUri::class);
 
         $root = $options['cdn']['root']
@@ -126,9 +128,9 @@ class LocalStorage implements StorageInterface
             $path = $base . '/' . $path;
         }
 
-        return new Uri(
-            $su->addUriBase($path, $root)
-        );
+        $url = $su->addUriBase($path, $root);
+
+        return new Uri(Str::removeLeft($url, $su->root));
     }
 
     public function get(string $path, array $options = []): GetResult
