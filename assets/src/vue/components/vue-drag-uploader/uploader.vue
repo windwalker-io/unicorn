@@ -212,7 +212,7 @@
                 allow = true;
               }
             } else {
-              if (type === fileExt) {
+              if (type.toLowerCase() === fileExt.toLowerCase()) {
                 allow = true;
               }
             }

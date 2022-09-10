@@ -270,7 +270,7 @@ class SingleImageDrag extends HTMLElement {
       if (type.indexOf('/') !== -1) {
         allow = allow || this.compareMimeType(type, file.type);
       } else {
-        allow = allow || type === file.extname;
+        allow = allow || type.toLowerCase() === file.extname.toLowerCase();
       }
     });
 
