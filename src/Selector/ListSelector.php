@@ -350,12 +350,16 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
     {
         $this->getFilterHelper()->addHandler($key, $handler);
 
+        $this->addAllowFields($key);
+
         return $this;
     }
 
     public function addSearchHandler(string $key, callable $handler): static
     {
         $this->getSearchHelper()->addHandler($key, $handler);
+
+        $this->addAllowFields($key);
 
         return $this;
     }
