@@ -13,6 +13,7 @@ namespace Unicorn\Script;
 
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Asset\AbstractScript;
+use Windwalker\Core\Html\HtmlFrame;
 use Windwalker\Core\Http\Browser;
 use Windwalker\Core\Language\LangService;
 use Windwalker\Core\Router\Navigator;
@@ -216,5 +217,26 @@ JS
         }
 
         return $this;
+    }
+
+    public function disableTransitionBeforeLoad(string $className = 'h-no-transition'): void
+    {
+        if ($this->available()) {
+            $css = <<<CSS
+.$className * {
+  -webkit-transition: none !important;
+  -moz-transition: none !important;
+  -ms-transition: none !important;
+  -o-transition: none !important;
+  transition: none !important;
+}
+CSS;
+
+            $this->internalCSS($css);
+            $this->importMainThen("u.domready(function () { document.body.classList.remove('$className') })");
+
+            $this->app->service(HtmlFrame::class)
+                ->addBodyClass($className);
+        }
     }
 }
