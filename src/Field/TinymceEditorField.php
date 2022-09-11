@@ -125,9 +125,9 @@ class TinymceEditorField extends AbstractEditorField
             ];
 
             $defaultOptions['toolbar'] = 'undo redo ' .
-                'bold italic strikethrough forecolor backcolor removeformat | ' .
-                'alignleft aligncenter alignright alignjustify bullist numlist outdent indent | ' .
+                'bold italic strikethrough forecolor backcolor blockquote removeformat | ' .
                 'blocks fontsize styles styleselect formatselect fontsizeselect | ' .
+                'alignleft aligncenter alignright alignjustify bullist numlist outdent indent | ' .
                 'link image media table code | fullscreen';
 
             $defaultOptions['image_advtab'] = true;
