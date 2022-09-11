@@ -1,5 +1,9 @@
 {% $phpOpen %}
 
+declare(strict_types=1);
+
+namespace App\View;
+
 /**
  * Global variables
  * --------------------------------------------------------------
@@ -12,9 +16,8 @@
  * @var $lang      LangService     The language translation service.
  */
 
-declare(strict_types=1);
-
 use {% $ns %}\{% pascal($name) %}ListView;
+use Unicorn\Workflow\BasicStateWorkflow;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Asset\AssetService;
 use Windwalker\Core\DateTime\ChronosService;
@@ -23,7 +26,7 @@ use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\SystemUri;
 
 $callback = $app->input('callback');
-$workflow = $app->service(\Unicorn\Workflow\BasicStateWorkflow::class);
+$workflow = $app->service(BasicStateWorkflow::class);
 {% $phpClose %}
 
 @extends('admin.global.pure')

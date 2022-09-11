@@ -1,5 +1,9 @@
 {% $phpOpen %}
 
+declare(strict_types=1);
+
+namespace App\View;
+
 /**
  * Global variables
  * --------------------------------------------------------------
@@ -12,8 +16,8 @@
  * @var  $lang      LangService     The language translation service.
  */
 
-declare(strict_types=1);
-
+use App\Entity\{% pascal($name) %};
+use Unicorn\Workflow\BasicStateWorkflow;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Asset\AssetService;
 use Windwalker\Core\DateTime\ChronosService;
@@ -23,10 +27,10 @@ use Windwalker\Core\Router\SystemUri;
 use {% $ns %}\{% pascal($name) %}ListView;
 
 /**
- * @var \App\Entity\{% pascal($name) %} $entity
+ * @var {% pascal($name) %} $entity
  */
 
-$workflow = $app->service(\Unicorn\Workflow\BasicStateWorkflow::class);
+$workflow = $app->service(BasicStateWorkflow::class);
 {% $phpClose %}
 
 @extends('admin.global.body-list')
@@ -44,131 +48,131 @@ $workflow = $app->service(\Unicorn\Workflow\BasicStateWorkflow::class);
         <x-filter-bar :form="$form" :open="$showFilters"></x-filter-bar>
 
         @if (count($items))
-        {{-- RESPONSIVE TABLE DESC --}}
-        <div class="d-block d-lg-none mb-3">
-            @lang('unicorn.grid.responsive.table.desc')
-        </div>
+            {{-- RESPONSIVE TABLE DESC --}}
+            <div class="d-block d-lg-none mb-3">
+                @lang('unicorn.grid.responsive.table.desc')
+            </div>
 
-        <div class="grid-table table-lg-responsive">
-            <table class="table table-striped table-hover">
-                <thead>
-                <tr>
-                    {{-- Toggle --}}
-                    <th style="width: 1%">
-                        <x-toggle-all></x-toggle-all>
-                    </th>
-
-                    {{-- State --}}
-                    <th style="width: 5%" class="text-nowrap">
-                        <x-sort field="{% snake($name) %}.state">
-                            @lang('unicorn.field.state')
-                        </x-sort>
-                    </th>
-
-                    {{-- Title --}}
-                    <th class="text-nowrap">
-                        <x-sort field="{% snake($name) %}.title">
-                            @lang('unicorn.field.title')
-                        </x-sort>
-                    </th>
-
-                    {{-- Ordering --}}
-                    <th style="width: 10%" class="text-nowrap">
-                        <div class="d-flex w-100 justify-content-end">
-                            <x-sort
-                                asc="{% snake($name) %}.ordering ASC"
-                                desc="{% snake($name) %}.ordering DESC"
-                            >
-                                @lang('unicorn.field.ordering')
-                            </x-sort>
-                            @if($vm->reorderEnabled($ordering))
-                                <x-save-order class="ml-2 ms-2"></x-save-order>
-                            @endif
-                        </div>
-                    </th>
-
-                    {{-- Delete --}}
-                    <th style="width: 1%" class="text-nowrap">
-                        @lang('unicorn.field.delete')
-                    </th>
-
-                    {{-- ID --}}
-                    <th style="width: 1%" class="text-nowrap text-end">
-                        <x-sort field="{% snake($name) %}.id">
-                            @lang('unicorn.field.id')
-                        </x-sort>
-                    </th>
-                </tr>
-                </thead>
-
-                <tbody>
-                @foreach($items as $i => $item)
-                    {% $phpOpen %}
-                        $entity = $vm->prepareItem($item);
-                    {% $phpClose %}
+            <div class="grid-table table-lg-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
                     <tr>
-                        {{-- Checkbox --}}
-                        <td>
-                            <x-row-checkbox :row="$i" :id="$entity->getId()"></x-row-checkbox>
-                        </td>
+                        {{-- Toggle --}}
+                        <th style="width: 1%">
+                            <x-toggle-all></x-toggle-all>
+                        </th>
 
                         {{-- State --}}
-                        <td>
-                            <x-state-dropdown color-on="text"
-                                button-style="width: 100%"
-                                use-states
-                                :workflow="$workflow"
-                                :id="$entity->getId()"
-                                :value="$item->state"
-                            />
-                        </td>
+                        <th style="width: 5%" class="text-nowrap">
+                            <x-sort field="{% snake($name) %}.state">
+                                @lang('unicorn.field.state')
+                            </x-sort>
+                        </th>
 
                         {{-- Title --}}
-                        <td>
-                            <div>
-                                <a href="{{ $nav->to('{% snake($name) %}_edit')->id($entity->getId()) }}">
-                                    {{ $item->title }}
-                                </a>
-                            </div>
-                        </td>
+                        <th class="text-nowrap">
+                            <x-sort field="{% snake($name) %}.title">
+                                @lang('unicorn.field.title')
+                            </x-sort>
+                        </th>
 
                         {{-- Ordering --}}
-                        <td class="text-end text-right">
-                            <x-order-control
-                                :enabled="$vm->reorderEnabled($ordering)"
-                                :row="$i"
-                                :id="$entity->getId()"
-                                :value="$item->ordering"
-                            ></x-order-control>
-                        </td>
+                        <th style="width: 10%" class="text-nowrap">
+                            <div class="d-flex w-100 justify-content-end">
+                                <x-sort
+                                    asc="{% snake($name) %}.ordering ASC"
+                                    desc="{% snake($name) %}.ordering DESC"
+                                >
+                                    @lang('unicorn.field.ordering')
+                                </x-sort>
+                                @if($vm->reorderEnabled($ordering))
+                                    <x-save-order class="ml-2 ms-2"></x-save-order>
+                                @endif
+                            </div>
+                        </th>
 
                         {{-- Delete --}}
-                        <td class="text-center">
-                            <button type="button" class="btn btn-sm btn-outline-secondary"
-                                @click="grid.deleteItem('{{ $entity->getId() }}')"
-                                data-dos
-                            >
-                                <i class="fa-solid fa-trash"></i>
-                            </button>
-                        </td>
+                        <th style="width: 1%" class="text-nowrap">
+                            @lang('unicorn.field.delete')
+                        </th>
 
                         {{-- ID --}}
-                        <td class="text-end">
-                            {{ $entity->getId() }}
+                        <th style="width: 1%" class="text-nowrap text-end">
+                            <x-sort field="{% snake($name) %}.id">
+                                @lang('unicorn.field.id')
+                            </x-sort>
+                        </th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    @foreach($items as $i => $item)
+                            {% $phpOpen %}
+                            $entity = $vm->prepareItem($item);
+                            {% $phpClose %}
+                        <tr>
+                            {{-- Checkbox --}}
+                            <td>
+                                <x-row-checkbox :row="$i" :id="$entity->getId()"></x-row-checkbox>
+                            </td>
+
+                            {{-- State --}}
+                            <td>
+                                <x-state-dropdown color-on="text"
+                                    button-style="width: 100%"
+                                    use-states
+                                    :workflow="$workflow"
+                                    :id="$entity->getId()"
+                                    :value="$item->state"
+                                />
+                            </td>
+
+                            {{-- Title --}}
+                            <td>
+                                <div>
+                                    <a href="{{ $nav->to('{% snake($name) %}_edit')->id($entity->getId()) }}">
+                                        {{ $item->title }}
+                                    </a>
+                                </div>
+                            </td>
+
+                            {{-- Ordering --}}
+                            <td class="text-end text-right">
+                                <x-order-control
+                                    :enabled="$vm->reorderEnabled($ordering)"
+                                    :row="$i"
+                                    :id="$entity->getId()"
+                                    :value="$item->ordering"
+                                ></x-order-control>
+                            </td>
+
+                            {{-- Delete --}}
+                            <td class="text-center">
+                                <button type="button" class="btn btn-sm btn-outline-secondary"
+                                    @click="grid.deleteItem('{{ $entity->getId() }}')"
+                                    data-dos
+                                >
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </td>
+
+                            {{-- ID --}}
+                            <td class="text-end">
+                                {{ $entity->getId() }}
+                            </td>
+                        </tr>
+                    @endforeach
+                    </tbody>
+
+                    <tfoot>
+                    <tr>
+                        <td colspan="20">
+                            {!! $pagination->render() !!}
                         </td>
                     </tr>
-                @endforeach
-                </tbody>
-
-                <tfoot>
-                <tr>
-                    <td colspan="20">
-                        {!! $pagination->render() !!}
-                    </td>
-                </tr>
-                </tfoot>
-            </table>
-        </div>
+                    </tfoot>
+                </table>
+            </div>
         @else
             <div class="grid-no-items card bg-light" style="padding: 125px 0;">
                 <div class="card-body text-center">

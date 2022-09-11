@@ -1,5 +1,9 @@
 {% $phpOpen %}
 
+declare(strict_types=1);
+
+namespace App\View;
+
 /**
  * Global variables
  * --------------------------------------------------------------
@@ -12,8 +16,6 @@
  * @var  $lang      LangService     The language translation service.
  */
 
-declare(strict_types=1);
-
 use {% $ns %}\{% pascal($name) %}EditView;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Asset\AssetService;
@@ -24,11 +26,10 @@ use Windwalker\Core\Router\SystemUri;
 
 {% $phpClose %}
 
-<div x-title="toolbar" x-data="{ form: $store.form }">
-
+<div x-title="toolbar" x-data="{ form: $store.form }" class="l-toolbar">
     {{-- Save --}}
     <div class="btn-group">
-        <button type="button" class="btn btn-success btn-sm"
+        <button type="button" class="btn btn-success btn-sm uni-btn-save"
             data-task="save"
             @click="form.post();"
             style="width: 150px"
@@ -49,7 +50,7 @@ use Windwalker\Core\Router\SystemUri;
 
         <div class="dropdown-menu dropdown-menu-end">
             {{-- Save2Copy --}}
-            <a class="dropdown-item"
+            <a class="dropdown-item uni-btn-save2copy"
                 data-task="save"
                 href="javascript://"
                 @click="form.post(null, { task: 'save2copy' });">
@@ -58,7 +59,7 @@ use Windwalker\Core\Router\SystemUri;
             </a>
 
             {{-- Save2New --}}
-            <a class="dropdown-item"
+            <a class="dropdown-item uni-btn-save2new"
                 data-task="save"
                 href="javascript://"
                 @click="form.post(null, { task: 'save2new' });">
@@ -69,7 +70,7 @@ use Windwalker\Core\Router\SystemUri;
     </div>
 
     {{-- Save2Close --}}
-    <button type="button" class="btn btn-primary btn-sm"
+    <button type="button" class="btn btn-primary btn-sm uni-btn-save2close"
         data-task="save"
         @click="form.post(null, { task: 'save2close' });">
         <span class="fa fa-check"></span>
@@ -77,7 +78,7 @@ use Windwalker\Core\Router\SystemUri;
     </button>
 
     {{-- Cancel --}}
-    <a class="btn btn-default btn-outline-secondary btn-sm"
+    <a class="btn btn-default btn-outline-secondary btn-sm uni-btn-cancel"
         href="{{ $nav->to('{% snake($name) %}_list') }}">
         <span class="fa fa-times"></span>
         @lang('unicorn.toolbar.cancel')

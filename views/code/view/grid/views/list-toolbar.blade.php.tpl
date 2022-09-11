@@ -1,5 +1,9 @@
 {% $phpOpen %}
 
+declare(strict_types=1);
+
+namespace App\View;
+
 /**
  * Global variables
  * --------------------------------------------------------------
@@ -12,8 +16,6 @@
  * @var  $lang      LangService     The language translation service.
  */
 
-declare(strict_types=1);
-
 use {% $ns %}\{% pascal($name) %}ListView;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Asset\AssetService;
@@ -24,9 +26,9 @@ use Windwalker\Core\Router\SystemUri;
 
 {% $phpClose %}
 
-<div x-title="toolbar" x-data="{ form: $store.grid.form, grid: $store.grid }">
+<div x-title="toolbar" x-data="{ form: $store.grid.form, grid: $store.grid }" class="l-toolbar">
     {{-- Create --}}
-    <a class="btn btn-primary btn-sm"
+    <a class="btn btn-primary btn-sm uni-btn-new"
         href="{{ $nav->to('{% snake($name) %}_edit')->var('new', 1) }}"
         style="min-width: 150px"
     >
@@ -35,7 +37,7 @@ use Windwalker\Core\Router\SystemUri;
     </a>
 
     {{-- Duplicate --}}
-    <button type="button" class="btn btn-info btn-sm"
+    <button type="button" class="btn btn-info btn-sm uni-btn-duplicate"
         @click="grid.form.post()"
     >
         <i class="fa fa-clone"></i>
@@ -48,12 +50,13 @@ use Windwalker\Core\Router\SystemUri;
         use-states
         batch
         :workflow="[$workflow]"
+        class="uni-btn-state"
     >
         @lang('unicorn.toolbar.state.change')
     </x-state-dropdown>
 
     {{-- Batch --}}
-    <button type="button" class="btn btn-dark btn-sm"
+    <button type="button" class="btn btn-dark btn-sm uni-btn-batch"
         @click="grid.validateChecked(null, function () {
             (new bootstrap.Modal('#batch-modal')).show();
         })"
@@ -63,7 +66,7 @@ use Windwalker\Core\Router\SystemUri;
     </button>
 
     {{-- Delete --}}
-    <button type="button" class="btn btn-outline-danger btn-sm"
+    <button type="button" class="btn btn-outline-danger btn-sm uni-btn-delete"
         @click="grid.deleteList()"
     >
         <i class="fa fa-trash"></i>
