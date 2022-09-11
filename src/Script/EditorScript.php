@@ -27,7 +27,7 @@ class EditorScript extends AbstractScript
 
     public function tinymce(string $selector, array $options = []): void
     {
-        if ($this->available()) {
+        if ($this->available($selector)) {
             $optionsString = static::getJSObject($options);
 
             $this->unicornScript->importMainThen(
