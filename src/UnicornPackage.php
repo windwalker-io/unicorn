@@ -28,7 +28,10 @@ use Unicorn\Generator\SubCommand\WorkflowSubCommand;
 use Unicorn\Image\ImagePlaceholder;
 use Unicorn\Listener\EmptyArrayFieldSubscriber;
 use Unicorn\Script\AwsScript;
+use Unicorn\Script\BootstrapScript;
+use Unicorn\Script\EditorScript;
 use Unicorn\Script\FormScript;
+use Unicorn\Script\JQueryScript;
 use Unicorn\Script\ModernScript;
 use Unicorn\Script\UnicornScript;
 use Unicorn\Script\VueScript;
@@ -103,11 +106,14 @@ class UnicornPackage extends AbstractPackage implements
     public function register(Container $container): void
     {
         $container->prepareSharedObject(UnicornScript::class);
+        $container->prepareSharedObject(BootstrapScript::class);
         $container->prepareSharedObject(FormScript::class);
+        $container->prepareSharedObject(JQueryScript::class);
+        $container->prepareSharedObject(EditorScript::class);
         $container->prepareSharedObject(VueScript::class);
-        $container->prepareSharedObject(FileUploadManager::class);
         $container->prepareSharedObject(ModernScript::class);
         $container->prepareSharedObject(AwsScript::class);
+        $container->prepareSharedObject(FileUploadManager::class);
         $container->prepareSharedObject(MimeTypes::class)
             ->alias(MimeTypesInterface::class, MimeTypes::class);
 
