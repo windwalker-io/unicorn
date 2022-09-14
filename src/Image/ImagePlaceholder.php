@@ -62,6 +62,6 @@ class ImagePlaceholder
             };
         }
 
-        ExceptionFactory::badMethodCall($name);
+        throw ExceptionFactory::badMethodCall($name);
     }
 }
