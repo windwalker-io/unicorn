@@ -65,14 +65,12 @@
   import '../../../../scss/field/vue-drag-uploader.scss';
   import VueDragUploaderItem from './item';
   import { itemStates, swal } from './util';
-  import draggable from 'vuedraggable';
   import * as Vue from 'vue';
   const { ref, reactive, toRefs, onMounted, computed, watch } = Vue;
 
   export default {
     name: 'vue-drag-uploader',
     components: {
-      draggable,
       VueDragUploaderItem
     },
     props: {

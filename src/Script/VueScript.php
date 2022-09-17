@@ -23,10 +23,10 @@ class VueScript extends AbstractScript
 
     public function vue(int $version = 3): void
     {
-        $this->asset->js('@vue');
-
         if ($version === 2) {
-            $this->compositionAPI();
+            $this->asset->js('vendor/vue/dist/vue.min.js');
+        } else {
+            $this->asset->js('@vue');
         }
     }
 

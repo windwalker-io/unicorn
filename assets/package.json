@@ -71,7 +71,8 @@
     "vue3-slide-up-down": "^1.2.5",
     "vuedraggable": "^4.0.3",
     "webpack-comment-remover-loader": "^0.0.3",
-    "webpack-stream": "^6.1.2"
+    "webpack-stream": "^6.1.2",
+    "webpack-bundle-analyzer": "^4.6.1"
   },
   "windwalker": {
     "vendors": [

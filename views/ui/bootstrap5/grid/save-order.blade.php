@@ -1,5 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
+namespace App\View;
+
 /**
  * Global variables
  * --------------------------------------------------------------
@@ -12,8 +16,6 @@
  * @var $router        \Windwalker\Core\Router\PackageRouter       Router object.
  * @var $asset         \Windwalker\Core\Asset\AssetManager         The Asset manager.
  */
-
-declare(strict_types=1);
 
 $store ??= 'grid';
 

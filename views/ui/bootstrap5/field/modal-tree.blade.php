@@ -1,5 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
+namespace App\View;
+
 /**
  * Global variables
  * --------------------------------------------------------------
@@ -12,27 +16,26 @@
  * @var $lang      LangService     The language translation service.
  */
 
-declare(strict_types=1);
-
+use Unicorn\Field\ModalTreeField;
+use Unicorn\Script\UnicornScript;
+use Unicorn\Script\VueScript;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Asset\AssetService;
 use Windwalker\Core\DateTime\ChronosService;
 use Windwalker\Core\Language\LangService;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\SystemUri;
+use Windwalker\DOM\DOMElement;
 
 /**
- * @var \App\Field\BoxSelectorField $field
- * @var \Windwalker\DOM\DOMElement $input
+ * @var ModalTreeField $field
+ * @var DOMElement     $input
  */
 
 $id = $input->getAttribute('id');
-$app->service(\Unicorn\Script\UnicornScript::class)
-    ->importMainThen(
-        <<<JS
-u.\$ui.modalTree();
-JS
-    );
+$app->service(VueScript::class)->vue();
+$app->service(UnicornScript::class)
+    ->importMainThen("u.\$ui.modalTree();");
 
 $wrapper = $field->getWrapper();
 ?>

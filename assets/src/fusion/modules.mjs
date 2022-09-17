@@ -6,6 +6,7 @@
  */
 
 import fusion, { webpack, watch, wait } from '@windwalker-io/fusion';
+import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 
 export async function uiBootstrap5() {
   watch(
@@ -143,6 +144,14 @@ export async function multiUploader() {
     fusion.vue('./src/modules/field/multi-uploader.js', './dist/field/', {
       override: (options) => {
         options.resolve.alias['vue$'] = 'vue/dist/vue.esm-bundler.js';
+
+        options.externals = {
+          vue: 'Vue'
+        };
+
+        // options.plugins.push(
+        //   new BundleAnalyzerPlugin()
+        // );
       }
     })
   );
@@ -157,6 +166,14 @@ export async function modalTree() {
     fusion.vue('./src/modules/field/modal-tree.js', './dist/field/', {
       override: (options) => {
         options.resolve.alias['vue$'] = 'vue/dist/vue.esm-bundler.js';
+
+        options.externals = {
+          vue: 'Vue'
+        };
+
+        // options.plugins.push(
+        //   new BundleAnalyzerPlugin()
+        // );
       }
     })
   );
@@ -168,7 +185,7 @@ export async function repeatable() {
   );
 
   return wait(
-    fusion.vue('./src/modules/field/repeatable.js', './dist/field/', {
+    webpack('./src/modules/field/repeatable.js', './dist/field/', {
       override: (options) => {
         // options.resolve.alias['vue$'] = 'vue/dist/vue.esm-bundler.js';
       }
