@@ -36,4 +36,19 @@ class VueScript extends AbstractScript
             $this->js('vendor/@vue/composition-api/dist/vue-composition-api.js');
         }
     }
+
+    public function draggable(): void
+    {
+        if ($this->available()) {
+            $this->js('@sortablejs');
+            $this->js('@vuedraggable');
+        }
+    }
+
+    public function animate(): void
+    {
+        if ($this->available()) {
+            $this->js('@vue2-animate');
+        }
+    }
 }
