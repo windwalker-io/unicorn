@@ -24,16 +24,20 @@ class SlugHelper
     /**
      * Make slug safe.
      *
-     * @param string      $alias
-     * @param bool        $utf8
-     * @param string|null $default
-     * @param int         $defaultLimit
+     * @param  string       $alias
+     * @param  bool         $utf8
+     * @param  string|null  $default
+     * @param  int          $defaultLimit
      *
      * @return  string
      * @throws \Exception
      */
-    public static function safe(string $alias, bool $utf8 = false, ?string $default = null, int $defaultLimit = 8): string
-    {
+    public static function safe(
+        string $alias,
+        bool $utf8 = false,
+        ?string $default = null,
+        int $defaultLimit = 16
+    ): string {
         $slug = static::slugify($alias, $utf8, $default, $defaultLimit);
 
         if (trim($slug) === '') {
@@ -46,10 +50,10 @@ class SlugHelper
     /**
      * slugify
      *
-     * @param string      $alias
-     * @param bool        $utf8
-     * @param string|null $default
-     * @param int         $defaultLimit
+     * @param  string       $alias
+     * @param  bool         $utf8
+     * @param  string|null  $default
+     * @param  int          $defaultLimit
      *
      * @return  string
      */
@@ -60,7 +64,7 @@ class SlugHelper
         int $defaultLimit = 16
     ): string {
         if ($utf8) {
-            $alias = $alias ?: mb_substr($default, 0, 16);
+            $alias = $alias ?: mb_substr($default, 0, $defaultLimit);
 
             return OutputFilter::stringURLUnicodeSlug($alias);
         }
@@ -85,7 +89,7 @@ class SlugHelper
     /**
      * breakWords
      *
-     * @param string $text
+     * @param  string  $text
      *
      * @return  array
      *
