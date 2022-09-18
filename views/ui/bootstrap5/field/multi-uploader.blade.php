@@ -1,5 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
+namespace App\View;
+
 /**
  * Global variables
  * --------------------------------------------------------------
@@ -12,31 +16,35 @@
  * @var $lang      LangService     The language translation service.
  */
 
-declare(strict_types=1);
-
+use Unicorn\Field\MultiUploaderField;
+use Unicorn\Script\FormScript;
+use Unicorn\Script\VueScript;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Asset\AssetService;
 use Windwalker\Core\DateTime\ChronosService;
 use Windwalker\Core\Language\LangService;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\SystemUri;
+use Windwalker\DOM\DOMElement;
+use Windwalker\Form\Form;
 
-$app->service(\Unicorn\Script\FormScript::class)->multiUploader();
+$app->service(VueScript::class)->vue();
+$app->service(FormScript::class)->multiUploader();
 $lang = $app->service(LangService::class);
 
 /**
- * @var \Unicorn\Field\MultiUploaderField $field
- * @var \Windwalker\DOM\DOMElement $input
- * @var array $options
- * @var array $data
- * @var \Windwalker\Form\Form $subForm
+ * @var MultiUploaderField $field
+ * @var DOMElement         $input
+ * @var array              $options
+ * @var array              $data
+ * @var Form               $subForm
  */
 
 $hasEditForm = count($subForm);
 
 $tmplId = 'multi-uploader-field-tmpl-' . $field->getId();
 
-$data['tmplSelector'] ??= '#' . $tmplId;
+$data['tmplSelector'] ??= ('#' . $tmplId);
 ?>
 
 <multi-uploader id="{{ $field->getId('-wrap') }}" options="{{ json_encode($data) }}">
@@ -82,7 +90,8 @@ $data['tmplSelector'] ??= '#' . $tmplId;
                     @if ($hasEditForm)
                         <input type="hidden" :name="`${fieldFullName}[${i}][url]`" :value="item.url" />
                         @foreach ($subForm->getFields() as $field)
-                            <input type="hidden" :name="`${fieldFullName}[${i}][{{ $field->getName() }}]`" :value="item.{{ $field->getName() }}" />
+                            <input type="hidden" :name="`${fieldFullName}[${i}][{{ $field->getName() }}]`"
+                                :value="item.{{ $field->getName() }}" />
                         @endforeach
                     @else
                         <input type="hidden" :name="`${fieldFullName}[${i}]`" :value="item.url" />
@@ -93,10 +102,10 @@ $data['tmplSelector'] ??= '#' . $tmplId;
     </vue-drag-uploader>
 
     @if ($field->isRequired())
-    <input type="text" class="form-control"
-        style="display: none"
-        required :disabled="value.length > 0"
-    />
+        <input type="text" class="form-control"
+            style="display: none"
+            required :disabled="value.length > 0"
+        />
     @endif
 
     <div v-if="current" class="modal fade" id="{{ $field->getId('-modal') }}" tabindex="-1" role="dialog"
@@ -107,7 +116,8 @@ $data['tmplSelector'] ??= '#' . $tmplId;
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title" id="{{ $field->getId('-modal-label') }}"></h4>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" data-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" data-dismiss="modal"
+                        aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="row">
@@ -131,16 +141,16 @@ $data['tmplSelector'] ??= '#' . $tmplId;
                         </div>
                         <div class="col-lg-5">
                             @foreach ($subForm->getFields() as $field)
-                                <?php
-                                $field->addClass(
-                                    match (true) {
-                                        $field instanceof \Windwalker\Form\Field\CheckboxesField === 'checkbox' => 'form-input-check',
-                                        $field instanceof \Windwalker\Form\Field\CheckboxField === 'checkbox' => 'form-input-check',
-                                        $field instanceof \Windwalker\Form\Field\ListField === 'select' => 'form-select',
-                                        default => 'form-control'
-                                    }
-                                );
-                                ?>
+                                    <?php
+                                    $field->addClass(
+                                        match (true) {
+                                            $field instanceof \Windwalker\Form\Field\CheckboxesField === 'checkbox' => 'form-input-check',
+                                            $field instanceof \Windwalker\Form\Field\CheckboxField === 'checkbox' => 'form-input-check',
+                                            $field instanceof \Windwalker\Form\Field\ListField === 'select' => 'form-select',
+                                            default => 'form-control'
+                                        }
+                                    );
+                                    ?>
                                 <div class="form-group mb-3">
                                     {!! str_replace('value=""', '', $field->render())!!}
                                 </div>

@@ -54,7 +54,7 @@ export class UIBootstrap5 {
    * @param {object} config
    */
   tooltip(selector = '[data-bs-toggle="tooltip"]', config = {}) {
-    return this.app.getBoundedInstanceList(
+    return this.app.module(
       selector,
       'bs.tooltip',
       (ele) => new bootstrap.Tooltip(ele, config)
@@ -66,7 +66,7 @@ export class UIBootstrap5 {
    * @param {object} config
    */
   modal(selector, config = {}) {
-    return this.app.getBoundedInstance(
+    return this.app.module(
       selector,
       'bs.modal',
       (element) => new bootstrap.Modal(element, config)
@@ -78,7 +78,7 @@ export class UIBootstrap5 {
    * @param {object} config
    */
   collapse(selector = '[data-bs-toggle=collapse]', config = {}) {
-    return this.app.getBoundedInstanceList(
+    return this.app.module(
       selector,
       'bs.collapse',
       (ele) => new bootstrap.Collapse(ele, config)
@@ -90,7 +90,7 @@ export class UIBootstrap5 {
    * @param {object} config
    */
   offcanvas(selector = '[data-bs-toggle="offcanvas"]', config = {}) {
-    return this.app.getBoundedInstanceList(
+    return this.app.module(
       selector,
       'bs.offcanvas',
       (ele) => new bootstrap.Offcanvas(ele, config)
@@ -102,7 +102,7 @@ export class UIBootstrap5 {
    * @param {object} config
    */
   popover(selector = '[data-bs-toggle="popover"]', config = {}) {
-    return this.app.getBoundedInstanceList(
+    return this.app.module(
       selector,
       'bs.popover',
       (ele) => new bootstrap.Popover(ele, config)
@@ -114,7 +114,7 @@ export class UIBootstrap5 {
    * @param {object} config
    */
   scrollspy(selector = '[data-bs-spy="scroll"]', config = {}) {
-    return this.app.getBoundedInstanceList(
+    return this.app.module(
       selector,
       'bs.scrollspy',
       (element) => new bootstrap.ScrollSpy(element, config)
@@ -126,7 +126,7 @@ export class UIBootstrap5 {
    * @param {object} config
    */
   tab(selector = '[data-bs-toggle="tab"]', config = {}) {
-    return this.app.getBoundedInstanceList(
+    return this.app.module(
       selector,
       'bs.tab',
       (element) => new bootstrap.Tab(element, config)
@@ -138,7 +138,7 @@ export class UIBootstrap5 {
    * @param {object} config
    */
   toast(selector = '[data-bs-toggle="toast"]', config = {}) {
-    return this.app.getBoundedInstanceList(
+    return this.app.module(
       selector,
       'bs.toast',
       (element) => new bootstrap.Toast(element, config)

@@ -17,8 +17,6 @@ use Windwalker\Form\Field\CompositeFieldInterface;
 use Windwalker\Form\Form;
 use Windwalker\Utilities\Arr;
 
-use function Windwalker\collect;
-
 /**
  * The RepeatableField class.
  */
