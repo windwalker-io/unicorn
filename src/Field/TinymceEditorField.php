@@ -61,7 +61,8 @@ class TinymceEditorField extends AbstractEditorField
         'height' => 450,
         'convert_urls' => true,
         'fontsize_formats' => '12px 13px 14px 15px 16px 18px 20px 24px 28px 32px',
-        'entity_encoding' => 'raw'
+        'entity_encoding' => 'raw',
+        'promotion' => false,
     ];
 
     /**
