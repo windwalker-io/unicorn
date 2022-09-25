@@ -11,10 +11,3 @@
  * @copyright  Copyright (C) 2022 __ORGANIZATION__.
  * @license    __LICENSE__
  */
-
-/**!
- * Sortable 1.14.0
- * @author	RubaXa   <trash@rubaxa.org>
- * @author	owenm    <owen23355@gmail.com>
- * @license MIT
- */
