@@ -126,9 +126,21 @@ export default class UnicornRouter {
     for (let k in query) {
       const v = query[k];
 
-      if (url.indexOf(`{${k}}`) !== -1) {
+      const placeholder = `{${k}}`;
+
+      if (url.indexOf(placeholder) !== -1) {
         url = url.replace(
-          new RegExp(`\{${k}\}`, 'g'),
+          new RegExp(`${placeholder}`, 'g'),
+          v
+        );
+        delete query[k];
+      }
+
+      const encodedPlaceholder = encodeURIComponent(`{${k}}`);
+
+      if (url.indexOf(encodedPlaceholder) !== -1) {
+        url = url.replace(
+          new RegExp(`${encodedPlaceholder}`, 'g'),
           v
         );
         delete query[k];
