@@ -22,6 +22,10 @@ export default class UnicornForm {
       const selector = typeof ele === 'string' ? ele : null;
       ele = app.selectOne(ele);
 
+      if (!ele) {
+        throw new Error(`Form element of: ${selector} not found.`);
+      }
+
       return defData(
         ele,
         'form.plugin',
@@ -34,7 +38,7 @@ export default class UnicornForm {
 export class UnicornFormElement {
   /**
    * Constructor.
-   * @param {string}      selector
+   * @param {?string}      selector
    * @param {HTMLElement} $form
    * @param {Object}      options
    * @param {UnicornApp}  app
