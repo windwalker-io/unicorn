@@ -131,7 +131,7 @@ class FormScript extends AbstractScript
     public function multiUploader(): static
     {
         if ($this->available()) {
-            // $this->vueScript->vue();
+            $this->vueScript->vue();
             $this->unicornScript->translate('unicorn.field.multi.uploader.*');
             $this->unicornScript->translate('unicorn.field.file.drag.*');
             $this->unicornScript->importMainThen(

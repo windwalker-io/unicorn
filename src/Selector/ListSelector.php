@@ -17,6 +17,7 @@ use Unicorn\Selector\Event\ConfigureQueryEvent;
 use Unicorn\Selector\Filter\FilterHelper;
 use Unicorn\Selector\Filter\SearchHelper;
 use Windwalker\Core\Database\QueryProxyTrait;
+use Windwalker\Core\Event\CoreEventAwareTrait;
 use Windwalker\Core\Pagination\Pagination;
 use Windwalker\Core\Pagination\PaginationFactory;
 use Windwalker\Data\Collection;
@@ -39,7 +40,7 @@ use function Windwalker\raw;
 class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countable
 {
     use OptionAccessTrait;
-    use EventAwareTrait;
+    use CoreEventAwareTrait;
     use InstanceCacheTrait;
     use FlowControlTrait;
     use QueryProxyTrait;

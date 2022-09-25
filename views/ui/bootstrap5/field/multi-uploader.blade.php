@@ -28,7 +28,6 @@ use Windwalker\Core\Router\SystemUri;
 use Windwalker\DOM\DOMElement;
 use Windwalker\Form\Form;
 
-$app->service(VueScript::class)->vue();
 $app->service(FormScript::class)->multiUploader();
 $lang = $app->service(LangService::class);
 

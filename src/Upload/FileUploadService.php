@@ -24,6 +24,7 @@ use Unicorn\Storage\StorageInterface;
 use Unicorn\Storage\StorageManager;
 use Unicorn\Upload\Event\FileUploadedEvent;
 use Unicorn\Upload\Exception\FileUploadException;
+use Windwalker\Core\Event\CoreEventAwareTrait;
 use Windwalker\Event\EventAwareInterface;
 use Windwalker\Event\EventAwareTrait;
 use Windwalker\Filesystem\Filesystem;
@@ -40,7 +41,7 @@ use function Windwalker\uid;
  */
 class FileUploadService implements EventAwareInterface
 {
-    use EventAwareTrait;
+    use CoreEventAwareTrait;
     use OptionsResolverTrait;
 
     public const DRIVER_GD = 'gd';

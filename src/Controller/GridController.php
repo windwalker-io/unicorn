@@ -14,6 +14,7 @@ namespace Unicorn\Controller;
 use Unicorn\Repository\ListRepositoryInterface;
 use Unicorn\Repository\ManageRepositoryInterface;
 use Windwalker\Core\Application\AppContext;
+use Windwalker\Core\Event\CoreEventAwareTrait;
 use Windwalker\Core\Language\LangService;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\RouteUri;
@@ -28,7 +29,7 @@ use function Windwalker\value;
  */
 class GridController implements EventAwareInterface
 {
-    use EventAwareTrait;
+    use CoreEventAwareTrait;
 
     protected bool $muted = false;
 

@@ -14,6 +14,7 @@ namespace Unicorn\Controller;
 use Unicorn\Repository\CrudRepositoryInterface;
 use Unicorn\Repository\Event\PrepareSaveEvent;
 use Windwalker\Core\Application\AppContext;
+use Windwalker\Core\Event\CoreEventAwareTrait;
 use Windwalker\Core\Language\LangService;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\RouteUri;
@@ -32,7 +33,7 @@ use Windwalker\ORM\NestedSetMapper;
  */
 class CrudController implements EventAwareInterface
 {
-    use EventAwareTrait;
+    use CoreEventAwareTrait;
 
     protected ?string $formNamespace = 'item';
 

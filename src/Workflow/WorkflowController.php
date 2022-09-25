@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace Unicorn\Workflow;
 
+use Windwalker\Core\Event\CoreEventAwareTrait;
 use Windwalker\Event\EventAwareInterface;
 use Windwalker\Event\EventAwareTrait;
 use Windwalker\ORM\Event\WatchEvent;
@@ -21,7 +22,7 @@ use Windwalker\Utilities\TypeCast;
  */
 class WorkflowController implements EventAwareInterface
 {
-    use EventAwareTrait;
+    use CoreEventAwareTrait;
 
     protected bool $allowFreeTransitions = true;
 

@@ -16,6 +16,7 @@ use PhpParser\ParserFactory;
 use Unicorn\Field\CalendarField;
 use Unicorn\Field\SwitcherField;
 use Unicorn\Form\Event\BuildFormFieldEvent;
+use Windwalker\Core\Event\CoreEventAwareTrait;
 use Windwalker\Core\Generator\Builder\AbstractAstBuilder;
 use Windwalker\Core\Language\TranslatorTrait;
 use Windwalker\Database\DatabaseAdapter;
@@ -35,7 +36,7 @@ use Windwalker\Utilities\StrNormalize;
  */
 class FormFieldsBuilder extends AbstractAstBuilder implements EventAwareInterface
 {
-    use EventAwareTrait;
+    use CoreEventAwareTrait;
 
     protected array $uses = [];
     protected array $newUses = [];

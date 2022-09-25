@@ -37,7 +37,6 @@ class UnicornAssetSubscriber
         if ($event->getType() === AssetBeforeRender::TYPE_JS) {
             $this->handleJS($event);
         }
-
     }
 
     /**
