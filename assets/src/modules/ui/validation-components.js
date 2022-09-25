@@ -329,6 +329,8 @@ export class UnicornFieldValidation {
 
     this.$input.classList.remove(this.invalidClass);
     this.$input.classList.remove(this.validClass);
+    this.el.classList.remove(this.invalidClass);
+    this.el.classList.remove(this.validClass);
 
     this.$input.setCustomValidity('');
 
@@ -340,8 +342,10 @@ export class UnicornFieldValidation {
 
     if (valid) {
       this.$input.classList.add(this.validClass);
+      this.el.classList.add(this.validClass);
     } else {
       this.$input.classList.add(this.invalidClass);
+      this.el.classList.add(this.invalidClass);
     }
 
     return valid;

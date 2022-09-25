@@ -122,7 +122,7 @@ class SingleImageDrag extends HTMLElement {
     });
 
     // Delete
-    this.removeCheckbox.addEventListener('click', () => {
+    this.removeCheckbox?.addEventListener('click', () => {
       if (this.removeCheckbox.checked) {
         this.valueBackup = this.valueInput.value;
         this.valueInput.value = '';
@@ -382,6 +382,9 @@ class SingleImageDrag extends HTMLElement {
     this.fileInput.dispatchEvent(new CustomEvent('input'));
 
     this.storeValue(null, URL.createObjectURL(file));
+
+    // No required for value input to remove validation message
+    this.valueInput.required = false;
   }
 
   uploadImage (file) {
@@ -400,7 +403,9 @@ class SingleImageDrag extends HTMLElement {
     this.previewImage.style.display = 'inline-block';
 
     // Make delete box unchecked
-    this.removeCheckbox.checked = false;
+    if (this.removeCheckbox) {
+      this.removeCheckbox.checked = false;
+    }
 
     if (url) {
       this.valueInput.value = url;
@@ -409,6 +414,7 @@ class SingleImageDrag extends HTMLElement {
     // Trigger change
     this.previewImage.dispatchEvent(new CustomEvent('change'));
     this.valueInput.dispatchEvent(new CustomEvent('change'));
+    this.valueInput.dispatchEvent(new CustomEvent('input'));
   }
 }
 

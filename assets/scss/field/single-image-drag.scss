@@ -79,3 +79,10 @@
 
   }
 }
+
+// A workaround for form validation
+.is-invalid[uni-field-validate] {
+  [data-field-error] {
+    display: block;
+  }
+}

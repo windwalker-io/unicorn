@@ -71,4 +71,7 @@
           align-items: center;
   z-index: 1; }
 
+.is-invalid[uni-field-validate] [data-field-error] {
+  display: block; }
+
 /*# sourceMappingURL=single-image-drag.css.map */
