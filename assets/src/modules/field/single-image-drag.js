@@ -377,14 +377,14 @@ class SingleImageDrag extends HTMLElement {
     const dt = new DataTransfer();
     dt.items.add(file);
 
+    // No required for value input to remove validation message
+    this.valueInput.required = false;
+
     this.fileInput.files = dt.files;
     this.fileInput.dispatchEvent(new CustomEvent('change'));
     this.fileInput.dispatchEvent(new CustomEvent('input'));
 
     this.storeValue(null, URL.createObjectURL(file));
-
-    // No required for value input to remove validation message
-    this.valueInput.required = false;
   }
 
   uploadImage (file) {
