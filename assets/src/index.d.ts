@@ -44,6 +44,11 @@ export interface Unicorn extends UnicornApp {
   data(ele: Element, name: string, data?: any): any;
   removeData(name: string): any;
   removeData(ele: Element, name: string): any;
+  on(event: string|string[], handler: Function): this;
+  once(event: string|string[], handler: Function): this;
+  off(event: string, handler: Function): this;
+  trigger(event: string|string[], ...args: any[]): this;
+  listeners(event: string): Function[];
   uri(type: string): string|undefined;
   asset(type: string): string|undefined;
   wait(callback: (resolve: Function, reject: Function) => void): Promise<any>;

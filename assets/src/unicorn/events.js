@@ -9,8 +9,17 @@ import { Mixin } from './mixwith.js';
 
 export const EventMixin = Mixin(function (superclass) {
   return class extends superclass {
+    /**
+     * @type {{ [event: string]: function[] }}
+     * @private
+     */
     _listeners = {};
 
+    /**
+     * @param {string|Array<string>} event
+     * @param {function} handler
+     * @returns {this}
+     */
     on(event, handler) {
       if (Array.isArray(event)) {
         event.forEach(e => this.on(e, handler));
@@ -26,6 +35,11 @@ export const EventMixin = Mixin(function (superclass) {
       return this;
     }
 
+    /**
+     * @param {string|Array<string>} event
+     * @param {function} handler
+     * @returns {this}
+     */
     once(event, handler) {
       if (Array.isArray(event)) {
         event.forEach(e => this.once(e, handler));
@@ -37,9 +51,14 @@ export const EventMixin = Mixin(function (superclass) {
       this.on(event, handler);
     }
 
-    off(event, callback = null) {
-      if (callback !== null) {
-        this._listeners[event] = this.listeners(event).filter((listener) => listener !== callback);
+    /**
+     * @param {string} event
+     * @param {?function} handler
+     * @returns {this}
+     */
+    off(event, handler = null) {
+      if (handler !== null) {
+        this._listeners[event] = this.listeners(event).filter((listener) => listener !== handler);
         return this;
       }
 
@@ -48,6 +67,11 @@ export const EventMixin = Mixin(function (superclass) {
       return this;
     }
 
+    /**
+     * @param {string|string[]} event
+     * @param {any[]} args
+     * @returns {this}
+     */
     trigger(event, ...args) {
       if (Array.isArray(event)) {
         event.forEach(e => this.trigger(e));
@@ -64,6 +88,10 @@ export const EventMixin = Mixin(function (superclass) {
       return this;
     }
 
+    /**
+     * @param {string} event
+     * @returns {Function[]}
+     */
     listeners(event) {
       if (typeof event !== 'string') {
         throw new Error(`get listeners event name should only use string.`);
