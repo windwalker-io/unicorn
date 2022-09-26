@@ -130,12 +130,13 @@ class FileUploadService implements EventAwareInterface
 
         $dest ??= $this->getUploadPath($dest, $ext);
         $dest = static::replaceVariables($dest, (string) $ext);
+        $destExt = Path::getExtension($dest);
 
-        if (str_starts_with($mime, 'image/') && $this->shouldResize($ext)) {
+        if (str_starts_with($mime, 'image/') && $this->shouldRedraw($ext, $destExt)) {
             $resizeConfig = [];
 
-            if (!str_ends_with($dest, '.{ext}')) {
-                $resizeConfig['output_format'] = Path::getExtension($dest);
+            if ($destExt !== '{ext}') {
+                $resizeConfig['output_format'] = $destExt;
             }
 
             $stream = $this->resizeImage($stream, $resizeConfig);
@@ -153,12 +154,18 @@ class FileUploadService implements EventAwareInterface
             $file = $file->getPathname();
         }
 
+        $forceRedraw = false;
+
         if ($file instanceof UploadedFileInterface) {
             if ($file->getError() !== UPLOAD_ERR_OK) {
                 $this->throwUploadError($file);
             }
 
             $srcExt = Path::getExtension($file->getClientFilename());
+
+            // If uploaded file extension not equals to mime type,
+            // Use extension as final output format.
+            $forceRedraw = $this->getExtensionByMimeType($file->getClientMediaType()) !== $srcExt;
         } else {
             $srcExt = Path::getExtension($file);
         }
@@ -166,12 +173,15 @@ class FileUploadService implements EventAwareInterface
         $dest ??= $this->getUploadPath($dest, $srcExt);
 
         $dest = static::replaceVariables($dest, $srcExt);
+        $destExt = Path::getExtension($dest);
 
-        if ($this->isImage($file) && $this->shouldResize($srcExt)) {
+        if ($this->isImage($file) && ($forceRedraw || $this->shouldRedraw($srcExt, $destExt))) {
             $resizeConfig = [];
 
-            if (!str_ends_with($dest, '.{ext}')) {
-                $resizeConfig['output_format'] = Path::getExtension($dest);
+            if ($destExt !== '{ext}') {
+                $resizeConfig['output_format'] = $destExt;
+            } elseif ($forceRedraw) {
+                $resizeConfig['output_format'] = $srcExt;
             }
 
             $stream = $this->resizeImage($file, $resizeConfig);
@@ -241,12 +251,13 @@ class FileUploadService implements EventAwareInterface
         }
 
         $dest = static::replaceVariables($dest, $ext);
+        $destExt = Path::getExtension($dest);
 
-        if (str_starts_with($mime, 'image/') && $this->shouldResize($ext)) {
+        if (str_starts_with($mime, 'image/') && $this->shouldRedraw($ext, $destExt)) {
             $resizeConfig = [];
 
-            if (!str_ends_with($dest, '.{ext}')) {
-                $resizeConfig['output_format'] = Path::getExtension($dest);
+            if ($destExt !== '{ext}') {
+                $resizeConfig['output_format'] = $destExt;
             }
 
             $stream = $this->resizeImage($stream, $resizeConfig);
@@ -289,8 +300,12 @@ class FileUploadService implements EventAwareInterface
         return $type !== null && str_starts_with($type, 'image/');
     }
 
-    protected function shouldResize(string $ext): bool
+    protected function shouldRedraw(string $ext, string $destExt): bool
     {
+        if ($destExt !== '{ext}' && $ext !== $destExt) {
+            return true;
+        }
+
         if ($this->options['raw_gif'] && strtolower($ext) === 'gif') {
             return false;
         }
@@ -341,7 +356,10 @@ class FileUploadService implements EventAwareInterface
         $height = $resizeConfig['height'];
 
         if (!$resizeConfig['enabled']) {
-            return $image->stream(null, $resizeConfig['quality']);
+            return $image->stream(
+                $resizeConfig['output_format'] ?? $outputFormat,
+                $resizeConfig['quality']
+            );
         }
 
         if (!$width || $image->width() >= $width || !$height || $image->height() >= $height) {
@@ -391,6 +409,11 @@ class FileUploadService implements EventAwareInterface
     public function getMimeTypeByExtension(string $pathOrExt): ?string
     {
         return $this->mimeTypes->getMimeTypes(Path::getExtension($pathOrExt))[0] ?? null;
+    }
+
+    public function getExtensionByMimeType(string $mime): ?string
+    {
+        return $this->mimeTypes->getExtensions($mime)[0] ?? null;
     }
 
     /**
