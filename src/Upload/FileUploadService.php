@@ -133,10 +133,10 @@ class FileUploadService implements EventAwareInterface
         $destExt = Path::getExtension($dest);
 
         if (str_starts_with($mime, 'image/') && $this->shouldRedraw($ext, $destExt)) {
-            $resizeConfig = [];
+            $resizeConfig = $options['resize'] ?? [];
 
             if ($destExt !== '{ext}') {
-                $resizeConfig['output_format'] = $destExt;
+                $resizeConfig['output_format'] ??= $destExt;
             }
 
             $stream = $this->resizeImage($stream, $resizeConfig);
@@ -176,12 +176,12 @@ class FileUploadService implements EventAwareInterface
         $destExt = Path::getExtension($dest);
 
         if ($this->isImage($file) && ($forceRedraw || $this->shouldRedraw($srcExt, $destExt))) {
-            $resizeConfig = [];
+            $resizeConfig = $options['resize'] ?? [];
 
             if ($destExt !== '{ext}') {
-                $resizeConfig['output_format'] = $destExt;
+                $resizeConfig['output_format'] ??= $destExt;
             } elseif ($forceRedraw) {
-                $resizeConfig['output_format'] = $srcExt;
+                $resizeConfig['output_format'] ??= $srcExt;
             }
 
             $stream = $this->resizeImage($file, $resizeConfig);
@@ -254,10 +254,10 @@ class FileUploadService implements EventAwareInterface
         $destExt = Path::getExtension($dest);
 
         if (str_starts_with($mime, 'image/') && $this->shouldRedraw($ext, $destExt)) {
-            $resizeConfig = [];
+            $resizeConfig = $options['resize'] ?? [];
 
             if ($destExt !== '{ext}') {
-                $resizeConfig['output_format'] = $destExt;
+                $resizeConfig['output_format'] ??= $destExt;
             }
 
             $stream = $this->resizeImage($stream, $resizeConfig);
