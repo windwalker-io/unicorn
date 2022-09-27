@@ -133,7 +133,7 @@ class FileUploadService implements EventAwareInterface
         $destExt = Path::getExtension($dest);
 
         if (str_starts_with($mime, 'image/') && $this->shouldRedraw($ext, $destExt)) {
-            $resizeConfig = $options['resize'] ?? [];
+            $resizeConfig = $this->getResizeConfig($options);
 
             if ($destExt !== '{ext}') {
                 $resizeConfig['output_format'] ??= $destExt;
@@ -172,11 +172,13 @@ class FileUploadService implements EventAwareInterface
 
         $dest ??= $this->getUploadPath($dest, $srcExt);
 
-        $dest = static::replaceVariables($dest, $srcExt);
         $destExt = Path::getExtension($dest);
 
         if ($this->isImage($file) && ($forceRedraw || $this->shouldRedraw($srcExt, $destExt))) {
-            $resizeConfig = $options['resize'] ?? [];
+            $resizeConfig = $this->getResizeConfig($options);
+
+            // Todo: Should refactor total process
+            $dest = static::replaceVariables($dest, $resizeConfig['output_format'] ?? $srcExt);
 
             if ($destExt !== '{ext}') {
                 $resizeConfig['output_format'] ??= $destExt;
@@ -186,8 +188,10 @@ class FileUploadService implements EventAwareInterface
 
             $stream = $this->resizeImage($file, $resizeConfig);
         } elseif ($file instanceof UploadedFileInterface) {
+            $dest = static::replaceVariables($dest, $srcExt);
             $stream = $file->getStream();
         } else {
+            $dest = static::replaceVariables($dest, $srcExt);
             $stream = new Stream($file, Stream::MODE_READ_ONLY_FROM_BEGIN);
         }
 
@@ -254,7 +258,7 @@ class FileUploadService implements EventAwareInterface
         $destExt = Path::getExtension($dest);
 
         if (str_starts_with($mime, 'image/') && $this->shouldRedraw($ext, $destExt)) {
-            $resizeConfig = $options['resize'] ?? [];
+            $resizeConfig = $this->getResizeConfig($options);
 
             if ($destExt !== '{ext}') {
                 $resizeConfig['output_format'] ??= $destExt;
@@ -381,6 +385,14 @@ class FileUploadService implements EventAwareInterface
         );
     }
 
+    protected function getResizeConfig(array $options = [])
+    {
+        return $resizeConfig = array_merge(
+            $this->options['resize'],
+            $options
+        );
+    }
+
     public function getMimeType(UploadedFileInterface|\SplFileInfo|string $src): ?string
     {
         $type = null;
@@ -499,5 +511,5 @@ class FileUploadService implements EventAwareInterface
         );
 
         return $event->getResult();
-}
+    }
 }
