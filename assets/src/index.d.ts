@@ -46,7 +46,7 @@ export interface Unicorn extends UnicornApp {
   removeData(ele: Element, name: string): any;
   on(event: string|string[], handler: Function): this;
   once(event: string|string[], handler: Function): this;
-  off(event: string, handler: Function): this;
+  off(event: string, handler?: Function): this;
   trigger(event: string|string[], ...args: any[]): this;
   listeners(event: string): Function[];
   uri(type: string): string|undefined;
@@ -83,7 +83,7 @@ export interface Unicorn extends UnicornApp {
 
   // router.js
   $router: UnicornRouter;
-  route(route: string, query: any): string;
+  route(route: string, query?: any): string;
 
   $grid: UnicornGrid;
   grid(ele: string|Element, options?: object): UnicornGridElement;
@@ -109,7 +109,7 @@ export interface Unicorn extends UnicornApp {
   importSync(...src): Promise<any>;
   importCSS(...src): Promise<any>;
   minFileName(fileName: string): string;
-  agterImported(name: string, callback: (resolve: Function, reject?: Function) => void): Promise<any>;
+  afterImported(name: string, callback: (resolve: Function, reject?: Function) => void): Promise<any>;
 
   // helper.js
   $helper: UnicornHelper;
