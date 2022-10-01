@@ -70,10 +70,10 @@ if ($attributes ?? null) {
 
     foreach ($attrs as $name => $value) {
         if (str_starts_with($name, 'input-')) {
-            $inputAttrs[Str::removeLeft($name, 'input-')] = $value;
+            $inputAttrs[Str::removeLeft($name, 'input-', 'ascii')] = $value;
             unset($attrs[$name]);
         } elseif (str_starts_with($name, 'label-')) {
-            $labelAttrs[Str::removeLeft($name, 'label-')] = $value;
+            $labelAttrs[Str::removeLeft($name, 'label-', 'ascii')] = $value;
             unset($attrs[$name]);
         }
     }

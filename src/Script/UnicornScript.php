@@ -197,7 +197,7 @@ JS
     public function addRoute(string $route, mixed $url = null): static
     {
         if ($url === null || is_array($url)) {
-            $url = $this->nav->to(Str::removeLeft($route, '@'), $url ?? []);
+            $url = $this->nav->to(Str::removeLeft($route, '@', 'ascii'), $url ?? []);
         }
 
         $route = Str::ensureLeft($route, '@');

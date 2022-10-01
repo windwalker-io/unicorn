@@ -140,7 +140,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
         return $this->query ??= $this->createQuery();
     }
 
-    public function compileQuery(): SelectorQuery
+    public function compileQuery(bool $autoSelection = true): SelectorQuery
     {
         $query = clone $this->getQuery();
         $selector = $this;
@@ -162,10 +162,12 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
             $query->order($this->handleOrdering($this->defaultOrdering));
         }
 
-        if (!$this->isDisableSelectGroup()) {
-            $query->groupByJoins('.');
-        } else {
-            $query->autoSelections('_');
+        if ($autoSelection) {
+            if (!$this->isDisableSelectGroup()) {
+                $query->groupByJoins('.');
+            } else {
+                $query->autoSelections('_');
+            }
         }
 
         if ($limit = $this->getLimit()) {
@@ -249,7 +251,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
         }
 
         // Pre-count to store cache, otherwise will cause infinity loop.
-        $query ??= $this->compileQuery();
+        $query ??= $this->compileQuery(false);
 
         return $this->cacheStorage['count'] ??= $query->count();
     }
