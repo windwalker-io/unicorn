@@ -13,6 +13,7 @@ namespace Unicorn\Repository\Actions;
 
 use Unicorn\Repository\Event\PrepareSaveEvent;
 use Windwalker\Form\FieldDefinitionInterface;
+use Windwalker\Form\Form;
 use Windwalker\ORM\EntityMapper;
 use Windwalker\ORM\Event\AfterSaveEvent;
 use Windwalker\ORM\Event\BeforeSaveEvent;
@@ -121,18 +122,18 @@ class SaveAction extends AbstractDatabaseAction
     /**
      * prepareFormStore
      *
-     * @param  array                                 $data
-     * @param  FieldDefinitionInterface|string|null  $definition
-     * @param  array                                 $args
+     * @param  array                                      $data
+     * @param  FieldDefinitionInterface|Form|string|null  $form
+     * @param  array                                      $args
      *
      * @return  array
      */
     public function prepareFormStore(
         array $data,
-        FieldDefinitionInterface|string|null $definition = null,
+        FieldDefinitionInterface|Form|string|null $form = null,
         array $args = []
     ): array {
-        $form = $this->getForm($definition, $args);
+        $form = $this->getForm($form, $args);
 
         return $form->prepareStore($data);
     }
@@ -140,25 +141,25 @@ class SaveAction extends AbstractDatabaseAction
     /**
      * prepareStore
      *
-     * @param  array                                 $data
-     * @param  FieldDefinitionInterface|string|null  $definition
-     * @param  array                                 $args
-     * @param  int                                   $options
+     * @param  array                                      $data
+     * @param  FieldDefinitionInterface|Form|string|null  $form
+     * @param  array                                      $args
+     * @param  int                                        $options
      *
      * @return  array
      */
     public function prepareStore(
         array $data,
-        FieldDefinitionInterface|string|null $definition = null,
+        FieldDefinitionInterface|Form|string|null $form = null,
         array $args = [],
         int $options = 0
     ): array {
         if (!($options & static::IGNORE_FILTER)) {
-            $data = $this->filterBy($data, $definition, $args, (bool) ($options & static::FILTER_KEEP_FULL_DATA));
+            $data = $this->filterBy($data, $form, $args, (bool) ($options & static::FILTER_KEEP_FULL_DATA));
         }
 
         if (!($options & static::IGNORE_FORM_PREPARE)) {
-            return $this->prepareFormStore($data, $definition, $args, $options);
+            return $this->prepareFormStore($data, $form, $args, $options);
         }
 
         return $data;

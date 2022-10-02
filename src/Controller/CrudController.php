@@ -22,6 +22,7 @@ use Windwalker\Core\View\View;
 use Windwalker\Event\EventAwareInterface;
 use Windwalker\Event\EventAwareTrait;
 use Windwalker\Form\FieldDefinitionInterface;
+use Windwalker\Form\Form;
 use Windwalker\ORM\Event\AfterDeleteEvent;
 use Windwalker\ORM\Event\AfterSaveEvent;
 use Windwalker\ORM\Event\BeforeDeleteEvent;
@@ -59,7 +60,7 @@ class CrudController implements EventAwareInterface
         AppContext $app,
         Navigator $nav,
         CrudRepositoryInterface $repository,
-        FieldDefinitionInterface $form,
+        mixed $form,
         array $formArgs = [],
         int $options = 0
     ): RouteUri {

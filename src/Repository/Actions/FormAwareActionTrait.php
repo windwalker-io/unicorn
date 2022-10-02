@@ -52,9 +52,7 @@ trait FormAwareActionTrait
         array $args = [],
         bool $keepFullData = false
     ): array {
-        if (is_string($form) || $form instanceof FieldDefinitionInterface) {
-            $form = $this->getForm($form, $args);
-        }
+        $form = $this->getForm($form, $args);
 
         if ($form instanceof Form) {
             return $form->filter($data, $keepFullData);
@@ -82,9 +80,7 @@ trait FormAwareActionTrait
      */
     public function validateBy(array $data, mixed $form, array $args = []): bool
     {
-        if (is_string($form) || $form instanceof FieldDefinitionInterface) {
-            $form = $this->getForm($form, $args);
-        }
+        $form = $this->getForm($form, $args);
 
         if ($form instanceof Form) {
             $resultSet = $form->validate($data);
@@ -125,15 +121,19 @@ trait FormAwareActionTrait
     /**
      * getForm
      *
-     * @param  FieldDefinitionInterface|string|null  $form
-     * @param  array                                 $args
+     * @param  FieldDefinitionInterface|Form|string|null  $form
+     * @param  array                                      $args
      *
      * @return  Form
      */
     public function getForm(
-        FieldDefinitionInterface|string|null $form = null,
+        FieldDefinitionInterface|Form|string|null $form = null,
         array $args = []
     ): Form {
+        if ($form instanceof Form) {
+            return $form;
+        }
+
         $id = $form;
 
         if (is_object($id)) {
