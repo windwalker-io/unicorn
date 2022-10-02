@@ -264,10 +264,11 @@ class WorkflowController implements EventAwareInterface
         if ($transition) {
             $this->onBeforeChanged($transition->getFroms(), $transition->getTo(), $listener);
 
-            $this->on(
-                'before_transition__' . $transition->getName(),
-                $listener
-            );
+            // Do not use transition event since it will call listener twice
+            // $this->on(
+            //     'before_transition__' . $transition->getName(),
+            //     $listener
+            // );
         }
 
         return $this;
@@ -280,10 +281,11 @@ class WorkflowController implements EventAwareInterface
         if ($transition) {
             $this->onAfterChanged($transition->getFroms(), $transition->getTo(), $listener);
 
-            $this->on(
-                'after_transition__' . $transition->getName(),
-                $listener
-            );
+            // Do not use transition event since it will call listener twice
+            // $this->on(
+            //     'after_transition__' . $transition->getName(),
+            //     $listener
+            // );
         }
 
         return $this;

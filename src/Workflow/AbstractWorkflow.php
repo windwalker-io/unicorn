@@ -69,14 +69,15 @@ abstract class AbstractWorkflow
                     );
                 }
 
+                // Do not use transition event since it will call listener twice
                 // Find transition
-                $transition = $workflow->findTransition($from, $to);
+                // $transition = $workflow->findTransition($from, $to);
+                //
+                // if ($transition) {
+                //     $workflow->triggerBeforeTransition($transition->getName(), $event);
+                // }
 
-                if ($transition) {
-                    $workflow->triggerBeforeTransition($transition->getName(), $event);
-                }
-
-                $workflow->triggerAfterChanged($from, $to, $event);
+                $workflow->triggerBeforeChanged($from, $to, $event);
             }
         );
 
@@ -86,12 +87,13 @@ abstract class AbstractWorkflow
                 $val = static::toStrings($event->getValue());
                 $oldVal = static::toStrings($event->getOldValue());
 
+                // Do not use transition event since it will call listener twice
                 // Find transition
-                $transition = $workflow->findTransition($oldVal, $val);
-
-                if ($transition) {
-                    $workflow->triggerAfterTransition($transition->getName(), $event);
-                }
+                // $transition = $workflow->findTransition($oldVal, $val);
+                //
+                // if ($transition) {
+                //     $workflow->triggerAfterTransition($transition->getName(), $event);
+                // }
 
                 $workflow->triggerAfterChanged($oldVal, $val, $event);
             }
