@@ -52,14 +52,35 @@ if ($desc = $field->get('description')) {
 }
 
 $labelElement = $field->buildLabel($label, $options);
+$star ??= false;
 
 if ($labelElement instanceof \Windwalker\DOM\DOMElement) {
     if ($attributes ?? null) {
-        $attributes = $attributes->exceptProps(['field', 'options']);
+        $attributes = $attributes->exceptProps(
+            [
+                'field',
+                'options',
+                'label',
+                'star'
+            ]
+        );
 
         $attributes = $attributes->merge($labelElement->getAttributes(true), false);
         $labelElement->setAttributes($attributes->getAttributes());
     }
+}
+
+if ($star !== false) {
+    $star = $star ?: '*';
+
+    $labelElement->appendText(' ');
+    $labelElement->appendChild(
+        h(
+            'span',
+            ['class' => 'c-label-required'],
+            $star
+        )
+    );
 }
 
 $label = $field->buildLabel($label, $options);

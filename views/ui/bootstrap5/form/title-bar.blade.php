@@ -14,20 +14,21 @@ $end ??= \Windwalker\nope();
 $slot ??= \Windwalker\nope();
 $before ??= \Windwalker\nope();
 $after ??= \Windwalker\nope();
+$star ??= false;
 ?>
-<div class="title-bar row form-horizontal">
+<div class="l-title-bar row">
     <div class="col-md-8">
         {!! $before() ?? '' !!}
 
         @if ($title = $form->getField($titleField))
              <x-field :field="$title" class="mb-3" input-class="input-lg form-control-lg"
-                 floating
+                 floating :star="$star"
              ></x-field>
         @endif
 
         @if ($alias = $form->getField($aliasField))
             <x-field :field="$alias" class="mb-3" input-class="input-sm form-control-sm"
-                floating
+                floating :star="$star"
             ></x-field>
         @endif
 

@@ -37,13 +37,18 @@ $is ??= 'div';
 $title ??= $fieldset?->getTitle();
 $floating ??= false;
 $horizon ??= null;
+$star ??= false;
 
 $attributes = $attributes->exceptProps(
     [
         'form',
         'horizon',
         'start',
-        'end'
+        'end',
+        'title',
+        'is',
+        'floating',
+        'star'
     ]
 );
 
@@ -80,7 +85,7 @@ if ($horizon) {
         @elseif ($$slotName ?? null)
             {!! $$slotName(field: $field) !!}
         @else
-            <x-field :field="$field" class="mb-3" :floating="$floating" :="$attrs">
+            <x-field :field="$field" class="mb-3" :floating="$floating" :star="$star" :="$attrs">
                 @if ($fieldSlot ?? null)
                     @scope($field)
                     {!! $fieldSlot(field: $field) !!}
