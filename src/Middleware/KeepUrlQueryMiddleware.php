@@ -181,10 +181,11 @@ class KeepUrlQueryMiddleware implements MiddlewareInterface
             return false;
         }
 
-        if ($uid = $this->getOption('uid')) {
-            return $middleware->getOption('uid') === $uid;
-        }
+        $myUid = (string) $this->getOption('uid');
+        $theirUid = (string) $middleware->getOption('uid');
+        $myKey = (string) $this->getOption('key');
+        $theirKey = (string) $middleware->getOption('key');
 
-        return $middleware->getOption('key') === $this->getOption('key');
+        return $myUid === $theirUid && $myKey === $theirKey;
     }
 }
