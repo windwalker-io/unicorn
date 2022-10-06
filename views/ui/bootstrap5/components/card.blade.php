@@ -25,6 +25,15 @@ use Windwalker\Core\Router\SystemUri;
 
 /** @var \Windwalker\Edge\Component\ComponentAttributes $attributes */
 $attributes = $attributes->class('card');
+$attributes = $attributes->exceptProps(
+    [
+        'title',
+        'title-class',
+        'footer-title',
+        'footer-class',
+        'name'
+    ]
+);
 $titleTag ??= 'h4';
 ?>
 
