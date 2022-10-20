@@ -385,11 +385,11 @@ class FileUploadService implements EventAwareInterface
         );
     }
 
-    protected function getResizeConfig(array $options = [])
+    protected function getResizeConfig(array $options = []): array
     {
-        return $resizeConfig = array_merge(
+        return array_merge(
             $this->options['resize'],
-            $options
+            $options['resize'] ?? []
         );
     }
 
