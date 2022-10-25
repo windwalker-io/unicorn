@@ -7,11 +7,15 @@
 
 import { defaultsDeep } from 'lodash-es';
 
+let imported = false;
+
 export default class UnicornTinymce {
   /**
    * @type {{ [name: string]: TinymceEditor }}
    */
   instances = {};
+
+  hooks = [];
 
   static install(app) {
     app.$ui.tinymce = new this(app.$ui);
@@ -23,13 +27,33 @@ export default class UnicornTinymce {
   }
 
   /**
-   * @returns {Editor}
+   * @returns {Promise<TinyMCE>}
    */
   loadTinymce() {
     return this.app.import('@tinymce')
       .then((tinymce) => {
+        if (imported) {
+          return tinymce;
+        }
+
+        imported = true;
+
+        for (const hook of this.hooks) {
+          hook(tinymce);
+        }
+
         return registerDragPlugin().then(() => tinymce);
       });
+  }
+
+  /**
+   * @param {(tinymce: TinyMCE) => void} callback
+   * @returns {this}
+   */
+  configure(callback) {
+    this.hooks.push(callback);
+
+    return this;
   }
 
   /**
@@ -39,7 +63,7 @@ export default class UnicornTinymce {
    */
   init(selector, options = {}) {
     return this.loadTinymce().then(() => {
-      return this.instances[selector] = this.create(document.querySelector(selector), options, this.app);
+      return this.instances[selector] = this.create(document.querySelector(selector), options);
     });
   }
 
@@ -53,6 +77,7 @@ export default class UnicornTinymce {
 
   /**
    * @param {string|Element} ele
+   * @param {?any} options
    * @returns {TinymceEditor}
    */
   create(ele, options = {}) {
