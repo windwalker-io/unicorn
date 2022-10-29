@@ -120,13 +120,13 @@ export class UnicornFormElement {
    * Make a request.
    *
    * @param  {string} url
-   * @param  {Object} queries
+   * @param  {Object} data
    * @param  {string} method
    * @param  {string} customMethod
    *
    * @returns {boolean}
    */
-  submit(url, queries, method, customMethod) {
+  submit(url, data, method, customMethod = undefined) {
     const form = this.element;
 
     if (customMethod) {
@@ -143,9 +143,9 @@ export class UnicornFormElement {
       methodInput.value = customMethod;
     }
 
-    // Set queries into form.
-    if (queries) {
-      const flatted = this.constructor.flattenObject(queries);
+    // Set data into form.
+    if (data) {
+      const flatted = this.constructor.flattenObject(data);
 
       each(flatted, (value, key) => {
         const fieldName = this.constructor.buildFieldName(key);
@@ -187,64 +187,64 @@ export class UnicornFormElement {
    * Make a GET request.
    *
    * @param  {string} url
-   * @param  {Object} queries
+   * @param  {Object} data
    * @param  {string} customMethod
    *
    * @returns {boolean}
    */
-  get(url, queries, customMethod) {
-    return this.submit(url, queries, 'GET', customMethod);
+  get(url, data, customMethod) {
+    return this.submit(url, data, 'GET', customMethod);
   }
 
   /**
    * Post form.
    *
    * @param  {string} url
-   * @param  {Object} queries
-   * @param  {string} customMethod
+   * @param  {Object} data
+   * @param  {?string} customMethod
    *
    * @returns {boolean}
    */
-  post(url, queries, customMethod) {
+  post(url, data = {}, customMethod = undefined) {
     customMethod = customMethod || 'POST';
 
-    return this.submit(url, queries, 'POST', customMethod);
+    return this.submit(url, data, 'POST', customMethod);
   }
 
   /**
    * Make a PUT request.
    *
    * @param  {string} url
-   * @param  {Object} queries
+   * @param  {Object} data
    *
    * @returns {boolean}
    */
-  put(url, queries) {
-    return this.post(url, queries, 'PUT');
+  put(url, data) {
+    return this.post(url, data, 'PUT');
   }
 
   /**
    * Make a PATCH request.
    *
    * @param  {string} url
-   * @param  {Object} queries
+   * @param  {Object} data
    *
    * @returns {boolean}
    */
-  patch(url, queries) {
-    return this.post(url, queries, 'PATCH');
+  patch(url, data) {
+    return this.post(url, data, 'PATCH');
   }
 
   /**
    * Make a DELETE request.
    *
    * @param  {string} url
-   * @param  {Object} queries
+   * @param  {Object} data
    *
    * @returns {boolean}
    */
-  delete(url, queries) {
-    return this.post(url, queries, 'DELETE');
+  delete(url, data) {
+    return this.post(url, data, 'DELETE');
   }
 
   /**
