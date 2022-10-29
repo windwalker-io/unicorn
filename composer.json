@@ -15,7 +15,8 @@
         "php": ">=8.0",
         "windwalker/core": "^4.0",
         "windwalker/language": "^4.0",
-        "intervention/image": "^2.5"
+        "intervention/image": "^2.5",
+        "symfony/mime": "^5.4||^6.0"
     },
     "require-dev": {
         "aws/aws-sdk-php": "^3.181",
