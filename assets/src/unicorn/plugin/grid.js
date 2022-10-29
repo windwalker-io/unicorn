@@ -402,6 +402,8 @@ export class UnicornGridElement {
         if (isConfirm) {
           // this.toggleAll(false);
           // this.checkRow(row);
+          data = data || {};
+
           data.id = id;
 
           this.form.delete(url, data);
