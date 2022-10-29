@@ -126,7 +126,8 @@ class FileUploadService implements EventAwareInterface
     public function handleBase64(string $file, ?string $dest = null, array $options = []): PutResult
     {
         $stream = Base64DataUri::toStream($file, $mime);
-        $ext = $this->mimeTypes->getExtensions($mime)[0] ?? null;
+
+        $ext = $this->getExtensionByMimeType($mime);
 
         $dest ??= $this->getUploadPath($dest, $ext);
         $dest = static::replaceVariables($dest, (string) $ext);
@@ -405,11 +406,7 @@ class FileUploadService implements EventAwareInterface
             if (Base64DataUri::isDataUri($src)) {
                 $type = Base64DataUri::getMimeType($src);
             } elseif (strlen($src) < PHP_MAXPATHLEN && is_file($src)) {
-                if (!interface_exists(MimeTypesInterface::class)) {
-                    throw new \DomainException('Please install symfony/mime to guess mime type.');
-                }
-
-                $type = $this->mimeTypes->getMimeTypes(Path::getExtension($src))[0] ?? null;
+                $type = $this->getMimeTypeByExtension(Path::getExtension($src))[0];
             }
         } elseif ($src instanceof UploadedFileInterface) {
             $type = $src->getClientMediaType();
@@ -420,11 +417,19 @@ class FileUploadService implements EventAwareInterface
 
     public function getMimeTypeByExtension(string $pathOrExt): ?string
     {
+        if (!interface_exists(MimeTypesInterface::class)) {
+            throw new \DomainException('Please install symfony/mime to guess mime type.');
+        }
+
         return $this->mimeTypes->getMimeTypes(Path::getExtension($pathOrExt))[0] ?? null;
     }
 
     public function getExtensionByMimeType(string $mime): ?string
     {
+        if (!interface_exists(MimeTypesInterface::class)) {
+            throw new \DomainException('Please install symfony/mime to guess mime type.');
+        }
+
         return $this->mimeTypes->getExtensions($mime)[0] ?? null;
     }
 
