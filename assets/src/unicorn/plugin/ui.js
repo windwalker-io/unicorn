@@ -121,12 +121,18 @@ export default class UnicornUI {
    * @returns Promise<*>
    */
   webComponentPolyfill() {
-    return this.app.import('@vendor/@webcomponents/webcomponentsjs/webcomponents-bundle.js')
-      .then((m) => new Promise((resolve) => {
-        window.addEventListener('WebComponentsReady', function() {
-          resolve(m);
+    return new Promise((resolve) => {
+      this.app.import('@vendor/@webcomponents/webcomponentsjs/webcomponents-loader.js')
+        .then((m) => {
+          if (window?.WebComponents?.ready === true) {
+            resolve(m);
+          } else {
+            window.addEventListener('WebComponentsReady', function() {
+              resolve(m);
+            });
+          }
         });
-      }));
+    });
   }
 
   /**
