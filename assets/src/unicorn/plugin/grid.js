@@ -236,12 +236,12 @@ export class UnicornGridElement {
    * Update a row.
    *
    * @param  {number} row
-   * @param  {string} url
-   * @param  {Object} data
+   * @param  {?string} url
+   * @param  {?Object} data
    *
    * @returns {boolean}
    */
-  updateRow(row, url, data = {}) {
+  updateRow(row, url = null, data = null) {
     const ch = this.getCheckboxByRow(row);
 
     return this.updateItem(ch.value, url, data);
@@ -251,12 +251,12 @@ export class UnicornGridElement {
    * Update a row.
    *
    * @param  {string|number} id
-   * @param  {string} url
-   * @param  {Object} data
+   * @param  {?string} url
+   * @param  {?Object} data
    *
    * @returns {boolean}
    */
-  updateItem(id, url, data) {
+  updateItem(id, url = null, data = null) {
     this.toggleAll(false);
 
     this.disableAllCheckboxes();
@@ -271,18 +271,18 @@ export class UnicornGridElement {
    *
    * @param  {string} task
    * @param  {string} id
-   * @param  {string} url
-   * @param  {Object} data
+   * @param  {?string} url
+   * @param  {?Object} data
    *
    * @returns {boolean}
    */
-  updateRowByTask(task, id, url, data = {}) {
+  updateRowByTask(task, id, url = null, data = null) {
     data.task = task;
 
     return this.updateItem(id, url, data);
   }
   
-  doTask(task, id, url, data = {}) {
+  doTask(task, id, url = null, data = null) {
     return this.updateRowByTask(task, id, url, data);
   }
 
@@ -290,18 +290,18 @@ export class UnicornGridElement {
    * Batch update items.
    *
    * @param  {string} task
-   * @param  {string} url
-   * @param  {Object} data
+   * @param  {?string} url
+   * @param  {?Object} data
    *
    * @returns {boolean}
    */
-  updateItemByTask(task, url, data = {}) {
+  updateItemByTask(task, url = null, data = null) {
     data.task = task;
 
     return this.form.patch(url, data);
   }
   
-  batch(task, url, data = {}) {
+  batch(task, url = null, data = null) {
     return this.updateItemByTask(task, url, data);
   }
 
@@ -309,12 +309,12 @@ export class UnicornGridElement {
    * Copy a row.
    *
    * @param  {string|number} id
-   * @param  {string} url
+   * @param  {?string} url
    * @param  {Object} data
    *
    * @returns {boolean}
    */
-  copyItem(id, url, data = {}) {
+  copyItem(id, url = null, data = null) {
     this.toggleAll(false);
 
     this.disableAllCheckboxes();
@@ -328,12 +328,12 @@ export class UnicornGridElement {
    * Copy a row.
    *
    * @param  {number} row
-   * @param  {string} url
+   * @param  {?string} url
    * @param  {Object} data
    *
    * @returns {boolean}
    */
-  copyRow(row, url, data = {}) {
+  copyRow(row, url = null, data = null) {
     const ch = this.getCheckboxByRow(row);
 
     return this.copyItem(ch.value, url, data);
@@ -342,13 +342,13 @@ export class UnicornGridElement {
   /**
    * Delete checked items.
    *
-   * @param  {string} message
-   * @param  {string} url
-   * @param  {Object} data
+   * @param  {?string} message
+   * @param  {?string} url
+   * @param  {?Object} data
    *
    * @returns {boolean}
    */
-  deleteList(message, url, data) {
+  deleteList(message = null, url = null, data = null) {
     if (!this.validateChecked()) {
       return false;
     }
@@ -378,7 +378,7 @@ export class UnicornGridElement {
    *
    * @returns {boolean}
    */
-  deleteRow(row, msg = null, url = null, data = {}) {
+  deleteRow(row, msg = null, url = null, data = null) {
     const  ch = this.getCheckboxByRow(row);
 
     return this.deleteItem(ch.value, msg, url, data);
@@ -394,7 +394,7 @@ export class UnicornGridElement {
    *
    * @returns {boolean}
    */
-  deleteItem(id, msg = null, url = null, data = {}) {
+  deleteItem(id, msg = null, url = null, data = null) {
     msg = msg || this.app.__('unicorn.message.delete.confirm');
 
     return this.app.confirm(msg)
@@ -506,12 +506,12 @@ export class UnicornGridElement {
   /**
    * Reorder all.
    *
-   * @param   {string}  url
+   * @param   {?string}  url
    * @param   {Object}  data
    *
    * @returns {boolean}
    */
-  reorderAll(url, data = {}) {
+  reorderAll(url = null, data = null) {
     return this.batch('reorder', url, data);
   }
 
@@ -520,23 +520,37 @@ export class UnicornGridElement {
    *
    * @param  {int}     id
    * @param  {int}     delta
-   * @param  {string}  url
+   * @param  {?string}  url
    * @param  {Object}  data
    *
    * @returns {boolean}
    */
-  moveItem(id, delta, url = undefined, data = {}) {
+  moveItem(id, delta, url = null, data = null) {
     data = data || {};
     data.delta = delta;
 
-    return this.doTask('move', id, url, data);
+    return this.updateRowByTask('move', id, url, data);
   }
 
-  moveUp(id, url = undefined, data = {}) {
+  /**
+   * @param  {int}     id
+   * @param  {?string}  url
+   * @param  {Object}  data
+   *
+   * @returns {boolean}
+   */
+  moveUp(id, url = null, data = null) {
     return this.moveItem(id, -1, url, data);
   }
 
-  moveDown(id, url = undefined, data = {}) {
+  /**
+   * @param  {int}     id
+   * @param  {?string}  url
+   * @param  {Object}  data
+   *
+   * @returns {boolean}
+   */
+  moveDown(id, url = null, data = null) {
     return this.moveItem(id, 1, url, data);
   }
 

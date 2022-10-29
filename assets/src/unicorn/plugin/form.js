@@ -119,14 +119,14 @@ export class UnicornFormElement {
   /**
    * Make a request.
    *
-   * @param  {string} url
-   * @param  {Object} data
-   * @param  {string} method
-   * @param  {string} customMethod
+   * @param  {?string} url
+   * @param  {?Object} data
+   * @param  {?string} method
+   * @param  {?string} customMethod
    *
    * @returns {boolean}
    */
-  submit(url, data, method, customMethod = undefined) {
+  submit(url = null, data = null, method = null, customMethod = null) {
     const form = this.element;
 
     if (customMethod) {
@@ -186,26 +186,26 @@ export class UnicornFormElement {
   /**
    * Make a GET request.
    *
-   * @param  {string} url
-   * @param  {Object} data
-   * @param  {string} customMethod
+   * @param  {?string} url
+   * @param  {?Object} data
+   * @param  {?string} customMethod
    *
    * @returns {boolean}
    */
-  get(url, data, customMethod) {
+  get(url = null, data = null, customMethod = null) {
     return this.submit(url, data, 'GET', customMethod);
   }
 
   /**
    * Post form.
    *
-   * @param  {string} url
-   * @param  {Object} data
+   * @param  {?string} url
+   * @param  {?Object} data
    * @param  {?string} customMethod
    *
    * @returns {boolean}
    */
-  post(url, data = {}, customMethod = undefined) {
+  post(url = null, data = null, customMethod = null) {
     customMethod = customMethod || 'POST';
 
     return this.submit(url, data, 'POST', customMethod);
@@ -214,36 +214,36 @@ export class UnicornFormElement {
   /**
    * Make a PUT request.
    *
-   * @param  {string} url
-   * @param  {Object} data
+   * @param  {?string} url
+   * @param  {?Object} data
    *
    * @returns {boolean}
    */
-  put(url, data) {
+  put(url = null, data = null) {
     return this.post(url, data, 'PUT');
   }
 
   /**
    * Make a PATCH request.
    *
-   * @param  {string} url
-   * @param  {Object} data
+   * @param  {?string} url
+   * @param  {?Object} data
    *
    * @returns {boolean}
    */
-  patch(url, data) {
+  patch(url = null, data = null) {
     return this.post(url, data, 'PATCH');
   }
 
   /**
    * Make a DELETE request.
    *
-   * @param  {string} url
-   * @param  {Object} data
+   * @param  {?string} url
+   * @param  {?Object} data
    *
    * @returns {boolean}
    */
-  delete(url, data) {
+  delete(url = null, data = null) {
     return this.post(url, data, 'DELETE');
   }
 

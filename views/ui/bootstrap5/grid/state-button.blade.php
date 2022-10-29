@@ -69,7 +69,7 @@ $value = $states->normalizeValue($value ?? '');
         @elseif ($state->getHref())
         onclick="location.href = '{{ $state->getHref() }}'"
         @elseif ($state->getTask())
-        @click="$store.{{ $store }}.doTask('{{ $state->getTask() }}', '{{ $id ?? '' }}')"
+        @click="$store.{{ $store }}.updateRowByTask('{{ $state->getTask() }}', '{{ $id ?? '' }}')"
         @endif
     >
         <span class="c-state-button__icon {{ $color }} {{ $state->getIcon() }}"></span>
