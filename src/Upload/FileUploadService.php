@@ -417,19 +417,11 @@ class FileUploadService implements EventAwareInterface
 
     public function getMimeTypeByExtension(string $pathOrExt): ?string
     {
-        if (!interface_exists(MimeTypesInterface::class)) {
-            throw new \DomainException('Please install symfony/mime to guess mime type.');
-        }
-
         return $this->mimeTypes->getMimeTypes(Path::getExtension($pathOrExt))[0] ?? null;
     }
 
     public function getExtensionByMimeType(string $mime): ?string
     {
-        if (!interface_exists(MimeTypesInterface::class)) {
-            throw new \DomainException('Please install symfony/mime to guess mime type.');
-        }
-
         return $this->mimeTypes->getExtensions($mime)[0] ?? null;
     }
 

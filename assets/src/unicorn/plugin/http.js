@@ -117,7 +117,7 @@ export default class UnicornHttp {
    * @param {any} data
    * @param {AxiosRequestConfig} options
    *
-   * @returns {AxiosResponse}
+   * @returns {Promise<AxiosResponse>}
    */
   post(url, data, options = {}) {
     options.url = url;
@@ -134,7 +134,7 @@ export default class UnicornHttp {
    * @param {any} data
    * @param {AxiosRequestConfig} options
    *
-   * @returns {AxiosResponse}
+   * @returns {Promise<AxiosResponse>}
    */
   put(url, data, options = {}) {
     options.url = url;
@@ -149,9 +149,9 @@ export default class UnicornHttp {
    *
    * @param {string} url
    * @param {any} data
-   * @param {Validator} options
+   * @param {AxiosRequestConfig} options
    *
-   * @returns {AxiosResponse}
+   * @returns {Promise<AxiosResponse>}
    */
   patch(url, data, options = {}) {
     options.url = url;
@@ -168,7 +168,7 @@ export default class UnicornHttp {
    * @param {any} data
    * @param {AxiosRequestConfig} options
    *
-   * @returns {AxiosResponse}
+   * @returns {Promise<AxiosResponse>}
    */
   'delete'(url, data, options = {}) {
     options.url = url;
@@ -184,7 +184,7 @@ export default class UnicornHttp {
    * @param {string} url
    * @param {AxiosRequestConfig} options
    *
-   * @returns {AxiosResponse}
+   * @returns {Promise<AxiosResponse>}
    */
   head(url, options = {}) {
     options.url = url;
@@ -199,7 +199,7 @@ export default class UnicornHttp {
    * @param {string} url
    * @param {AxiosRequestConfig} options
    *
-   * @returns {AxiosResponse}
+   * @returns {Promise<AxiosResponse>}
    */
   options(url, options = {}) {
     options.url = url;
@@ -218,24 +218,37 @@ export default class UnicornHttp {
   request(options) {
     let cancel;
 
-    const p = this.getHttp().then(axios => {
-      this.prepareAxios(axios);
+    const p = this.getHttp()
+      .then(axios => {
+        this.prepareAxios(axios);
 
-      const cancelTokenSource = this.cancelToken.source();
+        const cancelTokenSource = this.cancelToken.source();
 
-      cancel = (message) => {
-        return cancelTokenSource.cancel(message);
-      };
+        cancel = (message) => {
+          return cancelTokenSource.cancel(message);
+        };
 
-      if (options.cancelToken && typeof options.cancelToken === 'object') {
-        const canceller = options.cancelToken;
-        canceller.cancel = cancel;
-      }
+        if (options.cancelToken && typeof options.cancelToken === 'object') {
+          const canceller = options.cancelToken;
+          canceller.cancel = cancel;
+        }
 
-      options.cancelToken = cancelTokenSource.token;
+        options.cancelToken = cancelTokenSource.token;
 
-      return axios(options);
-    });
+        return axios(options);
+      })
+      .catch(
+        /** @param {AxiosError} e */
+        (e) => {
+          e.originMessage = e.message;
+
+          if (e.response?.data?.message) {
+            e.message = e.response.data.message;
+          }
+
+          return Promise.reject(e);
+        }
+      );
 
     p.cancel = (message) => {
       return cancel(message);

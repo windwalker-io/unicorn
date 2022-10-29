@@ -43,6 +43,10 @@ class FileUploadManager extends AbstractManager
 
         $options = $this->config->getDeep('profiles.' . $name);
 
+        if (!interface_exists(MimeTypesInterface::class)) {
+            throw new \DomainException('Please install symfony/mime to support file upload.');
+        }
+
         return $this->container->newInstance(
             FileUploadService::class,
             [
