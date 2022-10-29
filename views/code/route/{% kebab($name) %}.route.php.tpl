@@ -1,5 +1,7 @@
 {% $phpOpen %}
 
+declare(strict_types=1);
+
 namespace App\Routes;
 
 use {% $ns %}\{% pascal($name) %}Controller;
