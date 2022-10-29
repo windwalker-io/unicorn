@@ -192,7 +192,9 @@ class TinymceEditorField extends AbstractEditorField
     public function getImageUploadUrl(?string $profile): string
     {
         return $this->get('imageUploadUrl')
-            ?? (string) $this->getBuiltInUploadUrl($profile ?? 'image');
+            ?? (string) $this->getBuiltInUploadUrl(
+                $this->getUploadProfile() ?: $profile ?? 'image'
+            );
     }
 
     /**
