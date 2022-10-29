@@ -22,15 +22,14 @@ use Windwalker\Core\DateTime\ChronosService;
 use Windwalker\Core\Language\LangService;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\SystemUri;
+use Windwalker\Form\Field\HiddenField;
 
 /**
  * @var \Unicorn\Field\RepeatableField $field
- * @var \Windwalker\Form\Form $form
+ * @var \Windwalker\Form\Form          $form
  */
 
 $app->service(\Unicorn\Script\FormScript::class)->repeatable();
-// $app->service(\Unicorn\Script\UnicornScript::class)
-//     ->data($uid, $field->prepareJSData());
 
 $inputElement = $field->getPreparedInput();
 
@@ -77,23 +76,25 @@ $data = AssetService::getJSObject($field->prepareJSData());
         </tr>
         </thead>
         <tbody x-ref="tbody"
-{{--            is="{{ $field->isSortable() ? 'draggable' : 'tbody' }}" --}}
-{{--            element="tbody"--}}
-{{--            :options="{ handle: '.drag-handle', animation: 300 }"--}}
+            {{--            is="{{ $field->isSortable() ? 'draggable' : 'tbody' }}" --}}
+            {{--            element="tbody"--}}
+            {{--            :options="{ handle: '.drag-handle', animation: 300 }"--}}
         >
         <template x-for="(item, i) of items" :key="item.uid" x-ref="steps_template">
             <tr :data-item="item.uid" class="fadeIn" style="animation-duration: .3s">
                 <template x-if="options.sortable">
                     <td>
                         <div class="h-handle" style="cursor: move;">
-                            <span class="fa fa-ellipsis-v" ></span>
+                            <span class="fa fa-ellipsis-v"></span>
                         </div>
                     </td>
                 </template>
                 <td class="">
                     <div class="row">
                         @foreach ($form->getFields() as $subField)
-                            <div class="{{ $subField->get('subfield_class') ?: 'col-lg-4' }}">
+                            <div class="{{ $subField->get('subfield_class') ?: 'col-lg-4' }}"
+                                style="{{ $subField instanceof HiddenField ? 'display: none;' : '' }}{{ 'width: ' . $subField->get('subfield_width', 'auto') . ';' }}"
+                            >
                                 <x-field :field="$subField"></x-field>
                             </div>
                         @endforeach

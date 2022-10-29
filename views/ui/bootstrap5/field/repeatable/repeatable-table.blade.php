@@ -22,15 +22,14 @@ use Windwalker\Core\DateTime\ChronosService;
 use Windwalker\Core\Language\LangService;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\SystemUri;
+use Windwalker\Form\Field\HiddenField;
 
 /**
  * @var \Unicorn\Field\RepeatableField $field
- * @var \Windwalker\Form\Form $form
+ * @var \Windwalker\Form\Form          $form
  */
 
 $app->service(\Unicorn\Script\FormScript::class)->repeatable();
-// $app->service(\Unicorn\Script\UnicornScript::class)
-//     ->data($uid, $field->prepareJSData());
 
 $inputElement = $field->getPreparedInput();
 
@@ -63,7 +62,10 @@ $data = AssetService::getJSObject($field->prepareJSData());
                 <th width="1%">#</th>
             </template>
             @foreach ($form->getFields() as $subField)
-                <th class="{{ $subField->get('subfield_class') }}" width="{{ $subField->get('subfield_width') }}">
+                <th class="{{ $subField->get('subfield_class') }}"
+                    width="{{ $subField->get('subfield_width') }}"
+                    style="{{ $subField instanceof HiddenField ? 'display: none;' : '' }}"
+                >
                     {{ $subField->getLabelName() }}
                 </th>
             @endforeach
@@ -85,12 +87,15 @@ $data = AssetService::getJSObject($field->prepareJSData());
                 <template x-if="options.sortable">
                     <td>
                         <div class="h-handle" style="cursor: move;">
-                            <span class="fa fa-ellipsis-v" ></span>
+                            <span class="fa fa-ellipsis-v"></span>
                         </div>
                     </td>
                 </template>
                 @foreach ($form->getFields() as $subField)
-                    <td class="{{ $subField->get('subfield_class') }}" width="{{ $subField->get('subfield_width') }}">
+                    <td class="{{ $subField->get('subfield_class') }}"
+                        width="{{ $subField->get('subfield_width') }}"
+                        style="{{ $subField instanceof HiddenField ? 'display: none;' : '' }}"
+                    >
                         <x-field :field="$subField" :no-label="true"></x-field>
                     </td>
                 @endforeach
