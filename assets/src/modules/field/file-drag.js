@@ -31,10 +31,6 @@ class FileDrag extends HTMLElement {
   }
   
   bindEvent() {
-    this.element.addEventListener('change', (e) => {
-      this.onChange(e);
-    });
-
     this.element.addEventListener('dragover', () => {
       this.element.classList.add('hover');
     });
