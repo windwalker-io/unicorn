@@ -57,7 +57,7 @@ export class UIBootstrap5 {
     return this.app.module(
       selector,
       'bs.tooltip',
-      (ele) => new bootstrap.Tooltip(ele, config)
+      (ele) => this.getOrCreateInstance(bootstrap.Tooltip, ele, config)
     );
   }
 
@@ -69,7 +69,7 @@ export class UIBootstrap5 {
     return this.app.module(
       selector,
       'bs.modal',
-      (element) => new bootstrap.Modal(element, config)
+      (ele) => this.getOrCreateInstance(bootstrap.Modal, ele, config)
     );
   }
 
@@ -81,7 +81,7 @@ export class UIBootstrap5 {
     return this.app.module(
       selector,
       'bs.collapse',
-      (ele) => new bootstrap.Collapse(ele, config)
+      (ele) => this.getOrCreateInstance(bootstrap.Collapse, ele, config)
     );
   }
 
@@ -93,7 +93,7 @@ export class UIBootstrap5 {
     return this.app.module(
       selector,
       'bs.offcanvas',
-      (ele) => new bootstrap.Offcanvas(ele, config)
+      (ele) => this.getOrCreateInstance(bootstrap.Offcanvas, ele, config)
     );
   }
 
@@ -105,7 +105,7 @@ export class UIBootstrap5 {
     return this.app.module(
       selector,
       'bs.popover',
-      (ele) => new bootstrap.Popover(ele, config)
+      (ele) => this.getOrCreateInstance(bootstrap.Popover, ele, config)
     );
   }
 
@@ -117,7 +117,7 @@ export class UIBootstrap5 {
     return this.app.module(
       selector,
       'bs.scrollspy',
-      (element) => new bootstrap.ScrollSpy(element, config)
+      (ele) => this.getOrCreateInstance(bootstrap.Scrollspy, ele, config)
     );
   }
 
@@ -129,7 +129,7 @@ export class UIBootstrap5 {
     return this.app.module(
       selector,
       'bs.tab',
-      (element) => new bootstrap.Tab(element, config)
+      (ele) => this.getOrCreateInstance(bootstrap.Tab, ele, config)
     );
   }
 
@@ -141,7 +141,7 @@ export class UIBootstrap5 {
     return this.app.module(
       selector,
       'bs.toast',
-      (element) => new bootstrap.Toast(element, config)
+      (ele) => this.getOrCreateInstance(bootstrap.Toast, ele, config)
     );
   }
 
@@ -173,5 +173,17 @@ export class UIBootstrap5 {
 
         return m;
       });
+  }
+
+  getMajorVersion(module) {
+    return Number(module.VERSION.split('.').shift());
+  }
+
+  getOrCreateInstance(module, ele, config) {
+    if (this.getMajorVersion(module) <= 4) {
+      new module(ele, config);
+    } else {
+      return module.getOrCreateInstance(ele, config);
+    }
   }
 }
