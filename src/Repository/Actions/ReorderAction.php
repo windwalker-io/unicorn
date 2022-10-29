@@ -65,7 +65,7 @@ class ReorderAction extends AbstractDatabaseAction
             if (!$neighbor) {
                 continue;
             }
-            
+
             // Switch with target item
             $mapper->updateBatch(
                 [$orderField => (int) $neighbor->$orderField],
@@ -100,13 +100,13 @@ class ReorderAction extends AbstractDatabaseAction
             if (!$item) {
                 continue;
             }
-            
+
             $item->$orderField = $orderNumber;
-            
+
             $mapper->updateOne($item);
 
             $query = $mapper->select();
-            
+
             $this->groupConditions($query, $item);
 
             $hash = md5($query->render(true));
@@ -188,7 +188,7 @@ class ReorderAction extends AbstractDatabaseAction
     {
         $field ??= $this->getOrderField();
         $metadata = $this->getEntityMapper()->getMetadata();
-        
+
         return $metadata->getColumn($field) !== null;
     }
 

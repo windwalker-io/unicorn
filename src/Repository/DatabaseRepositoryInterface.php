@@ -13,6 +13,7 @@ namespace Unicorn\Repository;
 
 use Windwalker\Database\DatabaseAdapter;
 use Windwalker\ORM\EntityMapper;
+use Windwalker\ORM\ORM;
 
 /**
  * Interface DatabaseRepositoryInterface
@@ -20,6 +21,8 @@ use Windwalker\ORM\EntityMapper;
 interface DatabaseRepositoryInterface
 {
     public function getDb(): DatabaseAdapter;
+
+    public function getORM(): ORM;
 
     public function getEntityMapper(): EntityMapper;
 

@@ -19,6 +19,8 @@ use Windwalker\ORM\EntityMapper;
  */
 abstract class AbstractDatabaseAction extends AbstractAction
 {
+    protected ?string $entityClass = null;
+
     /**
      * SaveAction constructor.
      */
@@ -29,10 +31,34 @@ abstract class AbstractDatabaseAction extends AbstractAction
 
     public function getEntityMapper(): EntityMapper
     {
-        $mapper = $this->repository->getEntityMapper();
+        if ($this->entityClass) {
+            $mapper = $this->repository->getORM()->mapper($this->entityClass);
+        } else {
+            $mapper = $this->repository->getEntityMapper();
+        }
 
         $mapper->addEventDealer($this);
 
         return $mapper;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getEntityClass(): ?string
+    {
+        return $this->entityClass;
+    }
+
+    /**
+     * @param  string|null  $entityClass
+     *
+     * @return  static  Return self to support chaining.
+     */
+    public function setEntityClass(?string $entityClass): static
+    {
+        $this->entityClass = $entityClass;
+
+        return $this;
     }
 }
