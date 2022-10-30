@@ -17,8 +17,8 @@ use Windwalker\Core\Html\HtmlFrame;
 use Windwalker\Core\Http\Browser;
 use Windwalker\Core\Language\LangService;
 use Windwalker\Core\Router\Navigator;
-use Windwalker\Core\Router\SystemUri;
 use Windwalker\Core\Security\CsrfService;
+use Windwalker\DOM\DOMElement;
 use Windwalker\Utilities\Str;
 
 /**
@@ -74,7 +74,7 @@ class UnicornScript extends AbstractScript
         $uri = $this->app->getSystemUri()->all();
         $uri['asset'] = [
             'path' => $this->asset->path(),
-            'root' => $this->asset->root()
+            'root' => $this->asset->root(),
         ];
 
         $this->data('unicorn.uri', $uri);
@@ -95,12 +95,13 @@ class UnicornScript extends AbstractScript
 
     public function importThen(string $uri, string $code): static
     {
-        $this->internalJS(<<<JS
+        $this->internalJS(
+            <<<JS
 System.import('$uri').then(function (module) {
   $code
 });
 JS
-);
+        );
 
         return $this;
     }
@@ -219,9 +220,11 @@ JS
         return $this;
     }
 
-    public function disableTransitionBeforeLoad(string $className = 'h-no-transition'): void
-    {
-        if ($this->available()) {
+    public function disableTransitionBeforeLoad(
+        string $className = 'h-no-transition',
+        DOMElement|HtmlFrame|null $body = null
+    ): void {
+        if ($this->available($className)) {
             $css = <<<CSS
 .$className * {
   -webkit-transition: none !important;
@@ -235,8 +238,13 @@ CSS;
             $this->internalCSS($css);
             $this->importMainThen("u.domready(function () { document.body.classList.remove('$className') })");
 
-            $this->app->service(HtmlFrame::class)
-                ->addBodyClass($className);
+            $body ??= $this->app->service(HtmlFrame::class);
+
+            if ($body instanceof HtmlFrame) {
+                $body = $body->getBodyElement();
+            }
+
+            $body->addClass($className);
         }
     }
 }
