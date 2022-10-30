@@ -72,8 +72,8 @@ return [
                     'resize' => [
                         'enabled' => true,
                         'driver' => env('IMAGE_RESIZE_DRIVER', 'gd'),
-                        'width' => 1200,
-                        'height' => 1200,
+                        'width' => 1920,
+                        'height' => 1920,
                         'crop' => false,
                         'quality' => 85,
                         'output_format' => null
@@ -90,8 +90,8 @@ return [
                     'resize' => [
                         'enabled' => true,
                         'driver' => env('IMAGE_RESIZE_DRIVER', 'gd'),
-                        'width' => 1200,
-                        'height' => 1200,
+                        'width' => 1920,
+                        'height' => 1920,
                         'crop' => false,
                         'quality' => 85,
                         'output_format' => null
