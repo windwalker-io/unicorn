@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace Unicorn\Upload;
 
+use Symfony\Component\Mime\MimeTypesInterface;
 use Windwalker\Core\Manager\AbstractManager;
 
 /**
