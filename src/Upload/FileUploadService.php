@@ -417,12 +417,12 @@ class FileUploadService implements EventAwareInterface
 
     public function getMimeTypeByExtension(string $pathOrExt): ?string
     {
-        return $this->mimeTypes->getMimeTypes(Path::getExtension($pathOrExt))[0] ?? null;
+        return $this->getMimeTypeFinder()->getMimeTypes(Path::getExtension($pathOrExt))[0] ?? null;
     }
 
     public function getExtensionByMimeType(string $mime): ?string
     {
-        return $this->mimeTypes->getExtensions($mime)[0] ?? null;
+        return $this->getMimeTypeFinder()->getExtensions($mime)[0] ?? null;
     }
 
     /**
@@ -508,5 +508,17 @@ class FileUploadService implements EventAwareInterface
         );
 
         return $event->getResult();
+    }
+
+    /**
+     * @return  MimeTypesInterface
+     */
+    protected function getMimeTypeFinder(): MimeTypesInterface
+    {
+        if (!interface_exists(MimeTypesInterface::class)) {
+            throw new \DomainException('Please install symfony/mime to support file upload.');
+        }
+
+        return $this->mimeTypes;
     }
 }

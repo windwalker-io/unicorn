@@ -11,7 +11,6 @@ declare(strict_types=1);
 
 namespace Unicorn\Upload;
 
-use Symfony\Component\Mime\MimeTypesInterface;
 use Windwalker\Core\Manager\AbstractManager;
 
 /**
@@ -43,10 +42,6 @@ class FileUploadManager extends AbstractManager
         }
 
         $options = $this->config->getDeep('profiles.' . $name);
-
-        if (!interface_exists(MimeTypesInterface::class)) {
-            throw new \DomainException('Please install symfony/mime to support file upload.');
-        }
 
         return $this->container->newInstance(
             FileUploadService::class,
