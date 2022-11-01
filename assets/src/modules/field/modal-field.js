@@ -82,7 +82,7 @@ class ModalList extends HTMLElement {
     this.itemTemplate = template(document.querySelector(this.options.itemTemplate).innerHTML);
 
     const emptyInput = this.querySelector('[data-role=empty]');
-    console.log(emptyInput);
+
     if (emptyInput) {
       emptyInput.name = emptyInput.dataset.name;
     }
