@@ -5,8 +5,6 @@
  * @license    GNU General Public License version 2 or later.
  */
 
-import axios from 'axios';
-
 export default class UnicornHttp {
   globalAxios;
   cancelToken;

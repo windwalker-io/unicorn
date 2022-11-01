@@ -181,7 +181,7 @@ export class UIBootstrap5 {
 
   getOrCreateInstance(module, ele, config) {
     if (this.getMajorVersion(module) <= 4) {
-      new module(ele, config);
+      return new module(ele, config);
     } else {
       return module.getOrCreateInstance(ele, config);
     }
