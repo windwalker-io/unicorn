@@ -277,6 +277,7 @@ export class UnicornGridElement {
    * @returns {boolean}
    */
   updateRowByTask(task, id, url = null, data = null) {
+    data = data || {};
     data.task = task;
 
     return this.updateItem(id, url, data);
