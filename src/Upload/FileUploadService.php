@@ -417,7 +417,11 @@ class FileUploadService implements EventAwareInterface
 
     public function getMimeTypeByExtension(string $pathOrExt): ?string
     {
-        return $this->getMimeTypeFinder()->getMimeTypes(Path::getExtension($pathOrExt))[0] ?? null;
+        if (str_contains(Path::getExtension($pathOrExt), '.')) {
+            $pathOrExt = Path::getExtension($pathOrExt);
+        }
+
+        return $this->mimeTypes->getMimeTypes($pathOrExt)[0] ?? null;
     }
 
     public function getExtensionByMimeType(string $mime): ?string
