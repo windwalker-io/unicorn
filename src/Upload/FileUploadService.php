@@ -34,6 +34,7 @@ use Windwalker\Stream\Stream;
 use Windwalker\Utilities\Options\OptionsResolverTrait;
 
 use function Windwalker\chronos;
+use function Windwalker\fs;
 use function Windwalker\uid;
 
 /**
@@ -319,10 +320,16 @@ class FileUploadService implements EventAwareInterface
     }
 
     public function resizeImage(
-        StreamInterface|UploadedFileInterface $src,
+        StreamInterface|\SplFileInfo|string|UploadedFileInterface $src,
         array $resizeConfig = []
     ): StreamInterface {
         $outputFormat = null;
+
+        if (is_string($src)) {
+            $src = new Stream($src, Stream::MODE_READ_ONLY_FROM_BEGIN);
+        } elseif ($src instanceof \SplFileInfo) {
+            $src = new Stream($src->getPathname(), Stream::MODE_READ_ONLY_FROM_BEGIN);
+        }
 
         // Must save image to temp file to support image exif.
         // @see https://github.com/Intervention/image/issues/745
@@ -406,7 +413,7 @@ class FileUploadService implements EventAwareInterface
             if (Base64DataUri::isDataUri($src)) {
                 $type = Base64DataUri::getMimeType($src);
             } elseif (strlen($src) < PHP_MAXPATHLEN && is_file($src)) {
-                $type = $this->getMimeTypeByExtension(Path::getExtension($src))[0];
+                $type = $this->getMimeTypeByExtension(Path::getExtension($src));
             }
         } elseif ($src instanceof UploadedFileInterface) {
             $type = $src->getClientMediaType();
