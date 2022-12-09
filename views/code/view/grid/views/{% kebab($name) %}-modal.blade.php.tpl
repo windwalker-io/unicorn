@@ -77,7 +77,7 @@ $workflow = $app->service(BasicStateWorkflow::class);
                                 :workflow="$workflow"
                                 :id="$item->id"
                                 :value="$item->state"
-                            />
+                            ></x-state-dropdown>
                         </td>
                         <td>
                             <a href="javascript://"
@@ -104,7 +104,7 @@ $workflow = $app->service(BasicStateWorkflow::class);
 
         <div class="d-none">
             <input name="_method" type="hidden" value="PUT" />
-            @csrf
+            <x-csrf></x-csrf>
         </div>
 
         <x-batch-modal :form="$form" namespace="batch"></x-batch-modal>
