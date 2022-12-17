@@ -31,6 +31,6 @@ export default class UnicornValidation {
    * @returns {UnicornFormValidation}
    */
   get(selector) {
-    return this.app.module(selector, 'form.validation');
+    return this.app.$helper.getBoundedInstance(selector, 'form.validation');
   }
 }
