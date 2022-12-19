@@ -62,12 +62,12 @@ $fieldElement = $field->buildFieldElement($inputElement, $options);
 
 // Append / Prepend
 $prepend = $field->get('prepend');
-if (!is_array($prepend)) {
+if ($prepend && !is_array($prepend)) {
     $prepend = [$prepend];
 }
 
 $append = $field->get('append');
-if (!is_array($append)) {
+if ($append && !is_array($append)) {
     $append = [$append];
 }
 
