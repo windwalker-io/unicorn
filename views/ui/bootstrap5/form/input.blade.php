@@ -85,15 +85,19 @@ $inputGroup = $append || $prepend;
 @if ($inputGroup)
     <x-input-group class="c-field-input-group">
         <x-slot name="start">
-            @foreach ($prepend as $h)
-                {!! $h !!}
-            @endforeach
+            @if ($prepend)
+                @foreach ($prepend as $h)
+                    {!! $h !!}
+                @endforeach
+            @endif
         </x-slot>
         {!! $fieldElement !!}
         <x-slot name="end">
-            @foreach ($append as $h)
-                {!! $h !!}
-            @endforeach
+            @if ($append)
+                @foreach ($append as $h)
+                    {!! $h !!}
+                @endforeach
+            @endif
         </x-slot>
     </x-input-group>
 @else
