@@ -651,8 +651,8 @@ export default class UnicornUI {
 
         this.app.selectAll(buttonSelector, (button) => {
           button.disabled = true;
+          button.style.pointerEvents = 'none';
           button.classList.add('disabled');
-          button.styles.pointerEvents = 'none';
 
           if (button.dataset.clicked) {
             let icon = button.querySelector(iconSelector);
