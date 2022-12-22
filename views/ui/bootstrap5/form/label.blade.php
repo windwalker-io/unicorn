@@ -52,7 +52,6 @@ if ($desc = $field->get('description')) {
 }
 
 $labelElement = $field->buildLabel($label, $options);
-$star ??= false;
 
 if ($labelElement instanceof \Windwalker\DOM\DOMElement) {
     if ($attributes ?? null) {
@@ -61,26 +60,16 @@ if ($labelElement instanceof \Windwalker\DOM\DOMElement) {
                 'field',
                 'options',
                 'label',
-                'star'
             ]
         );
 
         $attributes = $attributes->merge($labelElement->getAttributes(true), false);
         $labelElement->setAttributes($attributes->getAttributes());
     }
-}
 
-if ($star !== false) {
-    $star = $star ?: '*';
-
-    $labelElement->appendText(' ');
-    $labelElement->appendChild(
-        h(
-            'span',
-            ['class' => 'c-label-required'],
-            $star
-        )
-    );
+    if ($field->isRequired()) {
+        $labelElement->addClass('h-label-required');
+    }
 }
 
 $label = $field->buildLabel($label, $options);

@@ -217,7 +217,6 @@ export class UnicornFormValidation {
   }
 
   registerDefaultValidators() {
-    console.log(validators);
     for (let name in validators) {
       this.addValidator(name, validators[name]);
     }

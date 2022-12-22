@@ -62,7 +62,6 @@ $attrs = $wrapper->getAttributes(true);
 $inputAttrs ??= [];
 $labelAttrs ??= [];
 $validate ??= [];
-$star ??= false;
 
 if ($attributes ?? null) {
     $attributes = $attributes->exceptProps(
@@ -73,7 +72,6 @@ if ($attributes ?? null) {
             'no-label',
             'input-attrs',
             'label-attrs',
-            'star',
         ]
     );
 
@@ -127,7 +125,7 @@ $noLabel ??= $options['no_label'] ?? false;
                 @if ($label ?? null)
                     {!! $label(field: $field, options: $options) !!}
                 @else
-                    <x-label :field="$field" :options="$options" :star="$star" :="$labelAttrs"></x-label>
+                    <x-label :field="$field" :options="$options" :="$labelAttrs"></x-label>
                 @endif
             @endif
         @endif
