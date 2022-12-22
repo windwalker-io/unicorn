@@ -65,11 +65,23 @@ $value = $states->normalizeValue($value ?? '');
         @attr('disabled', $state->isDisabled())
 
         @if (!empty($state->getOnclick()))
-        onclick="{!! $state->getOnclick() !!}"
+            @if (is_callable($state->getOnclick()))
+                onclick="{{ $state->getOnclick()($value, $state, $options) }}"
+            @else
+                onclick="{!! $state->getOnclick() !!}"
+            @endif
         @elseif ($state->getHref())
-        onclick="location.href = '{{ $state->getHref() }}'"
+            @if (is_callable($state->getHref()))
+                onclick="{{ $state->getHref()($value, $state, $options) }}"
+            @else
+                onclick="location.href = '{{ $state->getHref() }}'"
+            @endif
         @elseif ($state->getTask())
-        @click="$store.{{ $store }}.updateRowByTask('{{ $state->getTask() }}', '{{ $id ?? '' }}')"
+            @if (is_callable($state->getTask()))
+                @click="{{ $state->getTask()($value, $state, $options) }}"
+            @else
+                @click="$store.{{ $store }}.updateRowByTask('{{ $state->getTask() }}', '{{ $id ?? '' }}')"
+            @endif
         @endif
     >
         <span class="c-state-button__icon {{ $color }} {{ $state->getIcon() }}"></span>

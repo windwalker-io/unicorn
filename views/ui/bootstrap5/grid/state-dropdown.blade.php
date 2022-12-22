@@ -51,6 +51,7 @@ $readonly ??= false;
 $value = (string) $value;
 
 $currentState = null;
+$onclick ??= null;
 
 $attributes = $attributes->exceptProps(
     [
@@ -65,7 +66,8 @@ $attributes = $attributes->exceptProps(
         'buttonStyle',
         'useStates',
         'disabled',
-        'batch'
+        'batch',
+        'onclick'
     ]
 );
 
@@ -165,7 +167,9 @@ $buttonId ??= trim('c-state-dropdown-' . implode('-', $fieldName) . '-' . $id, '
                 @foreach ($states?->getStates() as $state)
                     <li>
                         <a class="dropdown-item" href="javascript://"
-                            @if ($batch)
+                            @if ($onclick)
+                                onclick="{{ $onclick($state, $workflowCtrl) }}"
+                            @elseif ($batch)
                             @click="$store.{{ $store }}.form.patch(null, { batch: { '{{ $workflowCtrl->getField() }}': '{{ $state->getValue() }}' } })">
                             @else
                                 @click="$store.{{ $store }}.updateItem('{{ $id }}', null, { batch: { '{{ $workflowCtrl->getField() }}': '{{ $state->getValue() }}' } })">
@@ -179,7 +183,9 @@ $buttonId ??= trim('c-state-dropdown-' . implode('-', $fieldName) . '-' . $id, '
                 @foreach ($transitions as $transition)
                     <li>
                         <a class="dropdown-item" href="javascript://"
-                            @if ($batch)
+                            @if ($onclick)
+                                onclick="{{ $onclick($transition, $workflowCtrl) }}"
+                            @elseif ($batch)
                             @click="$store.{{ $store }}.batch('{{ $transition->getName() }}', null, { batch: { '{{ $workflowCtrl->getField() }}': '{{ $state->getValue() }}' } })">
                             @else
                                 @click="$store.{{ $store }}.updateItem('{{ $id }}', null, { batch: { '{{ $workflowCtrl->getField() }}': '{{ $transition->getTo() }}' } })"

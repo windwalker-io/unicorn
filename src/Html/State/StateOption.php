@@ -22,11 +22,11 @@ class StateOption
 
     protected string $value = '';
 
-    protected string $task = '';
+    protected string|\Closure $task = '';
 
-    protected string $href = '';
+    protected string|\Closure $href = '';
 
-    protected string $onclick = '';
+    protected string|\Closure $onclick = '';
 
     protected string $icon = 'fa fa-fw fa-question-circle';
 
@@ -80,19 +80,19 @@ class StateOption
     }
 
     /**
-     * @return string
+     * @return string|\Closure
      */
-    public function getTask(): string
+    public function getTask(): string|\Closure
     {
         return $this->task;
     }
 
     /**
-     * @param  string  $task
+     * @param  string|\Closure  $task
      *
      * @return  static  Return self to support chaining.
      */
-    public function task(string $task): static
+    public function task(string|\Closure $task): static
     {
         $this->task = $task;
 
@@ -100,19 +100,19 @@ class StateOption
     }
 
     /**
-     * @return string
+     * @return string|\Closure
      */
-    public function getHref(): string
+    public function getHref(): string|\Closure
     {
         return $this->href;
     }
 
     /**
-     * @param  string  $href
+     * @param  string|\Closure  $href
      *
      * @return  static  Return self to support chaining.
      */
-    public function href(string $href): static
+    public function href(string|\Closure $href): static
     {
         $this->href = $href;
 
@@ -312,19 +312,19 @@ class StateOption
     }
 
     /**
-     * @return string
+     * @return string|\Closure
      */
-    public function getOnclick(): string
+    public function getOnclick(): string|\Closure
     {
         return $this->onclick;
     }
 
     /**
-     * @param  string  $onclick
+     * @param  string|\Closure  $onclick
      *
      * @return  static  Return self to support chaining.
      */
-    public function onclick(string $onclick): static
+    public function onclick(string|\Closure $onclick): static
     {
         $this->onclick = $onclick;
 
