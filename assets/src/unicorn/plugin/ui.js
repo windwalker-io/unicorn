@@ -652,21 +652,16 @@ export default class UnicornUI {
         this.app.selectAll(buttonSelector, (button) => {
           button.disabled = true;
           button.classList.add('disabled');
-          button.href = 'javascript:\/\/';
-          button.onclick = 'return false;';
+          button.styles.pointerEvents = 'none';
 
           if (button.dataset.clicked) {
             let icon = button.querySelector(iconSelector);
 
             if (icon) {
-              if (icon.tagName === 'svg') {
-                const span = u.html('<span></span>');
-                icon.parentNode.replaceChild(span, icon);
+              const i = u.html('<i></i>');
+              icon.parentNode.replaceChild(i, icon);
 
-                icon = span;
-              }
-
-              icon.setAttribute('class', spinnerClass);
+              i.setAttribute('class', spinnerClass);
               // icon.styles.width = '1em';
               // icon.styles.height = '1em';
               // icon.styles.borderWith = '.15em';
