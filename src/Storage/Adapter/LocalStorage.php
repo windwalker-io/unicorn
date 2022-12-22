@@ -102,7 +102,11 @@ class LocalStorage implements StorageInterface
 
     public function delete(string $path, array $options = []): Result
     {
-        $file = Filesystem::delete($this->getPath($path));
+        $path = $this->stripBasePath($path);
+
+        $path = $this->getPath($path);
+
+        $file = Filesystem::delete($path);
 
         return new Result(fn () => new Response(), $file);
     }
@@ -174,5 +178,31 @@ class LocalStorage implements StorageInterface
     public function exists(string $path): bool
     {
         return is_file($this->getPath($path));
+    }
+
+    public function stripBasePath(string $url): string
+    {
+        if (str_starts_with($url, $this->getPath())) {
+            return ltrim(Str::removeLeft($url, $this->getPath()), '\\/');
+        }
+
+        if (str_starts_with($url, $this->getBasePath())) {
+            return ltrim(Str::removeLeft($url, $this->getBasePath()), '\\/');
+        }
+
+        $su = $this->app->service(SystemUri::class);
+        $base = $su->path . $this->options['uri_base'] . '/';
+
+        if (str_starts_with($url, $base)) {
+            return Str::removeLeft($url, $base);
+        }
+
+        $base = $su->root . $this->options['uri_base'] . '/';
+
+        if (str_starts_with($url, $base)) {
+            return Str::removeLeft($url, $base);
+        }
+
+        return $url;
     }
 }
