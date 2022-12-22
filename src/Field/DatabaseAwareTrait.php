@@ -28,6 +28,8 @@ trait DatabaseAwareTrait
 
     protected ?Query $query = null;
 
+    protected string|false $autoSelections = '.';
+
     #[Inject]
     protected DatabaseManager $dbManager;
 
@@ -44,7 +46,7 @@ trait DatabaseAwareTrait
 
     public function configureQuery(callable $handler): static
     {
-        $query = $handler($this->getQuery());
+        $query = $handler($this->getQuery(), $this);
 
         if ($query !== null) {
             $this->setQuery($query);
@@ -57,7 +59,7 @@ trait DatabaseAwareTrait
     {
         $this->prepareQuery($query = clone $this->getQuery());
 
-        $query->autoSelections('.');
+        $query->autoSelections($this->getAutoSelections());
 
         return $query;
     }
@@ -123,6 +125,26 @@ trait DatabaseAwareTrait
     public function table(?string $table): static
     {
         $this->table = $table;
+
+        return $this;
+    }
+
+    /**
+     * @return false|string
+     */
+    public function getAutoSelections(): bool|string
+    {
+        return $this->autoSelections;
+    }
+
+    /**
+     * @param  false|string  $autoSelection
+     *
+     * @return  static  Return self to support chaining.
+     */
+    public function autoSelection(bool|string $autoSelection): static
+    {
+        $this->autoSelections = $autoSelection;
 
         return $this;
     }
