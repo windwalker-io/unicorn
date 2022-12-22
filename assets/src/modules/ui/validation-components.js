@@ -8,11 +8,11 @@
 import { defaultsDeep } from 'lodash-es';
 
 /**
- * Default handlers
+ * Default validators
  *
  * @type {{ [name: string]: ValidationHandler }}
  */
-const handlers = {};
+const validators = {};
 
 const defaultOptions = {
   scroll: false,
@@ -217,10 +217,9 @@ export class UnicornFormValidation {
   }
 
   registerDefaultValidators() {
-    for (let name in handlers) {
-      if (handlers.hasOwnProperty(name)) {
-        this.addValidator(name, handlers[name]);
-      }
+    console.log(validators);
+    for (let name in validators) {
+      this.addValidator(name, validators[name]);
     }
   }
 
@@ -499,6 +498,69 @@ export class UnicornFieldValidation {
   }
 }
 
+function camelTo(str, sep) {
+  return str.replace(/([a-z])([A-Z])/g, `$1${sep}$2`).toLowerCase();
+}
+
+validators.username = function(value, element) {
+  const regex = new RegExp("[\<|\>|\"|\'|\%|\;|\(|\)|\&]", "i");
+  return !regex.test(value);
+};
+
+validators.numeric = function(value, element) {
+  const regex = /^(\d|-)?(\d|,)*\.?\d*$/;
+  return regex.test(value);
+};
+
+validators.email = function(value, element) {
+  value = punycode.toASCII(value);
+  const regex = /^[a-zA-Z0-9.!#$%&â€™*+\/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+  return regex.test(value);
+};
+
+validators.url = function(value, element) {
+  const regex = /^(?:(?:https?|ftp):\/\/)(?:\S+(?::\S*)?@)?(?:(?!10(?:\.\d{1,3}){3})(?!127(?:\.\d{1,3}){3})(?!169\.254(?:\.\d{1,3}){2})(?!192\.168(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:\/[^\s]*)?$/i;
+  return regex.test(value);
+};
+
+validators.alnum = function(value, element) {
+  const regex = /^[a-zA-Z0-9]*$/;
+  return regex.test(value);
+};
+
+validators.color = function(value, element) {
+  const regex = /^#(?:[0-9a-f]{3}){1,2}$/;
+  return regex.test(value);
+};
+
+/**
+ * @see  http://www.virtuosimedia.com/dev/php/37-tested-php-perl-and-javascript-regular-expressions
+ */
+validators.creditcard = function(value, element) {
+  const regex = /^(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14}|6011[0-9]{12}|622((12[6-9]|1[3-9][0-9])|([2-8][0-9][0-9])|(9(([0-1][0-9])|(2[0-5]))))[0-9]{10}|64[4-9][0-9]{13}|65[0-9]{14}|3(?:0[0-5]|[68][0-9])[0-9]{11}|3[47][0-9]{13})*$/;
+  return regex.test(value);
+};
+
+validators.ip = function(value, element) {
+  const regex = /^((?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))*$/;
+  return regex.test(value);
+};
+
+validators['password-confirm'] = function (value, element) {
+  const selector = element.dataset.confirmTarget;
+
+  if (!selector) {
+    throw new Error('Validator: "password-confirm" must add "data-confirm-target" attribute.')
+  }
+
+  const target = document.querySelector(selector);
+
+  return target.value === value;
+};
+
+// customElements.define(UnicornFormValidateElement.is, UnicornFormValidateElement);
+// customElements.define(UnicornFieldValidateElement.is, UnicornFieldValidateElement);
+
 u.directive('form-validate', {
   mounted(el, binding) {
     u.getBoundedInstance(el, 'form.validation', (ele) => {
@@ -523,61 +585,3 @@ u.directive('field-validate', {
     instance.options = JSON.parse(binding.value || '{}');
   }
 });
-
-function camelTo(str, sep) {
-  return str.replace(/([a-z])([A-Z])/g, `$1${sep}$2`).toLowerCase();
-}
-
-handlers.username = function(value, element) {
-  const regex = new RegExp("[\<|\>|\"|\'|\%|\;|\(|\)|\&]", "i");
-  return !regex.test(value);
-};
-
-handlers.numeric = function(value, element) {
-  const regex = /^(\d|-)?(\d|,)*\.?\d*$/;
-  return regex.test(value);
-};
-
-handlers.email = function(value, element) {
-  value = punycode.toASCII(value);
-  const regex = /^[a-zA-Z0-9.!#$%&â€™*+\/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-  return regex.test(value);
-};
-
-handlers.url = function(value, element) {
-  const regex = /^(?:(?:https?|ftp):\/\/)(?:\S+(?::\S*)?@)?(?:(?!10(?:\.\d{1,3}){3})(?!127(?:\.\d{1,3}){3})(?!169\.254(?:\.\d{1,3}){2})(?!192\.168(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:\/[^\s]*)?$/i;
-  return regex.test(value);
-};
-
-handlers.alnum = function(value, element) {
-  const regex = /^[a-zA-Z0-9]*$/;
-  return regex.test(value);
-};
-
-handlers.color = function(value, element) {
-  const regex = /^#(?:[0-9a-f]{3}){1,2}$/;
-  return regex.test(value);
-};
-
-/**
- * @see  http://www.virtuosimedia.com/dev/php/37-tested-php-perl-and-javascript-regular-expressions
- */
-handlers.creditcard = function(value, element) {
-  const regex = /^(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14}|6011[0-9]{12}|622((12[6-9]|1[3-9][0-9])|([2-8][0-9][0-9])|(9(([0-1][0-9])|(2[0-5]))))[0-9]{10}|64[4-9][0-9]{13}|65[0-9]{14}|3(?:0[0-5]|[68][0-9])[0-9]{11}|3[47][0-9]{13})*$/;
-  return regex.test(value);
-};
-
-handlers.ip = function(value, element) {
-  const regex = /^((?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))*$/;
-  return regex.test(value);
-};
-
-handlers['password-confirm'] = function (value, element) {
-  const selector = element.attr('data-confirm-target');
-  const target = $(selector);
-
-  return target.val() === value;
-};
-
-// customElements.define(UnicornFormValidateElement.is, UnicornFormValidateElement);
-// customElements.define(UnicornFieldValidateElement.is, UnicornFieldValidateElement);
