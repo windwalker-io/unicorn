@@ -297,6 +297,7 @@ export class UnicornGridElement {
    * @returns {boolean}
    */
   updateItemByTask(task, url = null, data = null) {
+    data = data || {};
     data.task = task;
 
     return this.form.patch(url, data);

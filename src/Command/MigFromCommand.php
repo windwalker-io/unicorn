@@ -211,7 +211,7 @@ class MigFromCommand implements CommandInterface
                         }
                     }
                 }
-                
+
                 if ($node instanceof Node\Expr\MethodCall) {
                     if ($node->var->name === 'mig' && (string) $node->name === 'up') {
                         $func = $node->args[0]->value;
