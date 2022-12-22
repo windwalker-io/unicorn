@@ -265,7 +265,7 @@ export class UnicornFieldValidation {
   }
 
   get selector() {
-    return this.options.selector || 'input, select, textarea';
+    return this.options.selector || 'input[data-field-input], select[data-field-input], textarea[data-field-input]';
   }
 
   get validClass() {
@@ -281,7 +281,13 @@ export class UnicornFieldValidation {
   }
 
   selectInput() {
-    return this.$input = this.el.querySelector(this.selector);
+    let input = this.el.querySelector(this.selector);
+
+    if (!input) {
+      input = this.el.querySelector('input, select, textarea');
+    }
+
+    return this.$input = input;
   }
 
   init() {
@@ -304,10 +310,10 @@ export class UnicornFieldValidation {
     const events = this.options['events'] || ['change'];
 
     events.forEach((eventName) => {
-        this.$input.addEventListener(eventName, () => {
-          this.checkValidity();
-        });
+      this.$input.addEventListener(eventName, () => {
+        this.checkValidity();
       });
+    });
   }
 
   prepareWrapper() {
