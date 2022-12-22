@@ -374,14 +374,20 @@ export class UnicornFieldValidation {
       for (let i in validates) {
         const validator = fv.validators[validates[i]];
         if (validator && !validator.handler(this.$input.value, this.$input)) {
-          help = validator.options.notice;
-
-          if (typeof help === 'function') {
-            help = help(this.$input, this);
+          if (this.$input.dataset.customErrorMessage) {
+            this.$input.setCustomValidity(this.$input.dataset.customErrorMessage);
           }
 
-          if (help != null) {
-            this.$input.setCustomValidity(help);
+          if (this.$input.validationMessage === '') {
+            help = validator.options.notice;
+
+            if (typeof help === 'function') {
+              help = help(this.$input, this);
+            }
+
+            if (help != null) {
+              this.$input.setCustomValidity(help);
+            }
           }
 
           if (this.$input.validationMessage === '') {
@@ -399,6 +405,17 @@ export class UnicornFieldValidation {
   }
 
   showInvalidResponse() {
+    /** @type ValidityState */
+    const state = this.$input.validity;
+    let message = this.$input.validationMessage;
+
+    for (let key in state) {
+      if (state[key] === true && this.$input.dataset[key + 'Message']) {
+        message = this.$input.dataset[key + 'Message'];
+        break;
+      }
+    }
+
     if (!this.isVisible) {
       let title = this.findLabel()?.textContent;
 
@@ -407,7 +424,7 @@ export class UnicornFieldValidation {
       }
 
       u.addMessage(
-        `Field: ${title} - ${this.$input.validationMessage}`,
+        `Field: ${title} - ${message}`,
         'warning'
       );
     }
@@ -420,7 +437,7 @@ export class UnicornFieldValidation {
       this.prepareWrapper();
     }
 
-    $help.textContent = this.$input.validationMessage;
+    $help.textContent = message;
   }
 
   createHelpElement() {
