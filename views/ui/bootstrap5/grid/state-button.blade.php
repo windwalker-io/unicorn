@@ -55,7 +55,11 @@ $value = $states->normalizeValue($value ?? '');
         data-bs-toggle="tooltip"
         title="{{ $state->getHelp() }}"
         {!! $attributes !!}
-    ></span>
+    >
+        @if (!empty($state->getText()))
+            <span class="c-state-button__text {{ $state->getTextColor() }}">{{ $state->getText() }}</span>
+        @endif
+    </span>
 @else
     <button type="button"
         class="c-state-button grid-boolean-icon disable-on-submit c-state-button--{{ $value ?? '' }} {{ $state->getButtonClass() }} btn-{{ $size }}"
@@ -86,8 +90,8 @@ $value = $states->normalizeValue($value ?? '');
     >
         <span class="c-state-button__icon {{ $color }} {{ $state->getIcon() }}"></span>
 
-        @if (!empty($options['text']))
-            <span class="c-state-button__text {{ $options['text_color'] ?? '' }}">{{ $options['text'] }}</span>
+        @if (!empty($state->getText()))
+            <span class="c-state-button__text {{ $state->getTextColor() }}">{{ $state->getText() }}</span>
         @endif
     </button>
 @endif
