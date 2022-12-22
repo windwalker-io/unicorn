@@ -136,6 +136,8 @@ export interface Unicorn extends UnicornApp {
   $get(obj: any, path: string): any;
   $set<SetValue>(obj: any, path: string, value: SetValue): SetValue;
   delegate(wrapper: Element|string, selector: Element|string, eventName: string, callback: (e: Event) => void): (() => void);
+  debounce<T extends (...args: any) => any>(handler: T, wait?: number): T;
+  throttle<T extends (...args: any) => any>(handler: T, wait?: number): T;
   isDebug(): boolean;
   confirm(message: string): Promise<boolean>;
   alert(title: string, text?: string, type?: string): Promise<boolean>;

@@ -31,6 +31,8 @@ export default class UnicornHelper {
     app.$get = helper.$get;
     app.$set = helper.$set;
     app.delegate = helper.delegate.bind(helper);
+    app.debounce = helper.debounce.bind(helper);
+    app.throttle = helper.throttle.bind(helper);
     app.isDebug = helper.isDebug.bind(helper);
     app.confirm = helper.confirm.bind(helper);
     app.alert = helper.alert.bind(helper);
@@ -290,6 +292,38 @@ export default class UnicornHelper {
       } else {
         delete delegationSelectorsMap[selector];
       }
+    };
+  }
+
+  /**
+   * @param {Function} handler
+   * @param {number} wait
+   * @returns {Function}
+   */
+  debounce(handler, wait = 1) {
+    let timer, result;
+    return function(...args) {
+      clearTimeout(timer);
+      timer = setTimeout(() => result = handler.call(this, ...args), wait);
+      return result;
+    };
+  }
+
+  /**
+   * @param {Function} handler
+   * @param {number} wait
+   * @returns {Function}
+   */
+  throttle(handler, wait = 1) {
+    let timer, result;
+    return function(...args) {
+      if (!timer) {
+        return result = handler.call(this, ...args);
+      }
+
+      clearTimeout(timer);
+      timer = setTimeout(() => timer = undefined, wait);
+      return result;
     };
   }
 
