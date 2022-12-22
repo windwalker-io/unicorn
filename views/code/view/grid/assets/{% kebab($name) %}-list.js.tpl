@@ -9,13 +9,13 @@ import '@main';
 
 u.$ui.bootstrap.tooltip();
 
-const formId = '#admin-form';
+const formSelector = '#admin-form';
 
 // Init Grid
-u.grid(formId).initComponent();
+u.grid(formSelector).initComponent();
 
 // Disable on submit
-u.$ui.disableOnSubmit(formId);
+u.$ui.disableOnSubmit(formSelector);
 
 // Checkbox Multi-select
-u.$ui.checkboxesMultiSelect(formId);
+u.$ui.checkboxesMultiSelect(formSelector);
