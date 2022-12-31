@@ -32,6 +32,7 @@ S.import('@main').then(() => {
         defaultValue: '',
         onSelectInit: () => {},
         onChange: () => {},
+        onValueInit: () => {},
       },
       el: null,
       canModify: true,
@@ -40,7 +41,7 @@ S.import('@main').then(() => {
       values: [],
 
       init() {
-        this.options = defaultsDeep( options, this.options );
+        this.options = defaultsDeep(options, this.options);
 
         this.canModify = !this.options.readonly && !this.options.disabled;
         this.ajaxUrl = this.options.ajaxUrl;
@@ -55,6 +56,7 @@ S.import('@main').then(() => {
         }
 
         let promise = Promise.resolve();
+        let lastValue;
 
         values.forEach((v, i) => {
           promise = promise.then(() => {
@@ -64,9 +66,13 @@ S.import('@main').then(() => {
               }
             });
           });
+
+          lastValue = v;
         });
 
         this.el = this.$el;
+
+        this.valueInit(this.$el, lastValue, values);
       },
 
       getLabel(i) {
@@ -155,6 +161,21 @@ S.import('@main').then(() => {
         }
 
         return Promise.resolve(this.handleSourceItems(this.options.source));
+      },
+
+      valueInit($select, value, path) {
+        const event = new CustomEvent('value.init', {
+          detail: {
+            el: $select,
+            component: this,
+            value,
+            path
+          }
+        });
+
+        this.options.onSelectInit(event);
+
+        this.el.dispatchEvent(event);
       },
 
       selectInit($select) {
