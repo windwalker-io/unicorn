@@ -190,7 +190,7 @@ export interface Validator {
   handler: ValidationHandler;
   options: ValidationOptions;
 }
-export type ValidationHandler = (value: any, element: Element) => boolean;
+export type ValidationHandler = (value: any, element: Element, options: { [name: string]: any }, field: UnicornFieldValidation) => boolean|string|undefined;
 export interface ValidationOptions {
   notice?: string | ((input: Element, field: UnicornFieldValidation) => string);
 }

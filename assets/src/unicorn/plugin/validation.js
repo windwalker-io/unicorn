@@ -33,4 +33,19 @@ export default class UnicornValidation {
   get(selector) {
     return this.app.$helper.getBoundedInstance(selector, 'form.validation');
   }
+
+  /**
+   * @param {string|Element} selector
+   * @returns {UnicornFieldValidation}
+   */
+  getField(selector) {
+    return this.app.$helper.getBoundedInstance(selector, 'field.validation');
+  }
+
+  addGlobalValidator(name, validator, options = {}) {
+    return this.import().then((m) => {
+      UnicornFormValidation.addGlobalValidator(name, validator, options);
+      return m;
+    });
+  }
 }

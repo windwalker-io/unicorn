@@ -22,11 +22,18 @@ const defaultOptions = {
   validatedClass: null,
 };
 
+export const Hello = 123;
+
 export class UnicornFormValidation {
   /**
    * @type {Element[]}
    */
   presetFields = [];
+
+  /**
+   * @type {{ [name: string]: Validator }}
+   */
+  static globalValidators = {};
 
   /**
    * @type {{ [name: string]: Validator }}
@@ -76,7 +83,7 @@ export class UnicornFormValidation {
 
           return false;
         }
-        
+
         return true;
       }, false);
     }
@@ -142,6 +149,14 @@ export class UnicornFormValidation {
   }
 
   /**
+   * @param input {Element}
+   * @returns {UnicornFieldValidation|null}
+   */
+  getFieldComponent(input) {
+    return u.getBoundedInstance(input, 'field.validation');
+  }
+
+  /**
    * @param {Element[]} fields
    * @returns {boolean}
    */
@@ -152,7 +167,7 @@ export class UnicornFormValidation {
     let firstFail = null;
 
     fields.forEach((field) => {
-      const fv = u.getBoundedInstance(field, 'field.validation');
+      const fv = this.getFieldComponent(field);
 
       if (!fv) {
         return;
@@ -168,7 +183,45 @@ export class UnicornFormValidation {
     this.markFormAsValidated();
 
     if (firstFail && this.scrollEnabled) {
-      this.scrollTo(firstFail)
+      this.scrollTo(firstFail);
+    }
+
+    return firstFail === null;
+  }
+
+  /**
+   * @param {Element[]} fields
+   * @returns {boolean}
+   */
+  async validateAllAsync(fields = null) {
+    this.markFormAsUnvalidated();
+
+    fields = fields || this.findFields();
+    let firstFail = null;
+    const promises = [];
+
+    fields.forEach((field) => {
+      const fv = this.getFieldComponent(field);
+
+      if (!fv) {
+        return;
+      }
+
+      promises.push(
+        fv.checkValidityAsync().then((result) => {
+          if (!result && !firstFail) {
+            firstFail = field;
+          }
+        })
+      );
+    });
+
+    await Promise.all(promises);
+
+    this.markFormAsValidated();
+
+    if (firstFail && this.scrollEnabled) {
+      this.scrollTo(firstFail);
     }
 
     return firstFail === null;
@@ -234,6 +287,25 @@ export class UnicornFormValidation {
     options = options || {};
 
     this.validators[name] = {
+      handler: validator,
+      options: options
+    };
+
+    return this;
+  }
+
+  /**
+   * Add validator handler.
+   *
+   * @param {string} name
+   * @param {ValidationHandler} validator
+   * @param {ValidationOptions} options
+   * @returns {this}
+   */
+  static addGlobalValidator(name, validator, options = {}) {
+    options = options || {};
+
+    this.globalValidators[name] = {
       handler: validator,
       options: options
     };
@@ -331,18 +403,122 @@ export class UnicornFieldValidation {
       return true;
     }
 
+    this.$input.setCustomValidity('');
+    let valid = this.$input.checkValidity();
+
+    if (valid && this.$form) {
+      valid = this.runCustomValidity();
+    }
+
+    this.updateValidClass(valid);
+
+    return valid;
+  }
+
+  runCustomValidity() {
+    // Check custom validity
+    const validates = (this.$input.getAttribute('data-validate') || '').split('|');
+    let result = true;
+
+    if (this.$input.value !== '' && validates.length) {
+      for (const validatorName of validates) {
+        const [ validator, options ] = this.getValidator(validatorName) || [ null, {} ];
+
+        if (!validator) {
+          continue;
+        }
+
+        Object.assign(options, validator.options);
+
+        let r = validator.handler(this.$input.value, this.$input, options, this);
+
+        // If return is a promise, push to stack and resolve later
+        if (r instanceof Promise || (typeof r === 'object' && r.then)) {
+          r.then((result) => {
+            this.handleAsyncCustomResult(result, validator);
+          });
+          continue;
+        }
+
+        if (!this.handleCustomResult(r, validator)) {
+          result = false;
+
+          break;
+        }
+      }
+    }
+
+    return result;
+  }
+
+  async checkValidityAsync() {
+    if (!this.$input) {
+      return true;
+    }
+
+    if (this.$input.hasAttribute('readonly')) {
+      return true;
+    }
+
+    this.$input.setCustomValidity('');
+    let valid = this.$input.checkValidity();
+
+    if (valid && this.$form) {
+      valid = await this.runCustomValidityAsync();
+    }
+
+    this.updateValidClass(valid);
+
+    return valid;
+  }
+
+  async runCustomValidityAsync() {
+    // Check custom validity
+    const validates = (this.$input.getAttribute('data-validate') || '').split('|');
+    /** @type Array<boolean|string|undefined> */
+    const results = [];
+
+    /** @type Promise<boolean>[] */
+    const promises = [];
+
+    if (this.$input.value !== '' && validates.length) {
+      for (const validatorName of validates) {
+        const [ validator, options ] = this.getValidator(validatorName) || [ null, {} ];
+
+        if (!validator) {
+          continue;
+        }
+
+        Object.assign(options, validator.options);
+
+        promises.push(
+          Promise.resolve(validator.handler(this.$input.value, this.$input, options, this))
+            .then((r) => {
+              results.push(this.handleAsyncCustomResult(r, validator));
+            })
+        );
+      }
+    }
+
+    await Promise.all(promises);
+
+    for (const result of results) {
+      if (result === false) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  /**
+   * @param valid {boolean}
+   */
+  updateValidClass(valid) {
     this.$input.classList.remove(this.invalidClass);
     this.$input.classList.remove(this.validClass);
     this.el.classList.remove(this.invalidClass);
     this.el.classList.remove(this.validClass);
-
-    this.$input.setCustomValidity('');
-
-    if (this.$form) {
-      this.runCustomValidity();
-    }
-
-    const valid = this.$input.checkValidity();
 
     if (valid) {
       this.$input.classList.add(this.validClass);
@@ -351,8 +527,6 @@ export class UnicornFieldValidation {
       this.$input.classList.add(this.invalidClass);
       this.el.classList.add(this.invalidClass);
     }
-
-    return valid;
   }
 
   /**
@@ -363,45 +537,94 @@ export class UnicornFieldValidation {
     return u.getBoundedInstance(element, 'form.validation');
   }
 
-  runCustomValidity() {
-    // Check custom validity
-    const validates = (this.$input.getAttribute('data-validate') || '').split('|');
-    let help;
-    let result = true;
+  /**
+   * @param name {string}
+   * @returns {[Validator, object]|null}
+   */
+  getValidator(name) {
+    const matches = name.match(/(?<type>\w+)(\((?<params>.*)\))*/);
+
+    const validatorName = matches.groups.type || '';
+    const params = matches.groups.params || '';
+
     const fv = this.getFormValidation(this.$form);
+    const validator = fv.validators[validatorName] || fv.constructor.globalValidators[validatorName];
 
-    if (this.$input.value !== '' && validates.length) {
-      for (let i in validates) {
-        const validator = fv.validators[validates[i]];
-        if (validator && !validator.handler(this.$input.value, this.$input)) {
-          if (this.$input.dataset.customErrorMessage) {
-            this.$input.setCustomValidity(this.$input.dataset.customErrorMessage);
-          }
+    if (!validator) {
+      return null;
+    }
 
-          if (this.$input.validationMessage === '') {
-            help = validator.options.notice;
+    const paramMatches = params.matchAll(/(?<key>\w+)(\s?[=:]\s?(?<value>\w+))?/g);
+    const options = {};
 
-            if (typeof help === 'function') {
-              help = help(this.$input, this);
-            }
+    for (const paramMatch of paramMatches) {
+      options[paramMatch.groups.key] = handleParamValue(paramMatch.groups.value);
+    }
 
-            if (help != null) {
-              this.$input.setCustomValidity(help);
-            }
-          }
+    return [ validator, options ];
+  }
 
-          if (this.$input.validationMessage === '') {
-            this.$input.setCustomValidity(u.__('unicorn.message.validation.custom.error'));
-          }
+  /**
+   * @param result {boolean|string|undefined}
+   * @param validator {Validator}
+   *
+   * @return {boolean}
+   */
+  handleCustomResult(result, validator) {
+    if (typeof result === 'string') {
+      this.$input.setCustomValidity(result);
+      result = result === '';
+    } else if (result === undefined) {
+      result = true;
+    }
 
-          result = false;
-
-          break;
-        }
-      }
+    if (result) {
+      this.$input.setCustomValidity('');
+    } else {
+      this.raiseCustomErrorState(validator);
     }
 
     return result;
+  }
+
+  /**
+   * @param result {boolean}
+   * @param validator {Validator}
+   *
+   * @return {boolean}
+   */
+  handleAsyncCustomResult(result, validator) {
+    result = this.handleCustomResult(result, validator);
+
+    // Fire invalid events
+    this.$input.checkValidity();
+
+    this.updateValidClass(result);
+
+    return result;
+  }
+
+  /**
+   * @param validator {Validator}
+   */
+  raiseCustomErrorState(validator) {
+    let help;
+
+    if (this.$input.validationMessage === '') {
+      help = validator.options.notice;
+
+      if (typeof help === 'function') {
+        help = help(this.$input, this);
+      }
+
+      if (help != null) {
+        this.$input.setCustomValidity(help);
+      }
+    }
+
+    if (this.$input.validationMessage === '') {
+      this.$input.setCustomValidity(u.__('unicorn.message.validation.custom.error'));
+    }
   }
 
   showInvalidResponse() {
@@ -466,8 +689,8 @@ export class UnicornFieldValidation {
    * @returns {{classes: *[], ids: *[], tags: *[], attrs: *[]}}
    */
   parseSelector(subselector) {
-    var obj = {tags:[], classes:[], ids:[], attrs:[]};
-    subselector.split(/(?=\.)|(?=#)|(?=\[)/).forEach(function(token){
+    const obj = { tags: [], classes: [], ids: [], attrs: [] };
+    subselector.split(/(?=\.)|(?=#)|(?=\[)/).forEach(function (token) {
       switch (token[0]) {
         case '#':
           obj.ids.push(token.slice(1));
@@ -476,7 +699,7 @@ export class UnicornFieldValidation {
           obj.classes.push(token.slice(1));
           break;
         case '[':
-          obj.attrs.push(token.slice(1,-1).split('='));
+          obj.attrs.push(token.slice(1, -1).split('='));
           break;
         default :
           obj.tags.push(token);
@@ -518,33 +741,33 @@ function camelTo(str, sep) {
   return str.replace(/([a-z])([A-Z])/g, `$1${sep}$2`).toLowerCase();
 }
 
-validators.username = function(value, element) {
-  const regex = new RegExp("[\<|\>|\"|\'|\%|\;|\(|\)|\&]", "i");
+validators.username = function (value, element) {
+  const regex = new RegExp('[\<|\>|"|\'|\%|\;|\(|\)|\&]', 'i');
   return !regex.test(value);
 };
 
-validators.numeric = function(value, element) {
+validators.numeric = function (value, element) {
   const regex = /^(\d|-)?(\d|,)*\.?\d*$/;
   return regex.test(value);
 };
 
-validators.email = function(value, element) {
+validators.email = function (value, element) {
   value = punycode.toASCII(value);
   const regex = /^[a-zA-Z0-9.!#$%&â€™*+\/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
   return regex.test(value);
 };
 
-validators.url = function(value, element) {
+validators.url = function (value, element) {
   const regex = /^(?:(?:https?|ftp):\/\/)(?:\S+(?::\S*)?@)?(?:(?!10(?:\.\d{1,3}){3})(?!127(?:\.\d{1,3}){3})(?!169\.254(?:\.\d{1,3}){2})(?!192\.168(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:\/[^\s]*)?$/i;
   return regex.test(value);
 };
 
-validators.alnum = function(value, element) {
+validators.alnum = function (value, element) {
   const regex = /^[a-zA-Z0-9]*$/;
   return regex.test(value);
 };
 
-validators.color = function(value, element) {
+validators.color = function (value, element) {
   const regex = /^#(?:[0-9a-f]{3}){1,2}$/;
   return regex.test(value);
 };
@@ -552,12 +775,12 @@ validators.color = function(value, element) {
 /**
  * @see  http://www.virtuosimedia.com/dev/php/37-tested-php-perl-and-javascript-regular-expressions
  */
-validators.creditcard = function(value, element) {
+validators.creditcard = function (value, element) {
   const regex = /^(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14}|6011[0-9]{12}|622((12[6-9]|1[3-9][0-9])|([2-8][0-9][0-9])|(9(([0-1][0-9])|(2[0-5]))))[0-9]{10}|64[4-9][0-9]{13}|65[0-9]{14}|3(?:0[0-5]|[68][0-9])[0-9]{11}|3[47][0-9]{13})*$/;
   return regex.test(value);
 };
 
-validators.ip = function(value, element) {
+validators.ip = function (value, element) {
   const regex = /^((?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))*$/;
   return regex.test(value);
 };
@@ -566,7 +789,7 @@ validators['password-confirm'] = function (value, element) {
   const selector = element.dataset.confirmTarget;
 
   if (!selector) {
-    throw new Error('Validator: "password-confirm" must add "data-confirm-target" attribute.')
+    throw new Error('Validator: "password-confirm" must add "data-confirm-target" attribute.');
   }
 
   const target = document.querySelector(selector);
@@ -601,3 +824,23 @@ u.directive('field-validate', {
     instance.options = JSON.parse(binding.value || '{}');
   }
 });
+
+function handleParamValue(value) {
+  if (!isNaN(Number(value))) {
+    return Number(value);
+  }
+
+  if (value === 'null') {
+    return null;
+  }
+
+  if (value === 'true') {
+    return true;
+  }
+
+  if (value === 'false') {
+    return true;
+  }
+
+  return value;
+}
