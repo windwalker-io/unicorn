@@ -30,6 +30,8 @@ class UnicornScript extends AbstractScript
 
     public array $initialise = [];
 
+    public bool $importMain = false;
+
     /**
      * UnicornScript constructor.
      */
@@ -81,34 +83,44 @@ class UnicornScript extends AbstractScript
 
         $this->data('csrf-token', $this->app->service(CsrfService::class)->getToken());
 
-        $this->importScript('@main');
+        $this->importMain = true;
 
         return $this;
     }
 
-    public function importScript(string $uri): static
+    public function importScript(string $uri, bool $afterMain = true): static
     {
-        $this->internalJS("System.import('$uri');");
+        if ($afterMain) {
+            $this->importMainThen("u.import('$uri');");
+        } else {
+            $this->internalJS("System.import('$uri');");
+        }
 
         return $this;
     }
 
-    public function importThen(string $uri, string $code): static
+    public function importThen(string $uri, string $code, bool $afterMain = true): static
     {
-        $this->internalJS(
-            <<<JS
-System.import('$uri').then(function (module) {
-  $code
-});
-JS
-        );
+        $importer = $afterMain ? 'u' : 'System';
+
+        $js = <<<JS
+        $importer.import('$uri').then(function (module) {
+          $code
+        });
+        JS;
+
+        if ($afterMain) {
+            $this->importMainThen($js);
+        } else {
+            $this->internalJS($js);
+        }
 
         return $this;
     }
 
     public function importMainThen(string $code): static
     {
-        $this->addInitialise(Str::ensureRight(rtrim($code), ';'));
+        $this->addInitialise($code);
 
         return $this;
     }

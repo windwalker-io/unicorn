@@ -18,6 +18,10 @@ use Windwalker\Core\Asset\Event\AssetBeforeRender;
 use Windwalker\Event\Attributes\EventSubscriber;
 use Windwalker\Event\Attributes\ListenTo;
 
+use Windwalker\Utilities\Str;
+
+use function Windwalker\collect;
+
 /**
  * The UnicornAssetListener class.
  */
@@ -65,12 +69,22 @@ class UnicornAssetSubscriber
         }
 
         if ($script->initialise !== []) {
-            $codes = $script->initialise;
-            $codes[] = "u.trigger('ready')";
+            $codes = collect($script->initialise)
+                ->map('rtrim')
+                ->filter('strlen')
+                ->map(fn (string $s) => Str::ensureRight($s, ';'));
+
+            $codes[] = "u.trigger('ready');";
 
             $script->importThen(
                 '@main',
-                implode("\n", $codes)
+                (string) $codes->implode("\n"),
+                false
+            );
+        } elseif ($script->importMain) {
+            $script->importScript(
+                '@main',
+                false
             );
         }
     }
