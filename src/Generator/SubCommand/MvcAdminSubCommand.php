@@ -22,6 +22,7 @@ use Windwalker\Console\CommandWrapper;
 use Windwalker\Console\IOInterface;
 use Windwalker\Core\Generator\SubCommand\AbstractGeneratorSubCommand;
 use Windwalker\Utilities\Str;
+use Windwalker\Utilities\StrNormalize;
 
 /**
  * The ModelSubCommand class.
@@ -102,6 +103,7 @@ class MvcAdminSubCommand extends AbstractGeneratorSubCommand
             ->replace('\\', '/')
             ->explode('/')
             ->pop();
+
         $this->runProcess(
             "php windwalker g entity $entityName " . $optionString,
             $io
@@ -114,9 +116,9 @@ class MvcAdminSubCommand extends AbstractGeneratorSubCommand
         );
 
         // Seeder
-        $entityName = strtolower($entityName);
+        $kebabName = StrNormalize::toKebabCase($name);
         $this->runProcess(
-            "php windwalker seed:create {$entityName}",
+            "php windwalker seed:create {$kebabName}",
             $io
         );
 
@@ -140,9 +142,8 @@ class MvcAdminSubCommand extends AbstractGeneratorSubCommand
         );
 
         // Route
-        $routeName = strtolower($name);
         $this->runProcess(
-            "php windwalker g unicorn:route $routeName " . $optionString,
+            "php windwalker g unicorn:route $kebabName " . $optionString,
             $io
         );
 
