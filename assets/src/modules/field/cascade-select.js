@@ -45,7 +45,7 @@ S.import('@main').then(() => {
 
         this.canModify = !this.options.readonly && !this.options.disabled;
         this.ajaxUrl = this.options.ajaxUrl;
-        this.values = this.options.path.slice();
+        this.values = this.options.path.slice().map(String);
 
         let values = this.options.path.slice();
 
@@ -72,6 +72,8 @@ S.import('@main').then(() => {
 
         this.el = this.$el;
 
+        u.module(this.el, 'cascade.select', () => this);
+
         this.valueInit(this.$el, lastValue, values);
       },
 
@@ -88,7 +90,7 @@ S.import('@main').then(() => {
       },
 
       isSelected(i, item) {
-        return this.getListValue(i) == item[this.options.valueField];
+        return String(this.getListValue(i)) === String(item[this.options.valueField]);
       },
 
       getFinalValue() {
@@ -110,12 +112,29 @@ S.import('@main').then(() => {
         return v;
       },
 
+      getLevel() {
+        return this.values.length;
+      },
+
       onChange(i, event) {
         const el = event.target;
 
         this.values[i] = el.value;
 
         this.options.onChange(event);
+
+        event.stopPropagation();
+
+        const changeEvent = new CustomEvent('change', {
+          detail: {
+            el,
+            component: this,
+            value: el.value,
+            path: this.values
+          }
+        });
+
+        this.el.dispatchEvent(changeEvent);
 
         if (el.value === '') {
           // Clear child
