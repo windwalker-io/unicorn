@@ -118,9 +118,11 @@ export class UnicornFormValidation {
    */
   prepareFieldWrapper(input) {
     if (['INPUT', 'SELECT', 'TEXTAREA'].indexOf(input.tagName) !== -1) {
-      const wrapper = input.closest('.form-group, [uni-field-validate]');
+      let wrapper = input.closest('[uni-field-validate]');
 
-      if (wrapper && !wrapper.getAttribute('uni-field-validate')) {
+      if (!wrapper) {
+        wrapper = input.closest('[data-input-container]') || input.parentNode;
+
         wrapper.setAttribute('uni-field-validate', '{}');
       }
 
