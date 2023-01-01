@@ -88,7 +88,7 @@ class UnicornScript extends AbstractScript
         return $this;
     }
 
-    public function importScript(string $uri, bool $afterMain = true): static
+    public function importScript(string $uri, bool $afterMain = false): static
     {
         if ($afterMain) {
             $this->importMainThen("u.import('$uri');");
@@ -99,7 +99,7 @@ class UnicornScript extends AbstractScript
         return $this;
     }
 
-    public function importThen(string $uri, string $code, bool $afterMain = true): static
+    public function importThen(string $uri, string $code, bool $afterMain = false): static
     {
         $importer = $afterMain ? 'u' : 'System';
 
