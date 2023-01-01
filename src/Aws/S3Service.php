@@ -19,6 +19,8 @@ use Windwalker\Stream\Stream;
 use Windwalker\Uri\Uri;
 use Windwalker\Utilities\Str;
 
+use const Windwalker\Stream\READ_ONLY_FROM_BEGIN;
+
 /**
  * The S3Service class.
  *
@@ -194,7 +196,7 @@ class S3Service
     public function uploadFile(string $file, string $path, array $args = []): Result
     {
         $args['Key'] = $path;
-        $args['Body'] = $stream = new Stream($file, Stream::MODE_READ_ONLY_FROM_BEGIN);
+        $args['Body'] = $stream = new Stream($file, READ_ONLY_FROM_BEGIN);
 
         $result = $this->putObject($args);
 

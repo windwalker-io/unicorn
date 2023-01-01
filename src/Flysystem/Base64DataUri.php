@@ -19,6 +19,8 @@ use Windwalker\Filesystem\Filesystem;
 use Windwalker\Filesystem\Path;
 use Windwalker\Stream\Stream;
 
+use const Windwalker\Stream\READ_WRITE_RESET;
+
 /**
  * The Base64Data class.
  */
@@ -51,7 +53,7 @@ class Base64DataUri
     {
         $data = static::decode($base64, $mime);
 
-        $stream = new Stream('php://memory', Stream::MODE_READ_WRITE_RESET);
+        $stream = new Stream('php://memory', READ_WRITE_RESET);
         $stream->write($data);
         $stream->rewind();
 

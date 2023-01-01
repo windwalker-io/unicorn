@@ -37,6 +37,8 @@ use function Windwalker\chronos;
 use function Windwalker\fs;
 use function Windwalker\uid;
 
+use const Windwalker\Stream\READ_ONLY_FROM_BEGIN;
+
 /**
  * The FileUploadService class.
  */
@@ -194,7 +196,7 @@ class FileUploadService implements EventAwareInterface
             $stream = $file->getStream();
         } else {
             $dest = static::replaceVariables($dest, $srcExt);
-            $stream = new Stream($file, Stream::MODE_READ_ONLY_FROM_BEGIN);
+            $stream = new Stream($file, READ_ONLY_FROM_BEGIN);
         }
 
         return $this->putToStorage($stream, $file, $dest, $options);
@@ -326,9 +328,9 @@ class FileUploadService implements EventAwareInterface
         $outputFormat = null;
 
         if (is_string($src)) {
-            $src = new Stream($src, Stream::MODE_READ_ONLY_FROM_BEGIN);
+            $src = new Stream($src, READ_ONLY_FROM_BEGIN);
         } elseif ($src instanceof \SplFileInfo) {
-            $src = new Stream($src->getPathname(), Stream::MODE_READ_ONLY_FROM_BEGIN);
+            $src = new Stream($src->getPathname(), READ_ONLY_FROM_BEGIN);
         }
 
         // Must save image to temp file to support image exif.

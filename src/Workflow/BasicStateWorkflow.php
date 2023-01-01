@@ -15,6 +15,7 @@ use Unicorn\Attributes\StateMachine;
 use Unicorn\Enum\BasicState;
 use Unicorn\Enum\PublishingState;
 use Windwalker\Core\Language\TranslatorTrait;
+use Windwalker\ORM\Event\WatchEvent;
 
 /**
  * The BasicStateWorkflow class.
@@ -63,5 +64,15 @@ class BasicStateWorkflow extends AbstractWorkflow
             BasicState::UNPUBLISHED()
         )
             ->button('fa fa-fw fa-xmark', 'Unpublish');
+
+        $workflow->onBeforeChanged(
+            BasicState::PUBLISHED(),
+            BasicState::UNPUBLISHED(),
+            function (TransitionEvent $event) {
+                $data = &$event->getWatchEvent()->getData();
+
+                $data['title'] = $data['title'] .= '2';
+            }
+        );
     }
 }
