@@ -144,10 +144,6 @@ class ModalField extends AbstractField
                     $this->getId() => $this->getItems()
                 ]
             );
-
-            if ($this->isSortable()) {
-                $this->unicornScript->importScript('@sortablejs');
-            }
         } else {
             $title = $this->getItemTitle();
 

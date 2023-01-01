@@ -34,6 +34,7 @@ use Windwalker\Utilities\Str;
  */
 
 BootstrapFormRenderer::handleFieldConfiguration($field);
+
 // JS
 $app->service(\Unicorn\Script\FormScript::class)->showOn($field);
 
@@ -62,6 +63,12 @@ $attrs = $wrapper->getAttributes(true);
 $inputAttrs ??= [];
 $labelAttrs ??= [];
 $validate ??= [];
+
+// Validation
+$validate = array_merge(
+    $field->get('validate') ?? [],
+    $validate,
+);
 
 if ($attributes ?? null) {
     $attributes = $attributes->exceptProps(

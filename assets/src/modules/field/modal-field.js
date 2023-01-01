@@ -8,8 +8,6 @@ import { template } from 'lodash-es';
 
 class ModalField {
   static install(app, options = {}) {
-    u.import('@sortablejs');
-
     app.$modalField = new this(app);
   }
 

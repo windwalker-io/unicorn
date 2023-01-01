@@ -85,7 +85,7 @@ if ($horizon) {
         @elseif ($$slotName ?? null)
             {!! $$slotName(field: $field) !!}
         @else
-            <x-field :field="$field" class="mb-3" :floating="$floating" :star="$star" :="$attrs">
+            <x-field :field="$field" class="mb-4" :floating="$floating" :star="$star" :="$attrs">
                 @if ($fieldSlot ?? null)
                     @scope($field)
                     {!! $fieldSlot(field: $field) !!}

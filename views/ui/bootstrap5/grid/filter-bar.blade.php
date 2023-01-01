@@ -39,7 +39,7 @@ $size ??= null;
 $fieldsCount = $form->countFields(null, 'filter');
 
 if ($fieldsCount === 0 && $filterBlock === null) {
-    $fieldsCount = false;
+    $filterBlock = false;
 }
 
 /** @var \Windwalker\Edge\Component\ComponentAttributes $attributes */
@@ -76,9 +76,7 @@ $attributes = $attributes->class('c-filter-bar mb-4');
             @if ($searchBlock !== false)
                 @if ($searchBlock === null)
                     <x-input-group class="me-3 input-group-{{ $size }}" tag-name="span">
-                        <?php $searchField = $form->getField($searchInput); ?>
-
-                        <x-input :field="$searchField"></x-input>
+                        <x-input :field="$form[$searchInput]"></x-input>
 
                         <x-slot name="end">
                             <button type="submit" class="btn btn-outline-secondary"

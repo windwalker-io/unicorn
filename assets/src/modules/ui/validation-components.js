@@ -22,6 +22,19 @@ const defaultOptions = {
   validatedClass: null,
 };
 
+const defaultFieldOptions = {
+  formSelector: '[uni-form-validate]',
+  errorSelector: '[data-field-error]',
+  selector: 'input[data-field-input], select[data-field-input], textarea[data-field-input]',
+  validClass: 'is-valid',
+  invalidClass: 'is-invalid',
+  events: ['change'],
+  errorMessageClass: 'invalid-tooltip',
+  inputOptions: false,
+  inputOptionsWrapperSelector: 'div[data-field-input]',
+  inputOptionsSelector: '[data-input-option]'
+};
+
 export const Hello = 123;
 
 export class UnicornFormValidation {
@@ -53,7 +66,7 @@ export class UnicornFormValidation {
   }
 
   setOptions(options) {
-    this.options = defaultsDeep(options, defaultOptions);
+    this.options = defaultsDeep({}, options, defaultOptions);
   }
 
   get scrollEnabled() {
@@ -118,9 +131,11 @@ export class UnicornFormValidation {
    */
   prepareFieldWrapper(input) {
     if (['INPUT', 'SELECT', 'TEXTAREA'].indexOf(input.tagName) !== -1) {
-      const wrapper = input.closest('.form-group, [uni-field-validate]');
+      let wrapper = input.closest('[uni-field-validate]');
 
-      if (wrapper && !wrapper.getAttribute('uni-field-validate')) {
+      if (!wrapper) {
+        wrapper = input.closest('[data-input-container]') || input.parentNode;
+
         wrapper.setAttribute('uni-field-validate', '{}');
       }
 
@@ -282,7 +297,7 @@ export class UnicornFormValidation {
    * @param {ValidationHandler} validator
    * @param {ValidationOptions} options
    * @returns {this}
-   */
+   */$loginName
   addValidator(name, validator, options = {}) {
     options = options || {};
 
@@ -321,7 +336,7 @@ export class UnicornFieldValidation {
 
   constructor(el, options = {}) {
     this.el = el;
-    this.options = options;
+    this.options = defaultsDeep({}, options, defaultFieldOptions);
 
     this.init();
   }
@@ -331,27 +346,37 @@ export class UnicornFieldValidation {
   }
 
   get errorSelector() {
-    return this.options.errorSelector || '[data-field-error]';
+    return this.options.errorSelector;
   }
 
   get selector() {
-    return this.options.selector || 'input[data-field-input], select[data-field-input], textarea[data-field-input]';
+    return this.options.selector;
   }
 
   get validClass() {
-    return this.options.validClass || 'is-valid';
+    return this.options.validClass;
   }
 
   get invalidClass() {
-    return this.options.invalidClass || 'is-invalid';
+    return this.options.invalidClass;
   }
 
   get isVisible() {
     return !!(this.el.offsetWidth || this.el.offsetHeight || this.el.getClientRects().length);
   }
 
+  get isInputOptions() {
+    return Boolean(this.options.inputOptions);
+  }
+
   selectInput() {
-    let input = this.el.querySelector(this.selector);
+    let selector = this.selector;
+
+    if (this.options.inputOptions) {
+      selector += ', ' + this.options.inputOptionsWrapperSelector;
+    }
+
+    let input = this.el.querySelector(selector);
 
     if (!input) {
       input = this.el.querySelector('input, select, textarea');
@@ -366,6 +391,16 @@ export class UnicornFieldValidation {
     this.bindEvents();
 
     this.prepareWrapper();
+
+    if (this.isInputOptions) {
+      this.$input.validationMessage = '';
+      this.$input.setCustomValidity = (msg) => {
+        this.$input.validationMessage = String(msg);
+      };
+      this.$input.checkValidity = () => {
+        return this.checkInputOptionsValidity();
+      };
+    }
   }
 
   bindEvents() {
@@ -377,7 +412,7 @@ export class UnicornFieldValidation {
       this.showInvalidResponse();
     });
 
-    const events = this.options['events'] || ['change'];
+    const events = this.options.events;
 
     events.forEach((eventName) => {
       this.$input.addEventListener(eventName, () => {
@@ -526,6 +561,49 @@ export class UnicornFieldValidation {
     const error = this.$input.dataset.validationFail;
 
     return this.handleCustomResult(error);
+  }
+
+  checkInputOptionsValidity() {
+    const optionWrappers = this.$input.querySelectorAll(this.options.inputOptionsSelector);
+    let result = true;
+
+    for (const optionWrapper of optionWrappers) {
+      const input = optionWrapper.querySelector('input');
+      result = result && input.checked;
+
+      // Only need one checked
+      if (result) {
+        break;
+      }
+    }
+
+    // Get browser input validation message
+    const n = document.createElement('input');
+    n.required = true;
+
+    if (result) {
+      n.value = 'placeholder';
+    }
+
+    n.checkValidity();
+
+    this.$input.validationMessage = n.validationMessage;
+    this.$input.validity = n.validity;
+
+    for (const optionWrapper of optionWrappers) {
+      const input = optionWrapper.querySelector('input');
+
+      input.setCustomValidity(n.validationMessage);
+    }
+
+    if (!result) {
+      this.$input.dispatchEvent(
+        new CustomEvent('invalid')
+      );
+    }
+
+    return result;
+>>>>>>> 052ee2eca6f0be6f402a88f47b1fdfc24a4d9d4f
   }
 
   /**
@@ -685,7 +763,7 @@ export class UnicornFieldValidation {
   }
 
   createHelpElement() {
-    const className = this.options.errorMessageClass || 'invalid-tooltip';
+    const className = this.options.errorMessageClass;
     const parsed = this.parseSelector(this.errorSelector);
 
     const $help = u.html(`<div class="${className}"></div>`);
@@ -737,7 +815,7 @@ export class UnicornFieldValidation {
   }
 
   getForm() {
-    return this.el.closest(this.options['formSelector'] || '[uni-form-validate]');
+    return this.el.closest(this.options.formSelector || '[uni-form-validate]');
   }
 
   findLabel() {
