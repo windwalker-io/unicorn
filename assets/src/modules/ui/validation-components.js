@@ -410,6 +410,9 @@ export class UnicornFieldValidation {
       valid = this.runCustomValidity();
     }
 
+    // Raise invalid event
+    this.$input.checkValidity();
+
     this.updateValidClass(valid);
 
     return valid;
@@ -421,6 +424,10 @@ export class UnicornFieldValidation {
     let result = true;
 
     if (this.$input.value !== '' && validates.length) {
+      if (!this.checkCustomDataAttributeValidity()) {
+        return false;
+      }
+
       for (const validatorName of validates) {
         const [ validator, options ] = this.getValidator(validatorName) || [ null, {} ];
 
@@ -482,6 +489,10 @@ export class UnicornFieldValidation {
     const promises = [];
 
     if (this.$input.value !== '' && validates.length) {
+      if (!this.checkCustomDataAttributeValidity()) {
+        return false;
+      }
+
       for (const validatorName of validates) {
         const [ validator, options ] = this.getValidator(validatorName) || [ null, {} ];
 
@@ -509,6 +520,12 @@ export class UnicornFieldValidation {
     }
 
     return true;
+  }
+
+  checkCustomDataAttributeValidity() {
+    const error = this.$input.dataset.validationFail;
+
+    return this.handleCustomResult(error);
   }
 
   /**
@@ -544,6 +561,10 @@ export class UnicornFieldValidation {
   getValidator(name) {
     const matches = name.match(/(?<type>\w+)(\((?<params>.*)\))*/);
 
+    if (!matches) {
+      return null;
+    }
+
     const validatorName = matches.groups.type || '';
     const params = matches.groups.params || '';
 
@@ -566,11 +587,11 @@ export class UnicornFieldValidation {
 
   /**
    * @param result {boolean|string|undefined}
-   * @param validator {Validator}
+   * @param validator {Validator|null}
    *
    * @return {boolean}
    */
-  handleCustomResult(result, validator) {
+  handleCustomResult(result, validator = null) {
     if (typeof result === 'string') {
       this.$input.setCustomValidity(result);
       result = result === '';
@@ -580,7 +601,7 @@ export class UnicornFieldValidation {
 
     if (result) {
       this.$input.setCustomValidity('');
-    } else {
+    } else if (validator) {
       this.raiseCustomErrorState(validator);
     }
 
@@ -589,11 +610,11 @@ export class UnicornFieldValidation {
 
   /**
    * @param result {boolean}
-   * @param validator {Validator}
+   * @param validator {Validator|null}
    *
    * @return {boolean}
    */
-  handleAsyncCustomResult(result, validator) {
+  handleAsyncCustomResult(result, validator = null) {
     result = this.handleCustomResult(result, validator);
 
     // Fire invalid events
