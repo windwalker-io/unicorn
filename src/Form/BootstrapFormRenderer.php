@@ -27,6 +27,7 @@ class BootstrapFormRenderer extends FormRenderer
             $field->setOptionWrapperHandler(
                 function (DOMElement $wrapper) {
                     $wrapper->addClass('form-check');
+                    $wrapper->setAttribute('data-input-option', true);
                 }
             );
             $field->setOptionHandler(
@@ -39,16 +40,18 @@ class BootstrapFormRenderer extends FormRenderer
                     $wrapper->addClass('form-check-label');
                 }
             );
+            $field->set('validate', ['inputOptions' => true]);
         }
     }
 
-    public static function handleInputClasses(AbstractField $field, DOMElement $inputElement)
+    public static function handleInputClasses(AbstractField $field, DOMElement $inputElement): void
     {
         $inputElement->addClass(
             match (true) {
                 $inputElement->getAttribute('type') === 'checkbox' => 'form-input-check',
                 $field instanceof InputOptionsInterface => '',
-                $inputElement->getName() === 'select' && !$field->hasAttribute('multiple') => 'custom-select form-select',
+                $inputElement->getName() === 'select' && !$field->hasAttribute('multiple')
+                    => 'custom-select form-select',
                 default => 'form-control'
             }
         );
