@@ -603,7 +603,6 @@ export class UnicornFieldValidation {
     }
 
     return result;
->>>>>>> 052ee2eca6f0be6f402a88f47b1fdfc24a4d9d4f
   }
 
   /**
