@@ -35,8 +35,6 @@ const defaultFieldOptions = {
   inputOptionsSelector: '[data-input-option]'
 };
 
-export const Hello = 123;
-
 export class UnicornFormValidation {
   /**
    * @type {Element[]}
