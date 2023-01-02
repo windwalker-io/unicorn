@@ -219,3 +219,17 @@ export async function showOn() {
     })
   );
 }
+
+export async function vueComponentField() {
+  watch(
+    ['src/modules/**/*.js', 'scss/**/*.scss']
+  );
+
+  return wait(
+    webpack('./src/modules/field/vue-component-field.js', './dist/field/', {
+      override: (options) => {
+        options.output.libraryTarget = 'umd';
+      }
+    })
+  );
+}

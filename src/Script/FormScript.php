@@ -231,4 +231,18 @@ class FormScript extends AbstractScript
             }
         }
     }
+
+    public function vueComponentField(string $selector, mixed $value, array $options = []): void
+    {
+        if ($this->available($selector)) {
+            $this->vueScript->vue();
+
+            $v = static::getJSObject($value);
+            $optionsString = static::getJSObject($options);
+
+            $this->unicornScript->importMainThen(
+                "u.\$ui.vueComponentField('$selector', $v, $optionsString)"
+            );
+        }
+    }
 }

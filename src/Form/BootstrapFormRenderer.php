@@ -15,6 +15,7 @@ use Windwalker\Core\Form\FormRenderer;
 use Windwalker\DOM\DOMElement;
 use Windwalker\Form\Contract\InputOptionsInterface;
 use Windwalker\Form\Field\AbstractField;
+use Windwalker\Form\Field\TextField;
 
 /**
  * The BootstrapFormRenderer class.
@@ -52,7 +53,8 @@ class BootstrapFormRenderer extends FormRenderer
                 $field instanceof InputOptionsInterface => '',
                 $inputElement->getName() === 'select' && !$field->hasAttribute('multiple')
                     => 'custom-select form-select',
-                default => 'form-control'
+                $field instanceof TextField => 'form-control',
+                default => ''
             }
         );
     }

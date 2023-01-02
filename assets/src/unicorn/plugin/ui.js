@@ -722,6 +722,23 @@ export default class UnicornUI {
     return u.import('@unicorn/ui/show-on.js');
   }
 
+  /**
+   * Vue component field.
+   * @param {Element|string|null} selector
+   * @param {any} value
+   * @param {any} init
+   * @returns {Promise<any>}
+   */
+  vueComponentField(selector = null, value = null, options = {}) {
+    return u.import('@unicorn/field/vue-component-field.js').then((m) => {
+      if (selector) {
+        VueComponentField.init(selector, value, options);
+      }
+
+      return m;
+    });
+  }
+
   static prepareInpageCSS() {
     //
   }

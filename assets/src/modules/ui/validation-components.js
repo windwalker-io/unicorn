@@ -295,7 +295,7 @@ export class UnicornFormValidation {
    * @param {ValidationHandler} validator
    * @param {ValidationOptions} options
    * @returns {this}
-   */$loginName
+   */
   addValidator(name, validator, options = {}) {
     options = options || {};
 
