@@ -84,6 +84,7 @@ class VueComponentField extends AbstractField
 
         $input->setAttribute('data-vue-component', '');
         $input->setAttribute('ref', 'mainInput');
+        $input->setAttribute('v-model', 'value');
         $input->setAttribute('v-on:change', 'onChange');
         $input->setAttribute('v-on:input', 'onInput');
         $input->setAttribute('v-on:invalid', 'onInvalid');

@@ -7,7 +7,7 @@
 
 export class VueComponentField {
   static async init(selector, value = null, options = {}) {
-    const { createApp, ref, reactive, toRefs, onMounted, getCurrentInstance } = Vue;
+    const { createApp, ref, reactive, toRefs, onMounted } = Vue;
 
     options = u.defaultsDeep({}, options, {
       init: null,
@@ -51,6 +51,18 @@ export class VueComponentField {
           storeInput?.dispatchEvent(new CustomEvent('invalid'));
         }
 
+        function callGlobal(funcName) {
+          return function (...args) {
+            return window[funcName](...args);
+          }
+        }
+
+        function unicornEvent(eventName) {
+          return function (...args) {
+            return u.trigger(eventName, ...args);
+          }
+        }
+
         return {
           ...toRefs(state),
           elPlaceholder,
@@ -59,6 +71,8 @@ export class VueComponentField {
           onChange,
           onInput,
           onInvalid,
+          callGlobal,
+          unicornEvent,
         }
       }
     });
