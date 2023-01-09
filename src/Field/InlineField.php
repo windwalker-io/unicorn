@@ -17,6 +17,9 @@ use Windwalker\Form\Field\CompositeFieldInterface;
 use Windwalker\Form\Form;
 use Windwalker\Form\ValidateResult;
 use Windwalker\Utilities\Arr;
+use Windwalker\Utilities\Reflection\ReflectAccessor;
+
+use function Windwalker\uid;
 
 /**
  * The InlineField class.
@@ -27,11 +30,15 @@ use Windwalker\Utilities\Arr;
 class InlineField extends AbstractField implements CompositeFieldInterface
 {
     use LayoutFieldTrait;
-    use SubformFieldTrait;
+    use SubformFieldTrait {
+        SubformFieldTrait::configureForm as parentConfigureForm;
+    }
 
     protected array $widths = [];
 
     protected ?string $group = null;
+
+    protected ?string $subFieldset = null;
 
     public function getDefaultLayout(): string
     {
@@ -52,6 +59,25 @@ class InlineField extends AbstractField implements CompositeFieldInterface
         }
 
         return $form;
+    }
+
+    public function configureForm(callable $handler): static
+    {
+        $r = $this->parentConfigureForm($handler);
+
+        if (!$this->group) {
+            $this->subFieldset ??= 'inline-' . uid();
+            $fields = $this->subform->getFields();
+            $form = $this->getForm();
+
+            foreach ($fields as $name => $field) {
+                $form->addField($field, $this->subFieldset);
+            }
+
+            ReflectAccessor::setValue($form, 'fieldset', $form->getFieldset($this->getFieldset()));
+        }
+
+        return $r;
     }
 
     public function buildFieldElement(DOMElement $input, array $options = []): string|DOMElement
