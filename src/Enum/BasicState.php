@@ -11,8 +11,8 @@ declare(strict_types=1);
 
 namespace Unicorn\Enum;
 
-use MyCLabs\Enum\Enum;
 use Windwalker\Utilities\Contract\LanguageInterface;
+use Windwalker\Utilities\Enum\EnumSingleton;
 use Windwalker\Utilities\Enum\EnumTranslatableInterface;
 use Windwalker\Utilities\Enum\EnumTranslatableTrait;
 
@@ -22,7 +22,7 @@ use Windwalker\Utilities\Enum\EnumTranslatableTrait;
  * @method static static UNPUBLISHED()
  * @method static static PUBLISHED()
  */
-class BasicState extends Enum implements EnumTranslatableInterface
+class BasicState extends EnumSingleton implements EnumTranslatableInterface
 {
     use EnumTranslatableTrait;
 
