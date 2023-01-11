@@ -24,6 +24,8 @@ use Windwalker\Core\Generator\SubCommand\AbstractGeneratorSubCommand;
 use Windwalker\Utilities\Str;
 use Windwalker\Utilities\StrNormalize;
 
+use function Windwalker\collect;
+
 /**
  * The ModelSubCommand class.
  */
@@ -116,7 +118,14 @@ class MvcAdminSubCommand extends AbstractGeneratorSubCommand
         );
 
         // Seeder
-        $kebabName = StrNormalize::toKebabCase($name);
+        $kebabName = (string) collect(preg_split('/[\\/]+/', $name) ?: [])
+            ->map([StrNormalize::class, 'toKebabCase'])
+            ->implode('/');
+
+        if (trim($kebabName) === '') {
+            throw new \RuntimeException('Camel to Kebab name is empty');
+        }
+
         $this->runProcess(
             "php windwalker seed:create {$kebabName}",
             $io
