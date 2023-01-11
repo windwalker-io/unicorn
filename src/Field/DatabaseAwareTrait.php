@@ -59,7 +59,9 @@ trait DatabaseAwareTrait
     {
         $this->prepareQuery($query = clone $this->getQuery());
 
-        $query->autoSelections($this->getAutoSelections());
+        if ($this->getAutoSelections()) {
+            $query->autoSelections($this->getAutoSelections());
+        }
 
         return $query;
     }
