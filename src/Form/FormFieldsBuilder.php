@@ -278,8 +278,8 @@ PHP;
     {
         return match ($colName) {
             'id', 'title', 'alias', 'description', 'ordering', 'parent', 'delete', 'created', 'modified',
-                'modified_by', 'image', 'images', 'type' => 'unicorn.field.' . $colName,
-            'state' => 'unicorn.field.published',
+            'modified_by', 'image', 'images', 'type' => 'unicorn.field.' . $colName,
+            'state', 'published' => 'unicorn.field.published',
             'created_by' => 'unicorn.field.author',
             default => $langPrefix . '.' . $colName
         };
