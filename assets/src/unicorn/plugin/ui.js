@@ -551,7 +551,7 @@ export default class UnicornUI {
    * Color Picker.
    *
    * @param {string|HTMLElement|null} selector
-   * @param {Partial<SpectrumOptions>} options
+   * @param {SpectrumOptions} options
    *
    * @return Promise<Spectrum>
    */
