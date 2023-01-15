@@ -45,6 +45,9 @@ export default class UnicornUI {
     this.theme = theme;
   }
 
+  /**
+   * @param {Unicorn} app
+   */
   constructor(app) {
     this.app = app;
     this.aliveHandle = null;
@@ -546,67 +549,43 @@ export default class UnicornUI {
 
   /**
    * Color Picker.
-   * Todo: Move to another file.
+   *
+   * @param {string|HTMLElement|null} selector
+   * @param {Partial<SpectrumOptions>} options
+   *
+   * @return Promise<Spectrum>
    */
-  colorPicker() {
-    this.app.directive('color-picker', {
-      mounted(el, binding) {
-        u.getBoundedInstance(el, 'color.picker', () => {
-          const text = el.querySelector('[data-role=color-text]');
-          const preview = el.querySelector('[data-role=color-preview]');
-          const pick = el.querySelector('[data-task=pick-color]');
-          const inputContainer = el.querySelector('[data-role=input-container]');
+  colorPicker(selector = null, options = {}) {
+    if (options?.theme === 'dark') {
+      this.app.importCSS('@spectrum/spectrum-dark.min.css');
+    } else if (options?.theme !== false) {
+      this.app.importCSS('@spectrum/spectrum.min.css');
+    }
 
-          pick.addEventListener('click', () => {
-            openPicker();
-          });
+    return this.app.import('@spectrum')
+      .then((m) => {
+        if (typeof options.locale === 'string') {
+          let ls = options.locale.split('-').map((l) => l.toLocaleString());
 
-          text.addEventListener('focus', () => {
-            openPicker();
-          });
-
-          text.addEventListener('change', () => {
-            updatePreview();
-          });
-
-          text.dispatchEvent(new Event('change'));
-
-          function openPicker() {
-            const input = u.h('input', { type: 'color', value: text.value });
-
-            inputContainer.innerHTML = '';
-            inputContainer.appendChild(input);
-
-            input.addEventListener('change', () => {
-              preview.style.backgroundColor = input.value;
-              text.value = input.value;
-              updatePreview();
-            });
-
-            input.addEventListener('input', () => {
-              preview.style.backgroundColor = input.value;
-              text.value = input.value;
-              updatePreview();
-            });
-
-            setTimeout(() => {
-              input.click();
-            }, 0);
+          if (ls[0] === ls[1]) {
+            ls = [ls];
           }
 
-          function updatePreview() {
-            preview.style.backgroundColor = text.value;
+          ls = ls.join('-');
 
-            // @see https://stackoverflow.com/a/12043228
-            const sep = 200;
-            const [, r, g, b] = preview.style.backgroundColor?.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/)
-              || ['', 255, 255, 255];
-            const luma = Number(r) * 0.2126 + Number(g) * 0.7152 + Number(b) * 0.0722;
-            pick.style.color = luma > sep ? 'black' : 'white';
-          }
-        });
-      }
-    })
+          return this.app.import(`@spectrum/i18n/${ls}.js`)
+            .then(() => m)
+            .catch(() => m);
+        }
+
+        return m;
+      })
+      .then((m) => {
+        if (selector) {
+          u.module(selector, 'spectrum', (ele) => Spectrum.getInstance(ele, options));
+        }
+        return m;
+      });
   }
 
   /**
@@ -726,7 +705,7 @@ export default class UnicornUI {
    * Vue component field.
    * @param {Element|string|null} selector
    * @param {any} value
-   * @param {any} init
+   * @param {any} options
    * @returns {Promise<any>}
    */
   vueComponentField(selector = null, value = null, options = {}) {

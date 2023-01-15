@@ -151,9 +151,12 @@ class FormScript extends AbstractScript
         return $this;
     }
 
-    public function colorPicker(): static
+    public function colorPicker(?string $selector = null, array $options = []): static
     {
-        if ($this->available()) {
+        if ($selector && $this->available()) {
+            $optString = static::getJSObject($options);
+            $this->unicornScript->importMainThen("u.\$ui.colorPicker('$selector', $optString)");
+        } elseif ($this->available($selector)) {
             $this->unicornScript->importMainThen("u.\$ui.colorPicker()");
         }
 

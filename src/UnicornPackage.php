@@ -153,6 +153,8 @@ class UnicornPackage extends AbstractPackage implements
                 '@cropperjs/'   => 'vendor/cropperjs/dist/',
                 '@tinymce'      => 'vendor/tinymce/tinymce.js',
                 '@sortablejs'   => 'vendor/sortablejs/Sortable.min.js',
+                '@spectrum/'   => 'vendor/spectrum-vanilla/dist/',
+                '@spectrum'   => 'vendor/spectrum-vanilla/dist/spectrum.min.js',
                 '@vue'          => 'vendor/vue/dist/vue.global' . ($this->app->isDebug() ? '' : '.prod') . '.js',
                 '@vuedraggable' => 'vendor/vuedraggable/dist/vuedraggable.umd.min.js',
                 '@vue2-animate' => 'vendor/vue2-animate/dist/vue2-animate.min.css',

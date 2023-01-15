@@ -21,6 +21,8 @@ class ColorPickerField extends AbstractHtml5Field
 {
     use LayoutFieldTrait;
 
+    protected array $pickerOptions = [];
+
     public function getDefaultLayout(): string
     {
         return '@theme::field.color-picker';
@@ -35,5 +37,25 @@ class ColorPickerField extends AbstractHtml5Field
                 'field' => $this
             ]
         );
+    }
+
+    /**
+     * @return array
+     */
+    public function getPickerOptions(): array
+    {
+        return $this->pickerOptions;
+    }
+
+    /**
+     * @param  array  $pickerOptions
+     *
+     * @return  static  Return self to support chaining.
+     */
+    public function pickerOptions(array $pickerOptions): static
+    {
+        $this->pickerOptions = $pickerOptions;
+
+        return $this;
     }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@windwalker-io/unicorn",
-  "version": "1.0.46",
+  "version": "1.0.47",
   "description": "Unicorn framework js library",
   "types": "src/index.d.ts",
   "main": "dist/unicorn.js",
@@ -65,16 +65,18 @@
     "qs": "^6.10.1",
     "regenerator-runtime": "^0.13.7",
     "rollup-plugin-terser": "^7.0.2",
+    "spectrum-vanilla": "^1.0.2",
     "sprintf-js": "^1.1.2",
     "style-loader": "^2.0.0",
-    "vue-demi": "^0.13.11",
     "vinyl-named-with-path": "^1.0.0",
+    "vue-demi": "^0.13.11",
     "vue-loader": "^16",
     "vue-style-loader": "^4.1.3",
     "vue3-slide-up-down": "^1.2.5",
+    "webpack": "^5.0",
     "webpack-bundle-analyzer": "^4.6.1",
     "webpack-comment-remover-loader": "^0.0.3",
-    "webpack-stream": "^6.1.2"
+    "webpack-stream": "^7.0"
   },
   "windwalker": {
     "vendors": [
@@ -95,6 +97,7 @@
       "tinymce-i18n",
       "vue",
       "sortablejs",
+      "spectrum-vanilla",
       "vuedraggable",
       "vue2-animate",
       "choices.js",
