@@ -1,6 +1,6 @@
 {
   "name": "@windwalker-io/unicorn",
-  "version": "1.0.47",
+  "version": "1.0.48",
   "description": "Unicorn framework js library",
   "types": "src/index.d.ts",
   "main": "dist/unicorn.js",
@@ -35,6 +35,7 @@
     "flatpickr": "^4.6.9",
     "sortablejs": "^1.13.0",
     "systemjs": "^6.8.3",
+    "spectrum-vanilla": "^1.0.2",
     "tinymce": "^5.8.0||^6.0",
     "tom-select": "^2.0.0",
     "vue": "^2.6||^3.2",
@@ -65,7 +66,6 @@
     "qs": "^6.10.1",
     "regenerator-runtime": "^0.13.7",
     "rollup-plugin-terser": "^7.0.2",
-    "spectrum-vanilla": "^1.0.2",
     "sprintf-js": "^1.1.2",
     "style-loader": "^2.0.0",
     "vinyl-named-with-path": "^1.0.0",
