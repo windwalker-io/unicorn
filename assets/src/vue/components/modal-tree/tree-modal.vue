@@ -79,7 +79,6 @@ export default defineComponent({
 
     onMounted(() => {
       $modal = u.$ui.bootstrap.modal('#' + modalId)[0];
-      console.log($modal);
       $modal._element.addEventListener('show.bs.modal', onShow);
       $modal._element.addEventListener('hide.bs.modal', onHide);
     });
