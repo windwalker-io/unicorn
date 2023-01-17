@@ -51,7 +51,7 @@ class NestedReorderAction extends ReorderAction
 
             $conditions = $groupHandler
                 ? fn(Query $query) => $this->getReorderGroupHandler()($query, $item)
-                : null;
+                : [];
 
             $mapper->move($item, $delta, $conditions);
         }
