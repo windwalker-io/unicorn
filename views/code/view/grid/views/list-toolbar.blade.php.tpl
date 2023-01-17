@@ -23,6 +23,11 @@ use Windwalker\Core\DateTime\ChronosService;
 use Windwalker\Core\Language\LangService;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\SystemUri;
+use Windwalker\Form\Form;
+
+/**
+* @var $form Form
+*/
 
 {% $phpClose %}
 
@@ -55,15 +60,17 @@ use Windwalker\Core\Router\SystemUri;
         @lang('unicorn.toolbar.state.change')
     </x-state-dropdown>
 
-    {{-- Batch --}}
-    <button type="button" class="btn btn-dark btn-sm uni-btn-batch"
-        @click="grid.validateChecked(null, function () {
-            (new bootstrap.Modal('#batch-modal')).show();
-        })"
-    >
-        <i class="fa fa-sliders"></i>
-        @lang('unicorn.toolbar.batch')
-    </button>
+    @if ($form?->countFields(null, 'batch'))
+        {{-- Batch --}}
+        <button type="button" class="btn btn-dark btn-sm uni-btn-batch"
+            @click="grid.validateChecked(null, function () {
+                (new bootstrap.Modal('#batch-modal')).show();
+            })"
+        >
+            <i class="fa fa-sliders"></i>
+            @lang('unicorn.toolbar.batch')
+        </button>
+    @endif
 
     {{-- Delete --}}
     <button type="button" class="btn btn-outline-danger btn-sm uni-btn-delete"
