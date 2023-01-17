@@ -39,6 +39,8 @@ class NestedReorderAction extends ReorderAction
         /** @var NestedSetMapper $mapper */
         $mapper = $this->getEntityMapper();
 
+        $groupHandler = $this->getReorderGroupHandler();
+
         foreach ($ids as $id) {
             /** @var NestedEntityInterface $item */
             $item = $mapper->findOne($id, $mapper->getMetadata()->getClassName());
@@ -47,7 +49,11 @@ class NestedReorderAction extends ReorderAction
                 continue;
             }
 
-            $mapper->move($item, $delta);
+            $conditions = $groupHandler
+                ? fn(Query $query) => $this->getReorderGroupHandler()($query, $item)
+                : null;
+
+            $mapper->move($item, $delta, $conditions);
         }
 
         return true;
