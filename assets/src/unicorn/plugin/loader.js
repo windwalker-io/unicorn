@@ -34,7 +34,7 @@ export default class UnicornLoader {
 
   /**
    * Import modules or scripts.
-   * @param {string} ...src
+   * @param {string} src
    * @returns {Promise<any[]|any>}
    */
   import(...src) {
