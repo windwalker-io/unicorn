@@ -22,6 +22,8 @@ use Windwalker\Form\Form;
 use Windwalker\Form\ValidateResult;
 use Windwalker\Utilities\Arr;
 
+use Windwalker\Utilities\Cache\InstanceCacheTrait;
+
 use function Windwalker\collect;
 
 /**
@@ -29,6 +31,7 @@ use function Windwalker\collect;
  */
 trait FormAwareActionTrait
 {
+    use InstanceCacheTrait;
     use TranslatorTrait;
 
     #[Inject]
@@ -52,18 +55,18 @@ trait FormAwareActionTrait
         array $args = [],
         bool $keepFullData = false
     ): array {
-        $form = $this->getForm($form, $args);
-
-        if ($form instanceof Form) {
-            return $form->filter($data, $keepFullData);
-        }
-
         if (is_array($form)) {
             if (array_is_list($form)) {
                 return Arr::except($data, $form);
             }
 
             return $this->filterService->filter($data, $form);
+        }
+
+        $form = $this->getForm($form, $args);
+
+        if ($form instanceof Form) {
+            return $form->filter($data, $keepFullData);
         }
 
         return $data;
@@ -80,6 +83,14 @@ trait FormAwareActionTrait
      */
     public function validateBy(array $data, mixed $form, array $args = []): bool
     {
+        if (is_array($form)) {
+            try {
+                return $this->filterService->validate($data, $form);
+            } catch (ValidateException $e) {
+                throw new ValidateFailException($e->getMessage());
+            }
+        }
+
         $form = $this->getForm($form, $args);
 
         if ($form instanceof Form) {
@@ -105,14 +116,6 @@ trait FormAwareActionTrait
             }
 
             return true;
-        }
-
-        if (is_array($form)) {
-            try {
-                return $this->filterService->validate($data, $form);
-            } catch (ValidateException $e) {
-                throw new ValidateFailException($e->getMessage());
-            }
         }
 
         return true;

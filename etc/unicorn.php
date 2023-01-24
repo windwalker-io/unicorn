@@ -19,7 +19,9 @@ return [
             \Windwalker\Core\Asset\AssetService::class => [
                 \Unicorn\Listener\UnicornAssetSubscriber::class
             ],
-            \Unicorn\Listener\DumpOrphansSubscriber::class,
+            \Windwalker\Core\Application\AppContext::class => [
+                \Unicorn\Listener\DumpOrphansSubscriber::class
+            ],
         ],
 
         'providers' => [
