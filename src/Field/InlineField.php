@@ -56,6 +56,14 @@ class InlineField extends AbstractField implements CompositeFieldInterface
 
         if ($this->group) {
             $form->appendNamespace($this->group);
+
+            $value = $this->getValue();
+
+            if (is_json($value)) {
+                $value = (array) json_decode($value, true);
+            }
+
+            $form->fill((array) $value);
         }
 
         return $form;
