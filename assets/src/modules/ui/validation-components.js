@@ -436,6 +436,14 @@ export class UnicornFieldValidation {
       return true;
     }
 
+    if (this.$input.hasAttribute('[data-novalidate]')) {
+      return true;
+    }
+
+    if (this.$input.closest('[data-novalidate]')) {
+      return true;
+    }
+
     this.$input.setCustomValidity('');
     let valid = this.$input.checkValidity();
 
