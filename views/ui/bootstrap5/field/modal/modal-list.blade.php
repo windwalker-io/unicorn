@@ -120,13 +120,13 @@ $disabled = $field->isReadonly() || $field->isDisabled();
     <div class="list-group-item item">
         <div class="d-flex">
             @if ($field->isSortable())
-                <div class="h-drag-handle me-2" style="cursor: move;">
+                <div class="h-drag-handle" style="cursor: move;">
                     <span class="fa fa-fw fa-ellipsis-v"></span>
                 </div>
             @endif
 
             @if ($field->isHasImage())
-                <div class="modal-list-item-image mr-2">
+                <div class="modal-list-item-image me-2">
                     <div style="height: 2em; width: 2em; border-radius: 2px; background: url(${item.image}) center center; background-size: cover">
 
                     </div>
@@ -141,7 +141,7 @@ $disabled = $field->isReadonly() || $field->isDisabled();
                 ${item.title}
                 </a>
             </div>
-            <div class="modal-list-item-delete ml-2">
+            <div class="modal-list-item-delete ms-2">
                 <button type="button" class="btn btn-outline-secondary btn-sm"
                     data-role="remove">
                     <span class="fa fa-trash"></span>
