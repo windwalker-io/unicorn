@@ -75,7 +75,9 @@ export async function vue() {
 
   // Compile Start
   return wait(
-    fusion.vue('src/vue/entries/**/*.js', 'dist/vue/')
+    fusion.vue('src/vue/entries/**/*.js', 'dist/vue/', {
+      excludeVue: true
+    })
   );
   // Compile end
 }

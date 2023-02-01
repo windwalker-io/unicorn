@@ -182,6 +182,8 @@ class UnicornPackage extends AbstractPackage implements
                 '@card' => '@theme::components.card',
                 '@input-group' => '@theme::components.input-group',
                 '@breadcrumb' => '@theme::components.breadcrumb',
+                '@tabs' => '@theme::components.tabs',
+                '@tab' => '@theme::components.tab',
             ]
         );
 
@@ -206,7 +208,9 @@ class UnicornPackage extends AbstractPackage implements
                 'card' => '@card',
                 'div' => '@theme::components.div',
                 'input-group' => '@input-group',
-                'breadcrumb' => '@breadcrumb'
+                'breadcrumb' => '@breadcrumb',
+                'tabs' => '@tabs',
+                'tab' => '@tab',
             ]
         );
 
