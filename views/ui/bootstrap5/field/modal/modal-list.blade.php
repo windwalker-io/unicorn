@@ -87,7 +87,7 @@ $disabled = $field->isReadonly() || $field->isDisabled();
                     </a>
                     <button type="button" class="btn btn-primary"
                         data-bs-toggle="tooltip"
-                        title="@lang('uniform.field.modal.clear.all')"
+                        title="@lang('univorn.field.modal.clear.all')"
                         data-role="clear"
                     >
                         <span class="fa fa-xmark"></span>
