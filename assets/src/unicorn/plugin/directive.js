@@ -110,6 +110,17 @@ export default class UnicornDirective {
           this.findDirectivesFromNode(node).forEach((directive) => {
             this.runDirectiveIfExists(directive, node, 'mounted', mutation);
           });
+
+          // Find children with all directives
+          for (const directive in this.directives) {
+            if (!node.querySelectorAll) {
+              continue;
+            }
+
+            node.querySelectorAll(`[${directive}]`).forEach((node) => {
+              this.runDirectiveIfExists(directive, node, 'mounted', mutation);
+            });
+          }
         });
 
         [].forEach.call(mutation.removedNodes, (node) => {
