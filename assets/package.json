@@ -1,6 +1,6 @@
 {
   "name": "@windwalker-io/unicorn",
-  "version": "1.0.50",
+  "version": "1.0.51",
   "description": "Unicorn framework js library",
   "types": "src/index.d.ts",
   "main": "dist/unicorn.js",
