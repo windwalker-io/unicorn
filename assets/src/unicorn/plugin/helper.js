@@ -258,6 +258,15 @@ export default class UnicornHelper {
             event.stopPropagation = function () {
               forceBreak = true;
             };
+            Object.defineProperty(
+              event,
+              'currentTarget',
+              {
+                get() {
+                  return element;
+                }
+              }
+            );
 
             const callbackList = delegationSelectorsMap[selector];
 
