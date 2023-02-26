@@ -7,7 +7,7 @@
 
 export default class UnicornHttp {
   globalAxios;
-  cancelToken;
+  CanceledError;
 
   /**
    * @type {AxiosInstance}
@@ -34,12 +34,16 @@ export default class UnicornHttp {
     return this;
   }
 
+  importAxios() {
+    return this.app.import('@axios');
+  }
+
   /**
    * @return {Promise<any>}
    */
   getGlobalAxios() {
     if (!this.globalAxios) {
-      this.globalAxios = this.app.import('@axios');
+      this.globalAxios = this.importAxios();
     }
 
     return this.globalAxios;
@@ -50,7 +54,7 @@ export default class UnicornHttp {
    */
   createHttp() {
     return this.getGlobalAxios().then(() => {
-      this.cancelToken = axios.CancelToken;
+      this.CanceledError = axios.CanceledError;
       return this.axios = axios.create(this.options.axios || {});
     });
   }
@@ -206,6 +210,10 @@ export default class UnicornHttp {
     return this.request(options);
   }
 
+  isCancel(cancel) {
+    return axios.isCancel(cancel);
+  }
+
   /**
    * Send request.
    *
@@ -214,26 +222,11 @@ export default class UnicornHttp {
    * @returns {Promise<AxiosResponse>}
    */
   request(options) {
-    let cancel;
+    return this.getHttp()
+      .then(axiosInstance => {
+        this.prepareAxios(axiosInstance);
 
-    const p = this.getHttp()
-      .then(axios => {
-        this.prepareAxios(axios);
-
-        const cancelTokenSource = this.cancelToken.source();
-
-        cancel = (message) => {
-          return cancelTokenSource.cancel(message);
-        };
-
-        if (options.cancelToken && typeof options.cancelToken === 'object') {
-          const canceller = options.cancelToken;
-          canceller.cancel = cancel;
-        }
-
-        options.cancelToken = cancelTokenSource.token;
-
-        return axios(options);
+        return axiosInstance(options);
       })
       .catch(
         /** @param {AxiosError} e */
@@ -247,12 +240,6 @@ export default class UnicornHttp {
           return Promise.reject(e);
         }
       );
-
-    p.cancel = (message) => {
-      return cancel(message);
-    };
-
-    return p;
 
     // let reqOptions = options;
     // let reqUrl = url;
