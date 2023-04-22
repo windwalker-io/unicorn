@@ -119,9 +119,9 @@ class InlineField extends AbstractField implements CompositeFieldInterface
         return $failResult;
     }
 
-    public function filter(mixed $value): mixed
+    public function filter(mixed $value, int $formFilterOptions = 0): mixed
     {
-        return $this->prepareForm()->filter($value);
+        return $this->prepareForm()->filter($value, $formFilterOptions);
     }
 
     /**
