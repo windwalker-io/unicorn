@@ -93,7 +93,7 @@ class WorkflowController implements EventAwareInterface
         if ($this->isAllowFreeTransitions()) {
             return array_filter(
                 $this->getTransitions(),
-                fn(Transition $transition) => $transition->isEnabled()
+                static fn(Transition $transition) => $transition->isEnabled()
             );
         }
 
@@ -130,7 +130,7 @@ class WorkflowController implements EventAwareInterface
         return $this->findTransition($froms, $to) !== null;
     }
 
-    public function addState(mixed $state, ?string $name = null, bool $isInitial = false): static
+    public function addState(mixed $state, ?string $name = null, bool $isInitial = false): State
     {
         if (!$state instanceof State) {
             $state = new State(TypeCast::toString($state), $name, $isInitial);
@@ -138,7 +138,7 @@ class WorkflowController implements EventAwareInterface
 
         $this->states[$state->getValue()] = $state;
 
-        return $this;
+        return $state;
     }
 
     public function addStates(array $states): static
