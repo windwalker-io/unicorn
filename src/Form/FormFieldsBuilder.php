@@ -190,6 +190,16 @@ PHP;
             ->defaultValue('1');
 PHP;
 
+            case $column->getDataType() === 'tinyint' && (string) $column->getErratas()['custom_length'] === '1':
+                $this->addUse(SwitcherField::class);
+
+                return <<<PHP
+        \$form->add('$colName', SwitcherField::class)
+            ->label($label)
+            ->circle(true)
+            ->color('primary');
+PHP;
+
             case 'datetime':
             case 'timestamp':
                 $this->addUse(CalendarField::class);
