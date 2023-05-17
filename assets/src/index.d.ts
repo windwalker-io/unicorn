@@ -142,8 +142,9 @@ export interface Unicorn extends UnicornApp {
   confirm(message: string): Promise<boolean>;
   alert(title: string, text?: string, type?: string): Promise<boolean>;
   numberFormat(number: number|string, decimals?: number, decPoint?: string, thousandsSep?: string): string
-  sprintf(tmpl: string, ...args: string[]);
-  vsprintf(tmpl: string, args: string[]);
+  sprintf(tmpl: string, ...args: string[]): string;
+  vsprintf(tmpl: string, args: string[]): string;
+  genRandomString(length: numer): string;
   defaultsDeep(...args: any): any;
 
   // http.js

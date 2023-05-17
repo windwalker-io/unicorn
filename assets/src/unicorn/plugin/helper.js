@@ -10,6 +10,7 @@ import 'sprintf-js';
 import { defData, prepareData } from './../utilities.js';
 
 const domReady = null;
+const characters ='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
 export default class UnicornHelper {
   static get is() {
@@ -39,6 +40,7 @@ export default class UnicornHelper {
     app.numberFormat = helper.numberFormat;
     app.sprintf = sprintf;
     app.vsprintf = vsprintf;
+    app.genRandomString = helper.genRandomString;
     app.defaultsDeep = helper.defaultsDeep;
   }
 
@@ -405,6 +407,22 @@ export default class UnicornHelper {
     str[0] = parts.join(thousandsSep ? thousandsSep : ',');
 
     return str.join(decPoint ? decPoint : '.');
+  }
+
+  /**
+   * @see https://www.programiz.com/javascript/examples/generate-random-strings
+   * @param {number} length
+   * @returns {string}
+   */
+  genRandomString(length) {
+    let result = '';
+    const charactersLength = characters.length;
+
+    for (let i = 0; i < length; i++) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+
+    return result;
   }
 
   defaultsDeep(...args) {
