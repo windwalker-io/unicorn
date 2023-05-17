@@ -133,7 +133,6 @@ export class ListDependent {
       this.cancelToken = null;
     }
 
-    this.cancelToken = {};
     u.$http.get(this.options.ajax.url, {
       params: data,
       cancelToken: this.cancelToken
