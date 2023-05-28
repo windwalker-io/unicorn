@@ -575,10 +575,12 @@ export class UnicornFieldValidation {
 
     for (const optionWrapper of optionWrappers) {
       const input = optionWrapper.querySelector('input');
-      result = result && input.checked;
+
+      result = false;
 
       // Only need one checked
-      if (result) {
+      if (input.checked) {
+        result = true;
         break;
       }
     }
