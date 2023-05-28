@@ -5,7 +5,7 @@
  * @license    __LICENSE__
  */
 
-import md5 from 'md5';
+import md5 from 'md5-es';
 
 let globalSerial = 1;
 
