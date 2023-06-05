@@ -27,7 +27,7 @@ use Windwalker\Core\Router\SystemUri;
 use {% $ns %}\{% pascal($name) %}ListView;
 
 /**
- * @var {% pascal($name) %} $entity
+ * @var $entity {% pascal($name) %}
  */
 
 $workflow = $app->service(BasicStateWorkflow::class);

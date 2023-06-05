@@ -115,7 +115,6 @@ class SingleImageDrag extends HTMLElement {
         const type = types[0];
 
         items[0].getType(type).then((blob) => {
-          console.log(blob);
           this.handleFileSelect(new File([ blob ], 'image.png', { type }));
         });
       });

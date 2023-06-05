@@ -27,8 +27,8 @@ use Windwalker\Core\Router\SystemUri;
 use Windwalker\Form\Form;
 
 /**
- * @var Form      $form
- * @var {% pascal($name) %} $item
+ * @var $form Form
+ * @var $item {% pascal($name) %}
  */
 {% $phpClose %}
 
