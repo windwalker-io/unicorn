@@ -2,79 +2,98 @@
  * @link https://www.tinymce.com/css/codepen.min.css
  */
 .mce-container textarea {
-  display: initial !important; }
+  display: initial !important;
+}
 
 .mce-content-body {
   font-size: 16px;
   color: #828282;
-  padding: 0 25px 25px; }
+  padding: 0 25px 25px;
+}
 
 .mce-content-body a {
-  color: #007bff; }
+  color: #007bff;
+}
 
 .mce-content-body h1 {
-  font-size: 34px; }
+  font-size: 34px;
+}
 
 .mce-content-body h2 {
-  font-size: 30px; }
+  font-size: 30px;
+}
 
 .mce-content-body h3 {
-  font-size: 26px; }
+  font-size: 26px;
+}
 
 .mce-content-body h4 {
-  font-size: 22px; }
+  font-size: 22px;
+}
 
 .mce-content-body h5 {
-  font-size: 18px; }
+  font-size: 18px;
+}
 
 .mce-content-body h6 {
-  font-size: 14px; }
+  font-size: 14px;
+}
 
 .mce-content-body p {
-  margin: 25px 0; }
+  margin: 25px 0;
+}
 
 .mce-content-body ol,
 .mce-content-body ul {
   padding-left: 15px;
   list-style-position: outside;
-  margin-bottom: 20px; }
+  margin-bottom: 20px;
+}
 
 .mce-content-body ol li,
 .mce-content-body ul li {
   margin-left: 10px;
   margin-bottom: 10px;
-  color: #828282; }
+  color: #828282;
+}
 
 .mce-content-body ul {
-  list-style-type: disc; }
+  list-style-type: disc;
+}
 
 .mce-content-body ol {
-  list-style-type: decimal; }
+  list-style-type: decimal;
+}
 
 .mce-content-body table {
   width: 100%;
   border-spacing: 0;
   border-collapse: separate;
-  border: 1px solid #aaa; }
+  border: 1px solid #aaa;
+}
 
 .mce-content-body table tr:nth-child(even) {
-  background: #fafafa; }
+  background: #fafafa;
+}
 
 .mce-content-body table caption,
 .mce-content-body table td,
 .mce-content-body table th {
   padding: 15px 7px;
-  font: inherit; }
+  font: inherit;
+}
 
 .mce-content-body table th {
   font-weight: 400;
   color: #6e6e6e;
   background-position: 100% 100%;
   background-size: 2px 10px;
-  background-repeat: no-repeat; }
+  background-repeat: no-repeat;
+}
 
 .mce-content-body table th:last-child {
-  background: 0 0; }
+  background: 0 0;
+}
 
 /* Luna Hack */
 .mce-content-body hr#luna-readmore {
@@ -82,14 +101,16 @@
   content: "READMORE";
   height: 20px;
   display: block;
-  text-align: center; }
+  text-align: center;
+}
 
 .mce-content-body hr#luna-readmore::before {
   content: "READMORE";
-  color: #999; }
+  color: #999;
+}
 
 .mce-content-body img {
   max-width: 100%;
-  height: auto !important; }
-
+  height: auto !important;
+}
 /*# sourceMappingURL=editor.css.map */

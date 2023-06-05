@@ -3,14 +3,14 @@
   margin-right: 15px;
   -webkit-box-pack: center;
       -ms-flex-pack: center;
-          justify-content: center; }
-
+          justify-content: center;
+}
 .c-sid-default__left-col img {
-  max-height: 250px; }
-
+  max-height: 250px;
+}
 .c-sid-default__right-col {
-  overflow: hidden; }
-
+  overflow: hidden;
+}
 .c-sid-default__dragarea {
   font-weight: bold;
   text-align: center;
@@ -18,12 +18,13 @@
   color: #ccc;
   border: 2px dashed #ccc;
   border-radius: 7px;
-  cursor: default; }
-  .c-sid-default__dragarea.hover {
-    color: #333;
-    border-color: #333;
-    background-color: #f9f9f9; }
-
+  cursor: default;
+}
+.c-sid-default__dragarea.hover {
+  color: #333;
+  border-color: #333;
+  background-color: #f9f9f9;
+}
 .c-sid-default__img-loader {
   display: -webkit-box;
   display: -ms-flexbox;
@@ -35,25 +36,26 @@
       -ms-flex-align: center;
           align-items: center;
   width: 100%;
-  height: 180px; }
-
+  height: 180px;
+}
 .c-sid-default__size-info {
   margin-top: 5px;
-  font-size: 13px; }
-
+  font-size: 13px;
+}
 .c-sid-default__remove {
-  margin-left: 5px; }
-
+  margin-left: 5px;
+}
 .c-sid-default__modal .btn {
-  position: relative; }
+  position: relative;
+}
 
 .c-sid-modal .modal-body {
-  position: relative; }
-
+  position: relative;
+}
 .c-sid-modal__content {
   position: relative;
-  z-index: 3; }
-
+  z-index: 3;
+}
 .c-sid-modal__loading {
   position: absolute;
   left: 0;
@@ -69,9 +71,9 @@
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center;
-  z-index: 1; }
-
+  z-index: 1;
+}
 .is-invalid[uni-field-validate] [data-field-error] {
-  display: block; }
-
+  display: block;
+}
 /*# sourceMappingURL=single-image-drag.css.map */
