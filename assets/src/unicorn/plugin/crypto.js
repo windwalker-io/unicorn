@@ -5,7 +5,7 @@
  * @license    __LICENSE__
  */
 
-import md5 from 'md5-es';
+import MD5 from 'md5-es';
 
 let globalSerial = 1;
 
@@ -170,7 +170,7 @@ export default class UnicornCrypto {
    * @returns {string}
    */
   md5(str) {
-    return md5(str);
+    return MD5.hash(str);
   }
 
   /**
