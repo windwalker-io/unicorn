@@ -22,29 +22,12 @@ use Windwalker\Utilities\Enum\EnumTranslatableTrait;
  * @method static static UNPUBLISHED()
  * @method static static PUBLISHED()
  */
-class BasicState extends EnumSingleton implements EnumTranslatableInterface
+enum BasicState: int implements EnumTranslatableInterface
 {
     use EnumTranslatableTrait;
 
-    public const PUBLISHED = 1;
-    public const UNPUBLISHED = 0;
-
-    /**
-     * Creates a new value of some type
-     *
-     * @psalm-pure
-     *
-     * @param  mixed  $value
-     *
-     * @psalm-param T $value
-     * @throws \UnexpectedValueException if incompatible type is given.
-     */
-    public function __construct($value)
-    {
-        $value = (string) $value === '' ? 0 : $value;
-
-        parent::__construct($value);
-    }
+    case PUBLISHED = 1;
+    case UNPUBLISHED = 0;
 
     public function trans(LanguageInterface $lang, ...$args): string
     {

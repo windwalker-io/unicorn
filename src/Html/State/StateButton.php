@@ -10,6 +10,7 @@ namespace Unicorn\Html\State;
 
 use MyCLabs\Enum\Enum;
 use Windwalker\Utilities\Options\OptionAccessTrait;
+use Windwalker\Utilities\TypeCast;
 
 /**
  * The StateButton class.
@@ -91,7 +92,7 @@ class StateButton
             $value = '0';
         }
 
-        return (string) $value;
+        return TypeCast::toString($value);
     }
 
     /**

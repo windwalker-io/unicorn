@@ -17,6 +17,8 @@ use Windwalker\Event\EventAwareTrait;
 use Windwalker\ORM\Event\WatchEvent;
 use Windwalker\Utilities\TypeCast;
 
+use function Windwalker\value;
+
 /**
  * The Workflow class.
  */
@@ -410,7 +412,7 @@ class WorkflowController implements EventAwareInterface
 
     public function setStateMeta(mixed $value, string $title = '', string $icon = '', string $color = ''): static
     {
-        $state = $this->getState((string) $value);
+        $state = $this->getState(TypeCast::toString($value));
 
         if (!$state) {
             return $this;
@@ -426,7 +428,7 @@ class WorkflowController implements EventAwareInterface
     public function setInitialStates(array $states): static
     {
         foreach ($states as $state) {
-            $this->getState((string) $state)?->setIsInitial(true);
+            $this->getState(TypeCast::toString($state))?->setIsInitial(true);
         }
 
         return $this;
