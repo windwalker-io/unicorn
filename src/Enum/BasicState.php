@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace Unicorn\Enum;
 
 use Windwalker\Utilities\Contract\LanguageInterface;
+use Windwalker\Utilities\Enum\EnumBCTrait;
 use Windwalker\Utilities\Enum\EnumSingleton;
 use Windwalker\Utilities\Enum\EnumTranslatableInterface;
 use Windwalker\Utilities\Enum\EnumTranslatableTrait;
@@ -25,6 +26,7 @@ use Windwalker\Utilities\Enum\EnumTranslatableTrait;
 enum BasicState: int implements EnumTranslatableInterface
 {
     use EnumTranslatableTrait;
+    use EnumBCTrait;
 
     case PUBLISHED = 1;
     case UNPUBLISHED = 0;

@@ -36,6 +36,7 @@ use Unicorn\Script\ModernScript;
 use Unicorn\Script\UnicornScript;
 use Unicorn\Script\VueScript;
 use Unicorn\Upload\FileUploadManager;
+use Windwalker\Core\Application\AppClient;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Application\ApplicationInterface;
 use Windwalker\Core\DI\RequestBootableProviderInterface;
@@ -89,7 +90,7 @@ class UnicornPackage extends AbstractPackage implements
 
     public function bootBeforeRequest(Container $container): void
     {
-        if ($this->app->getClient() === ApplicationInterface::CLIENT_WEB) {
+        if ($this->app->getClient() === AppClient::WEB) {
             $app = $container->get(AppContext::class);
             $app->subscribe($container->newInstance(EmptyArrayFieldSubscriber::class));
         }
@@ -217,7 +218,7 @@ class UnicornPackage extends AbstractPackage implements
         $container->getAttributesResolver()
             ->registerAttribute(StateMachine::class, AttributeType::CLASSES);
 
-        if ($this->app->getClient() === ApplicationInterface::CLIENT_CONSOLE) {
+        if ($this->app->getClient() === AppClient::CONSOLE) {
             $container->mergeParameters(
                 'commands',
                 [

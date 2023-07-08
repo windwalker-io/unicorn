@@ -26,6 +26,7 @@ use Symfony\Component\Mime\MimeTypesInterface;
 use Unicorn\Aws\S3Service;
 use Unicorn\Storage\Adapter\LocalStorage;
 use Unicorn\Storage\Adapter\S3Storage;
+use Windwalker\Core\Application\AppClient;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Application\ApplicationInterface;
 use Windwalker\Core\Application\PathResolver;
@@ -198,7 +199,7 @@ class StorageFactory
     {
         $app = $this->container->get(ApplicationInterface::class);
 
-        if ($app->getClient() === ApplicationInterface::CLIENT_CONSOLE) {
+        if ($app->getClient() === AppClient::CONSOLE) {
             return $this->container->get(ConsoleApplication::class);
         }
 
