@@ -13,11 +13,13 @@ namespace Unicorn\Script;
 
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Asset\AbstractScript;
+use Windwalker\Core\Security\CspNonceService;
 use Windwalker\Core\Html\HtmlFrame;
 use Windwalker\Core\Http\Browser;
 use Windwalker\Core\Language\LangService;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Security\CsrfService;
+use Windwalker\DI\Exception\DefinitionException;
 use Windwalker\DOM\DOMElement;
 use Windwalker\Utilities\Str;
 
@@ -55,6 +57,13 @@ class UnicornScript extends AbstractScript
         return $this;
     }
 
+    /**
+     * @param  string|null  $mainJS
+     *
+     * @return  static
+     *
+     * @throws DefinitionException
+     */
     public function init(?string $mainJS = null): static
     {
         if ($mainJS) {
@@ -67,6 +76,11 @@ class UnicornScript extends AbstractScript
         return $this;
     }
 
+    /**
+     * @return  static
+     *
+     * @throws DefinitionException
+     */
     public function main(): static
     {
         $this->translate('unicorn.message.delete.confirm');
@@ -81,7 +95,7 @@ class UnicornScript extends AbstractScript
 
         $this->data('unicorn.uri', $uri);
 
-        $this->data('csrf-token', $this->app->service(CsrfService::class)->getToken());
+        $this->exposeCsrfToken();
 
         $this->importMain = true;
 
@@ -258,5 +272,31 @@ CSS;
 
             $body->addClass($className);
         }
+    }
+
+    /**
+     * @param  string  $keyName
+     *
+     * @return  void
+     *
+     * @throws DefinitionException
+     */
+    public function exposeCsrfToken(string $keyName = 'csrf-token'): void
+    {
+        $this->data($keyName, $this->app->service(CsrfService::class)->getToken());
+    }
+
+    /**
+     * @param  string  $keyName
+     *
+     * @return  void
+     *
+     * @throws DefinitionException
+     */
+    public function exposeCspNonce(string $keyName = 'csp-nonce'): void
+    {
+        $cspService = $this->app->service(CspNonceService::class);
+
+        $this->data($keyName, $cspService->getNonce());
     }
 }
