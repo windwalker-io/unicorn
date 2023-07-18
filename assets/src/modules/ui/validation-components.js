@@ -570,24 +570,27 @@ export class UnicornFieldValidation {
   }
 
   checkInputOptionsValidity() {
+    const isRequired = this.$input.getAttribute('required') != null;
     const optionWrappers = this.$input.querySelectorAll(this.options.inputOptionsSelector);
     let result = true;
 
-    for (const optionWrapper of optionWrappers) {
-      const input = optionWrapper.querySelector('input');
+    if (isRequired) {
+      for (const optionWrapper of optionWrappers) {
+        const input = optionWrapper.querySelector('input');
 
-      result = false;
+        result = false;
 
-      // Only need one checked
-      if (input.checked) {
-        result = true;
-        break;
+        // Only need one checked
+        if (input.checked) {
+          result = true;
+          break;
+        }
       }
     }
 
     // Get browser input validation message
     const n = document.createElement('input');
-    n.required = true;
+    n.required = isRequired;
 
     if (result) {
       n.value = 'placeholder';

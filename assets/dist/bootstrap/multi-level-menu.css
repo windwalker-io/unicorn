@@ -51,28 +51,22 @@
 
 .dropdown-fade .dropdown > .dropdown-menu {
   -webkit-transition: visibility 0s, display 0s, opacity 0.25s;
-  -o-transition: visibility 0s, display 0s, opacity 0.25s;
   transition: visibility 0s, display 0s, opacity 0.25s;
   -webkit-transition-delay: 0.25s, 0.25s, 0s;
-       -o-transition-delay: 0.25s, 0.25s, 0s;
           transition-delay: 0.25s, 0.25s, 0s;
 }
 .dropdown-fade .dropdown:hover > .dropdown-menu {
   -webkit-transition-delay: 0s, 0s, 0s;
-       -o-transition-delay: 0s, 0s, 0s;
           transition-delay: 0s, 0s, 0s;
 }
 .dropdown-fade .dropdown .dropdown-submenu > .dropdown-menu {
   -webkit-transition: visibility 0s, display 0s, opacity 0.25s;
-  -o-transition: visibility 0s, display 0s, opacity 0.25s;
   transition: visibility 0s, display 0s, opacity 0.25s;
   -webkit-transition-delay: 0.25s, 0.25s, 0s;
-       -o-transition-delay: 0.25s, 0.25s, 0s;
           transition-delay: 0.25s, 0.25s, 0s;
 }
 .dropdown-fade .dropdown .dropdown-submenu:hover > .dropdown-menu {
   -webkit-transition-delay: 0s, 0s, 0s;
-       -o-transition-delay: 0s, 0s, 0s;
           transition-delay: 0s, 0s, 0s;
 }
 
