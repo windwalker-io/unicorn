@@ -27,7 +27,6 @@
   right: 0;
   bottom: 0;
   -webkit-transition: 0.4s;
-  -o-transition: 0.4s;
   transition: 0.4s;
   background-color: var(--bs-btn-bg);
 }
@@ -99,7 +98,6 @@
   background-color: white;
   -webkit-transition: 0.4s;
   -webkit-transition: 0.25s;
-  -o-transition: 0.25s;
   transition: 0.25s;
 }
 .unicorn-switch input:checked + .switch-slider:before {
