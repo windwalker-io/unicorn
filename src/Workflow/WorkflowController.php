@@ -294,8 +294,8 @@ class WorkflowController implements EventAwareInterface
     }
 
     public function onBeforeChanged(
-        string|array|\Stringable $froms,
-        string|array|\Stringable $tos,
+        mixed $froms,
+        mixed $tos,
         callable $listener
     ): static {
         $eventNames = $this->sortEventNames(
@@ -315,8 +315,8 @@ class WorkflowController implements EventAwareInterface
     }
 
     public function onAfterChanged(
-        string|array|\Stringable $froms,
-        string|array|\Stringable $tos,
+        mixed $froms,
+        mixed $tos,
         callable $listener
     ): static {
         $eventNames = $this->sortEventNames(
@@ -335,7 +335,7 @@ class WorkflowController implements EventAwareInterface
         return $this;
     }
 
-    public function onBeforeFrom(string|array|\Stringable $froms, callable $listener): static
+    public function onBeforeFrom(mixed $froms, callable $listener): static
     {
         return $this->onBeforeChanged(
             $froms,
@@ -344,7 +344,7 @@ class WorkflowController implements EventAwareInterface
         );
     }
 
-    public function onAfterFrom(string|array|\Stringable $froms, callable $listener): static
+    public function onAfterFrom(mixed $froms, callable $listener): static
     {
         return $this->onAfterChanged(
             $froms,
@@ -353,7 +353,7 @@ class WorkflowController implements EventAwareInterface
         );
     }
 
-    public function onBeforeTo(string|array|\Stringable $tos, callable $listener): static
+    public function onBeforeTo(mixed $tos, callable $listener): static
     {
         return $this->onBeforeChanged(
             $this->getStateValues(),
@@ -362,7 +362,7 @@ class WorkflowController implements EventAwareInterface
         );
     }
 
-    public function onAfterTo(string|array|\Stringable $tos, callable $listener): static
+    public function onAfterTo(mixed $tos, callable $listener): static
     {
         return $this->onAfterChanged(
             $this->getStateValues(),
@@ -372,15 +372,15 @@ class WorkflowController implements EventAwareInterface
     }
 
     /**
-     * @param  string|array|\Stringable  $froms
-     * @param  string|array|\Stringable  $tos
+     * @param  mixed  $froms
+     * @param  mixed  $tos
      *
      * @return  array<string>
      */
     protected function sortEventNames(
         string $prefix,
-        string|array|\Stringable $froms,
-        string|array|\Stringable $tos
+        mixed $froms,
+        mixed $tos
     ): array {
         $froms = (array) AbstractWorkflow::toStrings($froms);
         $tos = (array) AbstractWorkflow::toStrings($tos);
