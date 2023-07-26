@@ -53,7 +53,7 @@ $workflow = $app->service(BasicStateWorkflow::class);
                 @lang('unicorn.grid.responsive.table.desc')
             </div>
 
-            <div class="grid-table table-lg-responsive">
+            <div class="grid-table table-responsive-lg">
                 <table class="table table-striped table-hover">
                     <thead>
                     <tr>
