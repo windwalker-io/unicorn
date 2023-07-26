@@ -49,7 +49,8 @@ $attributes = $attributes->except(
         'filterBlock',
         'size',
         'open',
-        'searchInput'
+        'searchInput',
+        'form',
     ]
 );
 $attributes = $attributes->class('c-filter-bar mb-4');
