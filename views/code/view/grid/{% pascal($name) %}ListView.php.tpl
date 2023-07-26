@@ -87,7 +87,7 @@ class {% pascal($name) %}ListView implements ViewModelInterface
         return compact('items', 'pagination', 'form', 'showFilters', 'ordering');
     }
 
-    public function prepareItem(Collection $item): object
+    public function prepareItem(Collection $item): {% pascal($name) %}
     {
         return $this->repository->getEntityMapper()->toEntity($item);
     }
