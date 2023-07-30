@@ -16,6 +16,7 @@ namespace App\View;
  * @var $lang      LangService     The language translation service.
  */
 
+use Unicorn\Utilities\SlugHelper;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Asset\AssetService;
 use Windwalker\Core\DateTime\ChronosService;
@@ -34,13 +35,14 @@ $props = $attributes->props(
     'active',
     'title',
     'name',
+    'id'
 );
 
-$name ??= '';
-$active = $props->active !== null;
 $title ??= '';
+$id ??= $name ?? SlugHelper::slugify($title) ?: 'c-tab-' . uid();
+$active = $props->active !== null;
 
-$attributes['id'] = $name;
+$attributes['id'] = $id;
 $attributes['data-role'] = 'tab-pane';
 $attributes['data-title'] = $title;
 

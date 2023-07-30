@@ -34,12 +34,14 @@ use function Windwalker\uid;
 $props = $attributes->props(
     'variant',
     'keepactive',
+    'fill',
     'nav-target',
     'nav-attrs'
 );
 
-$id ??= 'c-tab-' . uid();
+$id ??= 'c-tabs-' . uid();
 $variant ??= 'tabs';
+$fill ??= null;
 $keepactive ??= null;
 $navTarget ??= null;
 $navAttrs ??= '';
@@ -71,6 +73,7 @@ $attributes['id'] = $id;
           const tabContent = u.selectOne('#{{ $id }} .tab-content');
           const navTarget = '{{ $navTarget }}';
           const navAttrs = JSON.parse('{!! $navAttrs ?: '{}' !!}');
+          const fill = {{ $fill !== null ? 'true' : 'false' }};
 
           const tabs = tabContent.querySelectorAll('[data-role=tab-pane]');
           const nav = u.html(`<div></div>`);
@@ -84,6 +87,7 @@ $attributes['id'] = $id;
           }
 
           nav.classList.add('nav', 'nav-{{ $variant }}');
+          nav.classList.toggle('nav-fill', fill);
           let hasActive = false;
 
           tabs.forEach((tab) => {
