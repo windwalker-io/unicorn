@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace {% $ns %};
 
+use App\Entity\{% pascal($name) %};
 use {% $ns %}\Form\GridForm;
 use App\Repository\{% pascal($name) %}Repository;
 use Windwalker\Core\Application\AppContext;
