@@ -92,7 +92,7 @@ export interface Unicorn extends UnicornApp {
   form(ele: string|Element, options?: object): UnicornFormElement;
 
   // ui.js
-  $ui: UnicornUIExtended|UnicornUI;
+  $ui: UnicornUIExtended & UnicornUI;
   addMessage(messages: string[]|string, type?: string): void;
   clearMessages(): void;
   notify(messages: string|string[], type?: string): void;
@@ -144,7 +144,7 @@ export interface Unicorn extends UnicornApp {
   numberFormat(number: number|string, decimals?: number, decPoint?: string, thousandsSep?: string): string
   sprintf(tmpl: string, ...args: string[]): string;
   vsprintf(tmpl: string, args: string[]): string;
-  genRandomString(length: numer): string;
+  genRandomString(length: number): string;
   defaultsDeep(...args: any): any;
 
   // http.js
