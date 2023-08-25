@@ -32,9 +32,9 @@ export interface Unicorn extends UnicornApp {
   constructor: {
     createApp(): Unicorn;
     noConflict(): Unicorn;
-    mix<T>(superclass: T): MixinBuilder<T>;
+    mix<T>(superclass: T): MixinBuilder;
     Mixin<T>(mixin: (superclass: Function) => T): T;
-    EventMixin: EventMixin;
+    EventMixin: typeof EventMixin;
   }
 
   tap<T>(value: T, callback: ((T) => void)): T;
@@ -114,12 +114,14 @@ export interface Unicorn extends UnicornApp {
   // helper.js
   $helper: UnicornHelper;
   domready(callback?: () => any): Promise<any>;
+  selectOne<E extends Element = Element>(ele: string): E|null;
   selectOne<E extends Element = Element>(ele: E): E;
   selectOne<K extends keyof HTMLElementTagNameMap>(ele: K): HTMLElementTagNameMap[K]|null;
   selectOne(ele: string): Element;
-  selectAll<E extends Element = Element>(ele: NodeListOf<E>|E[], callback: ((ele: E) => any)): E[];
-  selectAll<E extends keyof HTMLElementTagNameMap>(ele: E, callback: ((ele: HTMLElementTagNameMap[E]) => any)): HTMLElementTagNameMap[E][];
-  selectAll(ele: string, callback: ((ele: Element) => any)): Element[];
+  selectAll<E extends Element = Element>(ele: string, callback?: ((ele: E) => any)): NodeListOf<E>;
+  selectAll<E extends Element = Element>(ele: NodeListOf<E>|E[], callback?: ((ele: E) => any)): E[];
+  selectAll<E extends keyof HTMLElementTagNameMap>(ele: E, callback?: ((ele: HTMLElementTagNameMap[E]) => any)): HTMLElementTagNameMap[E][];
+  selectAll(ele: string, callback?: ((ele: Element) => any)): Element[];
   each(collection: any, iteratee: (item: any, i: number|string) => void): void;
   getBoundedInstance<M, E extends Element = Element>(selector: E, name: string, callback?: ((ele: E) => M)): M;
   getBoundedInstance<M, E extends keyof HTMLElementTagNameMap>(selector: E, name: string, callback?: ((ele: HTMLElementTagNameMap[E]) => M)): M;
@@ -151,7 +153,7 @@ export interface Unicorn extends UnicornApp {
   $http: UnicornHttp;
 
   // uri.js
-  $uri: UnicornUri;
+  $uri: UnicornUri & UnicornUriExtended;
 
   // stack.js
   $stack: UnicornStack;
@@ -221,7 +223,7 @@ export interface UnicornHttp {
 }
 
 // Uri
-export interface UnicornUri {
+export interface UnicornUriExtended {
   asset: {
     path(path: string): string;
     root(path: string): string;

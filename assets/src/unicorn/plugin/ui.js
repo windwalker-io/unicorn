@@ -212,7 +212,7 @@ export default class UnicornUI {
 
   /**
    * @see https://tom-select.js.org/
-   * @param {string} selector
+   * @param {string | Element} selector
    * @param {object} options
    * @param {string} theme
    */
