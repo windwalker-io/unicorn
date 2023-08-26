@@ -86,10 +86,10 @@ export interface Unicorn extends UnicornApp {
   route(route: string, query?: any): string;
 
   $grid: UnicornGrid;
-  grid(ele: string|Element, options?: object): UnicornGridElement;
+  grid(ele?: string|Element, options?: object): UnicornGridElement;
 
   $form: UnicornForm;
-  form(ele: string|Element, options?: object): UnicornFormElement;
+  form(ele?: string|Element, options?: object): UnicornFormElement;
 
   // ui.js
   $ui: UnicornUIExtended & UnicornUI;
