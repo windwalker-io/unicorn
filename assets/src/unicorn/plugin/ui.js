@@ -5,7 +5,6 @@
  * @license    __LICENSE__
  */
 
-import 'construct-style-sheets-polyfill';
 import { defaultsDeep } from 'lodash-es';
 
 export default class UnicornUI {
@@ -155,39 +154,6 @@ export default class UnicornUI {
     });
   }
 
-  // loadSpruce() {
-  //   return Promise.all([
-  //     this.loadAlpine(),
-  //     this.app.import('@spruce')
-  //   ]);
-  // }
-
-  // initAlpine(selector) {
-  //   return this.loadAlpine().then(() => {
-  //     const element = this.app.selectOne(selector);
-  //     Alpine.initializeComponent(element);
-  //   });
-  // }
-
-  // startAlpine() {
-  //   return this.loadAlpine().then(() => {
-  //     Alpine.start();
-  //   });
-  // }
-
-  // startAlpineSpruce() {
-  //   return this.loadSpruce().then(() => {
-  //     Alpine.start();
-  //   });
-  // }
-  //
-  // initAlpineSpruce(selector) {
-  //   return this.loadSpruce().then(() => {
-  //     const element = this.app.selectOne(selector);
-  //     Alpine.initializeComponent(element);
-  //   });
-  // }
-
   /**
    * Highlight mark some keywords.
    *
@@ -249,7 +215,7 @@ export default class UnicornUI {
               class UnicornTomSelect extends TomSelect {
                 syncOptionsWithoutKeepSelected() {
                   let item;
-                  
+
                   for(item of this.items) {
                     var option = this.options[item].$option;
 
@@ -261,7 +227,7 @@ export default class UnicornUI {
                       this.setValue(first);
                     }
                   }
-                  
+
                   this.clearOptions();
                   this.sync();
                 }
@@ -334,7 +300,7 @@ export default class UnicornUI {
       if (element) {
         module.ListDependent.handle(element, dependent, options);
       }
-      
+
       return module;
     });
   }
