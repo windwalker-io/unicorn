@@ -98,7 +98,7 @@ export class Stack {
   }
 
   /**
-   * @param {boolean} value
+   * @param {any} value
    * @returns {number}
    */
   push(value = true) {
