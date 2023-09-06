@@ -197,12 +197,17 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
     // abstract protected function afterCompileQuery(SelectorQuery $query): void;
     public function all(?string $class = null, array $args = []): Collection
     {
-        return $this->compileQuery()->all($class ?? $this->getDefaultItemClass(), $args);
+        return $this->compileQuery()->all($class, $args);
     }
 
     public function get(?string $class = null, array $args = []): ?object
     {
-        return $this->compileQuery()->get($class ?? $this->getDefaultItemClass(), $args);
+        return $this->compileQuery()->get($class, $args);
+    }
+
+    public function mustGet(?string $class = null, array $args = []): object
+    {
+        return $this->compileQuery()->mustGet($class, $args);
     }
 
     public function page(int|string|null $page): static

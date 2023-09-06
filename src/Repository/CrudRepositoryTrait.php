@@ -11,15 +11,9 @@ declare(strict_types=1);
 
 namespace Unicorn\Repository;
 
-use Unicorn\Repository\Actions\ActionsFactory;
-use Unicorn\Repository\Actions\BatchAction;
-use Unicorn\Repository\Actions\ReorderAction;
 use Unicorn\Repository\Actions\SaveAction;
-use Unicorn\Selector\ListSelector;
 use Windwalker\Core\Router\Exception\RouteNotFoundException;
-use Windwalker\DI\Attributes\Inject;
-use Windwalker\ORM\Exception\NoResultException;
-use Windwalker\ORM\SelectorQuery;
+use Windwalker\Query\Exception\NoResultException;
 
 /**
  * Trait CrudRepositoryTrait
