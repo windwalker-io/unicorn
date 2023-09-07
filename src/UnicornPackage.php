@@ -39,6 +39,7 @@ use Unicorn\Upload\FileUploadManager;
 use Windwalker\Core\Application\AppClient;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Application\ApplicationInterface;
+use Windwalker\Core\Application\Context\AppContextInterface;
 use Windwalker\Core\DI\RequestBootableProviderInterface;
 use Windwalker\Core\Package\AbstractPackage;
 use Windwalker\Core\Package\PackageInstaller;
@@ -91,7 +92,7 @@ class UnicornPackage extends AbstractPackage implements
     public function bootBeforeRequest(Container $container): void
     {
         if ($this->app->getClient() === AppClient::WEB) {
-            $app = $container->get(AppContext::class);
+            $app = $container->get(AppContextInterface::class);
             $app->subscribe($container->newInstance(EmptyArrayFieldSubscriber::class));
         }
     }
