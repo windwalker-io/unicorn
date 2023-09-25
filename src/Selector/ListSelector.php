@@ -80,10 +80,10 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
     /**
      * ListSelector constructor.
      *
-     * @param  DatabaseAdapter    $db
-     * @param  PaginationFactory  $paginationFactory
+     * @param  DatabaseAdapter     $db
+     * @param  ?PaginationFactory  $paginationFactory
      */
-    public function __construct(protected DatabaseAdapter $db, protected PaginationFactory $paginationFactory)
+    public function __construct(protected DatabaseAdapter $db, protected ?PaginationFactory $paginationFactory = null)
     {
     }
 
