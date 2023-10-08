@@ -21,6 +21,7 @@ use Windwalker\DI\Attributes\Inject;
 use Windwalker\DOM\DOMElement;
 use Windwalker\Form\Field\AbstractField;
 use Windwalker\Query\Query;
+use Windwalker\Uri\Uri;
 use Windwalker\Utilities\Arr;
 use Windwalker\Utilities\Cache\InstanceCacheTrait;
 
@@ -155,6 +156,9 @@ class ModalField extends AbstractField
         $url        = $this->getUrl();
         $field      = $this;
         $buttonText = $field->getButtonText() ?? $this->lang->trans('unicorn.field.modal.button.text');
+
+        $url = Uri::wrap($url);
+        $url = $url->withVar('callback', $this->getCallback());
 
         return $this->renderLayout(
             $this->getLayout(),
@@ -455,8 +459,7 @@ class ModalField extends AbstractField
             $route = $this->nav->to($route);
         }
 
-        return $route->layout('modal')
-            ->var('callback', $this->getCallback());
+        return $route->layout('modal');
     }
 
     /**
