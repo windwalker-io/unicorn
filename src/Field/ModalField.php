@@ -75,6 +75,8 @@ class ModalField extends AbstractField
      */
     protected string $imageField = 'image';
 
+    protected ?\Closure $urlHandler = null;
+
     /**
      * Property route.
      *
@@ -160,6 +162,10 @@ class ModalField extends AbstractField
         $url = Uri::wrap($url);
         $url = $url->withVar('callback', $this->getCallback());
 
+        if ($this->urlHandler) {
+            $url = ($this->urlHandler)($url, $this) ?? $url;
+        }
+
         return $this->renderLayout(
             $this->getLayout(),
             compact(
@@ -234,6 +240,23 @@ class ModalField extends AbstractField
     public function setRoute(string|RouteUri|null $route): static
     {
         $this->route = $route;
+
+        return $this;
+    }
+
+    public function getUrlHandler(): ?\Closure
+    {
+        return $this->urlHandler;
+    }
+
+    /**
+     * @param  \Closure|null  $urlHandler
+     *
+     * @return  static  Return self to support chaining.
+     */
+    public function configureUrl(?\Closure $urlHandler): static
+    {
+        $this->urlHandler = $urlHandler;
 
         return $this;
     }
