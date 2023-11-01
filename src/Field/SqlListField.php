@@ -38,6 +38,8 @@ class SqlListField extends ListField
 
     protected ?string $valueField = 'id';
 
+    protected ?\Closure $groupBy = null;
+
     protected function prepareQuery(Query $query): void
     {
     }
@@ -57,8 +59,21 @@ class SqlListField extends ListField
             return [];
         }
 
+        $groupHandler = $this->getGroupBy();
+
         foreach ($this->getItems() as $item) {
-            $options[] = $this->createItemOption($item);
+            $group = null;
+
+            if ($groupHandler) {
+                $group = $groupHandler($item, $this);
+            }
+
+            if ($group) {
+                $options[$group] ??= [];
+                $options[$group][] = $this->createItemOption($item);
+            } else {
+                $options[] = $this->createItemOption($item);
+            }
         }
 
         return $options;
@@ -79,6 +94,23 @@ class SqlListField extends ListField
         }
 
         return static::createOption(str_repeat('- ', $level) . $text, $value, $this->getOptionAttrs() ?? []);
+    }
+
+    public function getGroupBy(): ?\Closure
+    {
+        return $this->groupBy;
+    }
+
+    /**
+     * @param  \Closure|null  $groupBy
+     *
+     * @return  static  Return self to support chaining.
+     */
+    public function setGroupBy(?\Closure $groupBy): static
+    {
+        $this->groupBy = $groupBy;
+
+        return $this;
     }
 
     /**
