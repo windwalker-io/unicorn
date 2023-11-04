@@ -20,11 +20,14 @@ use Windwalker\Console\CommandInterface;
 use Windwalker\Console\CommandWrapper;
 use Windwalker\Console\InteractInterface;
 use Windwalker\Console\IOInterface;
+use Windwalker\Core\Command\CommandPackageResolveTrait;
 use Windwalker\Core\Console\ConsoleApplication;
+use Windwalker\Core\Manager\DatabaseManager;
 use Windwalker\Core\Utilities\ClassFinder;
 use Windwalker\DI\Attributes\Autowire;
 use Windwalker\Filesystem\Filesystem;
 use Windwalker\ORM\ORM;
+use Windwalker\Utilities\Str;
 use Windwalker\Utilities\StrNormalize;
 
 /**
@@ -35,6 +38,8 @@ use Windwalker\Utilities\StrNormalize;
 )]
 class BuildFormCommand implements CommandInterface, InteractInterface
 {
+    use CommandPackageResolveTrait;
+
     private IOInterface $io;
 
     /**
@@ -42,8 +47,8 @@ class BuildFormCommand implements CommandInterface, InteractInterface
      */
     public function __construct(
         #[Autowire] protected ClassFinder $classFinder,
-        protected ORM $orm,
-        protected ConsoleApplication $app
+        protected ConsoleApplication $app,
+        protected DatabaseManager $databaseManager,
     ) {
     }
 
@@ -73,7 +78,11 @@ class BuildFormCommand implements CommandInterface, InteractInterface
             null,
             InputOption::VALUE_REQUIRED,
             'The base namespace.',
-            'App\\Module'
+        );
+
+        $this->configurePackageOptions(
+            $command,
+            'Package name to find namespace.'
         );
 
         $command->addOption(
@@ -89,6 +98,13 @@ class BuildFormCommand implements CommandInterface, InteractInterface
             'd',
             InputOption::VALUE_NONE,
             'Do not replace origin file.'
+        );
+
+        $command->addOption(
+            'connection',
+            'c',
+            InputOption::VALUE_REQUIRED,
+            'This database connection name.'
         );
     }
 
@@ -124,9 +140,12 @@ class BuildFormCommand implements CommandInterface, InteractInterface
             throw new InvalidArgumentException('Unable use multiple classes.');
         }
 
-        $class = StrNormalize::toClassNamespace($io->getOption('ns') . '\\' . $class);
+        $ns = $this->getPackageNamespace($io, 'Module') ?? $io->getOption('ns') ?? 'App\\Module';
 
-        $tbm = $this->orm->getDb()->getTable($table);
+        $class = StrNormalize::toClassNamespace(Str::ensureRight($ns, '\\') . $class);
+
+        $db = $this->databaseManager->get($io->getOption('connection'));
+        $tbm = $db->getTable($table);
 
         $ref = new \ReflectionClass($class);
 
