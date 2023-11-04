@@ -28,9 +28,9 @@ use Windwalker\Utilities\StrNormalize;
 )]
 class WorkflowSubCommand extends AbstractGeneratorSubCommand
 {
-    protected string $defaultNamespace = 'App\\Workflow';
+    protected string $defaultNamespace = 'Workflow';
 
-    protected string $defaultDir = 'src/Workflow';
+    protected string $defaultDir = 'Workflow';
 
     protected bool $requireDest = false;
 
@@ -89,7 +89,7 @@ class WorkflowSubCommand extends AbstractGeneratorSubCommand
                 [
                     'name' => $name,
                     'field' => $field,
-                    'ns' => $this->getNamesapce($io),
+                    'ns' => $this->getNamespace($io),
                 ],
                 $force
             );

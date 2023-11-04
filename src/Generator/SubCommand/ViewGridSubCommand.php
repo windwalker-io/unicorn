@@ -87,7 +87,7 @@ class ViewGridSubCommand extends \Windwalker\Core\Generator\SubCommand\ViewSubCo
                 [
                     'className' => Str::ensureRight($name, 'ListView'),
                     'name' => Str::removeRight($name, 'ListView'),
-                    'ns' => $this->getNamesapce($io, 'ListView'),
+                    'ns' => $this->getNamespace($io, 'ListView'),
                 ],
                 $force
             );
