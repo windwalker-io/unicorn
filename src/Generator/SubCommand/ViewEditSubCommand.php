@@ -99,9 +99,23 @@ class ViewEditSubCommand extends \Windwalker\Core\Generator\SubCommand\ViewSubCo
                 ->explode('/')
                 ->pop();
 
-            $this->app->runProcess(
-                "php windwalker g unicorn:model {$modelName}",
-                output: $io
+            $inoutOptions = $io->getInput()->getOptions();
+            $options = [
+                'name' => $modelName,
+                '--dir' => $inoutOptions['dir'] ?? null,
+                '--ns' => $inoutOptions['ns'] ?? null,
+                '--force' => $inoutOptions['force'] ?? null,
+                '--quite' => $inoutOptions['quiet'] ?? null,
+                '--ansi' => $inoutOptions['ansi'] ?? null,
+                '--no-interaction' => $inoutOptions['no-interaction'] ?? null,
+            ];
+
+            $options = array_filter($options);
+
+            $this->app->runCommand(
+                $this->app->make(ModelSubCommand::class),
+                $options,
+                $io
             );
         }
 

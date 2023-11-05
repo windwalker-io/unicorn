@@ -302,7 +302,10 @@ class MigFromCommand implements CommandInterface
                 throw new \RuntimeException($process->getErrorOutput());
             }
 
-            $build = $io->getOption('build') ?: $io->ask(new ConfirmationQuestion('Do you want to build entity properties? [Y/n] '));
+            $build = $io->getOption('build')
+                || $io->ask(
+                    new ConfirmationQuestion('Do you want to build entity properties? [Y/n] ')
+                );
 
             if ($build) {
                 foreach ($entities as $entity) {
@@ -440,7 +443,7 @@ PHP;
 
     protected function typeMap(string $type): string
     {
-        return match($type) {
+        return match ($type) {
             'int' => 'integer',
             default => $type,
         };
