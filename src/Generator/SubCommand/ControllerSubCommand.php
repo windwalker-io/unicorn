@@ -77,17 +77,35 @@ class ControllerSubCommand extends \Windwalker\Core\Generator\SubCommand\Control
         $result = parent::execute($io);
 
         if ($result !== 0) {
-            return $result;
+            // return $result;
         }
 
-        if ($io->getOption('model')) {
+        if ($io->getOption('model') !== false) {
             $name = $io->getArgument('name');
             $name = Str::removeRight($name, 'Controller');
-            $args = $io->getArguments();
-            $args['task'] = 'unicorn:model';
-            $args['name'] = $name;
+            $modelName = \Windwalker\str($name)
+                ->replace('\\', '/')
+                ->explode('/')
+                ->pop();
 
-            $result = $this->app->runCommand('g', $args);
+            $inoutOptions = $io->getInput()->getOptions();
+            $options = [
+                'name' => $modelName,
+                '--dir' => $inoutOptions['dir'] ?? null,
+                '--ns' => $inoutOptions['ns'] ?? null,
+                '--force' => $inoutOptions['force'] ?? null,
+                '--quite' => $inoutOptions['quiet'] ?? null,
+                '--ansi' => $inoutOptions['ansi'] ?? null,
+                '--no-interaction' => $inoutOptions['no-interaction'] ?? null,
+            ];
+
+            $options = array_filter($options);
+
+            $this->app->runCommand(
+                $this->app->make(ModelSubCommand::class),
+                $options,
+                $io
+            );
         }
 
         return $result;

@@ -88,11 +88,29 @@ class ViewGridSubCommand extends \Windwalker\Core\Generator\SubCommand\ViewSubCo
         if ($io->getOption('model')) {
             $name = $io->getArgument('name');
             $name = Str::removeRight($name, 'ListView');
-            $args = $io->getArguments();
-            $args['task'] = 'unicorn:model';
-            $args['name'] = $name;
+            $modelName = \Windwalker\str($name)
+                ->replace('\\', '/')
+                ->explode('/')
+                ->pop();
 
-            return $this->app->runCommand('g', $args);
+            $inoutOptions = $io->getInput()->getOptions();
+            $options = [
+                'name' => $modelName,
+                '--dir' => $inoutOptions['dir'] ?? null,
+                '--ns' => $inoutOptions['ns'] ?? null,
+                '--force' => $inoutOptions['force'] ?? null,
+                '--quite' => $inoutOptions['quiet'] ?? null,
+                '--ansi' => $inoutOptions['ansi'] ?? null,
+                '--no-interaction' => $inoutOptions['no-interaction'] ?? null,
+            ];
+
+            $options = array_filter($options);
+
+            $this->app->runCommand(
+                $this->app->make(ModelSubCommand::class),
+                $options,
+                $io
+            );
         }
 
         return 0;
