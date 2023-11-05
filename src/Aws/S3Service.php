@@ -1,10 +1,4 @@
 <?php
-/**
- * Part of earth project.
- *
- * @copyright  Copyright (C) 2018 LYRASOFT.
- * @license    LGPL-2.0-or-later
- */
 
 namespace Unicorn\Aws;
 
