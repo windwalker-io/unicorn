@@ -94,11 +94,15 @@ class ViewEditSubCommand extends \Windwalker\Core\Generator\SubCommand\ViewSubCo
         if ($io->getOption('model')) {
             $name = $io->getArgument('name');
             $name = Str::removeRight($name, 'EditView');
-            $args = $io->getArguments();
-            $args['task'] = 'unicorn:model';
-            $args['name'] = $name;
+            $modelName = \Windwalker\str($name)
+                ->replace('\\', '/')
+                ->explode('/')
+                ->pop();
 
-            return $this->app->runCommand('g', $args);
+            $this->app->runProcess(
+                "php windwalker g unicorn:model {$modelName}",
+                output: $io
+            );
         }
 
         return 0;

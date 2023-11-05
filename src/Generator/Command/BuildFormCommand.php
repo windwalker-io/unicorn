@@ -22,6 +22,7 @@ use Windwalker\Console\InteractInterface;
 use Windwalker\Console\IOInterface;
 use Windwalker\Core\Command\CommandPackageResolveTrait;
 use Windwalker\Core\Console\ConsoleApplication;
+use Windwalker\Core\Database\Command\CommandDatabaseTrait;
 use Windwalker\Core\Manager\DatabaseManager;
 use Windwalker\Core\Utilities\ClassFinder;
 use Windwalker\DI\Attributes\Autowire;
@@ -38,6 +39,7 @@ use Windwalker\Utilities\StrNormalize;
 )]
 class BuildFormCommand implements CommandInterface, InteractInterface
 {
+    use CommandDatabaseTrait;
     use CommandPackageResolveTrait;
 
     private IOInterface $io;
@@ -48,7 +50,6 @@ class BuildFormCommand implements CommandInterface, InteractInterface
     public function __construct(
         #[Autowire] protected ClassFinder $classFinder,
         protected ConsoleApplication $app,
-        protected DatabaseManager $databaseManager,
     ) {
     }
 
@@ -100,12 +101,7 @@ class BuildFormCommand implements CommandInterface, InteractInterface
             'Do not replace origin file.'
         );
 
-        $command->addOption(
-            'connection',
-            'c',
-            InputOption::VALUE_REQUIRED,
-            'This database connection name.'
-        );
+        $this->configureDatabaseOptions($command);
     }
 
     /**
