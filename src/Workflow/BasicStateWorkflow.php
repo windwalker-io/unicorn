@@ -31,36 +31,36 @@ class BasicStateWorkflow extends AbstractWorkflow
     public function configure(WorkflowController $workflow): void
     {
         $workflow->setStateMeta(
-            BasicState::PUBLISHED(),
-            BasicState::PUBLISHED()->trans($this->lang),
+            BasicState::PUBLISHED,
+            BasicState::PUBLISHED->trans($this->lang),
             'fa fa-fw fa-check',
             'success'
         );
         $workflow->setStateMeta(
-            BasicState::UNPUBLISHED(),
-            BasicState::UNPUBLISHED()->trans($this->lang),
+            BasicState::UNPUBLISHED,
+            BasicState::UNPUBLISHED->trans($this->lang),
             'fa fa-fw fa-xmark',
             'danger'
         );
 
         $workflow->setInitialStates(
             [
-                BasicState::PUBLISHED(),
-                BasicState::UNPUBLISHED(),
+                BasicState::PUBLISHED,
+                BasicState::UNPUBLISHED,
             ]
         );
 
         $workflow->addTransition(
             'publish',
-            BasicState::UNPUBLISHED(),
-            BasicState::PUBLISHED()
+            BasicState::UNPUBLISHED,
+            BasicState::PUBLISHED
         )
             ->button('fa fa-fw fa-check', 'Publish');
 
         $workflow->addTransition(
             'unpublish',
-            BasicState::PUBLISHED(),
-            BasicState::UNPUBLISHED()
+            BasicState::PUBLISHED,
+            BasicState::UNPUBLISHED
         )
             ->button('fa fa-fw fa-xmark', 'Unpublish');
     }

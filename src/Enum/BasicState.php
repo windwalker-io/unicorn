@@ -38,11 +38,11 @@ enum BasicState: int implements EnumTranslatableInterface
 
     public function isPublished(): bool
     {
-        return $this->equals(static::PUBLISHED());
+        return $this === self::PUBLISHED;
     }
 
     public function isUnpublished(): bool
     {
-        return $this->equals(static::UNPUBLISHED());
+        return $this === self::UNPUBLISHED;
     }
 }
