@@ -1,12 +1,5 @@
 {% $phpOpen %}
 
-/**
- * Part of starter project.
- *
- * @copyright  Copyright (C) 2021 __ORGANIZATION__.
- * @license    __LICENSE__
- */
-
 declare(strict_types=1);
 
 namespace {% $ns %}\Form;
@@ -18,9 +11,6 @@ use Windwalker\Form\Field\TextField;
 use Windwalker\Form\FieldDefinitionInterface;
 use Windwalker\Form\Form;
 
-/**
- * The EditForm class.
- */
 class EditForm implements FieldDefinitionInterface
 {
     use TranslatorTrait;

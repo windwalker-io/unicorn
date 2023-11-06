@@ -1,12 +1,5 @@
 {% $phpOpen %}
 
-/**
- * Part of starter project.
- *
- * @copyright  Copyright (C) 2021 __ORGANIZATION__.
- * @license    __LICENSE__
- */
-
 declare(strict_types=1);
 
 namespace {% $ns %};
@@ -20,9 +13,6 @@ use Windwalker\Core\Attributes\Controller;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\DI\Attributes\Autowire;
 
-/**
- * The {% pascal($name) %}Controller class.
- */
 #[Controller()]
 class {% pascal($name) %}Controller
 {

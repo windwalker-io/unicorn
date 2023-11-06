@@ -1,12 +1,5 @@
 {% $phpOpen %}
 
-/**
- * Part of Windwalker project.
- *
- * @copyright  Copyright (C) 2021 __ORGANIZATION__.
- * @license    MIT
- */
-
 declare(strict_types=1);
 
 namespace {% $ns %};
@@ -15,9 +8,6 @@ use Unicorn\Attributes\StateMachine;
 use Unicorn\Workflow\AbstractWorkflow;
 use Unicorn\Workflow\WorkflowController;
 
-/**
- * The {% pascal($name) %}Workflow class.
- */
 #[StateMachine(
     field: '{% snake($field) %}',
     enum: \App\Enum\{% pascal($name) %}::class,

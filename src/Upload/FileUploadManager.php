@@ -12,12 +12,14 @@ declare(strict_types=1);
 namespace Unicorn\Upload;
 
 use Windwalker\Core\Manager\AbstractManager;
+use Windwalker\DI\Attributes\Isolation;
 
 /**
  * The FileUploadManager class.
  *
  * @method FileUploadService get(?string $name = null, ...$args)
  */
+#[Isolation]
 class FileUploadManager extends AbstractManager
 {
     public function getConfigPrefix(): string

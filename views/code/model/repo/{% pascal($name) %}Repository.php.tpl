@@ -1,12 +1,5 @@
 {% $phpOpen %}
 
-/**
- * Part of starter project.
- *
- * @copyright    Copyright (C) 2021 __ORGANIZATION__.
- * @license        __LICENSE__
- */
-
 declare(strict_types=1);
 
 namespace App\Repository;
@@ -24,9 +17,6 @@ use Unicorn\Repository\ManageRepositoryTrait;
 use Unicorn\Selector\ListSelector;
 use Windwalker\ORM\SelectorQuery;
 
-/**
- * The {% pascal($name) %}Repository class.
- */
 #[Repository(entityClass: {% pascal($name) %}::class)]
 class {% pascal($name) %}Repository implements ManageRepositoryInterface, ListRepositoryInterface
 {
