@@ -282,7 +282,14 @@ export class UnicornGridElement {
 
     return this.updateItem(id, url, data);
   }
-  
+
+  /**
+   * @param {string} task
+   * @param {any} id
+   * @param {string|null} url
+   * @param {*|null} data
+   * @returns {boolean}
+   */
   doTask(task, id, url = null, data = null) {
     return this.updateRowByTask(task, id, url, data);
   }
@@ -292,7 +299,7 @@ export class UnicornGridElement {
    *
    * @param  {string} task
    * @param  {?string} url
-   * @param  {?Object} data
+   * @param  {*|null} data
    *
    * @returns {boolean}
    */
@@ -302,7 +309,13 @@ export class UnicornGridElement {
 
     return this.form.patch(url, data);
   }
-  
+
+  /**
+   * @param {string} task
+   * @param {string|null} url
+   * @param {*|null} data
+   * @returns {boolean}
+   */
   batch(task, url = null, data = null) {
     return this.updateItemByTask(task, url, data);
   }
@@ -312,7 +325,7 @@ export class UnicornGridElement {
    *
    * @param  {string|number} id
    * @param  {?string} url
-   * @param  {Object} data
+   * @param  {*|null} data
    *
    * @returns {boolean}
    */
