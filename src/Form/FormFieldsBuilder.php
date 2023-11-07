@@ -34,12 +34,46 @@ class FormFieldsBuilder extends AbstractAstBuilder implements EventAwareInterfac
     protected array $uses = [];
     protected array $newUses = [];
     protected bool|string|null $langPrefix = null;
+    protected bool $hasTranslations = false;
+
+    /**
+     * @var true
+     */
+    protected bool $methodFound = false;
 
     /**
      * FormFieldsBuilder constructor.
      */
     public function __construct(protected string $className, protected TableManager $table)
     {
+    }
+
+    /**
+     * @param  Node\Stmt\ClassMethod  $node
+     *
+     * @return  bool
+     */
+    protected function isFormDefineMethod(Node\Stmt\ClassMethod $node): bool
+    {
+        if ($this->methodFound) {
+            return false;
+        }
+
+        if ($node->name->name === 'define') {
+            $this->methodFound = true;
+            return true;
+        }
+
+        foreach ($node->getAttrGroups() as $attrGroup) {
+            foreach ($attrGroup->attrs as $attr) {
+                if ((string) $attr->name === 'FormDefine') {
+                    $this->methodFound = true;
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     protected function getDb(): DatabaseAdapter
@@ -73,16 +107,22 @@ class FormFieldsBuilder extends AbstractAstBuilder implements EventAwareInterfac
 
             if (
                 $node instanceof Node\Stmt\ClassMethod
-                && $node->name->name === 'define'
             ) {
-                $columns = array_diff($columns, $existsColumns);
+                if ($this->isFormDefineMethod($node)) {
+                    $columns = array_diff($columns, $existsColumns);
 
-                foreach ($columns as $column) {
-                    $added[] = $column;
-                    $fields[] = $this->createFieldDefine($column);
+                    foreach ($columns as $column) {
+                        $added[] = $column;
+
+                        $field = $this->createFieldDefine($column);
+
+                        if ($field) {
+                            $fields[] = $field;
+                        }
+                    }
+
+                    $node->stmts[] = new Node\Stmt\Expression(new Node\Scalar\String_('@replace-line'));
                 }
-
-                $node->stmts[] = new Node\Stmt\Expression(new Node\Scalar\String_('@replace-line'));
             }
 
             if ($node instanceof Node\Stmt\Namespace_) {
@@ -94,7 +134,7 @@ class FormFieldsBuilder extends AbstractAstBuilder implements EventAwareInterfac
             }
 
             if ($node instanceof Node\Stmt\Class_) {
-                if ($this->langPrefix && !in_array(TranslatorTrait::class, $ref->getTraitNames(), true)) {
+                if ($this->hasTranslations && !in_array(TranslatorTrait::class, $ref->getTraitNames(), true)) {
                     $this->addUse(TranslatorTrait::class);
                     // $this->addUse(Inject::class);
 
@@ -129,15 +169,22 @@ class FormFieldsBuilder extends AbstractAstBuilder implements EventAwareInterfac
 
     protected function getFieldByColumnType(Column $column): string
     {
-        $factory = $this->createNodeFactory();
+        if ($column->getErratas()['is_json'] ?? false) {
+            return '';
+        }
+
         $colName = $column->getColumnName();
 
-        if ($this->langPrefix) {
+        if ($lang = $this->getUnicornLangKey($colName)) {
+            $this->hasTranslations = true;
+            $label = "\$this->trans('" . $lang . "')";
+        } elseif ($this->langPrefix) {
+            $this->hasTranslations = true;
             $lang = $this->getLangKey($this->langPrefix, $colName);
             $label = "\$this->trans('" . $lang . "')";
         } else {
             $label = Str::surrounds(
-                StrNormalize::toSpaceSeparated(
+                $column->getComment() ?: StrNormalize::toSpaceSeparated(
                     StrNormalize::toPascalCase($column->getColumnName())
                 ),
                 "'"
@@ -167,13 +214,6 @@ PHP;
         switch ($column->getDataType()) {
             case $colName === 'state' && $column->getDataType() === 'tinyint':
                 $this->addUse(SwitcherField::class);
-
-                if ($this->langPrefix) {
-                    $lang = $this->getLangKey($this->langPrefix, 'published');
-                    $label = "\$this->trans('" . $lang . "')";
-                } else {
-                    $label = Str::surrounds('Published', "'");
-                }
 
                 return <<<PHP
         \$form->add('$colName', SwitcherField::class)
@@ -279,12 +319,17 @@ PHP;
 
     protected function getLangKey(string $langPrefix, string $colName): string
     {
-        return match ($colName) {
+        return $this->getUnicornLangKey($colName) ?? $langPrefix . '.' . $colName;
+    }
+
+    protected function getUnicornLangKey(string $columnName): ?string
+    {
+        return match ($columnName) {
             'id', 'title', 'alias', 'description', 'ordering', 'parent', 'delete', 'created', 'modified',
-            'modified_by', 'image', 'images', 'type' => 'unicorn.field.' . $colName,
+            'modified_by', 'image', 'images', 'type' => 'unicorn.field.' . $columnName,
             'state', 'published' => 'unicorn.field.published',
             'created_by' => 'unicorn.field.author',
-            default => $langPrefix . '.' . $colName
+            default => null
         };
     }
 }
