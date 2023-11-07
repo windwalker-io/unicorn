@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Unicorn\Generator\Command;
 
+use Stecman\Component\Symfony\Console\BashCompletion\Completion\CompletionAwareInterface;
+use Stecman\Component\Symfony\Console\BashCompletion\CompletionContext;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Exception\InvalidArgumentException;
 use Symfony\Component\Console\Input\InputArgument;
@@ -20,9 +22,12 @@ use Windwalker\Core\Manager\DatabaseManager;
 use Windwalker\Core\Utilities\ClassFinder;
 use Windwalker\DI\Attributes\Autowire;
 use Windwalker\Filesystem\Filesystem;
+use Windwalker\Filesystem\Path;
 use Windwalker\ORM\ORM;
 use Windwalker\Utilities\Str;
 use Windwalker\Utilities\StrNormalize;
+
+use function Windwalker\collect;
 
 /**
  * The BuildFormCommand class.
@@ -30,7 +35,7 @@ use Windwalker\Utilities\StrNormalize;
 #[CommandWrapper(
     description: 'Build form definition from DB table.'
 )]
-class BuildFormCommand implements CommandInterface, InteractInterface
+class BuildFormCommand implements CommandInterface, InteractInterface, CompletionAwareInterface
 {
     use CommandDatabaseTrait;
     use CommandPackageResolveTrait;
@@ -159,5 +164,33 @@ class BuildFormCommand implements CommandInterface, InteractInterface
         $io->newLine();
 
         return 0;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function completeOptionValues($optionName, CompletionContext $context)
+    {
+        return null;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function completeArgumentValues($argumentName, CompletionContext $context)
+    {
+        if ($argumentName === 'class') {
+            $classes = $this->classFinder->findClasses('App\\', true);
+            $classes = iterator_to_array($classes);
+            $classes = collect($classes)
+                ->filter(fn ($class) => str_ends_with(strtolower($class), 'form'))
+                ->map(fn ($class) => Path::clean($class, '/'))
+                ->map(fn ($class) => Str::removeLeft($class, 'App/Module/'))
+                ->dump();
+
+            return $classes;
+        }
+
+        return null;
     }
 }
