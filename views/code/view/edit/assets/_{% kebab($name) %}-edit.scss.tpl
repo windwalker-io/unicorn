@@ -1,4 +1,3 @@
-
 .view-{% kebab($name) %}-edit {
     //
 }

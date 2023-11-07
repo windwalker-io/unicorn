@@ -26,20 +26,10 @@ class {% pascal($name) %}Controller
 
         $uri = $app->call([$controller, 'save'], compact('repository', 'form'));
 
-        switch ($app->input('task')) {
-            case 'save2close':
-                return $nav->to('{% snake($name) %}_list');
-
-            case 'save2new':
-                return $nav->to('{% snake($name) %}_edit')->var('new', 1);
-
-            case 'save2copy':
-                $controller->rememberForClone($app, $repository);
-                return $nav->self($nav::WITHOUT_VARS)->var('new', 1);
-
-            default:
-                return $uri;
-        }
+        return match ($app->input('task')) {
+            'save2close' => $nav->to('{% snake($name) %}_list'),
+            default => $uri,
+        };
     }
 
     public function delete(

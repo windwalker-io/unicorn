@@ -6,15 +6,13 @@ namespace {% $ns %}\Form;
 
 use Unicorn\Enum\BasicState;
 use Windwalker\Core\Language\TranslatorTrait;
-use Windwalker\Form\Attributes\Fieldset;
 use Windwalker\Form\Attributes\FormDefine;
 use Windwalker\Form\Attributes\NS;
 use Windwalker\Form\Field\ListField;
 use Windwalker\Form\Field\SearchField;
-use Windwalker\Form\FieldDefinitionInterface;
 use Windwalker\Form\Form;
 
-class GridForm implements FieldDefinitionInterface
+class GridForm
 {
     use TranslatorTrait;
 
@@ -35,7 +33,7 @@ class GridForm implements FieldDefinitionInterface
         $form->add('{% snake($name) %}.state', ListField::class)
             ->label($this->trans('unicorn.field.state'))
             ->option($this->trans('unicorn.select.placeholder'), '')
-            ->registerOptions(BasicState::getTransItems($this->lang))
+            ->registerFromEnums(BasicState::class, $this->lang)
             ->onchange('this.form.submit()');
     }
 
@@ -46,6 +44,6 @@ class GridForm implements FieldDefinitionInterface
         $form->add('state', ListField::class)
             ->label($this->trans('unicorn.field.state'))
             ->option($this->trans('unicorn.select.no.change'), '')
-            ->registerOptions(BasicState::getTransItems($this->lang));
+            ->registerFromEnums(BasicState::class, $this->lang);
     }
 }

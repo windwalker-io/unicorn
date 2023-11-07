@@ -28,46 +28,14 @@ use Windwalker\Core\Router\SystemUri;
 
 <div x-title="toolbar" x-data="{ form: $store.form }" class="l-toolbar">
     {{-- Save --}}
-    <div class="btn-group">
-        <button type="button" class="btn btn-success btn-sm uni-btn-save"
-            data-task="save"
-            @click="form.post();"
-            style="width: 150px"
-        >
-            <span class="fa fa-save"></span>
-            @lang('unicorn.toolbar.save')
-        </button>
-
-        {{-- Split Toggle --}}
-        <button type="button" class="btn btn-success btn-sm dropdown-toggle dropdown-toggle-split"
-            data-bs-toggle="dropdown"
-            data-toggle="dropdown"
-            aria-haspopup="true"
-            aria-expanded="false">
-            <span class="caret"></span>
-            <span class="sr-only visually-hidden">Toggle Dropdown</span>
-        </button>
-
-        <div class="dropdown-menu dropdown-menu-end">
-            {{-- Save2Copy --}}
-            <a class="dropdown-item uni-btn-save2copy"
-                data-task="save"
-                href="javascript://"
-                @click="form.post(null, { task: 'save2copy' });">
-                <span class="fa fa-copy"></span>
-                @lang('unicorn.toolbar.save2copy')
-            </a>
-
-            {{-- Save2New --}}
-            <a class="dropdown-item uni-btn-save2new"
-                data-task="save"
-                href="javascript://"
-                @click="form.post(null, { task: 'save2new' });">
-                <span class="fa fa-plus"></span>
-                @lang('unicorn.toolbar.save2new')
-            </a>
-        </div>
-    </div>
+    <button type="button" class="btn btn-success btn-sm uni-btn-save"
+        data-task="save"
+        @click="form.post();"
+        style="width: 150px"
+    >
+        <span class="fa fa-save"></span>
+        @lang('unicorn.toolbar.save')
+    </button>
 
     {{-- Save2Close --}}
     <button type="button" class="btn btn-primary btn-sm uni-btn-save2close"
