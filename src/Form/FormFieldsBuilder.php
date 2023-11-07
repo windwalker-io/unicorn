@@ -35,11 +35,7 @@ class FormFieldsBuilder extends AbstractAstBuilder implements EventAwareInterfac
     protected array $newUses = [];
     protected bool|string|null $langPrefix = null;
     protected bool $hasTranslations = false;
-
-    /**
-     * @var true
-     */
-    protected bool $methodFound = false;
+    protected ?Node\Stmt\ClassMethod $methodFound = null;
 
     /**
      * FormFieldsBuilder constructor.
@@ -55,19 +51,13 @@ class FormFieldsBuilder extends AbstractAstBuilder implements EventAwareInterfac
      */
     protected function isFormDefineMethod(Node\Stmt\ClassMethod $node): bool
     {
-        if ($this->methodFound) {
-            return false;
-        }
-
         if ($node->name->name === 'define') {
-            $this->methodFound = true;
             return true;
         }
 
         foreach ($node->getAttrGroups() as $attrGroup) {
             foreach ($attrGroup->attrs as $attr) {
                 if ((string) $attr->name === 'FormDefine') {
-                    $this->methodFound = true;
                     return true;
                 }
             }
@@ -109,19 +99,7 @@ class FormFieldsBuilder extends AbstractAstBuilder implements EventAwareInterfac
                 $node instanceof Node\Stmt\ClassMethod
             ) {
                 if ($this->isFormDefineMethod($node)) {
-                    $columns = array_diff($columns, $existsColumns);
-
-                    foreach ($columns as $column) {
-                        $added[] = $column;
-
-                        $field = $this->createFieldDefine($column);
-
-                        if ($field) {
-                            $fields[] = $field;
-                        }
-                    }
-
-                    $node->stmts[] = new Node\Stmt\Expression(new Node\Scalar\String_('@replace-line'));
+                    $this->methodFound = $node;
                 }
             }
 
@@ -134,6 +112,42 @@ class FormFieldsBuilder extends AbstractAstBuilder implements EventAwareInterfac
             }
 
             if ($node instanceof Node\Stmt\Class_) {
+                if (!$this->methodFound) {
+                    $factory = $this->createNodeFactory();
+
+                    $method = $factory->method('define')
+                        ->makePublic()
+                        ->addParam(
+                            $factory->param('form')
+                                ->setType('Form')
+                        )
+                        ->addAttribute(
+                            new Node\Attribute(
+                                new Node\Name('FormDefine')
+                            )
+                        )
+                        ->setReturnType('void')
+                        ->getNode();
+
+                    $node->stmts[] = $method;
+
+                    $this->methodFound = $method;
+                }
+
+                $this->methodFound->stmts[] = new Node\Stmt\Expression(new Node\Scalar\String_('@replace-line'));
+
+                $columns = array_diff($columns, $existsColumns);
+
+                foreach ($columns as $column) {
+                    $added[] = $column;
+
+                    $field = $this->createFieldDefine($column);
+
+                    if ($field) {
+                        $fields[] = $field;
+                    }
+                }
+
                 if ($this->hasTranslations && !in_array(TranslatorTrait::class, $ref->getTraitNames(), true)) {
                     $this->addUse(TranslatorTrait::class);
                     // $this->addUse(Inject::class);

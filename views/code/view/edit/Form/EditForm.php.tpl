@@ -6,23 +6,18 @@ namespace {% $ns %}\Form;
 
 use Unicorn\Enum\BasicState;
 use Windwalker\Core\Language\TranslatorTrait;
+use Windwalker\Form\Attributes\Fieldset;
+use Windwalker\Form\Attributes\FormDefine;
 use Windwalker\Form\Field\ListField;
 use Windwalker\Form\Field\TextField;
-use Windwalker\Form\FieldDefinitionInterface;
 use Windwalker\Form\Form;
 
-class EditForm implements FieldDefinitionInterface
+class EditForm
 {
     use TranslatorTrait;
 
-    /**
-     * Define the form fields.
-     *
-     * @param  Form  $form  The Windwalker form object.
-     *
-     * @return  void
-     */
-    public function define(Form $form): void
+    #[FormDefine]
+    public function main(Form $form): void
     {
         $form->add('title', TextField::class)
             ->label($this->trans('unicorn.field.title'))
@@ -32,12 +27,12 @@ class EditForm implements FieldDefinitionInterface
         $form->add('alias', TextField::class)
             ->label($this->trans('unicorn.field.alias'))
             ->addFilter('trim');
+    }
 
-        $form->fieldset(
-            'basic',
-            function (Form $form) {
-                //
-            }
-        );
+    #[FormDefine]
+    #[Fieldset('basic')]
+    public function basic(Form $form): void
+    {
+        //
     }
 }
