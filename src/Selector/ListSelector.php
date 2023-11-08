@@ -46,7 +46,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
 
     protected ?int $limit = null;
 
-    protected string $searchText = '';
+    protected array|string $searchText = '';
 
     protected ?string $defaultOrdering = null;
 
@@ -394,10 +394,12 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
             }
         }
 
-        if (trim($this->searchText) !== '') {
+        if ($this->searchText) {
             foreach ($this->searchFields as $field) {
-                if ($this->isFieldAllow($field)) {
-                    $searches[$field] = $this->searchText;
+                foreach ((array) $this->searchText as $text) {
+                    if ((trim($text) !== '') && $this->isFieldAllow($field)) {
+                        $searches[$field] = $text;
+                    }
                 }
             }
         }
@@ -517,13 +519,26 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
         return $this;
     }
 
-    public function searchTextFor(string $q, array $fields = []): static
+    public function searchTextFor(string|array $q, array $fields = [], bool $breakWords = false): static
     {
-        $this->searchText = trim($q);
+        if (is_string($q) && $breakWords) {
+            $q = Arr::explodeAndClear(' ', $q);
+        }
+
+        if (is_string($q)) {
+            $this->searchText = trim($q);
+        } else {
+            $this->searchText = array_map('trim', $q);
+        }
 
         $this->setSearchFields($fields);
 
         return $this;
+    }
+
+    public function fuzzySearchTextFor(string $q, array $fields = []): static
+    {
+        return $this->searchTextFor($q, $fields, true);
     }
 
     /**
@@ -813,11 +828,11 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
     /**
      * Method to get property SearchText
      *
-     * @return  string
+     * @return  string|array
      *
      * @since  1.0.0
      */
-    public function getSearchText(): string
+    public function getSearchText(): string|array
     {
         return $this->searchText;
     }
