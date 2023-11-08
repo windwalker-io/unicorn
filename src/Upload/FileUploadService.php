@@ -24,6 +24,7 @@ use Windwalker\Filesystem\Filesystem;
 use Windwalker\Filesystem\Path;
 use Windwalker\Http\Helper\UploadedFileHelper;
 use Windwalker\Stream\Stream;
+use Windwalker\Stream\StringStream;
 use Windwalker\Utilities\Options\OptionsResolverTrait;
 
 use function Windwalker\chronos;
@@ -164,6 +165,10 @@ class FileUploadService implements EventAwareInterface
             // Use extension as final output format.
             $forceRedraw = $this->getExtensionByMimeType($file->getClientMediaType()) !== $srcExt;
         } else {
+            if (Path::isURL($file)) {
+                throw new \InvalidArgumentException('Cannot upload file from URL');
+            }
+
             $srcExt = Path::getExtension($file);
         }
 
@@ -232,9 +237,9 @@ class FileUploadService implements EventAwareInterface
 
             $mime = $this->getMimeTypeByExtension($dest);
         } elseif (is_string($file)) {
-            $stream = Stream::wrap($file);
+            $stream = StringStream::fromString($file);
 
-            $ext = Path::getExtension($file);
+            $ext = Path::getExtension($dest);
             $dest ??= $this->getUploadPath($dest, $ext);
 
             $mime = $this->getMimeType($file);
