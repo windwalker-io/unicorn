@@ -1,0 +1,3 @@
+.view-{% kebab($name) %}-list {
+    //
+}
