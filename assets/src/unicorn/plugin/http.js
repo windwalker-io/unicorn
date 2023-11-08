@@ -67,7 +67,9 @@ export default class UnicornHttp {
       return Promise.resolve(this.axios);
     }
 
-    return this.createHttp().then((axios) => this.axios = axios);
+    return this.createHttp()
+      .then((axios) => this.prepareAxios(axios))
+      .then((axios) => this.axios = axios);
   }
 
   /**
@@ -83,6 +85,8 @@ export default class UnicornHttp {
 
       return config;
     });
+
+    return axios;
   }
 
   requestMiddleware(callback) {
@@ -224,8 +228,6 @@ export default class UnicornHttp {
   request(options) {
     return this.getHttp()
       .then(axiosInstance => {
-        this.prepareAxios(axiosInstance);
-
         return axiosInstance(options);
       })
       .catch(

@@ -13,24 +13,22 @@ import fusion, {
   parallel,
   series,
   module,
-  wait
+  wait,
+  webpackBundle
 } from '@windwalker-io/fusion';
 import { babelBasicOptions } from '@windwalker-io/fusion/src/utilities/babel.js';
 import * as moduleTasks from './src/fusion/modules.mjs';
 export * from './src/fusion/modules.mjs';
 
 export async function main() {
-  // Watch start
-  fusion.watch('src/unicorn/**/*.js');
-  // Watch end
-
-  return wait(
-    webpack('./src/unicorn/unicorn.js', './dist/', {
-      override: (options) => {
-        options.output.library = 'Unicorn';
-        options.output.libraryTarget = 'umd';
-      }
-    })
+  return webpackBundle(
+    './src/unicorn/unicorn.js',
+    './dist/unicorn.js',
+    (options) => {
+      options.output.library = 'Unicorn';
+      options.output.libraryTarget = 'umd';
+      options.output.clean = false;
+    }
   );
   // Compile end
 }
