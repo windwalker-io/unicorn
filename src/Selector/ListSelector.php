@@ -440,7 +440,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
 
     public function addFilters(mixed ...$filters): static
     {
-        $filters = Arr::collapse($filters);
+        $filters = Arr::collapse($filters, true);
 
         $this->filters = array_merge($this->filters, $filters);
 
