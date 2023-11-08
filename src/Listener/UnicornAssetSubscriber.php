@@ -53,6 +53,10 @@ class UnicornAssetSubscriber
         $asset = $event->getAssetService();
         $scripts = $asset->getInternalScripts();
 
+        if (WINDWALKER_DEBUG) {
+            $script->data('windwalker.debug', true);
+        }
+
         if ($script->getData() !== []) {
             $store = json_encode($script->getData(), $this->app->isDebug() ? JSON_PRETTY_PRINT : 0);
 
