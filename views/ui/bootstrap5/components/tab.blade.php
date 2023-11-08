@@ -39,7 +39,7 @@ $props = $attributes->props(
 );
 
 $title ??= '';
-$id ??= $name ?? SlugHelper::slugify($title) ?: 'c-tab-' . uid();
+$id ??= $name ?? 'c-tab-' . SlugHelper::slugify($title) ?: 'c-tab-' . uid();
 $active = $props->active !== null;
 
 $attributes['id'] = $id;

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Unicorn\Repository;
 
+use Unicorn\Model\Contract\SoftDeleteEntityInterface;
 use Unicorn\Repository\Actions\SaveAction;
 use Windwalker\Core\Router\Exception\RouteNotFoundException;
 use Windwalker\Query\Exception\NoResultException;
@@ -72,8 +73,23 @@ trait CrudRepositoryTrait
         }
     }
 
-    public function delete(array $conditions = []): array
+    public function delete(array $conditions = []): void
     {
-        return $this->getEntityMapper()->deleteWhere($conditions);
+        $entityClass = $this->getEntityClass();
+
+        $mapper = $this->getEntityMapper();
+
+        if (is_a($entityClass, SoftDeleteEntityInterface::class, true)) {
+            /** @var SoftDeleteEntityInterface $entity */
+            foreach ($mapper->findList($conditions) as $entity) {
+                $entity->setIsDeleted(true);
+
+                $mapper->updateOne($entity);
+            }
+
+            return;
+        }
+
+        $mapper->deleteWhere($conditions);
     }
 }

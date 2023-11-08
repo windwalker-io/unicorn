@@ -22,13 +22,11 @@ interface CrudRepositoryInterface extends
      * @param  array        $conditions
      * @param  string|null  $className
      *
-     * @return  object
-     *
      * @psalm-template T
      * @psalm-param T       $className
      * @psalm-return T
      */
     public function getItem(array $conditions = [], ?string $className = null): ?object;
 
-    public function delete(array $conditions = []): array;
+    public function delete(array $conditions = []): void;
 }
