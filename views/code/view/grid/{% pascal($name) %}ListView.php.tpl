@@ -66,7 +66,8 @@ class {% pascal($name) %}ListView implements ViewModelInterface
             )
             ->ordering($ordering)
             ->page($page)
-            ->limit($limit);
+            ->limit($limit)
+            ->setDefaultItemClass({% pascal($name) %}::class);
 
         $pagination = $items->getPagination();
 
@@ -79,11 +80,6 @@ class {% pascal($name) %}ListView implements ViewModelInterface
         $this->prepareMetadata($app, $view);
 
         return compact('items', 'pagination', 'form', 'showFilters', 'ordering');
-    }
-
-    public function prepareItem(Collection $item): {% pascal($name) %}
-    {
-        return $this->repository->getEntityMapper()->toEntity($item);
     }
 
     /**
