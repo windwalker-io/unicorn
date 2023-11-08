@@ -735,7 +735,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
      */
     public function getDefaultLimit(): ?int
     {
-        return $this->defaultLimit ?? 15;
+        return $this->defaultLimit ?? 30;
     }
 
     /**
