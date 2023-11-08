@@ -146,6 +146,11 @@ class InlineField extends AbstractField implements CompositeFieldInterface
         return $this->group;
     }
 
+    protected function castToValidValue(mixed $value): mixed
+    {
+        return parent::castToValidValue($value);
+    }
+
     /**
      * getAccessors
      *
