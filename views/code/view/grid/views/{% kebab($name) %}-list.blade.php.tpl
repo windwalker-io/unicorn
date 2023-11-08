@@ -75,21 +75,6 @@ $workflow = $app->service(BasicStateWorkflow::class);
                         </x-sort>
                     </th>
 
-                    {{-- Ordering --}}
-                    <th style="width: 10%" class="text-nowrap">
-                        <div class="d-flex w-100 justify-content-end">
-                            <x-sort
-                                asc="{% snake($name) %}.ordering ASC"
-                                desc="{% snake($name) %}.ordering DESC"
-                            >
-                                @lang('unicorn.field.ordering')
-                            </x-sort>
-                            @if($vm->reorderEnabled($ordering))
-                                <x-save-order class="ml-2 ms-2"></x-save-order>
-                            @endif
-                        </div>
-                    </th>
-
                     {{-- Delete --}}
                     <th style="width: 1%" class="text-nowrap">
                         @lang('unicorn.field.delete')
@@ -130,16 +115,6 @@ $workflow = $app->service(BasicStateWorkflow::class);
                                     {{ $item->getTitle() }}
                                 </a>
                             </div>
-                        </td>
-
-                        {{-- Ordering --}}
-                        <td class="text-end text-right">
-                            <x-order-control
-                                :enabled="$vm->reorderEnabled($ordering)"
-                                :row="$i"
-                                :id="$item->getId()"
-                                :value="$item->ordering"
-                            ></x-order-control>
                         </td>
 
                         {{-- Delete --}}

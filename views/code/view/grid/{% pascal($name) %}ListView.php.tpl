@@ -11,6 +11,7 @@ use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Attributes\ViewModel;
 use Windwalker\Core\Form\FormFactory;
 use Windwalker\Core\Language\TranslatorTrait;
+use Windwalker\Core\View\SortableViewModelInterface;
 use Windwalker\Core\View\View;
 use Windwalker\Core\View\ViewModelInterface;
 use Windwalker\Data\Collection;
@@ -104,18 +105,6 @@ class {% pascal($name) %}ListView implements ViewModelInterface
             '{% snake($name) %}.title',
             '{% snake($name) %}.alias',
         ];
-    }
-
-    /**
-     * Is reorder enabled.
-     *
-     * @param  string  $ordering
-     *
-     * @return  bool
-     */
-    public function reorderEnabled(string $ordering): bool
-    {
-        return $ordering === '{% snake($name) %}.ordering ASC';
     }
 
     /**
