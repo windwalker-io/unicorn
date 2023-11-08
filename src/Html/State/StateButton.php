@@ -6,6 +6,8 @@ use MyCLabs\Enum\Enum;
 use Windwalker\Utilities\Options\OptionAccessTrait;
 use Windwalker\Utilities\TypeCast;
 
+use function Windwalker\unwrap_enum;
+
 /**
  * The StateButton class.
  *
@@ -76,9 +78,7 @@ class StateButton
 
     public function normalizeValue(mixed $value): string
     {
-        if ($value instanceof Enum) {
-            $value = $value->getValue();
-        }
+        $value = unwrap_enum($value);
 
         if ($value === true) {
             $value = '1';

@@ -10,23 +10,21 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Unicorn\UnicornPackage;
 use Windwalker\Console\CommandWrapper;
 use Windwalker\Console\IOInterface;
+use Windwalker\Core\Generator\SubCommand\ViewSubCommand;
 use Windwalker\Utilities\Str;
 
-/**
- * The ModelSubCommand class.
- */
 #[CommandWrapper(
-    description: 'Unicorn edit view.'
+    description: 'Unicorn item view.'
 )]
-class ViewEditSubCommand extends AbstractViewSubCommand
+class ViewListSubCommand extends AbstractViewSubCommand
 {
     protected function getClassSuffix(): string
     {
-        return 'EditView';
+        return 'ListView';
     }
 
     protected function getTmplPath(): string
     {
-        return 'view/edit/**/*.tpl';
+        return 'view/list/**/*.tpl';
     }
 }

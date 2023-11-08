@@ -7,18 +7,13 @@ namespace Unicorn\Generator\SubCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Process\Process;
 use Unicorn\UnicornPackage;
 use Windwalker\Console\CommandWrapper;
 use Windwalker\Console\IOInterface;
 use Windwalker\Core\Generator\SubCommand\AbstractGeneratorSubCommand;
 use Windwalker\Data\Collection;
-use Windwalker\Utilities\Str;
 use Windwalker\Utilities\StrNormalize;
-
-use function Windwalker\collect;
 
 /**
  * The ModelSubCommand class.
@@ -26,7 +21,7 @@ use function Windwalker\collect;
 #[CommandWrapper(
     description: 'Unicorn mvc admin.'
 )]
-class MvcAdminSubCommand extends AbstractGeneratorSubCommand
+class MvcFrontSubCommand extends AbstractGeneratorSubCommand
 {
     /**
      * configure
@@ -42,15 +37,10 @@ class MvcAdminSubCommand extends AbstractGeneratorSubCommand
             InputArgument::OPTIONAL,
         );
 
-        // $command->addArgument(
-        //     'dest',
-        //     InputArgument::OPTIONAL,
-        // );
-
         $command->addOption(
             'dir',
             'd',
-            \Windwalker\Console\Input\InputOption::VALUE_REQUIRED,
+            InputOption::VALUE_REQUIRED,
             'Root dir.'
         );
 
@@ -127,19 +117,19 @@ class MvcAdminSubCommand extends AbstractGeneratorSubCommand
 
         // Controller
         $this->runProcess(
-            "php windwalker g unicorn:controller $name " . $optionString,
+            "php windwalker g controller $name " . $optionString,
             $io,
             'y',
         );
 
         // View
         $this->runProcess(
-            "php windwalker g unicorn:view-grid $name " . $optionString,
+            "php windwalker g unicorn:view-list $name " . $optionString,
             $io,
             'n',
         );
         $this->runProcess(
-            "php windwalker g unicorn:view-edit $name " . $optionString,
+            "php windwalker g unicorn:view-item $name " . $optionString,
             $io,
             'n'
         );

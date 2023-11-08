@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Unicorn\Html\State;
 
+use Windwalker\Utilities\Arr;
 use Windwalker\Utilities\Options\OptionAccessTrait;
 
 /**
@@ -287,7 +288,7 @@ class StateOption
     {
         foreach ($props as $name => $value) {
             if ($name === 'options') {
-                $this->options = array_merge(
+                $this->options = Arr::merge(
                     $this->options,
                     $value
                 );

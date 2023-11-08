@@ -18,106 +18,15 @@ use Windwalker\Utilities\Str;
 #[CommandWrapper(
     description: 'Unicorn grid view.'
 )]
-class ViewGridSubCommand extends \Windwalker\Core\Generator\SubCommand\ViewSubCommand
+class ViewGridSubCommand extends AbstractViewSubCommand
 {
-    /**
-     * configure
-     *
-     * @param  Command  $command
-     *
-     * @return  void
-     */
-    public function configure(Command $command): void
+    protected function getClassSuffix(): string
     {
-        parent::configure($command);
-
-        $command->addOption(
-            'model',
-            'm',
-            InputOption::VALUE_OPTIONAL,
-            'Also generate model.',
-            false
-        );
+        return 'ListView';
     }
 
-    /**
-     * Interaction with user.
-     *
-     * @param  IOInterface  $io
-     *
-     * @return  void
-     */
-    public function interact(IOInterface $io): void
+    protected function getTmplPath(): string
     {
-        parent::interact($io);
-
-        if ($io->getOption('model') === false) {
-            $io->setOption('model', $io->ask(new ConfirmationQuestion('Also generate model? [Y/n]: ')));
-        }
-    }
-
-    /**
-     * Executes the current command.
-     *
-     * @param  IOInterface  $io
-     *
-     * @return  int Return 0 is success, 1-255 is failure.
-     */
-    public function execute(IOInterface $io): int
-    {
-        [, $name] = $this->getNameParts($io, 'ListView');
-        $force = $io->getOption('force');
-
-        if (!$name) {
-            $io->errorStyle()->error('No view name');
-
-            return 255;
-        }
-
-        $this->codeGenerator->from($this->getViewPath('view/grid/**/*.tpl'))
-            ->replaceTo(
-                $this->getDestPath($io, 'ListView'),
-                [
-                    'className' => Str::ensureRight($name, 'ListView'),
-                    'name' => Str::removeRight($name, 'ListView'),
-                    'ns' => $this->getNamespace($io, 'ListView'),
-                ],
-                $force
-            );
-
-        if ($io->getOption('model')) {
-            $name = $io->getArgument('name');
-            $name = Str::removeRight($name, 'ListView');
-            $modelName = \Windwalker\str($name)
-                ->replace('\\', '/')
-                ->explode('/')
-                ->pop();
-
-            $inoutOptions = $io->getInput()->getOptions();
-            $options = [
-                'name' => $modelName,
-                '--dir' => $inoutOptions['dir'] ?? null,
-                '--ns' => $inoutOptions['ns'] ?? null,
-                '--force' => $inoutOptions['force'] ?? null,
-                '--quite' => $inoutOptions['quiet'] ?? null,
-                '--ansi' => $inoutOptions['ansi'] ?? null,
-                '--no-interaction' => $inoutOptions['no-interaction'] ?? null,
-            ];
-
-            $options = array_filter($options);
-
-            $this->app->runCommand(
-                $this->app->make(ModelSubCommand::class),
-                $options,
-                $io
-            );
-        }
-
-        return 0;
-    }
-
-    protected function getBaseDir(): string
-    {
-        return dirname(UnicornPackage::dir());
+        return 'view/grid/**/*.tpl';
     }
 }
