@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace Unicorn\Workflow;
 
 use Windwalker\Core\Event\CoreEventAwareTrait;
+use Windwalker\Core\Language\TranslatorTrait;
 use Windwalker\Event\EventAwareInterface;
 use Windwalker\Event\EventAwareTrait;
 use Windwalker\ORM\Event\WatchEvent;
+use Windwalker\Utilities\Enum\EnumTranslatableInterface;
 use Windwalker\Utilities\TypeCast;
 
 use function Windwalker\value;
@@ -17,6 +19,7 @@ use function Windwalker\value;
  */
 class WorkflowController implements EventAwareInterface
 {
+    use TranslatorTrait;
     use CoreEventAwareTrait;
 
     protected bool $allowFreeTransitions = true;
@@ -128,7 +131,15 @@ class WorkflowController implements EventAwareInterface
     public function addState(mixed $state, ?string $name = null, bool $isInitial = false): State
     {
         if (!$state instanceof State) {
-            $state = new State(TypeCast::toString($state), $name, $isInitial);
+            $value = $state;
+
+            $state = new State(TypeCast::toString($value), $name, $isInitial);
+
+            if ($value instanceof EnumTranslatableInterface) {
+                $state->title($value->getTitle($this->lang))
+                    ->icon($value->getIcon())
+                    ->color($value->getColor());
+            }
         }
 
         $this->states[$state->getValue()] = $state;
@@ -375,6 +386,9 @@ class WorkflowController implements EventAwareInterface
         mixed $froms,
         mixed $tos
     ): array {
+        $froms ??= $this->getStateValues();
+        $tos ??= $this->getStateValues();
+
         $froms = (array) AbstractWorkflow::toStrings($froms);
         $tos = (array) AbstractWorkflow::toStrings($tos);
 
@@ -427,8 +441,10 @@ class WorkflowController implements EventAwareInterface
         return $this;
     }
 
-    public function getState(string $value): ?State
+    public function getState(mixed $value): ?State
     {
+        $value = TypeCast::toString($value);
+
         return $this->states[$value] ?? null;
     }
 

@@ -118,7 +118,7 @@ $buttonId ??= trim('c-state-dropdown-' . implode('-', $fieldName) . '-' . $id, '
 
 @if ($readonly)
     <div class="d-inline-block text-{{ $color }} text-nowrap">
-        <i class="{{ $currentState?->getIcon() ?? 'fa fa-question-circle' }}"></i>
+        <i class="{{ $currentState?->getIcon() ?? 'fa fa-question-circle' }} fa-fw"></i>
         @if (!$noTitle)
             <span class="mr-auto me-auto ms-1">{{ $currentState?->getTitle() ?? 'Unknown State' }}</span>
         @endif
@@ -139,7 +139,7 @@ $buttonId ??= trim('c-state-dropdown-' . implode('-', $fieldName) . '-' . $id, '
             @if ($batch)
                 {!! $slot ?? '' !!}
             @else
-                <i class="{{ $currentState?->getIcon() ?? 'fa fa-question-circle' }}"></i>
+                <i class="{{ $currentState?->getIcon() ?? 'fa fa-question-circle' }} fa-fw"></i>
                 @if (!$noTitle)
                     <span class="mr-auto me-auto ms-1">{{ $currentState?->getTitle() ?? 'Unknown State' }}</span>
                 @endif
@@ -177,7 +177,7 @@ $buttonId ??= trim('c-state-dropdown-' . implode('-', $fieldName) . '-' . $id, '
                                 @else
                                     @click="$store.{{ $store }}.updateItem('{{ $id }}', null, { batch: { '{{ $workflowCtrl->getField() }}': '{{ $state->getValue() }}' } })">
                                 @endif
-                                <i class="{{ $state->getIcon() }} text-{{ $state->getColor() }}"></i>
+                                <i class="{{ $state->getIcon() }} fa-fw text-{{ $state->getColor() }}"></i>
                                 {{ $state->getTitle() ?? $state->getName() }}
                             </a>
                         </li>

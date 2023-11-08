@@ -37,7 +37,7 @@ class StateMachine implements ContainerAttributeInterface
             $machine = $handler(...$args);
             $container = $handler->getContainer();
 
-            $workflow = new WorkflowController();
+            $workflow = $container->newInstance(WorkflowController::class);
             $workflow->setField($this->field);
 
             if (is_a($this->enum, \UnitEnum::class, true) || is_a($this->enum, Enum::class, true)) {
