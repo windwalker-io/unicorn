@@ -10,11 +10,9 @@ use Windwalker\Core\Language\TranslatorTrait;
 use Windwalker\Core\Service\FilterService;
 use Windwalker\DI\Attributes\Inject;
 use Windwalker\Filter\Exception\ValidateException;
-use Windwalker\Form\FieldDefinitionInterface;
 use Windwalker\Form\Form;
 use Windwalker\Form\ValidateResult;
 use Windwalker\Utilities\Arr;
-
 use Windwalker\Utilities\Cache\InstanceCacheTrait;
 
 use function Windwalker\collect;
@@ -117,13 +115,13 @@ trait FormAwareActionTrait
     /**
      * getForm
      *
-     * @param  FieldDefinitionInterface|Form|string|null  $form
-     * @param  array                                      $args
+     * @param  object|string|null  $form
+     * @param  array               $args
      *
      * @return  Form
      */
     public function getForm(
-        FieldDefinitionInterface|Form|string|null $form = null,
+        object|string|null $form = null,
         array $args = []
     ): Form {
         if ($form instanceof Form) {

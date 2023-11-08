@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Unicorn\Repository\Actions;
 
 use Unicorn\Repository\Event\PrepareSaveEvent;
-use Windwalker\Form\FieldDefinitionInterface;
-use Windwalker\Form\Form;
 use Windwalker\ORM\EntityMapper;
 use Windwalker\ORM\Event\AfterSaveEvent;
 use Windwalker\ORM\Event\BeforeSaveEvent;
@@ -115,15 +113,15 @@ class SaveAction extends AbstractDatabaseAction
     /**
      * prepareFormStore
      *
-     * @param  array                                      $data
-     * @param  FieldDefinitionInterface|Form|string|null  $form
-     * @param  array                                      $args
+     * @param  array               $data
+     * @param  object|string|null  $form
+     * @param  array               $args
      *
      * @return  array
      */
     public function prepareFormStore(
         array $data,
-        FieldDefinitionInterface|Form|string|null $form = null,
+        object|string|null $form = null,
         array $args = []
     ): array {
         $form = $this->getForm($form, $args);
@@ -134,16 +132,16 @@ class SaveAction extends AbstractDatabaseAction
     /**
      * prepareStore
      *
-     * @param  array                                      $data
-     * @param  FieldDefinitionInterface|Form|string|null  $form
-     * @param  array                                      $args
-     * @param  int                                        $options
+     * @param  array               $data
+     * @param  object|string|null  $form
+     * @param  array               $args
+     * @param  int                 $options
      *
      * @return  array
      */
     public function prepareStore(
         array $data,
-        FieldDefinitionInterface|Form|string|null $form = null,
+        object|string|null $form = null,
         array $args = [],
         int $options = 0
     ): array {
