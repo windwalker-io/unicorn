@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Unicorn\Repository;
 
+use Unicorn\Attributes\NewOrdering;
 use Unicorn\Repository\Actions\BatchAction;
 use Unicorn\Repository\Actions\ReorderAction;
 use Unicorn\Repository\Actions\SaveAction;
+use Windwalker\Attributes\AttributesAccessor;
 use Windwalker\ORM\Event\AfterSaveEvent;
 use Windwalker\ORM\Event\BeforeSaveEvent;
 
@@ -15,7 +17,32 @@ use Windwalker\ORM\Event\BeforeSaveEvent;
  */
 trait ManageRepositoryTrait
 {
-    use CrudRepositoryTrait;
+    use CrudRepositoryTrait {
+        CrudRepositoryTrait::createSaveAction as parentCreateSaveAction;
+    }
+
+    public function createSaveAction(string $actionClass = SaveAction::class): SaveAction
+    {
+        $action = $this->parentCreateSaveAction($actionClass);
+
+        $entityClass = $this->getEntityClass();
+
+        $attr = AttributesAccessor::getFirstAttributeInstance(
+            $entityClass,
+            NewOrdering::class,
+            \ReflectionAttribute::IS_INSTANCEOF
+        );
+
+        if ($attr) {
+            if ($attr->isFirst()) {
+                $this->newOrderFirst($action);
+            } else {
+                $this->newOrderLast($action);
+            }
+        }
+
+        return $action;
+    }
 
     public function createReorderAction(string $actionClass = ReorderAction::class): ReorderAction
     {
