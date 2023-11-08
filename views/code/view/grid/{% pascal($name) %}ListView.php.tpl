@@ -8,10 +8,14 @@ use App\Entity\{% pascal($name) %};
 use {% $ns %}\Form\GridForm;
 use App\Repository\{% pascal($name) %}Repository;
 use Windwalker\Core\Application\AppContext;
+use Windwalker\Core\Attributes\ViewMetadata;
 use Windwalker\Core\Attributes\ViewModel;
 use Windwalker\Core\Form\FormFactory;
+use Windwalker\Core\Html\HtmlFrame;
 use Windwalker\Core\Language\TranslatorTrait;
+use Windwalker\Core\View\Contract\FilterAwareViewModelInterface;
 use Windwalker\Core\View\SortableViewModelInterface;
+use Windwalker\Core\View\Traits\FilterAwareViewModelTrait;
 use Windwalker\Core\View\View;
 use Windwalker\Core\View\ViewModelInterface;
 use Windwalker\Data\Collection;
@@ -28,9 +32,10 @@ use Windwalker\ORM\ORM;
     ],
     js: '{% kebab($name) %}-list.js'
 )]
-class {% pascal($name) %}ListView implements ViewModelInterface
+class {% pascal($name) %}ListView implements ViewModelInterface, FilterAwareViewModelInterface
 {
     use TranslatorTrait;
+    use FilterAwareViewModelTrait;
 
     public function __construct(
         protected ORM $orm,
@@ -54,7 +59,7 @@ class {% pascal($name) %}ListView implements ViewModelInterface
 
         // Prepare Items
         $page     = $state->rememberFromRequest('page');
-        $limit    = $state->rememberFromRequest('limit');
+        $limit    = $state->rememberFromRequest('limit') ?: 30;
         $filter   = (array) $state->rememberFromRequest('filter');
         $search   = (array) $state->rememberFromRequest('search');
         $ordering = $state->rememberFromRequest('list_ordering') ?? $this->getDefaultOrdering();
@@ -76,9 +81,7 @@ class {% pascal($name) %}ListView implements ViewModelInterface
         $form = $this->formFactory->create(GridForm::class);
         $form->fill(compact('search', 'filter'));
 
-        $showFilters = $this->showFilterBar($filter);
-
-        $this->prepareMetadata($app, $view);
+        $showFilters = $this->isFiltered($filter);
 
         return compact('items', 'pagination', 'form', 'showFilters', 'ordering');
     }
@@ -107,37 +110,11 @@ class {% pascal($name) %}ListView implements ViewModelInterface
         ];
     }
 
-    /**
-     * Can show Filter bar
-     *
-     * @param  array  $filter
-     *
-     * @return  bool
-     */
-    public function showFilterBar(array $filter): bool
+    #[ViewMetadata]
+    protected function prepareMetadata(HtmlFrame $htmlFrame): void
     {
-        foreach ($filter as $value) {
-            if ($value !== null && (string) $value !== '') {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Prepare Metadata and HTML Frame.
-     *
-     * @param  AppContext  $app
-     * @param  View        $view
-     *
-     * @return  void
-     */
-    protected function prepareMetadata(AppContext $app, View $view): void
-    {
-        $view->getHtmlFrame()
-            ->setTitle(
-                $this->trans('unicorn.title.grid', title: '{% pascal($name) %}')
-            );
+        $htmlFrame->setTitle(
+            $this->trans('unicorn.title.grid', title: '{% pascal($name) %}')
+        );
     }
 }

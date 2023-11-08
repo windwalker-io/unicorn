@@ -38,6 +38,8 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
     use FlowControlTrait;
     use QueryProxyTrait;
 
+    public static int $globalDefaultLimit = 0;
+
     protected ?SelectorQuery $query = null;
 
     protected ?int $offset = null;
@@ -735,7 +737,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
      */
     public function getDefaultLimit(): ?int
     {
-        return $this->defaultLimit ?? 30;
+        return $this->defaultLimit ?? static::$globalDefaultLimit;
     }
 
     /**

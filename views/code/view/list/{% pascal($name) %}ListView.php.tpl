@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace {% $ns %};
 
+use App\Entity\{% pascal($name) %};
 use App\Repository\{% pascal($name) %}Repository;
 use Windwalker\Core\Application\AppContext;
+use Windwalker\Core\Attributes\ViewMetadata;
 use Windwalker\Core\Attributes\ViewModel;
+use Windwalker\Core\Html\HtmlFrame;
 use Windwalker\Core\View\View;
 use Windwalker\Core\View\ViewModelInterface;
 use Windwalker\DI\Attributes\Autowire;
@@ -40,18 +43,17 @@ class {% pascal($name) %}ListView implements ViewModelInterface
     public function prepare(AppContext $app, View $view): array
     {
         $page     = $app->input('page');
-        $limit    = $app->input('limit');
+        $limit    = $app->input('limit') ?: 30;
         $ordering = $this->getDefaultOrdering();
 
         $items = $this->repository->getListSelector()
             ->setFilters([])
             ->ordering($ordering)
             ->page($page)
-            ->limit($limit);
+            ->limit($limit)
+            ->setDefaultItemClass({% pascal($name) %}::class);
 
         $pagination = $items->getPagination();
-
-        $this->prepareMetadata($app, $view);
 
         return compact('items', 'pagination');
     }
@@ -66,17 +68,9 @@ class {% pascal($name) %}ListView implements ViewModelInterface
         return '{% snake($name) %}.id DESC';
     }
 
-    /**
-     * Prepare Metadata and HTML Frame.
-     *
-     * @param  AppContext  $app
-     * @param  View        $view
-     *
-     * @return  void
-     */
-    protected function prepareMetadata(AppContext $app, View $view): void
+    #[ViewMetadata]
+    protected function prepareMetadata(HtmlFrame $htmlFrame): void
     {
-        $view->getHtmlFrame()
-            ->setTitle('{% pascal($name) %} List');
+        $htmlFrame->setTitle('{% pascal($name) %} List');
     }
 }
