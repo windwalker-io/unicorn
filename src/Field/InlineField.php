@@ -148,6 +148,10 @@ class InlineField extends AbstractField implements CompositeFieldInterface
 
     protected function castToValidValue(mixed $value): mixed
     {
+        if (is_json($value)) {
+            return (array) json_decode($value, true);
+        }
+
         return parent::castToValidValue($value);
     }
 
