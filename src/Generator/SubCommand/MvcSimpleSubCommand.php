@@ -15,13 +15,10 @@ use Windwalker\Core\Generator\SubCommand\AbstractGeneratorSubCommand;
 use Windwalker\Data\Collection;
 use Windwalker\Utilities\StrNormalize;
 
-/**
- * The ModelSubCommand class.
- */
 #[CommandWrapper(
-    description: 'Unicorn mvc admin.'
+    description: 'Unicorn mvc simple.'
 )]
-class MvcFrontSubCommand extends AbstractGeneratorSubCommand
+class MvcSimpleSubCommand extends AbstractGeneratorSubCommand
 {
     /**
      * configure

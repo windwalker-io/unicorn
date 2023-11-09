@@ -14,7 +14,7 @@ use Unicorn\Generator\Command\BuildFormCommand;
 use Unicorn\Generator\SubCommand\ControllerSubCommand;
 use Unicorn\Generator\SubCommand\ModelSubCommand;
 use Unicorn\Generator\SubCommand\MvcAdminSubCommand;
-use Unicorn\Generator\SubCommand\MvcFrontSubCommand;
+use Unicorn\Generator\SubCommand\MvcSimpleSubCommand;
 use Unicorn\Generator\SubCommand\RouteSubCommand;
 use Unicorn\Generator\SubCommand\ViewEditSubCommand;
 use Unicorn\Generator\SubCommand\ViewGridSubCommand;
@@ -240,7 +240,7 @@ class UnicornPackage extends AbstractPackage implements
                     'unicorn:view-item' => ViewItemSubCommand::class,
                     'unicorn:route' => RouteSubCommand::class,
                     'unicorn:mvc-admin' => MvcAdminSubCommand::class,
-                    'unicorn:mvc-front' => MvcFrontSubCommand::class,
+                    'unicorn:mvc-simple' => MvcSimpleSubCommand::class,
                     'unicorn:workflow' => WorkflowSubCommand::class,
                     // 'unicorn:workflow' => ModelSubCommand::class,
                 ]

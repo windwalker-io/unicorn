@@ -58,7 +58,6 @@ class {% pascal($name) %}EditView implements ViewModelInterface
 
         $form = $this->formFactory
             ->create(EditForm::class)
-            ->setNamespace('item')
             ->fill(
                 $this->repository->getState()->getAndForget('edit.data')
                     ?: $this->orm->extractEntity($item)
