@@ -13,10 +13,10 @@
     ],
     "require": {
         "php": ">=8.2",
-        "windwalker/core": "^4.0",
-        "windwalker/language": "^4.0",
+        "windwalker/core": "^4.1",
+        "windwalker/language": "^4.1",
         "intervention/image": "^2.5",
-        "symfony/mime": "^5.4||^6.0"
+        "symfony/mime": "^5.4||^6.0||^7.0"
     },
     "require-dev": {
         "aws/aws-sdk-php": "^3.181",
@@ -51,8 +51,7 @@
             ]
         },
         "branch-alias": {
-            "dev-main": "1.x-dev",
-            "dev-next": "1.1.x-dev"
+            "dev-main": "1.x-dev"
         }
     }
 }
