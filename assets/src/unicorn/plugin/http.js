@@ -4,6 +4,7 @@
  * @copyright  Copyright (C) 2016 LYRASOFT. All rights reserved.
  * @license    GNU General Public License version 2 or later.
  */
+import { parseTemplate } from 'url-template';
 
 export default class UnicornHttp {
   globalAxios;
@@ -81,6 +82,11 @@ export default class UnicornHttp {
 
       if (config.url && config.url.startsWith('@')) {
         config.url = this.app.route(config.url);
+      }
+
+      if (config?.vars) {
+        const tmpl = parseTemplate(config.url);
+        config.url = tmpl.expand(config.vars || {});
       }
 
       return config;
