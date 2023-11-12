@@ -42,6 +42,7 @@ export interface Unicorn extends UnicornApp {
   data(name: string): any;
   data(ele: Element, name: string): any;
   data(ele: Element, name: string, data?: any): any;
+  use(plugin: any, options?: any): this;
   removeData(name: string): any;
   removeData(ele: Element, name: string): any;
   on(event: string|string[], handler: Function): this;
