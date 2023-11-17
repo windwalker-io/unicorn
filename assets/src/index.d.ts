@@ -207,20 +207,24 @@ export interface UnicornUIExtended {
 }
 
 // Http
+export type UnicornHttpOptions = AxiosRequestConfig | {
+  vars?: Record<string, any>;
+};
+
 export interface UnicornHttp {
   axios: AxiosInstance;
   createHttp(): Promise<AxiosInstance>;
   getHttp(): Promise<AxiosInstance>;
   prepareAxios(axios: AxiosInstance): void;
-  requestMiddleware(callback: (config: AxiosRequestConfig) => AxiosRequestConfig): void;
-  get(url: string, options?: AxiosRequestConfig): Promise<AxiosResponse>;
-  post(url: string, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>;
-  put(url: string, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>;
-  patch(url: string, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>;
-  delete(url: string, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>;
-  head(url: string, options?: AxiosRequestConfig): Promise<AxiosResponse>;
-  options(url: string, options?: AxiosRequestConfig): Promise<AxiosResponse>;
-  request(options: AxiosRequestConfig): Promise<AxiosResponse>;
+  requestMiddleware(callback: (config: UnicornHttpOptions) => AxiosRequestConfig): void;
+  get(url: string, options?: UnicornHttpOptions): Promise<AxiosResponse>;
+  post(url: string, data?: any, options?: UnicornHttpOptions): Promise<AxiosResponse>;
+  put(url: string, data?: any, options?: UnicornHttpOptions): Promise<AxiosResponse>;
+  patch(url: string, data?: any, options?: UnicornHttpOptions): Promise<AxiosResponse>;
+  delete(url: string, data?: any, options?: UnicornHttpOptions): Promise<AxiosResponse>;
+  head(url: string, options?: UnicornHttpOptions): Promise<AxiosResponse>;
+  options(url: string, options?: UnicornHttpOptions): Promise<AxiosResponse>;
+  request(options: UnicornHttpOptions): Promise<AxiosResponse>;
 }
 
 // Uri

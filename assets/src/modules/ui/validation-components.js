@@ -463,7 +463,7 @@ export class UnicornFieldValidation {
     // Check custom validity
     const validates = (this.$input.getAttribute('data-validate') || '').split('|');
     let result = true;
-
+    
     if (this.$input.value !== '' && validates.length) {
       if (!this.checkCustomDataAttributeValidity()) {
         return false;
@@ -647,18 +647,19 @@ export class UnicornFieldValidation {
    * @returns {[Validator, object]|null}
    */
   getValidator(name) {
-    const matches = name.match(/(?<type>\w+)(\((?<params>.*)\))*/);
+    const matches = name.match(/(?<type>[\w\-_]+)(\((?<params>.*)\))*/);
 
     if (!matches) {
       return null;
     }
 
     const validatorName = matches.groups.type || '';
+    
     const params = matches.groups.params || '';
 
     const fv = this.getFormValidation(this.$form);
     const validator = fv.validators[validatorName] || fv.constructor.globalValidators[validatorName];
-
+    
     if (!validator) {
       return null;
     }
