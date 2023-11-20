@@ -54,7 +54,7 @@ class {% pascal($name) %}EditView implements ViewModelInterface
         $item = $this->repository->getItem($id);
 
         // Bind item for injection
-        $view[$item::class] = $item;
+        $view[{% pascal($name) %}::class] = $item;
 
         $form = $this->formFactory
             ->create(EditForm::class)
