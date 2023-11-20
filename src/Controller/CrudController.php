@@ -52,10 +52,11 @@ class CrudController implements EventAwareInterface
         CrudRepositoryInterface $repository,
         mixed $form,
         array $formArgs = [],
+        ?array $data = null,
         int $options = 0
     ): RouteUri {
         try {
-            $item = $app->input($this->getFormNamespace());
+            $item = $data ?? $app->input($this->getFormNamespace());
 
             /** @var object $item */
             $action = $repository->createSaveAction();
@@ -96,8 +97,9 @@ class CrudController implements EventAwareInterface
         AppContext $app,
         Navigator $nav,
         CrudRepositoryInterface $repository,
+        mixed $id = null,
     ): RouteUri {
-        $ids = (array) $app->input('id');
+        $ids = (array) ($id ?? $app->input('id'));
 
         if ($ids === []) {
             return $nav->back();
