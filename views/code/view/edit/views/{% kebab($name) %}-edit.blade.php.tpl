@@ -44,7 +44,7 @@ use Windwalker\Form\Form;
         action="{{ $nav->to('{% snake($name) %}_edit') }}"
         method="POST" enctype="multipart/form-data">
 
-        <x-title-bar :form="$form"></x-title-bar>
+        <x-title-bar :form="$form" ns="item"></x-title-bar>
 
         <div class="row">
             <div class="col-lg-7">

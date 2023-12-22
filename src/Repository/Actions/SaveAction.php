@@ -40,10 +40,6 @@ class SaveAction extends AbstractDatabaseAction
         array $args = [],
         int $options = 0
     ): object {
-        if (is_object($data)) {
-            $data = $this->getEntityMapper()->extract($data);
-        }
-
         $data = $this->processDataAndValidate($data, $form, $args, $options);
 
         return $this->save($data);
@@ -65,6 +61,10 @@ class SaveAction extends AbstractDatabaseAction
         array $args = [],
         int $options = 0
     ): array {
+        if (is_object($data)) {
+            $data = $this->getEntityMapper()->extract($data);
+        }
+
         $data = $this->prepareStore($data, $form, $args, $options);
 
         if (!($options & static::IGNORE_VALIDATE)) {

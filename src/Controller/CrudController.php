@@ -56,14 +56,29 @@ class CrudController implements EventAwareInterface
         int $options = 0
     ): RouteUri {
         try {
-            $item = $data ?? $app->input($this->getFormNamespace());
+            $ns = $this->getFormNamespace();
 
-            /** @var object $item */
+            $data ??= $app->input($ns);
+
             $action = $repository->createSaveAction();
 
             $action->addEventDealer($this);
 
-            $item = $action->processDataAndSave($item, $form, $formArgs, $options);
+            $form = $action->getForm($form);
+
+            // 4.0 BC
+            if ($form->getNamespace() !== $ns) {
+                $data = [$ns => $data];
+            }
+
+            $data = $action->processDataAndValidate($data, $form, $formArgs, $options);
+
+            // 4.0 BC
+            if ($form->getNamespace() !== $ns) {
+                $item = $data[$ns] ?? [];
+            }
+
+            $item = $action->save($item);
 
             if (!$this->isMuted()) {
                 $app->addMessage(
