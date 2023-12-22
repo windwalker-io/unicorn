@@ -67,6 +67,7 @@ class CrudController implements EventAwareInterface
             $form = $action->getForm($form);
 
             // 4.0 BC
+            // Todo: Remove global ns on 5.0
             if ($form->getNamespace() !== $ns) {
                 $data = [$ns => $data];
             }
@@ -74,6 +75,7 @@ class CrudController implements EventAwareInterface
             $data = $action->processDataAndValidate($data, $form, $formArgs, $options);
 
             // 4.0 BC
+            // Todo: Remove global ns on 5.0
             if ($form->getNamespace() !== $ns) {
                 $item = $data[$ns] ?? [];
             }
