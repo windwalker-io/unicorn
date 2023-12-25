@@ -18,6 +18,7 @@ use Windwalker\ORM\Event\AfterSaveEvent;
 use Windwalker\ORM\Event\BeforeDeleteEvent;
 use Windwalker\ORM\Event\BeforeSaveEvent;
 use Windwalker\ORM\NestedSetMapper;
+use Windwalker\Utilities\TypeCast;
 
 /**
  * The CrudController class.
@@ -52,13 +53,14 @@ class CrudController implements EventAwareInterface
         CrudRepositoryInterface $repository,
         mixed $form,
         array $formArgs = [],
-        ?array $data = null,
+        iterable|null $data = null,
         int $options = 0
     ): RouteUri {
         try {
             $ns = $this->getFormNamespace();
 
             $data ??= $app->input($ns);
+            $data = TypeCast::toArray($data);
 
             $action = $repository->createSaveAction();
 
@@ -66,21 +68,55 @@ class CrudController implements EventAwareInterface
 
             $form = $action->getForm($form);
 
-            // 4.0 BC
-            // Todo: Remove global ns on 5.0
-            if ($form->getNamespace() !== $ns) {
-                $data = [$ns => $data];
+            $item = $action->processDataAndSave($data, $form, $formArgs, $options);
+
+            if (!$this->isMuted()) {
+                $app->addMessage(
+                    $this->lang->trans('save.success'),
+                    'success'
+                );
             }
+
+            return $nav->self()->id($item->getId());
+        } catch (\RuntimeException $e) {
+            $item = $app->input($this->getFormNamespace());
+            $repository->getState()->remember('edit.data', $item);
+
+            throw $e;
+        }
+    }
+
+    public function saveWithNamespace(
+        AppContext $app,
+        Navigator $nav,
+        CrudRepositoryInterface $repository,
+        mixed $form,
+        array $formArgs = [],
+        ?string $namespace = 'item',
+        iterable|null $data = null,
+        int $options = 0
+    ): RouteUri {
+        try {
+            $data ??= $app->input($namespace);
+            $data = TypeCast::toArray($data);
+
+            if ($namespace) {
+                $data = [$namespace => $data];
+            }
+
+            $action = $repository->createSaveAction();
+
+            $action->addEventDealer($this);
+
+            $form = $action->getForm($form);
 
             $data = $action->processDataAndValidate($data, $form, $formArgs, $options);
 
-            // 4.0 BC
-            // Todo: Remove global ns on 5.0
-            if ($form->getNamespace() !== $ns) {
-                $item = $data[$ns] ?? [];
+            if ($namespace) {
+                $data = $data[$namespace] ?? [];
             }
 
-            $item = $action->save($item);
+            $item = $action->save($data);
 
             if (!$this->isMuted()) {
                 $app->addMessage(

@@ -24,7 +24,7 @@ class {% pascal($name) %}Controller
     ): mixed {
         $form = $app->make(EditForm::class);
 
-        $uri = $app->call([$controller, 'save'], compact('repository', 'form'));
+        $uri = $app->call($controller->saveWithNamespace(...), compact('repository', 'form'));
 
         return match ($app->input('task')) {
             'save2close' => $nav->to('{% snake($name) %}_list'),
@@ -37,7 +37,7 @@ class {% pascal($name) %}Controller
         #[Autowire] {% pascal($name) %}Repository $repository,
         CrudController $controller
     ): mixed {
-        return $app->call([$controller, 'delete'], compact('repository'));
+        return $app->call($controller->delete(...), compact('repository'));
     }
 
     public function filter(
@@ -45,7 +45,7 @@ class {% pascal($name) %}Controller
         #[Autowire] {% pascal($name) %}Repository $repository,
         GridController $controller
     ): mixed {
-        return $app->call([$controller, 'filter'], compact('repository'));
+        return $app->call($controller->filter(...), compact('repository'));
     }
 
     public function batch(
@@ -60,7 +60,7 @@ class {% pascal($name) %}Controller
             default => null
         };
 
-        return $app->call([$controller, 'batch'], compact('repository', 'data'));
+        return $app->call($controller->batch(...), compact('repository', 'data'));
     }
 
     public function copy(
@@ -68,6 +68,6 @@ class {% pascal($name) %}Controller
         #[Autowire] {% pascal($name) %}Repository $repository,
         GridController $controller
     ): mixed {
-        return $app->call([$controller, 'copy'], compact('repository'));
+        return $app->call($controller->copy(...), compact('repository'));
     }
 }
