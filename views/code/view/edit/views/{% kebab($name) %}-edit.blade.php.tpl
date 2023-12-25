@@ -66,7 +66,7 @@ use Windwalker\Form\Form;
         </div>
 
         <div class="d-none">
-            @if ($idField = $form?->getField('id'))
+            @if ($idField = $form?->getField('item/id') ?? $form?->getField('id'))
                 <input name="{{ $idField->getInputName() }}" type="hidden" value="{{ $idField->getValue() }}" />
             @endif
 
