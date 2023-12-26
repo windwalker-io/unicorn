@@ -107,7 +107,7 @@ class MvcAdminSubCommand extends AbstractGeneratorSubCommand
             ->implode('/');
 
         $this->runProcess(
-            "php windwalker g entity $entityName " . $optionString,
+            "php windwalker g unicorn:model $entityName " . $optionString,
             $io
         );
 

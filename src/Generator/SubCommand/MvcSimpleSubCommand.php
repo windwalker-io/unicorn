@@ -94,7 +94,7 @@ class MvcSimpleSubCommand extends AbstractGeneratorSubCommand
             ->implode('/');
 
         $this->runProcess(
-            "php windwalker g entity $entityName " . $optionString,
+            "php windwalker g unicorn:model $entityName " . $optionString,
             $io
         );
 
@@ -133,7 +133,7 @@ class MvcSimpleSubCommand extends AbstractGeneratorSubCommand
 
         // Route
         $this->runProcess(
-            "php windwalker g unicorn:route $kebabName " . $optionString,
+            "php windwalker g unicorn:route $kebabName --type=simple " . $optionString,
             $io
         );
 
