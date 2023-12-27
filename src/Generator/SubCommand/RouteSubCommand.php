@@ -49,7 +49,7 @@ class RouteSubCommand extends \Windwalker\Core\Generator\SubCommand\RouteSubComm
             return 255;
         }
 
-        $src = $type === 'admin' ? 'route/*' : 'route-simple/*';
+        $src = $type === 'admin' ? 'route-admin/*' : 'route-simple/*';
 
         $this->codeGenerator->from($this->getViewPath($src))
             ->replaceTo(
