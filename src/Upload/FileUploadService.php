@@ -259,7 +259,7 @@ class FileUploadService implements EventAwareInterface
         $dest = static::replaceVariables($dest, $ext);
         $destExt = Path::getExtension($dest);
 
-        if (str_starts_with($mime, 'image/') && $this->shouldRedraw($ext, $destExt)) {
+        if (str_starts_with((string) $mime, 'image/') && $this->shouldRedraw($ext, $destExt)) {
             $resizeConfig = $this->getResizeConfig($options);
 
             if ($destExt !== '{ext}') {
@@ -424,7 +424,7 @@ class FileUploadService implements EventAwareInterface
 
     public function getMimeTypeByExtension(string $pathOrExt): ?string
     {
-        if (str_contains(Path::getExtension($pathOrExt), '.')) {
+        if (str_contains($pathOrExt, '.')) {
             $pathOrExt = Path::getExtension($pathOrExt);
         }
 
