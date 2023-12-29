@@ -15,7 +15,7 @@
         "php": ">=8.2",
         "windwalker/core": "^4.1",
         "windwalker/language": "^4.1",
-        "intervention/image": "^2.5",
+        "intervention/image": "^2.5||^3.0",
         "symfony/mime": "^5.4||^6.0||^7.0"
     },
     "require-dev": {

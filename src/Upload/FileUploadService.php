@@ -12,6 +12,7 @@ use Psr\Http\Message\UploadedFileInterface;
 use Symfony\Component\Mime\MimeTypesInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Unicorn\Flysystem\Base64DataUri;
+use Unicorn\Image\InterventionImage;
 use Unicorn\Storage\PutResult;
 use Unicorn\Storage\StorageInterface;
 use Unicorn\Storage\StorageManager;
@@ -366,8 +367,60 @@ class FileUploadService implements EventAwareInterface
             $resizeConfig
         );
 
-        $manager = new ImageManager(['driver' => $driver = $resizeConfig['driver']]);
-        $image = $manager->make($src);
+        $interventionVersion = InterventionImage::version();
+
+        return $interventionVersion === 2
+            ? $this->resizeByIntervension2($src, $resizeConfig, $outputFormat)
+            : $this->resizeByIntervension3($src, $resizeConfig, $outputFormat);
+    }
+
+    protected function resizeByIntervension3(
+        StreamInterface|\SplFileInfo|string|UploadedFileInterface $src,
+        array $resizeConfig,
+        ?string $outputFormat
+    ): StreamInterface {
+        $image = InterventionImage::read($src, $driver = $resizeConfig['driver']);
+
+        // if ($driver === static::DRIVER_IMAGICK && $resizeConfig['strip_exif']) {
+        //     $image->getCore()->stripImage();
+        // }
+
+        $width = $resizeConfig['width'];
+        $height = $resizeConfig['height'];
+
+        if (!$resizeConfig['enabled']) {
+            return Stream::wrap(
+                $image->encodeByExtension(
+                    $resizeConfig['output_format'] ?? $outputFormat,
+                    $resizeConfig['quality']
+                )
+                    ->toFilePointer(),
+            );
+        }
+
+        if ($resizeConfig['crop'] && $width !== null && $height !== null) {
+            $image->coverDown($width, $height);
+        } elseif ($width || $height) {
+            $image->resizeDown($width, $height);
+        }
+
+        return Stream::wrap(
+            $image->encodeByExtension(
+                $resizeConfig['output_format'] ?? $outputFormat,
+                $resizeConfig['quality']
+            )
+        );
+    }
+
+    /**
+     * @deprecated
+     */
+    protected function resizeByIntervension2(
+        StreamInterface|\SplFileInfo|string|UploadedFileInterface $src,
+        array $resizeConfig,
+        ?string $outputFormat
+    ): StreamInterface {
+        $image = InterventionImage::read($src, $driver = $resizeConfig['driver']);
 
         if ($resizeConfig['orientate']) {
             try {
