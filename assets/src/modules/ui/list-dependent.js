@@ -24,7 +24,8 @@ export class ListDependent {
     return {
       ajax: {
         url: null,
-        value_field: 'value'
+        value_field: 'value',
+        data: null,
       },
       source: null,
       text_field: 'title',
@@ -123,8 +124,15 @@ export class ListDependent {
    * @param {string} value
    */
   ajaxUpdate(value) {
-    const data = {};
+    let data = {};
+
     data[this.options.ajax.value_field] = value;
+
+    if (typeof this.options.ajax.data === 'object') {
+      data = { ...data, ...this.options.ajax.data };
+    } else if (typeof this.options.ajax.data === 'function') {
+      data = this.options.ajax.data(data, this) || data;
+    }
 
     this.beforeHook(value, this.element, this.dependent);
 
@@ -133,7 +141,13 @@ export class ListDependent {
       this.cancelToken = null;
     }
 
-    u.$http.get(this.options.ajax.url, {
+    let url = this.options.ajax.url;
+
+    if (typeof url === 'function') {
+      url = url(this);
+    }
+
+    u.$http.get(url, {
       params: data,
       cancelToken: this.cancelToken
     })
