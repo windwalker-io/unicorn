@@ -45,6 +45,8 @@ class FileUploadService implements EventAwareInterface
 
     public const DRIVER_IMAGICK = 'imagick';
 
+    protected array $pathVars = [];
+
     /**
      * FileUploadService constructor.
      */
@@ -127,7 +129,7 @@ class FileUploadService implements EventAwareInterface
         $ext = $this->getExtensionByMimeType($mime);
 
         $dest ??= $this->getUploadPath($dest, $ext);
-        $dest = static::replaceVariables($dest, (string) $ext);
+        $dest = $this->replaceVariables($dest, (string) $ext);
         $destExt = Path::getExtension($dest);
 
         if (str_starts_with($mime, 'image/') && $this->shouldRedraw($ext, $destExt)) {
@@ -180,7 +182,7 @@ class FileUploadService implements EventAwareInterface
             $resizeConfig = $this->getResizeConfig($options);
 
             // Todo: Should refactor total process
-            $dest = static::replaceVariables($dest, $resizeConfig['output_format'] ?? $srcExt);
+            $dest = $this->replaceVariables($dest, $resizeConfig['output_format'] ?? $srcExt);
 
             if ($destExt !== '{ext}') {
                 $resizeConfig['output_format'] ??= $destExt;
@@ -190,10 +192,10 @@ class FileUploadService implements EventAwareInterface
 
             $stream = $this->resizeImage($file, $resizeConfig);
         } elseif ($file instanceof UploadedFileInterface) {
-            $dest = static::replaceVariables($dest, $srcExt);
+            $dest = $this->replaceVariables($dest, $srcExt);
             $stream = $file->getStream();
         } else {
-            $dest = static::replaceVariables($dest, $srcExt);
+            $dest = $this->replaceVariables($dest, $srcExt);
             $stream = new Stream($file, READ_ONLY_FROM_BEGIN);
         }
 
@@ -256,7 +258,7 @@ class FileUploadService implements EventAwareInterface
             );
         }
 
-        $dest = static::replaceVariables($dest, $ext);
+        $dest = $this->replaceVariables($dest, $ext);
         $destExt = Path::getExtension($dest);
 
         if (str_starts_with((string) $mime, 'image/') && $this->shouldRedraw($ext, $destExt)) {
@@ -319,6 +321,21 @@ class FileUploadService implements EventAwareInterface
         return $this->options['resize']['enabled'] || $this->options['force_redraw'];
     }
 
+    /**
+     * @param  StreamInterface|\SplFileInfo|string|UploadedFileInterface  $src
+     * @param  array{
+     *     driver: string,
+     *     strip_exif: bool,
+     *     width: ?int,
+     *     height: ?int,
+     *     crop: bool,
+     *     quality: int,
+     *     output_format: string,
+     *     orientate: true,
+     * }  $resizeConfig
+     *
+     * @return  StreamInterface
+     */
     public function resizeImage(
         StreamInterface|\SplFileInfo|string|UploadedFileInterface $src,
         array $resizeConfig = []
@@ -454,9 +471,14 @@ class FileUploadService implements EventAwareInterface
         return $ext;
     }
 
-    public static function replaceVariables(string $dest, string $ext): string
+    public function replaceVariables(string $dest, string $ext): string
     {
         $chronos = chronos();
+
+        $vars = array_map(
+            static fn (string $var) => "{{$var}}",
+            $this->pathVars
+        );
 
         return strtr(
             $dest,
@@ -468,7 +490,8 @@ class FileUploadService implements EventAwareInterface
                 '{minute}' => $chronos->format('i'),
                 '{second}' => $chronos->format('s'),
                 '{ext}' => $ext,
-            ]
+                ...$vars
+            ],
         );
     }
 
@@ -531,5 +554,36 @@ class FileUploadService implements EventAwareInterface
         }
 
         return $this->mimeTypes;
+    }
+
+    public function setPathVar(string $name, mixed $value): static
+    {
+        $this->pathVars[$name] = (string) $value;
+
+        return $this;
+    }
+
+    public function getPathVar(string $name): ?string
+    {
+        return $this->pathVars[$name] ?? null;
+    }
+
+    public function removePathVar(string $name): static
+    {
+        unset($this->pathVars[$name]);
+
+        return $this;
+    }
+
+    public function getPathVars(): array
+    {
+        return $this->pathVars;
+    }
+
+    public function setPathVars(array $pathVars): static
+    {
+        $this->pathVars = $pathVars;
+
+        return $this;
     }
 }
