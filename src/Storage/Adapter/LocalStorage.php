@@ -130,6 +130,19 @@ class LocalStorage implements StorageInterface
         return new Uri(Str::removeLeft($url, $su->root));
     }
 
+    public function getUriBase(): string
+    {
+        $su = $this->app->service(SystemUri::class);
+
+        $root = $options['cdn']['root']
+            ?? $this->options['host']
+            ?? $su->root;
+
+        $base = $this->options['uri_base'] ?? '';
+
+        return Str::ensureRight($su->addUriBase($base, $root), '/');
+    }
+
     public function get(string $path, array $options = []): GetResult
     {
         $file = Filesystem::get($this->getPath($path));
