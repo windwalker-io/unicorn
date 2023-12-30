@@ -404,12 +404,12 @@ class FileUploadService implements EventAwareInterface
             $image->resizeDown($width, $height);
         }
 
-        return Stream::wrap(
-            $image->encodeByExtension(
-                $resizeConfig['output_format'] ?? $outputFormat,
-                $resizeConfig['quality']
-            )
+        $res = $image->encodeByExtension(
+            $resizeConfig['output_format'] ?? $outputFormat,
+            $resizeConfig['quality']
         );
+
+        return Stream::wrap($res->toFilePointer());
     }
 
     /**
