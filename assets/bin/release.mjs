@@ -1,10 +1,3 @@
-/**
- * Part of fusion project.
- *
- * @copyright  Copyright (C) 2018 Asikart.
- * @license    MIT
- */
-
 import minimist from 'minimist';
 import { execSync as exec } from 'child_process';
 
@@ -31,12 +24,14 @@ console.log(`>>> yarn build:prod`);
 exec(`yarn build:prod`);
 
 console.log(`>>> npm version ${args.join(' ')}`);
-exec(`npm version ${args.join(' ')}`);
+const buffer = exec(`npm version ${args.join(' ')}`);
+
+const output = buffer.toString();
 
 console.log('>>> Git commit all');
 exec(`git add .`);
 try {
-  exec(`git commit -am "Prepare release @windwalker-io/unicorn."`);
+  exec(`git commit -am "Prepare release ${output.join(' ')}."`);
 } catch (e) {
   console.log(e.message);
 }
