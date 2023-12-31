@@ -1,10 +1,3 @@
-/**
- * Part of earth project.
- *
- * @copyright  Copyright (C) 2019 ${ORGANIZATION}.
- * @license    __LICENSE__
- */
-
 import { Mixin } from './mixwith.js';
 
 export const EventMixin = Mixin(function (superclass) {

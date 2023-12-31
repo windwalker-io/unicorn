@@ -1,9 +1,3 @@
-/**
- * Part of Unicorn project.
- *
- * @copyright  Copyright (C) 2016 LYRASOFT. All rights reserved.
- * @license    GNU General Public License version 2 or later.
- */
 import { parseTemplate } from 'url-template';
 
 export default class UnicornHttp {

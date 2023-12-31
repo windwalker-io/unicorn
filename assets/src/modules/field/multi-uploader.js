@@ -1,9 +1,3 @@
-/**
- * Part of starter project.
- *
- * @copyright  Copyright (C) 2021 __ORGANIZATION__.
- * @license    __LICENSE__
- */
 
 import { createApp, nextTick, onMounted, reactive, ref, toRefs } from 'vue';
 import VueDragUploader from '../../vue/components/vue-drag-uploader/uploader.vue';

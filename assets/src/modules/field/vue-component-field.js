@@ -1,10 +1,3 @@
-/**
- * Part of earth project.
- *
- * @copyright  Copyright (C) 2023 __ORGANIZATION__.
- * @license    __LICENSE__
- */
-
 export class VueComponentField {
   static async init(selector, value = null, options = {}) {
     const { createApp, ref, reactive, toRefs, onMounted } = Vue;

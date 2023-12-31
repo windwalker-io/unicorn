@@ -1,10 +1,3 @@
-/**
- * Part of unicorn project.
- *
- * @copyright  Copyright (C) 2018 ${ORGANIZATION}.
- * @license    __LICENSE__
- */
-
 import { defaultsDeep, each } from 'lodash-es';
 import 'sprintf-js';
 import { defData, prepareData } from './../utilities.js';

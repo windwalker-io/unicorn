@@ -1,11 +1,5 @@
-
 /**
- * Part of phoenix project.
- *
  * Modified version of mixwith.js. @see https://raw.githubusercontent.com/justinfagnani/mixwith.js/
- *
- * @copyright  Copyright (C) 2019 ${ORGANIZATION}.
- * @license    __LICENSE__
  */
 
 // used by apply() and isApplicationOf()

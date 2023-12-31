@@ -1,10 +1,4 @@
 
-/**
- * Part of starter project.
- *
- * @copyright  Copyright (C) 2021 __ORGANIZATION__.
- * @license    __LICENSE__
- */
 import { defaultsDeep } from 'lodash-es';
 
 class IFrameModal extends HTMLElement {

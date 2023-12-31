@@ -1,10 +1,3 @@
-/**
- * Part of earth project.
- *
- * @copyright  Copyright (C) 2022 __ORGANIZATION__.
- * @license    __LICENSE__
- */
-
 import { createApp, nextTick, onMounted, reactive, ref, toRefs } from 'vue';
 import ModalTreeApp from '../../vue/components/modal-tree/modal-tree.vue';
 

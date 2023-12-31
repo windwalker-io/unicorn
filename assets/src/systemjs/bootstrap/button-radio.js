@@ -1,10 +1,3 @@
-/**
- * Part of unicorn project.
- *
- * @copyright  Copyright (C) 2021 __ORGANIZATION__.
- * @license    __LICENSE__
- */
-
 const defaultOptions = {
   selector: '.btn-group .radio',
   buttonClass: 'btn',

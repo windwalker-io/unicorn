@@ -1,9 +1,3 @@
-/**
- * Part of starter project.
- *
- * @copyright  Copyright (C) 2021 __ORGANIZATION__.
- * @license    __LICENSE__
- */
 import { each, defaultsDeep } from 'lodash-es';
 
 export default class UnicornAnimate {

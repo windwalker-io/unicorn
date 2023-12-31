@@ -1,10 +1,3 @@
-/**
- * Part of earth project.
- *
- * @copyright  Copyright (C) 2020 .
- * @license    __LICENSE__
- */
-
 import { SimpleQueue } from '../../../unicorn/plugin/queue.js';
 
 export let swal;

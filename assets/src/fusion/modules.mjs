@@ -1,10 +1,3 @@
-/**
- * Part of unicorn project.
- *
- * @copyright  Copyright (C) 2021 __ORGANIZATION__.
- * @license    __LICENSE__
- */
-
 import fusion, { webpack, watch, wait } from '@windwalker-io/fusion';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 

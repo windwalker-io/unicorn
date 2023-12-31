@@ -1,10 +1,3 @@
-/**
- * Part of unicorn project.
- *
- * @copyright  Copyright (C) 2021 __ORGANIZATION__.
- * @license    __LICENSE__
- */
-
 export class LoadTab {
   static TAB_ITEM_SELECTOR = '[data-toggle=tab],[data-bs-toggle=tab],[data-toggle=pill],[data-bs-toggle=pill]';
 
