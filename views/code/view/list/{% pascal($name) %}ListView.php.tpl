@@ -47,7 +47,7 @@ class {% pascal($name) %}ListView implements ViewModelInterface
         $ordering = $this->getDefaultOrdering();
 
         $items = $this->repository->getListSelector()
-            ->setFilters([])
+            ->addFilters([])
             ->ordering($ordering)
             ->page($page)
             ->limit($limit)
