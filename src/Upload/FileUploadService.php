@@ -6,7 +6,6 @@ namespace Unicorn\Upload;
 
 use Intervention\Image\Constraint;
 use Intervention\Image\Exception\NotReadableException;
-use Intervention\Image\ImageManager;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use Symfony\Component\Mime\MimeTypesInterface;
@@ -20,7 +19,6 @@ use Unicorn\Upload\Event\FileUploadedEvent;
 use Unicorn\Upload\Exception\FileUploadException;
 use Windwalker\Core\Event\CoreEventAwareTrait;
 use Windwalker\Event\EventAwareInterface;
-use Windwalker\Event\EventAwareTrait;
 use Windwalker\Filesystem\Filesystem;
 use Windwalker\Filesystem\Path;
 use Windwalker\Http\Helper\UploadedFileHelper;
@@ -29,7 +27,6 @@ use Windwalker\Stream\StringStream;
 use Windwalker\Utilities\Options\OptionsResolverTrait;
 
 use function Windwalker\chronos;
-use function Windwalker\fs;
 use function Windwalker\uid;
 
 use const Windwalker\Stream\READ_ONLY_FROM_BEGIN;
@@ -76,6 +73,7 @@ class FileUploadService implements EventAwareInterface
                             'enabled' => true,
                             'driver' => static::DRIVER_GD,
                             'strip_exif' => true,
+                            'optimize' => true,
                             'width' => null,
                             'height' => null,
                             'crop' => false,
@@ -102,6 +100,10 @@ class FileUploadService implements EventAwareInterface
         $resolver->define('storage')
             ->allowedTypes('string', 'null')
             ->default('local');
+
+        $resolver->define('optimize')
+            ->allowedTypes('bool')
+            ->default(false);
 
         $resolver->define('options')
             ->allowedTypes('array')
@@ -141,6 +143,7 @@ class FileUploadService implements EventAwareInterface
             }
 
             $stream = $this->resizeImage($stream, $resizeConfig);
+            $stream = $this->optimizeImage($stream, $dest, $resizeConfig);
         }
 
         return $this->putToStorage($stream, $file, $dest, $options);
@@ -192,6 +195,7 @@ class FileUploadService implements EventAwareInterface
             }
 
             $stream = $this->resizeImage($file, $resizeConfig);
+            $stream = $this->optimizeImage($stream, $dest, $resizeConfig);
         } elseif ($file instanceof UploadedFileInterface) {
             $dest = $this->replaceVariables($dest, $srcExt);
             $stream = $file->getStream();
@@ -221,8 +225,8 @@ class FileUploadService implements EventAwareInterface
 
     /**
      * @param  resource|StreamInterface|string  $file
-     * @param  string|null  $dest
-     * @param  array        $options
+     * @param  string|null                      $dest
+     * @param  array                            $options
      *
      * @return  PutResult
      */
@@ -270,6 +274,7 @@ class FileUploadService implements EventAwareInterface
             }
 
             $stream = $this->resizeImage($stream, $resizeConfig);
+            $stream = $this->optimizeImage($stream, $dest, $resizeConfig);
         }
 
         return $this->putToStorage($stream, $file, $dest, $options);
@@ -327,13 +332,14 @@ class FileUploadService implements EventAwareInterface
      * @param  array{
      *     driver: string,
      *     strip_exif: bool,
+     *     optimize: bool,
      *     width: ?int,
      *     height: ?int,
      *     crop: bool,
      *     quality: int,
      *     output_format: string,
      *     orientate: true,
-     * }  $resizeConfig
+     * }                                                                  $resizeConfig
      *
      * @return  StreamInterface
      */
@@ -374,12 +380,78 @@ class FileUploadService implements EventAwareInterface
             : $this->resizeByIntervension3($src, $resizeConfig, $outputFormat);
     }
 
+    /**
+     * @param  StreamInterface  $src
+     * @param  string           $dest
+     * @param  array            $resizeConfig
+     *
+     * @return  StreamInterface
+     *
+     * @deprecated  This method is not work currently
+     */
+    public function optimizeImage(StreamInterface $src, string $dest, array $resizeConfig): StreamInterface
+    {
+        $optimize = $resizeConfig['strip_exif'] || $this->options['optimize'];
+
+        if (!$optimize) {
+            return $src;
+        }
+
+        // $filename = Path::getFilename($dest);
+        // $ext = Path::getExtension($dest);
+
+        // Todo: Test pngauant at Linux
+        // if ($ext === 'png') {
+        // $tmp = WINDWALKER_TEMP . '/images/' . $filename;
+        // Filesystem::mkdir(dirname($tmp));
+        // $tmpFile = new TempFileObject($tmp);
+        // $tmpFile->touch();
+        // StreamHelper::copyTo($src, $tmpFile->getStream());
+        // // $tmpFile->deleteWhenShutdown();
+        //
+        // $pngquant = WINDWALKER_TEMP . '/pngquant';
+        // $quality = $resizeConfig['quality'];
+        // $input = fopen('php://memory', READ_WRITE_FROM_BEGIN);
+        // $newImage = new Stream();
+        //
+        // $c = sprintf(
+        //     '%s  %s',
+        //     $pngquant,
+        //     $tmpFile->getPathname()
+        // );
+        // $o = shell_exec($c);
+        //
+        // show($o);
+
+        // while (!$src->eof()) {
+        //     $buffer = $src->read(8192);
+        //     fwrite($input, $buffer);
+        //
+        //     $out = $process->getIncrementalOutput();
+        //     $newImage->write($out);
+        //
+        //     show($out);
+        // }
+        //
+        // $newImage->rewind();
+        //
+        // show((string) $newImage);
+        //     exit(' @Checkpoint');
+        //
+        //     return $newImage;
+        // }
+
+        return $src;
+    }
+
     protected function resizeByIntervension3(
         StreamInterface|\SplFileInfo|string|UploadedFileInterface $src,
         array $resizeConfig,
         ?string $outputFormat
     ): StreamInterface {
-        $image = InterventionImage::read($src, $driver = $resizeConfig['driver']);
+        $optimize = $resizeConfig['strip_exif'] || $this->options['optimize'];
+
+        $image = InterventionImage::read($src, $resizeConfig['driver']);
 
         // if ($driver === static::DRIVER_IMAGICK && $resizeConfig['strip_exif']) {
         //     $image->getCore()->stripImage();
@@ -401,7 +473,11 @@ class FileUploadService implements EventAwareInterface
         if ($resizeConfig['crop'] && $width !== null && $height !== null) {
             $image->coverDown($width, $height);
         } elseif ($width || $height) {
-            $image->resizeDown($width, $height);
+            $image->scaleDown($width, $height);
+        }
+
+        if ($optimize && $outputFormat === 'png') {
+            $image->reduceColors(2048);
         }
 
         $res = $image->encodeByExtension(
@@ -529,7 +605,7 @@ class FileUploadService implements EventAwareInterface
         $chronos = chronos();
 
         $vars = array_map(
-            static fn (string $var) => "{{$var}}",
+            static fn(string $var) => "{{$var}}",
             $this->pathVars
         );
 
@@ -543,7 +619,7 @@ class FileUploadService implements EventAwareInterface
                 '{minute}' => $chronos->format('i'),
                 '{second}' => $chronos->format('s'),
                 '{ext}' => $ext,
-                ...$vars
+                ...$vars,
             ],
         );
     }

@@ -34,6 +34,7 @@ return [
              * - dir: The default upload dir, use {year}, {month}, {day}, {hour}, {minute}, {second}, {ext}
              *          variables to replace file path.
              * - force_redraw: (bool) Force redraw image to wipe malware, must be TRUE if we allow front end uploads.
+             * - optimize: (bool) Limit the colors as max 2048, only works on png now.
              * - resize:
              *      - enabled: (bool) Enable resize or not.
              *      - driver: `gd` or `imagick`.
@@ -64,6 +65,7 @@ return [
                     'accept' => 'image/*',
                     'dir' => 'images/{year}/{month}/{day}',
                     'raw_gif' => true,
+                    'optimize' => false,
                     'resize' => [
                         'enabled' => true,
                         'driver' => env('IMAGE_RESIZE_DRIVER', 'gd'),
@@ -82,6 +84,7 @@ return [
                     'accept' => 'image/*',
                     'dir' => 'files/{year}/{month}/{day}',
                     'force_redraw' => true,
+                    'optimize' => true,
                     'resize' => [
                         'enabled' => true,
                         'driver' => env('IMAGE_RESIZE_DRIVER', 'gd'),
@@ -89,6 +92,7 @@ return [
                         'height' => 1920,
                         'crop' => false,
                         'quality' => 85,
+                        'optimize' => false,
                         'output_format' => null
                     ],
                     'options' => [

@@ -6,6 +6,7 @@ namespace Unicorn\Image;
 
 use Intervention\Image\Drivers\Gd\Driver as GdDriver;
 use Intervention\Image\Drivers\Imagick\Driver as ImagickDriver;
+use Intervention\Image\Image;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Interfaces\DriverInterface;
 use Intervention\Image\Interfaces\ImageInterface;
@@ -27,7 +28,7 @@ class InterventionImage
         return new ImageManager($driver);
     }
 
-    public static function read(mixed $image, string|DriverInterface $driver = 'gd'): ImageInterface
+    public static function read(mixed $image, string|DriverInterface $driver = 'gd'): Image|ImageInterface
     {
         $manager = static::create($driver);
 
