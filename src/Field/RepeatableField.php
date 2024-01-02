@@ -62,7 +62,7 @@ class RepeatableField extends AbstractField implements CompositeFieldInterface
                 );
             }
 
-            if (!$form->hasField('key') || !$form->hasField('value')) {
+            if (!$form->hasField('value')) {
                 throw new \UnexpectedValueException(
                     'Repeatable field in singleArray mode must have a `value` field.'
                 );

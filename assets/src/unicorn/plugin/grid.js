@@ -260,7 +260,7 @@ export class UnicornGridElement {
   }
 
   /**
-   * Update a row with batch task.
+   * Update a item with batch task.
    *
    * @param  {string} task
    * @param  {string} id
@@ -269,11 +269,27 @@ export class UnicornGridElement {
    *
    * @returns {boolean}
    */
-  updateRowByTask(task, id, url = null, data = null) {
+  updateItemByTask(task, id, url = null, data = null) {
     data = data || {};
     data.task = task;
 
     return this.updateItem(id, url, data);
+  }
+
+  /**
+   * Update a row with batch task.
+   *
+   * @param  {string} task
+   * @param  {number} row
+   * @param  {?string} url
+   * @param  {?Object} data
+   *
+   * @returns {boolean}
+   */
+  updateRowByTask(task, row, url = null, data = null) {
+    const ch = this.getCheckboxByRow(row);
+
+    return this.updateItemByTask(task, ch.value, url, data);
   }
 
   /**
@@ -284,7 +300,7 @@ export class UnicornGridElement {
    * @returns {boolean}
    */
   doTask(task, id, url = null, data = null) {
-    return this.updateRowByTask(task, id, url, data);
+    return this.updateItemByTask(task, id, url, data);
   }
 
   /**
@@ -296,7 +312,7 @@ export class UnicornGridElement {
    *
    * @returns {boolean}
    */
-  updateItemByTask(task, url = null, data = null) {
+  updateByTask(task, url = null, data = null) {
     data = data || {};
     data.task = task;
 
@@ -310,7 +326,7 @@ export class UnicornGridElement {
    * @returns {boolean}
    */
   batch(task, url = null, data = null) {
-    return this.updateItemByTask(task, url, data);
+    return this.updateByTask(task, url, data);
   }
 
   /**

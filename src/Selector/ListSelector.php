@@ -458,7 +458,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
      */
     public function hasFilter(string $key): bool
     {
-        $v = $this->filters[$key];
+        $v = $this->filters[$key] ?? null;
 
         if (is_array($v)) {
             return $v !== [];

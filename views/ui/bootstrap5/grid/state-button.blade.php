@@ -30,6 +30,8 @@ use Windwalker\Core\Router\SystemUri;
  * @var \Windwalker\Edge\Component\ComponentAttributes $attributes
  */
 
+$value = $states->normalizeValue($value ?? '');
+
 $options ??= [];
 
 if ($states instanceof \Unicorn\Html\State\StateButton) {
@@ -46,8 +48,6 @@ $size ??= 'sm';
 $attributes = $attributes->exceptProps(['states']);
 
 $color = \Windwalker\Utilities\Str::ensureLeft($state->getColor(), 'text-');
-
-$value = $states->normalizeValue($value ?? '');
 ?>
 
 @if ($state->isOnlyIcon())
