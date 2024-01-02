@@ -1,5 +1,5 @@
 
-import { createApp, nextTick, onMounted, reactive, ref, toRefs } from 'vue';
+import { createApp, getCurrentInstance, nextTick, onMounted, reactive, ref, toRefs } from 'vue';
 import VueDragUploader from '../../vue/components/vue-drag-uploader/uploader.vue';
 
 class MultiUploader extends HTMLElement {
@@ -17,19 +17,17 @@ class MultiUploader extends HTMLElement {
     u.importSync('@sortablejs', '@vuedraggable')
       .then(() => {
         const app = createApp({ name: 'multi-uploader-field' });
-        app.component('app', createAppInstance(options, document.querySelector(tmplSelector).innerHTML));
+        app.component('app', createAppInstance(options, document.querySelector(tmplSelector).innerHTML, this));
         app.component('draggable', vuedraggable);
         app.component('vue-drag-uploader', VueDragUploader);
-        app.mount(this);
-
-        this.vm = app;
+        this.vm = app.mount(this);
       });
   }
 }
 
 u.defineCustomElement(MultiUploader.is, MultiUploader);
 
-function createAppInstance(data, tmpl) {
+function createAppInstance(data, tmpl, el) {
   return {
     name: 'multi-uploader-field-app',
     template: tmpl,
@@ -45,7 +43,12 @@ function createAppInstance(data, tmpl) {
       });
       const dragarea = ref(null);
       const modal = ref(null);
-      const app = ref(null);
+      const uploader = ref(null);
+      const app = getCurrentInstance();
+
+      onMounted(() => {
+        domEmit('multi-uploader:mounted', app, uploader);
+      });
 
       function openFile(item) {
         if (state.openFileHandler) {
@@ -62,6 +65,8 @@ function createAppInstance(data, tmpl) {
       function itemClick(item, i, event) {
         state.current = item;
         state.currentIndex = i;
+
+        domEmit('item-click', item, i);
 
         nextTick().then(() => {
           new bootstrap.Modal(modal.value).show();
@@ -111,9 +116,9 @@ function createAppInstance(data, tmpl) {
         const item = state.current;
         const file = event.dataTransfer.files[0];
 
-        app.value.checkFile(file);
+        uploader.value.checkFile(file);
 
-        if (app.value.isReadonly) {
+        if (uploader.value.isReadonly) {
           return;
         }
 
@@ -121,7 +126,7 @@ function createAppInstance(data, tmpl) {
 
         item.file = file;
 
-        const itemComponent = app.value.$refs[item.key];
+        const itemComponent = uploader.value.$refs[item.key];
 
         state.loading = true;
 
@@ -132,14 +137,31 @@ function createAppInstance(data, tmpl) {
 
       function uploading() {
         u.stack(props.stackName).push(true);
+
+        domEmit('uploading');
       }
 
       function uploaded() {
         u.stack(props.stackName).pop();
+
+        domEmit('uploaded');
       }
 
+      function onChange(e) {
+        state.value = e;
+
+        domEmit('change', e);
+      }
+
+      function domEmit(event, ...args) {
+        el.dispatchEvent(new CustomEvent(event, { detail: args }));
+      }
+
+      el.uploader = uploader;
+      el.app = ref(app.proxy);
+
       return {
-        app,
+        uploader,
         modal,
         state,
         dragarea,
@@ -155,6 +177,8 @@ function createAppInstance(data, tmpl) {
         drop,
         uploading,
         uploaded,
+        onChange,
+        domEmit
       };
     }
   };

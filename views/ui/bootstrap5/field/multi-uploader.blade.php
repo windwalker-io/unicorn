@@ -71,12 +71,13 @@ $data['tmplSelector'] ??= ('#' . $tmplId);
         :max-concurrent="{{ (int) ($field->getMaxConcurrent() ?: 2) }}"
         accept="{{ $field->getAccept() }}"
         placeholder="{{ $field->getPlaceholder() ?? $lang('unicorn.field.multi.uploader.placeholder') }}"
-        @change="value = $event"
-        @update:modelValue="value = $event"
+        @update:modelValue="onChange"
         @uploading="uploading"
         @uploaded="uploaded"
+        @delete-item="domEmit('delete-item', $event)"
+        @reorder="domEmit('reorder', $event)"
         @attr('v-on:item-click', $hasEditForm ? 'itemClick' : 'openFile')
-        ref="app"
+        ref="uploader"
     >
         <template v-slot:extra="{ item, i }">
             @if ($hasEditForm)

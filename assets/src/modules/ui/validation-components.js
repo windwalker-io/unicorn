@@ -160,7 +160,17 @@ export class UnicornFormValidation {
    * @returns {UnicornFieldValidation|null}
    */
   getFieldComponent(input) {
-    return u.getBoundedInstance(input, 'field.validation');
+    let v = u.getBoundedInstance(input, 'field.validation');
+
+    if (!v) {
+      const wrapper = input.closest('[uni-field-validate]');
+
+      if (wrapper) {
+        v = u.getBoundedInstance(wrapper, 'field.validation');
+      }
+    }
+
+    return v;
   }
 
   /**
@@ -322,6 +332,9 @@ export class UnicornFormValidation {
 }
 
 export class UnicornFieldValidation {
+  /**
+   * @type {HTMLInputElement|HTMLSelectElement|HTMLTextAreaElement}
+   */
   $input;
 
   static is = 'uni-field-validate';
@@ -359,6 +372,14 @@ export class UnicornFieldValidation {
 
   get isInputOptions() {
     return Boolean(this.options.inputOptions);
+  }
+
+  get validationMessage() {
+    return this.$input.validationMessage;
+  }
+
+  get validity() {
+    return this.$input.validity;
   }
 
   selectInput() {
@@ -446,7 +467,7 @@ export class UnicornFieldValidation {
     }
 
     // Raise invalid event
-    this.$input.checkValidity();
+    // this.$input.checkValidity();
 
     this.updateValidClass(valid);
 
@@ -632,8 +653,8 @@ export class UnicornFieldValidation {
    * @param {Element} element
    * @returns {UnicornFormValidation}
    */
-  getFormValidation(element) {
-    return u.getBoundedInstance(element, 'form.validation');
+  getFormValidation(element = undefined) {
+    return u.getBoundedInstance(element || this.getForm(), 'form.validation');
   }
 
   /**
@@ -731,7 +752,24 @@ export class UnicornFieldValidation {
     }
   }
 
+  setAsInvalidAndReport(error) {
+    this.setCustomValidity(error);
+    this.showInvalidResponse();
+  }
+
+  setCustomValidity(error) {
+    this.$input.setCustomValidity(error);
+  }
+
+  reportValidity() {
+    if (this.validationMessage !== '') {
+      this.showInvalidResponse();
+    }
+  }
+
   showInvalidResponse() {
+    this.getFormValidation()?.markFormAsValidated();
+
     /** @type ValidityState */
     const state = this.$input.validity;
     let message = this.$input.validationMessage;
@@ -811,6 +849,11 @@ export class UnicornFieldValidation {
       }
     });
     return obj;
+  }
+
+  setAsValidAndClearResponse() {
+    this.setCustomValidity('');
+    this.clearInvalidResponse();
   }
 
   clearInvalidResponse() {
