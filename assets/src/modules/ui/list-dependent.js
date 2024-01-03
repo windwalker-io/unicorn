@@ -226,12 +226,18 @@ export class ListDependent {
     let defaultValues = '';
 
     // Convert all types to array
-    if (Array.isArray(this.options.default_value)) {
-      defaultValues = this.options.default_value;
-    } else if (this.options.default_value && typeof this.options.default_value === 'object') {
-      defaultValues = Object.keys(this.options.default_value);
+    let defValue = this.options.default_value;
+
+    if (typeof defValue === 'function') {
+      defValue = defValue(value, this);
+    }
+
+    if (Array.isArray(defValue)) {
+      defaultValues = defValue;
+    } else if (defValue && typeof defValue === 'object') {
+      defaultValues = Object.keys(defValue);
     } else {
-      defaultValues = [this.options.default_value];
+      defaultValues = [defValue];
     }
 
     return defaultValues.indexOf(value) !== -1;
