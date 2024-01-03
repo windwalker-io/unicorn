@@ -108,11 +108,17 @@
           })
           .then(res => {
             state.state = itemStates.COMPLETED;
-            props.item.url = res.data.data.url;
-            props.item.download_url = res.data.data.download_url;
+
+            Object.assign(
+              props.item,
+              {
+                url: '',
+              },
+              res.data.data
+            );
 
             if (isImage.value) {
-              props.item.thumb_url = res.data.data.thumb_url || res.data.data.url;
+              props.item.thumb_url = props.item.thumb_url || res.data.data.url;
             }
           })
           .catch(error => {
