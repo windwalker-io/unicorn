@@ -341,9 +341,13 @@ export class UnicornFieldValidation {
 
   constructor(el, options = {}) {
     this.el = el;
-    this.options = defaultsDeep({}, options, defaultFieldOptions);
+    this.setOptions(options);
 
     this.init();
+  }
+
+  setOptions(options) {
+    this.options = defaultsDeep({}, options, defaultFieldOptions);
   }
 
   get $form() {
@@ -807,7 +811,7 @@ export class UnicornFieldValidation {
 
   createHelpElement() {
     const className = this.options.errorMessageClass;
-    const parsed = this.parseSelector(this.errorSelector);
+    const parsed = this.parseSelector(this.errorSelector || '');
 
     const $help = u.html(`<div class="${className}"></div>`);
 
@@ -968,7 +972,7 @@ u.directive('field-validate', {
 
   updated(el, binding) {
     const instance = u.getBoundedInstance(el, 'field.validation');
-    instance.options = JSON.parse(binding.value || '{}');
+    instance.setOptions(JSON.parse(binding.value || '{}'));
   }
 });
 
