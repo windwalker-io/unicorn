@@ -431,10 +431,12 @@ export default class UnicornUI {
       { duration, easing: 'ease-out' }
     );
 
-    return animation.finished.then((r) => {
-      target.style.overflow = 'visible';
-      return r;
+    animation.addEventListener('finish', () => {
+        target.style.height = '';
+        target.style.overflow = 'visible';
     });
+
+    return animation.finished;
   }
 
   /**
@@ -482,7 +484,11 @@ export default class UnicornUI {
   fadeIn(el, duration = 500, display = 'block') {
     el = this.app.selectOne(el);
 
-    el.style.display = display;
+    el.style.display = '';
+
+    if (window.getComputedStyle(el).display !== display) {
+        el.style.display = display;
+    }
 
     const animation = u.animate(el, { opacity: 1 }, { duration, easing: 'ease-out' });
 

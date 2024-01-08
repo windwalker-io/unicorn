@@ -7,6 +7,7 @@ class ShowOn {
   conditions = {};
   targets = {};
   readonly = false;
+  initialDisplay = null;
 
   constructor(el, conditions) {
     this.el = el;
@@ -19,6 +20,8 @@ class ShowOn {
   }
 
   init() {
+    this.initialDisplay = window.getComputedStyle(this.el).display || 'block';
+
     each(this.conditions, (value, selector) => {
       const target = u.selectOne(selector);
 
@@ -29,7 +32,7 @@ class ShowOn {
       let listenTarget;
 
       if (target.nodeName === 'DIV') {
-        listenTarget = target.querySelectorAll('input, sellect, textarea');
+        listenTarget = target.querySelectorAll('input, select, textarea');
       } else {
         listenTarget = [target];
       }
@@ -48,7 +51,7 @@ class ShowOn {
     const matched = this.isValueMatched(target, value);
 
     if (matched) {
-      u.$ui.fadeIn(this.el, duration);
+      u.$ui.fadeIn(this.el, duration, this.initialDisplay);
     } else {
       u.$ui.fadeOut(this.el, duration);
     }

@@ -41,14 +41,25 @@ export default class UnicornAnimate {
       {
         duration: 400,
         easing: 'linear',
-        fill: 'forwards'
+        fill: 'both'
       }
     );
 
-    return element.animate(
+    const animation = element.animate(
       transitions,
       options
     );
+
+    animation.addEventListener('finish', () => {
+        each(styles, (value, name) => {
+            element.style[name] = Array.isArray(value)
+                ? value[value.length - 1]
+                : value;
+        });
+        animation.cancel();
+    });
+
+    return animation;
   }
 
   /**
