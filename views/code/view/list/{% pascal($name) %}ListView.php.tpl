@@ -43,7 +43,7 @@ class {% pascal($name) %}ListView implements ViewModelInterface
     public function prepare(AppContext $app, View $view): array
     {
         $page     = $app->input('page');
-        $limit    = $app->input('limit') ?: 30;
+        $limit    = $app->input('limit') ?? 30;
         $ordering = $this->getDefaultOrdering();
 
         $items = $this->repository->getListSelector()

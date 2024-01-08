@@ -11,6 +11,7 @@ use Windwalker\Form\Attributes\FormDefine;
 use Windwalker\Form\Attributes\NS;
 use Windwalker\Form\Field\ListField;
 use Windwalker\Form\Field\TextField;
+use Windwalker\Form\Field\HiddenField;
 use Windwalker\Form\Form;
 
 class EditForm
@@ -29,6 +30,8 @@ class EditForm
         $form->add('alias', TextField::class)
             ->label($this->trans('unicorn.field.alias'))
             ->addFilter('trim');
+
+        $form->add('id', HiddenField::class);
     }
 
     #[FormDefine]
