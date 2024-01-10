@@ -26,6 +26,8 @@ use Windwalker\Stream\Stream;
 use Windwalker\Stream\StringStream;
 use Windwalker\Utilities\Options\OptionsResolverTrait;
 
+use Windwalker\Utilities\TypeCast;
+
 use function Windwalker\chronos;
 use function Windwalker\uid;
 
@@ -457,14 +459,14 @@ class FileUploadService implements EventAwareInterface
         //     $image->getCore()->stripImage();
         // }
 
-        $width = $resizeConfig['width'];
-        $height = $resizeConfig['height'];
+        $width = TypeCast::tryInteger($resizeConfig['width']);
+        $height = TypeCast::tryInteger($resizeConfig['height']);
 
         if (!$resizeConfig['enabled']) {
             return Stream::wrap(
                 $image->encodeByExtension(
                     $resizeConfig['output_format'] ?? $outputFormat,
-                    $resizeConfig['quality']
+                    $resizeConfig['quality'] ?? 85
                 )
                     ->toFilePointer(),
             );
@@ -482,7 +484,7 @@ class FileUploadService implements EventAwareInterface
 
         $res = $image->encodeByExtension(
             $resizeConfig['output_format'] ?? $outputFormat,
-            $resizeConfig['quality']
+            $resizeConfig['quality'] ?? 85
         );
 
         return Stream::wrap($res->toFilePointer());
