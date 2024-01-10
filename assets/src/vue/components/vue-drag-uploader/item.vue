@@ -4,7 +4,7 @@
     @click="onClick">
     <slot name="it" :item="item">
       <div v-if="isImage" class="preview-img__body"
-        :style="{'background-image': 'url(' + (item.thumb_url || item.url) + ')'}"></div>
+        :style="{'background-image': 'url(' + (item.thumb_url || item.url) + ')', opacity: state === 'completed' ? 1 : 0.5}"></div>
 
       <div v-if="!isImage" class="preview-img__body d-flex justify-content-center align-items-center">
         <div class="text-center">
