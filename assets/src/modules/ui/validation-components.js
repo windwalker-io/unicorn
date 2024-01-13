@@ -772,7 +772,7 @@ export class UnicornFieldValidation {
   }
 
   showInvalidResponse() {
-    this.getFormValidation()?.markFormAsValidated();
+    this.updateValidClass(false);
 
     /** @type ValidityState */
     const state = this.$input.validity;
@@ -857,6 +857,7 @@ export class UnicornFieldValidation {
 
   setAsValidAndClearResponse() {
     this.setCustomValidity('');
+    this.updateValidClass(true);
     this.clearInvalidResponse();
   }
 
