@@ -84,7 +84,11 @@ $color = \Windwalker\Utilities\Str::ensureLeft($state->getColor(), 'text-');
             @if (is_callable($state->getTask()))
                 @click="{{ $state->getTask()($value, $state, $options) }}"
             @else
-                @click="$store.{{ $store }}.updateRowByTask('{{ $state->getTask() }}', '{{ $id ?? '' }}')"
+                @if ($row ?? null)
+                    @click="$store.{{ $store }}.updateRowByTask('{{ $state->getTask() }}', '{{ $row }}')"
+                @elseif ($id ?? null)
+                    @click="$store.{{ $store }}.updateItemByTask('{{ $state->getTask() }}', '{{ $id }}')"
+                @endif
             @endif
         @endif
     >

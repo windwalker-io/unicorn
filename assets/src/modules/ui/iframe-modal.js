@@ -87,10 +87,12 @@ class IFrameModal extends HTMLElement {
     setTimeout(() => {
       let height = iframe.contentWindow.document.documentElement.scrollHeight;
 
+      height += 30;
+
       if (height < 500) {
         height = 500;
       }
-      
+
       iframe.style.height = height + 'px';
     }, 30);
   }
@@ -101,6 +103,8 @@ u.defineCustomElement(IFrameModal.is, IFrameModal);
 u.directive('modal-link', {
   mounted(el, binding) {
     let options = {};
+
+    options.height = el.dataset.height;
     options.resize = el.dataset.resize;
     options.size = el.dataset.size;
 

@@ -140,11 +140,13 @@ export class ButtonRadio {
 
         input.checked = true;
 
-        this.syncState();
-
         input.dispatchEvent(new Event('change'));
         input.dispatchEvent(new Event('input'));
       }
+    });
+
+    input.addEventListener('change', () => {
+      this.syncState();
     });
 
     return button;
