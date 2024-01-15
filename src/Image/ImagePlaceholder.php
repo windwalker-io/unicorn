@@ -47,17 +47,17 @@ class ImagePlaceholder
             return $this->asset->handleUri($this->imageMap[$ratio]);
         }
 
-        return $this->asset->handleUri("@unicorn/../images/placeholder/image-$ratio.png");
+        return $this->asset->handleUri("@unicorn/../images/placeholder/image-$ratio.png", 'root');
     }
 
     public function avatar(): string
     {
-        return $this->asset->handleUri("@unicorn/../images/placeholder/avatar.png");
+        return $this->asset->handleUri("@unicorn/../images/placeholder/avatar.png", 'root');
     }
 
     public function ajaxLoader(): string
     {
-        return $this->asset->handleUri('@unicorn/images/ajax-loader.gif');
+        return $this->asset->handleUri('@unicorn/images/ajax-loader.gif', 'root');
     }
 
     public function __call(string $name, array $args): string
