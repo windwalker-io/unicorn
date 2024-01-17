@@ -8,6 +8,7 @@ use Unicorn\Selector\Event\AfterCompileQueryEvent;
 use Unicorn\Selector\Event\BeforeCompileQueryEvent;
 use Unicorn\Selector\Event\ConfigureQueryEvent;
 use Unicorn\Selector\Filter\FilterHelper;
+use Unicorn\Selector\Filter\OrderingHelper;
 use Unicorn\Selector\Filter\SearchHelper;
 use Windwalker\Core\Database\QueryProxyTrait;
 use Windwalker\Core\Event\CoreEventAwareTrait;
@@ -25,7 +26,10 @@ use Windwalker\Utilities\Classes\FlowControlTrait;
 use Windwalker\Utilities\Options\OptionAccessTrait;
 use Windwalker\Utilities\Wrapper\RawWrapper;
 
+use Windwalker\Utilities\Wrapper\WrapperInterface;
+
 use function Windwalker\raw;
+use function Windwalker\value;
 
 /**
  * The AbstractSelector class.
@@ -71,6 +75,8 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
     protected ?FilterHelper $filterHelper = null;
 
     protected ?SearchHelper $searchHelper = null;
+
+    protected ?OrderingHelper $orderingHelper = null;
 
     /**
      * ListSelector constructor.
@@ -154,7 +160,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
         $order = $query->getOrder();
 
         if ($order === null && $this->defaultOrdering) {
-            $query->order($this->handleOrdering($this->defaultOrdering));
+            $query = $this->handleOrdering($query, $this->defaultOrdering);
         }
 
         if ($autoSelection) {
@@ -270,11 +276,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
             return $this;
         }
 
-        $order = $this->handleOrdering($order, $dir);
-
-        if ($order) {
-            $this->getQuery()->order($order);
-        }
+        $this->handleOrdering($this->getQuery(), $order, $dir);
 
         return $this;
     }
@@ -361,6 +363,15 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
     public function addSearchHandler(string $key, callable $handler): static
     {
         $this->getSearchHelper()->addHandler($key, $handler);
+
+        $this->addAllowFields($key);
+
+        return $this;
+    }
+
+    public function addOrderingHandler(string $key, callable $handler): static
+    {
+        $this->getOrderingHelper()->addHandler($key, $handler);
 
         $this->addAllowFields($key);
 
@@ -625,6 +636,11 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
         return $this->searchHelper ??= new SearchHelper();
     }
 
+    public function getOrderingHelper(): OrderingHelper
+    {
+        return $this->orderingHelper ??= new OrderingHelper();
+    }
+
     /**
      * @param  SearchHelper|null  $searchHelper
      *
@@ -633,6 +649,18 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
     public function setSearchHelper(?SearchHelper $searchHelper): static
     {
         $this->searchHelper = $searchHelper;
+
+        return $this;
+    }
+
+    /**
+     * @param  SearchHelper|null  $orderingHelper
+     *
+     * @return  static  Return self to support chaining.
+     */
+    public function setOrderingHelper(?OrderingHelper $orderingHelper): static
+    {
+        $this->orderingHelper = $orderingHelper;
 
         return $this;
     }
@@ -666,9 +694,9 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
     public function resolveFieldAlias(string $field): string
     {
         while (isset($this->fieldAliases[$field])) {
-            $field = $this->fieldAliases[$field];
+            $field = $this->fieldAliases[$field] ?? null;
 
-            if (!is_string($field)) {
+            if ($field === null) {
                 break;
             }
         }
@@ -772,15 +800,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
         return $this;
     }
 
-    /**
-     * handleOrdering
-     *
-     * @param  mixed        $order
-     * @param  string|null  $dir
-     *
-     * @return  array|mixed
-     */
-    protected function handleOrdering(mixed $order, ?string $dir = null): mixed
+    protected function handleOrdering(Query $query, mixed $order, ?string $dir = null): Query
     {
         if (is_string($order)) {
             $order = Arr::explodeAndClear(',', $order);
@@ -790,33 +810,37 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
             $order = [$order];
         }
 
+        $helper = $this->getOrderingHelper();
+        $orderData = [];
+
         foreach ($order as $i => $orderItem) {
             if (is_string($orderItem)) {
-                $orderItem = Arr::explodeAndClear(' ', $orderItem);
+                [$orderFieldOrigin, $orderDir] = Arr::explodeAndClear(' ', $orderItem, 2) + [null, null];
 
-                $orderItem[0] = $this->resolveField($orderItem[0]);
+                $orderField = $this->resolveField($orderFieldOrigin);
 
-                if (!$orderItem[0]) {
-                    $order[$i] = null;
+                if (!$orderField) {
                     continue;
                 }
 
                 if ($dir !== null) {
-                    $orderItem[1] = $dir;
+                    $orderDir = $dir;
                 }
 
-                $orderItem[1] ??= 'ASC';
-                $orderItem[1] = strtoupper($orderItem[1]);
+                $orderDir ??= 'ASC';
+                $orderDir = strtoupper($orderDir);
 
-                if (str_ends_with($orderItem[1], '()')) {
-                    $orderItem[1] = raw($orderItem[1]);
+                if (is_string($orderField)) {
+                    $orderData[$orderField] = [$orderField, $orderDir];
+                } else {
+                    $orderData[$orderFieldOrigin] = [$orderField, $orderDir];
                 }
-
-                $order[$i] = $orderItem;
             }
         }
 
-        return array_filter($order);
+        $query = $helper->process($query, $orderData);
+
+        return $query;
     }
 
     /**

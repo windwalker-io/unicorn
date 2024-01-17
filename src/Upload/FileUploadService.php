@@ -459,14 +459,14 @@ class FileUploadService implements EventAwareInterface
         //     $image->getCore()->stripImage();
         // }
 
-        $width = TypeCast::tryInteger($resizeConfig['width']);
-        $height = TypeCast::tryInteger($resizeConfig['height']);
+        $width = TypeCast::safeInteger($resizeConfig['width']);
+        $height = TypeCast::safeInteger($resizeConfig['height']);
 
         if (!$resizeConfig['enabled']) {
             return Stream::wrap(
                 $image->encodeByExtension(
                     $resizeConfig['output_format'] ?? $outputFormat,
-                    $resizeConfig['quality'] ?? 85
+                    TypeCast::safeInteger($resizeConfig['quality'] ?? 85)
                 )
                     ->toFilePointer(),
             );
@@ -484,7 +484,7 @@ class FileUploadService implements EventAwareInterface
 
         $res = $image->encodeByExtension(
             $resizeConfig['output_format'] ?? $outputFormat,
-            $resizeConfig['quality'] ?? 85
+            TypeCast::safeInteger($resizeConfig['quality'] ?? 85)
         );
 
         return Stream::wrap($res->toFilePointer());
@@ -518,7 +518,7 @@ class FileUploadService implements EventAwareInterface
         if (!$resizeConfig['enabled']) {
             return $image->stream(
                 $resizeConfig['output_format'] ?? $outputFormat,
-                $resizeConfig['quality']
+                TypeCast::safeInteger($resizeConfig['quality'])
             );
         }
 
@@ -537,7 +537,7 @@ class FileUploadService implements EventAwareInterface
 
         return $image->stream(
             $resizeConfig['output_format'] ?? $outputFormat,
-            $resizeConfig['quality']
+            TypeCast::safeInteger($resizeConfig['quality'])
         );
     }
 

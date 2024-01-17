@@ -75,7 +75,7 @@ class InlineField extends AbstractField implements CompositeFieldInterface
                 $form->addField($field, $this->subFieldset);
             }
 
-            ReflectAccessor::setValue($form, 'fieldset', $form->getFieldset($this->getFieldset()));
+            ReflectAccessor::setValue($form, 'fieldset', $form->getFieldset((string) $this->getFieldset()));
         }
 
         return $r;

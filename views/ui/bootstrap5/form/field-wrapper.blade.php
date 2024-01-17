@@ -79,6 +79,7 @@ if ($attributes ?? null) {
             'no-label',
             'input-attrs',
             'label-attrs',
+            'horizon',
         ]
     );
 
@@ -95,8 +96,14 @@ if ($attributes ?? null) {
     }
 
     // Count cols
-    $inputCols = $attributes['input-cols'] ?? null;
-    $labelCols = $attributes['label-cols'] ?? null;
+    $horizon ??= null;
+
+    if ($horizon) {
+        [$labelCols, $inputCols] = explode(':', $horizon) + [null, null];
+    } else {
+        $inputCols = $attributes['input-cols'] ?? null;
+        $labelCols = $attributes['label-cols'] ?? null;
+    }
 
     if ($inputCols === null && $labelCols !== null) {
         $inputCols = 12 - $labelCols;

@@ -754,6 +754,10 @@ export class UnicornFieldValidation {
     if (this.$input.validationMessage === '') {
       this.$input.setCustomValidity(u.__('unicorn.message.validation.custom.error'));
     }
+
+    this.$input.dispatchEvent(
+      new CustomEvent('invalid')
+    );
   }
 
   setAsInvalidAndReport(error) {
@@ -777,7 +781,7 @@ export class UnicornFieldValidation {
     /** @type ValidityState */
     const state = this.$input.validity;
     let message = this.$input.validationMessage;
-
+    
     for (let key in state) {
       if (state[key] === true && this.$input.dataset[key + 'Message']) {
         message = this.$input.dataset[key + 'Message'];

@@ -53,12 +53,6 @@ $attributes = $attributes->exceptProps(
 );
 
 $attrs = [];
-
-if ($horizon) {
-    [$labelCols, $inputCols] = explode(':', $horizon) + [null, null];
-    $attrs['label-cols'] = $labelCols;
-    $attrs['input-cols'] = $inputCols;
-}
 ?>
 
 <x-component :is="$is" :="$attributes" :title="$title">
@@ -85,7 +79,9 @@ if ($horizon) {
         @elseif ($$slotName ?? null)
             {!! $$slotName(field: $field) !!}
         @else
-            <x-field :field="$field" class="mb-4" :floating="$floating" :star="$star" :="$attrs">
+            <x-field :field="$field" class="mb-4" :floating="$floating" :star="$star"
+                :horizon="$horizon"
+                :="$attrs">
                 @if ($fieldSlot ?? null)
                     @scope($field)
                     {!! $fieldSlot(field: $field) !!}
