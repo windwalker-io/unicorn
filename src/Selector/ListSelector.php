@@ -72,6 +72,8 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
 
     protected ?string $defaultItemClass = null;
 
+    protected ?\Closure $countCallback = null;
+
     protected ?FilterHelper $filterHelper = null;
 
     protected ?SearchHelper $searchHelper = null;
@@ -173,7 +175,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
 
         if ($limit = $this->getLimit()) {
             $query->limit($limit);
-            // Count first to cache
+            // Pre-count to cache the total value.
             $this->count($query);
             $query->offset($this->getOffset());
         }
@@ -250,16 +252,34 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
         return $this;
     }
 
+    public function setCountCallback(?\Closure $callback): static
+    {
+        $this->countCallback = $callback;
+
+        return $this;
+    }
+
+    public function getCountCallback(): ?\Closure
+    {
+        return $this->countCallback;
+    }
+
     public function count(Query $query = null): int
     {
-        if (($this->cacheStorage['count'] ?? null) !== null) {
-            return $this->cacheStorage['count'];
+        if (array_key_exists('count', $this->cacheStorage)) {
+            return (int) $this->cacheStorage['count'];
         }
 
         // Pre-count to store cache, otherwise will cause infinity loop.
         $query ??= $this->compileQuery(false);
 
-        return $this->cacheStorage['count'] ??= $query->count();
+        if ($this->countCallback) {
+            $count = (int) ($this->countCallback)(clone $query);
+        } else {
+            $count = $query->count();
+        }
+
+        return $this->cacheStorage['count'] = $count;
     }
 
     /**

@@ -7,6 +7,8 @@ namespace Unicorn\Listener;
 use Unicorn\Script\UnicornScript;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Application\ApplicationInterface;
+use Windwalker\Core\Asset\AssetItem;
+use Windwalker\Core\Asset\AssetLink;
 use Windwalker\Core\Asset\Event\AssetBeforeRender;
 use Windwalker\Event\Attributes\EventSubscriber;
 use Windwalker\Event\Attributes\ListenTo;
@@ -51,7 +53,8 @@ class UnicornAssetSubscriber
 
         $script = $this->app->service(UnicornScript::class);
         $asset = $event->getAssetService();
-        $scripts = $asset->getInternalScripts();
+        $scripts = &$event->getLinks();
+        $internalScripts = $asset->getInternalScripts();
 
         if (WINDWALKER_DEBUG) {
             $script->data('windwalker.debug', true);
@@ -60,9 +63,11 @@ class UnicornAssetSubscriber
         if ($script->getData() !== []) {
             $store = json_encode($script->getData(), $this->app->isDebug() ? JSON_PRETTY_PRINT : 0);
 
-            array_unshift($scripts, "document.__unicorn = $store;");
-
-            $asset->setInternalScripts($scripts);
+            array_unshift(
+                $scripts,
+                (new AssetLink())
+                    ->setOption('body', "document.__unicorn = $store;")
+            );
         }
 
         if ($script->initialise !== []) {

@@ -11,6 +11,7 @@ use Windwalker\Core\Event\CoreEventAwareTrait;
 use Windwalker\Core\Language\LangService;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\RouteUri;
+use Windwalker\Core\State\AppState;
 use Windwalker\Event\EventAwareInterface;
 use Windwalker\Session\Session;
 
@@ -33,9 +34,11 @@ class GridController implements EventAwareInterface
         $this->lang = $this->lang->extract('unicorn.message.batch.');
     }
 
-    public function filter(Navigator $nav, ListRepositoryInterface $repository, Session $session): RouteUri
+    public function filter(Navigator $nav, ?ListRepositoryInterface $repository = null, ?AppState $state = null): RouteUri
     {
-        $state = $repository->getState();
+        if ($repository) {
+            $state = $repository->getState();
+        }
 
         $state->rememberFromRequest('filter');
         $state->rememberFromRequest('search');
