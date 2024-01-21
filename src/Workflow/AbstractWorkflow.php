@@ -17,98 +17,41 @@ use Windwalker\Utilities\TypeCast;
 /**
  * The Workflow class.
  */
-abstract class AbstractWorkflow
+abstract class AbstractWorkflow implements WorkflowInterface
 {
     use TranslatorTrait;
+    use WorkflowTrait;
 
     protected ?WorkflowController $workflowController = null;
 
     protected string $property = '';
 
+    public function compile(WorkflowController $workflow, ?object $entity): void
+    {
+        $this->configure($workflow);
+    }
+
     abstract public function configure(WorkflowController $workflow): void;
 
-    public static function toStrings(mixed $value): string|array
-    {
-        if (is_array($value)) {
-            return array_map([TypeCast::class, 'toString'], $value);
-        }
-
-        return TypeCast::toString($value);
-    }
-
-    public function listen(EntityMetadata $metadata): void
-    {
-        $workflow = $this->getWorkflowController();
-
-        $metadata->watchBefore(
-            $workflow->getField(),
-            function (WatchEvent $event) use ($metadata, $workflow) {
-                $to = static::toStrings($event->getValue());
-                $from = static::toStrings($event->getOldValue());
-
-                $toTitle = $workflow->getState($to)?->getTitle() ?? $to;
-                $fromTitle = $workflow->getState($from)?->getTitle() ?? $from;
-
-                if (!$workflow->isAllow($from, $to)) {
-                    throw new TransitionDisallowException(
-                        $from,
-                        $to,
-                        $this,
-                        $this->trans(
-                            'unicorn.workflow.error.transition.disallow',
-                            from: $fromTitle,
-                            to: $toTitle
-                        )
-                    );
-                }
-
-                // Do not use transition event since it will call listener twice
-                // Find transition
-                // $transition = $workflow->findTransition($from, $to);
-                //
-                // if ($transition) {
-                //     $workflow->triggerBeforeTransition($transition->getName(), $event);
-                // }
-
-                $workflow->triggerBeforeChanged($from, $to, $event);
-            }
-        );
-
-        $metadata->watchAfter(
-            $workflow->getField(),
-            function (WatchEvent $event) use ($metadata, $workflow) {
-                $val = static::toStrings($event->getValue());
-                $oldVal = static::toStrings($event->getOldValue());
-
-                // Do not use transition event since it will call listener twice
-                // Find transition
-                // $transition = $workflow->findTransition($oldVal, $val);
-                //
-                // if ($transition) {
-                //     $workflow->triggerAfterTransition($transition->getName(), $event);
-                // }
-
-                $workflow->triggerAfterChanged($oldVal, $val, $event);
-            }
-        );
-    }
-
     /**
-     * @return WorkflowController
+     * @deprecated  Use getController() instead.
      */
     public function getWorkflowController(): WorkflowController
     {
         if ($this->workflowController === null) {
-            $this->setWorkflowController(new WorkflowController());
+            $this->setWorkflowController(new WorkflowController($this->lang));
         }
 
         return $this->workflowController;
     }
 
+    public function getController(?object $entity = null, ?string $field = null): WorkflowController
+    {
+        return $this->getWorkflowController();
+    }
+
     /**
-     * @param  WorkflowController  $workflowController
-     *
-     * @return  static  Return self to support chaining.
+     * @deprecated  Deprecate without replacement.
      */
     public function setWorkflowController(WorkflowController $workflowController): static
     {

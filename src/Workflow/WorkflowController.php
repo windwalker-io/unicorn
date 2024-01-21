@@ -4,22 +4,19 @@ declare(strict_types=1);
 
 namespace Unicorn\Workflow;
 
+use MyCLabs\Enum\Enum;
 use Windwalker\Core\Event\CoreEventAwareTrait;
-use Windwalker\Core\Language\TranslatorTrait;
 use Windwalker\Event\EventAwareInterface;
-use Windwalker\Event\EventAwareTrait;
 use Windwalker\ORM\Event\WatchEvent;
-use Windwalker\Utilities\Enum\EnumTranslatableInterface;
+use Windwalker\Utilities\Contract\LanguageInterface;
+use Windwalker\Utilities\Enum\EnumMetaInterface;
 use Windwalker\Utilities\TypeCast;
-
-use function Windwalker\value;
 
 /**
  * The Workflow class.
  */
 class WorkflowController implements EventAwareInterface
 {
-    use TranslatorTrait;
     use CoreEventAwareTrait;
 
     protected bool $allowFreeTransitions = true;
@@ -35,6 +32,24 @@ class WorkflowController implements EventAwareInterface
      * @var array<Transition>
      */
     protected array $transitions = [];
+
+    public function registerStatesFromEnum(string|object|iterable $enum, ?LanguageInterface $lang = null): static
+    {
+        $states = [];
+
+        if (
+            is_a($enum, \UnitEnum::class, true)
+            || is_a($enum, Enum::class, true)
+        ) {
+            $states = $enum::values();
+        } elseif (is_iterable($enum)) {
+            $states = TypeCast::toArray($enum);
+        }
+
+        $this->addStates($states, $lang);
+
+        return $this;
+    }
 
     /**
      * getAvailableStates
@@ -56,7 +71,7 @@ class WorkflowController implements EventAwareInterface
         // Add self
         $tos = [
             ...$tos,
-            ...((array) $froms)
+            ...((array) $froms),
         ];
 
         $tos = array_unique($tos);
@@ -128,15 +143,19 @@ class WorkflowController implements EventAwareInterface
         return $this->findTransition($froms, $to) !== null;
     }
 
-    public function addState(mixed $state, ?string $name = null, bool $isInitial = false): State
-    {
+    public function addState(
+        mixed $state,
+        ?string $name = null,
+        bool $isInitial = false,
+        ?LanguageInterface $lang = null
+    ): State {
         if (!$state instanceof State) {
             $value = $state;
 
             $state = new State(TypeCast::toString($value), $name, $isInitial);
 
-            if ($value instanceof EnumTranslatableInterface) {
-                $state->title($value->getTitle($this->lang))
+            if ($value instanceof EnumMetaInterface) {
+                $state->title($value->getTitle($lang))
                     ->icon($value->getIcon())
                     ->color($value->getColor());
             }
@@ -147,10 +166,10 @@ class WorkflowController implements EventAwareInterface
         return $state;
     }
 
-    public function addStates(array $states): static
+    public function addStates(array $states, ?LanguageInterface $lang = null): static
     {
         foreach ($states as $state) {
-            $this->addState($state);
+            $this->addState($state, lang: $lang);
         }
 
         return $this;
@@ -461,11 +480,11 @@ class WorkflowController implements EventAwareInterface
      *
      * @return  static  Return self to support chaining.
      */
-    public function setStates(array $states): static
+    public function setStates(array $states, ?LanguageInterface $lang = null): static
     {
         $this->states = [];
 
-        $this->addStates($states);
+        $this->addStates($states, $lang);
 
         return $this;
     }
@@ -495,6 +514,11 @@ class WorkflowController implements EventAwareInterface
      * @return  static  Return self to support chaining.
      */
     public function setAllowFreeTransitions(bool $allowFreeTransitions): static
+    {
+        return $this->allowFreeTransitions($allowFreeTransitions);
+    }
+
+    public function allowFreeTransitions(bool $allowFreeTransitions): static
     {
         $this->allowFreeTransitions = $allowFreeTransitions;
 
