@@ -17,11 +17,12 @@ use Windwalker\Core\Language\TranslatorTrait;
     enum: PublishingState::class,
     strict: true
 )]
-class PublishingStateWorkflow extends AbstractWorkflow
+class PublishingStateWorkflow implements WorkflowInterface
 {
+    use WorkflowTrait;
     use TranslatorTrait;
 
-    public function configure(WorkflowController $workflow): void
+    public function prepare(WorkflowController $workflow, ?object $entity): void
     {
         $workflow->getState(PublishingState::PUBLISHED)
             ?->icon('fa fa-fw fa-check')

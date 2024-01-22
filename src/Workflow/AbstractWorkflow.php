@@ -5,17 +5,13 @@ declare(strict_types=1);
 namespace Unicorn\Workflow;
 
 use Unicorn\Html\State\StateButton;
-use Unicorn\Workflow\Exception\TransitionDisallowException;
 use Windwalker\Core\Language\TranslatorTrait;
 use Windwalker\DOM\DOMElement;
-use Windwalker\ORM\Event\AfterSaveEvent;
-use Windwalker\ORM\Event\BeforeSaveEvent;
-use Windwalker\ORM\Event\WatchEvent;
-use Windwalker\ORM\Metadata\EntityMetadata;
-use Windwalker\Utilities\TypeCast;
 
 /**
  * The Workflow class.
+ *
+ * @deprecated  Use WorkflowInterface and WorkflowTrait instead.
  */
 abstract class AbstractWorkflow implements WorkflowInterface
 {
@@ -24,9 +20,7 @@ abstract class AbstractWorkflow implements WorkflowInterface
 
     protected ?WorkflowController $workflowController = null;
 
-    protected string $property = '';
-
-    public function compile(WorkflowController $workflow, ?object $entity): void
+    public function prepare(WorkflowController $workflow, ?object $entity): void
     {
         $this->configure($workflow);
     }
@@ -36,17 +30,21 @@ abstract class AbstractWorkflow implements WorkflowInterface
     /**
      * @deprecated  Use getController() instead.
      */
-    public function getWorkflowController(): WorkflowController
+    public function getWorkflowController(array $options = []): WorkflowController
     {
         if ($this->workflowController === null) {
-            $this->setWorkflowController(new WorkflowController($this->lang));
+            $options = array_merge($this->options, $options);
+            $this->setWorkflowController($this->createController($this->getField(), $options));
         }
 
         return $this->workflowController;
     }
 
-    public function getController(?object $entity = null, ?string $field = null): WorkflowController
-    {
+    public function compile(
+        ?object $entity = null,
+        ?string $field = null,
+        array $options = []
+    ): WorkflowController {
         return $this->getWorkflowController();
     }
 
@@ -77,6 +75,9 @@ abstract class AbstractWorkflow implements WorkflowInterface
         return $this->getWorkflowController()->getStates();
     }
 
+    /**
+     * @deprecated  Use WorkflowController instead.
+     */
     public function getStateOptions(array $attrs = []): array
     {
         $options = [];
@@ -94,6 +95,9 @@ abstract class AbstractWorkflow implements WorkflowInterface
         return $options;
     }
 
+    /**
+     * @deprecated  Use WorkflowController instead.
+     */
     public function getStateButton(): StateButton
     {
         $button = new StateButton();

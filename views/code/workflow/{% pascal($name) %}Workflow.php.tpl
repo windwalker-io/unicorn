@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace {% $ns %};
 
 use Unicorn\Attributes\StateMachine;
-use Unicorn\Workflow\AbstractWorkflow;
 use Unicorn\Workflow\WorkflowController;
+use Unicorn\Workflow\WorkflowInterface;
+use Unicorn\Workflow\WorkflowTrait;
 
 #[StateMachine(
     field: '{% snake($field) %}',
@@ -14,12 +15,12 @@ use Unicorn\Workflow\WorkflowController;
     // Set to FALSE to allow free transition.
     strict: true
 )]
-class {% pascal($name) %}Workflow extends AbstractWorkflow
+class {% pascal($name) %}Workflow implements WorkflowInterface
 {
-    public function configure(WorkflowController $workflow): void
-    {
-        $workflow->setAllowFreeTransitions(true);
+    use WorkflowTrait;
 
+    public function prepare(WorkflowController $workflow, ?object $entity): void
+    {
         // $workflow->setInitialStates(
         //     []
         // );

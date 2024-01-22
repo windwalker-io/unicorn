@@ -17,6 +17,7 @@ namespace App\View;
  */
 
 use Unicorn\Html\State\StateButton;
+use Unicorn\Html\State\StateOption;
 use Unicorn\Workflow\AbstractWorkflow;
 use Unicorn\Workflow\Transition;
 use Unicorn\Workflow\WorkflowController;
@@ -27,104 +28,35 @@ use Windwalker\Core\Language\LangService;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\SystemUri;
 
-use function Windwalker\unwrap_enum;
-
 /**
  * @var StateButton        $state
  * @var string             $value
- * @var StateButton|array  $states
+ * @var StateButton|array  $stateButton
  * @var AbstractWorkflow   $workflow
  * @var AbstractWorkflow[] $workflows
  * @var WorkflowController $workflowCtrl
  * @var Transition         $transition
+ * @var \Closure           $prepareWorkflow
+ * @var ?StateOption       $currentState
  */
 
-$batch ??= false;
-$disabled ??= false;
-$useStates ??= false;
-$store ??= 'grid';
-$colorOn ??= 'button';
-$size ??= 'sm';
-$value ??= '';
-$id ??= '';
-$noTitle ??= false;
-$readonly ??= false;
-
-$value = (string) unwrap_enum($value);
-
-$currentState = null;
-$onclick ??= null;
-
-$attributes = $attributes->exceptProps(
-    [
-        'states',
-        'workflow',
-        'id',
-        'colorOn',
-        'size',
-        'store',
-        'value',
-        'textColor',
-        'buttonStyle',
-        'useStates',
-        'disabled',
-        'batch',
-        'onclick'
-    ]
-);
-
-$workflows = $workflow;
-
-if (!is_array($workflow)) {
-    $workflows = [$workflow];
-} elseif (!$batch) {
-    throw new \InvalidArgumentException('Multiple workflows only supports "batch" mode.');
-}
-
-$color = '';
-
-if ($batch) {
-    $color = 'secondary';
-    $buttonColor = $buttonColor ??= 'btn-' . $color;
-    $textColor = '';
-} else {
-    $workflowCtrl = $workflow->getWorkflowController();
-
-    if ($useStates) {
-        $states ??= $workflow->getStateButton();
-        $currentState = $workflowCtrl?->getState($value) ?? $states->getState($value);
-    } else {
-        $transitions = $workflowCtrl->getEnabledTransitions($value);
-        $disabled = $disabled || !count($transitions);
-
-        $currentState = $workflowCtrl->getState($value) ?? new \Unicorn\Workflow\State($value);
-    }
-
-    $color = $currentState?->getColor();
-
-    if ($colorOn === 'button') {
-        $buttonColor = 'btn-' . $color;
-        $textColor = '';
-    } elseif ($colorOn === 'text') {
-        $buttonColor = $buttonColor ??= 'btn-light';
-        $textColor = 'text-' . $color;
-    }
-}
-
-$fieldName = array_map(fn(AbstractWorkflow $w) => $w->getWorkflowController()->getField(), $workflows);
-
-$buttonId ??= trim('c-state-dropdown-' . implode('-', $fieldName) . '-' . $id, '-');
 ?>
 
 @if ($readonly)
-    <div class="d-inline-block text-{{ $color }} text-nowrap">
+    <?php
+    $data = $prepareWorkflow($workflow);
+    extract($data, EXTR_OVERWRITE);
+    ?>
+    @php($attributes = $attributes->class("d-inline-block $textColor text-nowrap"))
+    <div {!! $attributes !!}>
         <i class="{{ $currentState?->getIcon() ?? 'fa fa-question-circle' }} fa-fw"></i>
         @if (!$noTitle)
             <span class="mr-auto me-auto ms-1">{{ $currentState?->getTitle() ?? 'Unknown State' }}</span>
         @endif
     </div>
 @else
-    <div class="btn-group dropdown c-state-dropdown d-inline-block" {!! $attributes !!}>
+    @php($attributes = $attributes->class('btn-group dropdown c-state-dropdown d-inline-block'))
+    <div {!! $attributes !!}>
         <button
             class="btn {{ $buttonColor }} btn-{{ $size }} d-flex align-items-center {{ $textColor }} {{ $disabled ? '' : 'dropdown-toggle' }} c-state-dropdown__toggle w-100 {{ $noTitle ? 'has-tooltip' : '' }}"
             type="button"
@@ -148,26 +80,18 @@ $buttonId ??= trim('c-state-dropdown-' . implode('-', $fieldName) . '-' . $id, '
         <ul class="dropdown-menu" aria-labelledby="{{ $buttonId }}">
             @php($k = 1)
             @foreach ($workflows as $name => $workflow)
-                    <?php
-                    $workflowCtrl = $workflow->getWorkflowController();
+                <?php
+                $data = $prepareWorkflow($workflow);
 
-                    if ($useStates) {
-                        $states ??= $workflow->getStateButton();
-                        $currentState = $workflowCtrl?->getState($value) ?? $states->getState($value);
-                    } else {
-                        $transitions = $workflowCtrl->getEnabledTransitions($value);
-                        $disabled = $disabled || !count($transitions);
-
-                        $currentState = $workflowCtrl->getState($value) ?? new \Unicorn\Workflow\State($value);
-                    }
-                    ?>
+                extract($data);
+                ?>
 
                 @if (!is_numeric($name))
                     <li><h6 class="dropdown-header">{{ $name }}</h6></li>
                 @endif
 
                 @if ($useStates)
-                    @foreach ($states?->getStates() as $state)
+                    @foreach ($stateButton?->getStates() as $state)
                         <li>
                             <a class="dropdown-item" href="javascript://"
                                 @if ($onclick)
@@ -178,7 +102,7 @@ $buttonId ??= trim('c-state-dropdown-' . implode('-', $fieldName) . '-' . $id, '
                                     @click="$store.{{ $store }}.updateItem('{{ $id }}', null, { batch: { '{{ $workflowCtrl->getField() }}': '{{ $state->getValue() }}' } })">
                                 @endif
                                 <i class="{{ $state->getIcon() }} fa-fw text-{{ $state->getColor() }}"></i>
-                                {{ $state->getTitle() ?? $state->getName() }}
+                                {{ $state->getTitle() ?? $state->getValue() }}
                             </a>
                         </li>
                     @endforeach
@@ -195,7 +119,7 @@ $buttonId ??= trim('c-state-dropdown-' . implode('-', $fieldName) . '-' . $id, '
                                 @endif
                                 >
                                 <i class="{{ $transition->getIcon() }}"></i>
-                                {{ $transition->getTitle() ?? $transition->getName() }}
+                                {{ $transition->getTitle() ?: $transition->getName() }}
                             </a>
                         </li>
                     @endforeach

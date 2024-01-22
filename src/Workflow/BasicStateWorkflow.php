@@ -17,18 +17,19 @@ use Windwalker\Core\Language\TranslatorTrait;
     enum: BasicState::class,
     strict: true
 )]
-class BasicStateWorkflow extends AbstractWorkflow
+class BasicStateWorkflow implements WorkflowInterface
 {
+    use WorkflowTrait;
     use TranslatorTrait;
 
-    public function configure(WorkflowController $workflow): void
+    public function prepare(WorkflowController $workflow, ?object $entity): void
     {
-        $workflow->getState(BasicState::PUBLISHED)
-            ?->icon('fa fa-fw fa-check')
+        $workflow->mustGetState(BasicState::PUBLISHED)
+            ->icon('fa fa-fw fa-check')
             ->color('success');
 
-        $workflow->getState(BasicState::UNPUBLISHED)
-            ?->icon('fa fa-fw fa-xmark')
+        $workflow->mustGetState(BasicState::UNPUBLISHED)
+            ->icon('fa fa-fw fa-xmark')
             ->color('danger');
 
         $workflow->addTransition(

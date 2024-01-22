@@ -8,6 +8,8 @@ use Symfony\Component\Mime\MimeTypes;
 use Symfony\Component\Mime\MimeTypesInterface;
 use Unicorn\Attributes\StateMachine;
 use Unicorn\Command\MigFromCommand;
+use Unicorn\Component\StateButtonComponent;
+use Unicorn\Component\StateDropdownComponent;
 use Unicorn\Controller\CrudController;
 use Unicorn\Controller\GridController;
 use Unicorn\Generator\Command\BuildFormCommand;
@@ -200,8 +202,8 @@ class UnicornPackage extends AbstractPackage implements
                 'order-sort' => '@order-sort',
                 'order-control' => '@order-control',
                 'save-order' => '@save-order',
-                'state-button' => '@state-button',
-                'state-dropdown' => '@state-dropdown',
+                'state-button' => StateButtonComponent::class,
+                'state-dropdown' => StateDropdownComponent::class,
                 'batch-modal' => '@batch-modal',
                 'field' => '@theme::form.field-wrapper',
                 'input' => '@theme::form.input',

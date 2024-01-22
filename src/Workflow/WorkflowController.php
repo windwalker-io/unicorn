@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace Unicorn\Workflow;
 
 use MyCLabs\Enum\Enum;
+use Unicorn\Html\State\StateButton;
 use Windwalker\Core\Event\CoreEventAwareTrait;
+use Windwalker\DOM\DOMElement;
 use Windwalker\Event\EventAwareInterface;
 use Windwalker\ORM\Event\WatchEvent;
 use Windwalker\Utilities\Contract\LanguageInterface;
 use Windwalker\Utilities\Enum\EnumMetaInterface;
+use Windwalker\Utilities\Options\OptionAccessTrait;
 use Windwalker\Utilities\TypeCast;
 
 /**
@@ -18,10 +21,9 @@ use Windwalker\Utilities\TypeCast;
 class WorkflowController implements EventAwareInterface
 {
     use CoreEventAwareTrait;
+    use OptionAccessTrait;
 
     protected bool $allowFreeTransitions = true;
-
-    protected string $field = '';
 
     /**
      * @var array<State>
@@ -32,6 +34,11 @@ class WorkflowController implements EventAwareInterface
      * @var array<Transition>
      */
     protected array $transitions = [];
+
+    public function __construct(protected string $field, array $options = [])
+    {
+        $this->options = $options;
+    }
 
     public function registerStatesFromEnum(string|object|iterable $enum, ?LanguageInterface $lang = null): static
     {
@@ -182,17 +189,15 @@ class WorkflowController implements EventAwareInterface
         bool $enabled = true,
     ): Transition {
         if (!$transition instanceof Transition) {
-            if ($froms === null) {
-                $froms = $this->getStateValues();
-            }
+            $froms = $this->expandStatesFromAny($froms);
 
-            if ($froms instanceof \Stringable) {
-                $froms = (string) $froms;
+            if (is_array($to)) {
+                throw new \InvalidArgumentException('addTransition() arg 2 $to must not be array.');
             }
-
-            $froms = AbstractWorkflow::toStrings($froms);
 
             $to = TypeCast::toString($to);
+
+            $froms = array_filter($froms, static fn (string $state) => $state !== $to);
 
             $transition = new Transition($transition, $froms, $to, $enabled);
         }
@@ -405,11 +410,8 @@ class WorkflowController implements EventAwareInterface
         mixed $froms,
         mixed $tos
     ): array {
-        $froms ??= $this->getStateValues();
-        $tos ??= $this->getStateValues();
-
-        $froms = (array) AbstractWorkflow::toStrings($froms);
-        $tos = (array) AbstractWorkflow::toStrings($tos);
+        $froms = $this->expandStatesFromAny($froms);
+        $tos = $this->expandStatesFromAny($tos);
 
         $eventNames = [];
 
@@ -420,6 +422,15 @@ class WorkflowController implements EventAwareInterface
         }
 
         return array_unique($eventNames);
+    }
+
+    protected function expandStatesFromAny(mixed $states): array
+    {
+        if ($states === null || $states === '*') {
+            $states = $this->getStateValues();
+        }
+
+        return (array) AbstractWorkflow::toStrings($states);
     }
 
     protected function toEventName(string $prefix, string $from, string $to): string
@@ -465,6 +476,11 @@ class WorkflowController implements EventAwareInterface
         $value = TypeCast::toString($value);
 
         return $this->states[$value] ?? null;
+    }
+
+    public function mustGetState(mixed $value): State
+    {
+        return $this->getState($value);
     }
 
     /**
@@ -572,5 +588,36 @@ class WorkflowController implements EventAwareInterface
         }
 
         return $this;
+    }
+
+    public function getStateOptions(array $attrs = []): array
+    {
+        $options = [];
+
+        foreach ($this->getStates() as $state) {
+            $attrs['value'] = $state->getValue();
+
+            $options[] = DOMElement::create(
+                'option',
+                $attrs,
+                $state->getTitle() ?? $state->getValue(),
+            );
+        }
+
+        return $options;
+    }
+
+    public function getStateButton(): StateButton
+    {
+        $button = new StateButton();
+
+        foreach ($this->getStates() as $value => $state) {
+            $button->addState((string) $value)
+                ->icon($state->getIcon())
+                ->color($state->getColor())
+                ->title($state->getTitle());
+        }
+
+        return $button;
     }
 }
