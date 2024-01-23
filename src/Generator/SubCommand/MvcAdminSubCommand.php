@@ -68,6 +68,22 @@ class MvcAdminSubCommand extends AbstractGeneratorSubCommand
             'Force override files',
             null
         );
+
+        $command->addOption(
+            'grid',
+            '',
+            InputOption::VALUE_NONE,
+            'Only generate grid',
+            null
+        );
+
+        $command->addOption(
+            'edit',
+            '',
+            InputOption::VALUE_NONE,
+            'Only generate edit',
+            null
+        );
     }
 
     /**
@@ -85,6 +101,10 @@ class MvcAdminSubCommand extends AbstractGeneratorSubCommand
             '--force' => $io->getOption('force') ? '' : null,
         ];
         $optionString = '';
+
+        $onlyGrid = $io->getOption('grid');
+        $onlyEdit = $io->getOption('edit');
+        $all = !$onlyGrid && !$onlyEdit;
 
         foreach ($options as $key => $value) {
             if ($value !== null) {
@@ -133,16 +153,21 @@ class MvcAdminSubCommand extends AbstractGeneratorSubCommand
         );
 
         // View
-        $this->runProcess(
-            "php windwalker g unicorn:view-grid $name " . $optionString,
-            $io,
-            'n',
-        );
-        $this->runProcess(
-            "php windwalker g unicorn:view-edit $name " . $optionString,
-            $io,
-            'n'
-        );
+        if ($all || $onlyGrid) {
+            $this->runProcess(
+                "php windwalker g unicorn:view-grid $name " . $optionString,
+                $io,
+                'n',
+            );
+        }
+
+        if ($all || $onlyEdit) {
+            $this->runProcess(
+                "php windwalker g unicorn:view-edit $name " . $optionString,
+                $io,
+                'n'
+            );
+        }
 
         // Route
         $this->runProcess(

@@ -55,6 +55,22 @@ class MvcSimpleSubCommand extends AbstractGeneratorSubCommand
             'Force override files',
             null
         );
+
+        $command->addOption(
+            'list',
+            '',
+            InputOption::VALUE_NONE,
+            'Only generate list',
+            null
+        );
+
+        $command->addOption(
+            'item',
+            '',
+            InputOption::VALUE_NONE,
+            'Only generate item',
+            null
+        );
     }
 
     /**
@@ -78,6 +94,10 @@ class MvcSimpleSubCommand extends AbstractGeneratorSubCommand
                 $optionString = $key . ' ' . $value;
             }
         }
+
+        $onlyList = $io->getOption('list');
+        $onlyItem = $io->getOption('item');
+        $all = !$onlyList && !$onlyItem;
 
         $name = $io->getArgument('name');
 
@@ -120,16 +140,21 @@ class MvcSimpleSubCommand extends AbstractGeneratorSubCommand
         );
 
         // View
-        $this->runProcess(
-            "php windwalker g unicorn:view-list $name " . $optionString,
-            $io,
-            'n',
-        );
-        $this->runProcess(
-            "php windwalker g unicorn:view-item $name " . $optionString,
-            $io,
-            'n'
-        );
+        if ($all || $onlyList) {
+            $this->runProcess(
+                "php windwalker g unicorn:view-list $name " . $optionString,
+                $io,
+                'n',
+            );
+        }
+
+        if ($all || $onlyItem) {
+            $this->runProcess(
+                "php windwalker g unicorn:view-item $name " . $optionString,
+                $io,
+                'n'
+            );
+        }
 
         // Route
         $this->runProcess(
