@@ -462,18 +462,20 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
      *
      * @return  static  Return self to support chaining.
      */
-    public function setFilters(array $filters): static
+    public function setFilters(array $filters, bool $merge = false): static
     {
-        $this->filters = $filters;
+        if ($merge) {
+            $this->filters = array_merge($this->filters, $filters);
+        } else {
+            $this->filters = $filters;
+        }
 
         return $this;
     }
 
     public function addFilters(mixed ...$filters): static
     {
-        $filters = Arr::collapse($filters, true);
-
-        $this->filters = array_merge($this->filters, $filters);
+        $this->setFilters($filters, true);
 
         return $this;
     }
@@ -533,21 +535,24 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
 
     /**
      * @param  array  $searches
+     * @param  bool   $merge
      *
      * @return  static  Return self to support chaining.
      */
-    public function setSearches(array $searches): static
+    public function setSearches(array $searches, bool $merge = false): static
     {
-        $this->searches = $searches;
+        if ($merge) {
+            $this->searches = array_merge($this->searches, $searches);
+        } else {
+            $this->searches = $searches;
+        }
 
         return $this;
     }
 
     public function addSearches(mixed ...$searches): static
     {
-        $searches = Arr::collapse($searches);
-
-        $this->searches = array_merge($this->searches, $searches);
+        $this->setSearches($searches, true);
 
         return $this;
     }
