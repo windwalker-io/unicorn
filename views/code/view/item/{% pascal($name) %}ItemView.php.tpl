@@ -21,9 +21,6 @@ use Windwalker\ORM\ORM;
 )]
 class {% pascal($name) %}ItemView implements ViewModelInterface
 {
-    /**
-     * Constructor.
-     */
     public function __construct(
         protected ORM $orm,
         #[Autowire] protected {% pascal($name) %}Repository $repository

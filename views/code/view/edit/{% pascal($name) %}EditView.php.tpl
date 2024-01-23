@@ -7,17 +7,16 @@ namespace {% $ns %};
 use App\Entity\{% pascal($name) %};
 use {% $ns %}\Form\EditForm;
 use App\Repository\{% pascal($name) %}Repository;
+use Unicorn\View\FormAwareViewModelTrait;
+use Unicorn\View\ORMAwareViewModelTrait;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Attributes\ViewMetadata;
 use Windwalker\Core\Attributes\ViewModel;
-use Windwalker\Core\Form\FormFactory;
 use Windwalker\Core\Html\HtmlFrame;
 use Windwalker\Core\Language\TranslatorTrait;
-use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\View\View;
 use Windwalker\Core\View\ViewModelInterface;
 use Windwalker\DI\Attributes\Autowire;
-use Windwalker\ORM\ORM;
 
 /**
  * The {% pascal($name) %}EditView class.
@@ -29,12 +28,11 @@ use Windwalker\ORM\ORM;
 class {% pascal($name) %}EditView implements ViewModelInterface
 {
     use TranslatorTrait;
+    use ORMAwareViewModelTrait;
+    use FormAwareViewModelTrait;
 
     public function __construct(
-        protected ORM $orm,
-        protected FormFactory $formFactory,
-        protected Navigator $nav,
-        #[Autowire] protected {% pascal($name) %}Repository $repository
+        #[Autowire] protected {% pascal($name) %}Repository $repository,
     ) {
     }
 
@@ -56,8 +54,7 @@ class {% pascal($name) %}EditView implements ViewModelInterface
         // Bind item for injection
         $view[{% pascal($name) %}::class] = $item;
 
-        $form = $this->formFactory
-            ->create(EditForm::class)
+        $form = $this->createForm(EditForm::class)
             ->fill(
                 [
                     'item' => $this->repository->getState()->getAndForget('edit.data')
