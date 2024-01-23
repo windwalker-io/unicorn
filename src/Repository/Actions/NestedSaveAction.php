@@ -34,11 +34,15 @@ class NestedSaveAction extends SaveAction
             compact('data', 'source', 'condFields', 'options')
         );
 
-        $entity = $mapper->toEntity($data = $event->getData());
+        $data = $event->getData();
+        $key = $mapper->getMainKey();
 
-        $oldEntity = $entity->getPrimaryKeyValue()
-            ? $mapper->findOne($entity->getPrimaryKeyValue())
-            : null;
+        $pk = $data[$key] ?? null;
+
+        $oldEntity = $pk ? $mapper->findOne($pk) : null;
+
+        $entity = $oldEntity ?: $mapper->createEntity();
+        $entity = $mapper->hydrate($data, $entity);
 
         if (
             $mapper->isNew($entity)
