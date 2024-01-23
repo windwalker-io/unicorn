@@ -28,7 +28,7 @@ trait ListRepositoryTrait
 
     protected function createSelectorObject(): ListSelector
     {
-        return new ListSelector($this->db, $this->paginationFactory);
+        return new ListSelector($this->getDb(), $this->paginationFactory);
     }
 
     protected function configureSelector(SelectorQuery $query, ListSelector $selector): void

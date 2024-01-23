@@ -18,7 +18,7 @@ class Repository
     /**
      * Repository constructor.
      */
-    public function __construct(protected string $entityClass)
+    public function __construct(protected string $entityClass, public ?string $connection = null)
     {
     }
 
@@ -37,5 +37,10 @@ class Repository
             Table::class,
             \ReflectionAttribute::IS_INSTANCEOF
         );
+    }
+
+    public function getConnection(): ?string
+    {
+        return $this->connection;
     }
 }

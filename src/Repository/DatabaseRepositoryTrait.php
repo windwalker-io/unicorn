@@ -8,6 +8,7 @@ use Unicorn\Attributes\Repository;
 use Unicorn\Selector\ListSelector;
 use Windwalker\Attributes\AttributesAccessor;
 use Windwalker\Core\Form\FormFactory;
+use Windwalker\Core\Manager\DatabaseManager;
 use Windwalker\Core\Pagination\PaginationFactory;
 use Windwalker\Database\DatabaseAdapter;
 use Windwalker\DI\Attributes\Inject;
@@ -20,13 +21,15 @@ use Windwalker\ORM\SelectorQuery;
  */
 trait DatabaseRepositoryTrait
 {
-    #[Inject]
     protected DatabaseAdapter $db;
+
+    protected ?Repository $metaAttribute = null;
+
+    #[Inject]
+    protected DatabaseManager $databaseManager;
 
     #[Inject]
     protected FormFactory $formFactory;
-
-    protected ?Repository $metaAttribute = null;
 
     /**
      * getTable
@@ -59,12 +62,12 @@ trait DatabaseRepositoryTrait
 
     public function getEntityMapper(): EntityMapper
     {
-        return $this->db->orm()->mapper($this->getEntityClass());
+        return $this->getDb()->orm()->mapper($this->getEntityClass());
     }
 
     public function getORM(): ORM
     {
-        return $this->db->orm();
+        return $this->getDb()->orm();
     }
 
     /**
@@ -72,7 +75,8 @@ trait DatabaseRepositoryTrait
      */
     public function getDb(): DatabaseAdapter
     {
-        return $this->db;
+        return $this->db
+            ??= $this->databaseManager->get($this->getMetaAttribute()->getConnection());
     }
 
     /**
