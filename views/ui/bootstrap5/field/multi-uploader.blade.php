@@ -49,7 +49,7 @@ $data['tmplSelector'] ??= ('#' . $tmplId);
 <multi-uploader id="{{ $field->getId('-wrap') }}" options="{{ json_encode($data) }}">
     <app
         stack-name="{{ $field->getStackName() ?: 'uploading' }}"
-    />
+    ></app>
 </multi-uploader>
 
 @teleport($tmplId)

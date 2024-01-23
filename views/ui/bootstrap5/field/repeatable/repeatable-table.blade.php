@@ -41,6 +41,7 @@ $optString = AssetService::getJSObject(
         'hasKey' => (bool) $form->hasField('key'),
         'singleArray' => $field->isSingleArray(),
         'ensureFirstRow' => $field->isEnsureFirstRow(),
+        'max' => $field->getMax()
     ]
 );
 

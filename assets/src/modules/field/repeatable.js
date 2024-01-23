@@ -2,8 +2,13 @@
 import { cloneDeep } from 'lodash-es';
 
 const defaultOptions = {
+  id: '',
+  fieldName: '',
+  sortable: false,
   hasKey: false,
-  singleArray: false
+  singleArray: false,
+  ensureFirstRow: false,
+  max: null,
 };
 
 function prepareItem(item) {
@@ -132,7 +137,7 @@ S.import('@main').then(() => {
           return true;
         }
 
-        return this.options.max > this.items;
+        return this.options.max > this.items.length;
       },
 
       get canModify() {
