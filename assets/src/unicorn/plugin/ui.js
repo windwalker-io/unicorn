@@ -208,28 +208,25 @@ export default class UnicornUI {
               // @see https://github.com/orchidjs/tom-select/issues/362
               class UnicornTomSelect extends TomSelect {
                 syncOptionsWithoutKeepSelected() {
-                  let item;
+                  const oldValue = ele.value;
 
-                  for(item of this.items) {
-                    var option = this.options[item].$option;
-
-                    if(!this.input.contains(option)) {
-                      this.removeItem(item, true);
-                      delete this.options[item];
-                      const first = Object.keys(this.options).shift();
-
-                      this.setValue(first);
-                    }
-                  }
-
+                  this.clear();
                   this.clearOptions();
                   this.sync();
+
+                  if (ele.value !== oldValue) {
+                    this.setValue(
+                      ele.querySelector(`option[value="${oldValue}"]`)?.value
+                      ?? ele.querySelector('option')?.value,
+                        true
+                    );
+                  }
                 }
               }
 
               const t = new UnicornTomSelect(ele, options);
 
-              ele.addEventListener('list:updated', () => {
+              ele.addEventListener('change', () => {
                 t.syncOptionsWithoutKeepSelected();
               });
 
