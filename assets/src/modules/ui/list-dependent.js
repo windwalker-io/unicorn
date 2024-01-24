@@ -226,7 +226,7 @@ export class ListDependent {
     let defaultValues = '';
 
     // Convert all types to array
-    let defValue = this.options.default_value;
+    let defValue = this.element.dataset.selected ?? this.options.default_value;
 
     if (typeof defValue === 'function') {
       defValue = defValue(value, this);
