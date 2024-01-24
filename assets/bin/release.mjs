@@ -21,17 +21,17 @@ if (cliInput['help'] || cliInput['h']) {
 }
 
 console.log(`>>> yarn build:prod`);
-exec(`yarn build:prod`);
+exec(`yarn build:prod`, { stdio: 'inherit' });
 
 console.log(`>>> npm version ${args.join(' ')}`);
-const buffer = exec(`npm version ${args.join(' ')}`);
+const buffer = exec(`npm version ${args.join(' ')}`, { stdio: 'inherit' });
 
-const output = buffer.toString();
+const ver = buffer.toString().split("\n").join(' ');
 
 console.log('>>> Git commit all');
-exec(`git add .`);
+exec(`git add .`, { stdio: 'inherit' });
 try {
-  exec(`git commit -am "Prepare release ${output.join(' ')}."`);
+  exec(`git commit -am "Prepare release JS @windwalker-io/unicorn ${ver}."`, { stdio: 'inherit' });
 } catch (e) {
   console.log(e.message);
 }
@@ -40,8 +40,8 @@ const branch = cliInput['b'] || 'main';
 
 console.log('>>> Push to git');
 
-exec(`git push origin ${branch}`);
+exec(`git push origin ${branch}`, { stdio: 'inherit' });
 
 console.log('>> Publish to npm');
 
-exec(`npm publish`);
+exec(`npm publish`, { stdio: 'inherit' });
