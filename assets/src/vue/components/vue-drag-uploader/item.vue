@@ -71,12 +71,7 @@
 
       onMounted(() => {
         if (props.initState === itemStates.NEW) {
-          const reader = new FileReader();
-          reader.onload = (event) => {
-            props.item.thumb_url = event.target.result;
-          };
-
-          reader.readAsDataURL(props.item.file);
+          props.item.thumb_url = URL.createObjectURL(props.item.file);
 
           const queue = getQueue(props.queueName, Number(props.maxConcurrent) || 2);
 
@@ -118,7 +113,7 @@
             );
 
             if (isImage.value) {
-              props.item.thumb_url = props.item.thumb_url || res.data.data.url;
+              props.item.thumb_url = res.data.data.thumb_url || res.data.data.url;
             }
           })
           .catch(error => {
