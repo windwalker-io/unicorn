@@ -40,6 +40,8 @@ use Windwalker\Utilities\Cache\InstanceCacheTrait;
  * @method  mixed  getHeight()
  * @method  $this  max(int $value = null)
  * @method  mixed  getMax()
+ * @method  $this  modalHeight(string $value = null)
+ * @method  mixed  getModalHeight()
  */
 class ModalField extends AbstractField
 {
@@ -520,6 +522,7 @@ class ModalField extends AbstractField
                 'placeholder',
                 'height',
                 'max',
+                'modalHeight'
             ]
         );
     }

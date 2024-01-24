@@ -80,6 +80,7 @@ $disabled = $field->isReadonly() || $field->isDisabled();
                         href="{{ $url }}"
                         data-role="select"
                         data-size="modal-xl"
+                        data-height="{{ $field->getModalHeight() ?: '80vh' }}"
                         class="btn btn-primary c-modal-field__select"
                         style="pointer-events: none"
                     >

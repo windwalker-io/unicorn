@@ -6,7 +6,7 @@ class IFrameModal extends HTMLElement {
 
   template() {
     return `
-<div class="modal fade c-unicorn-iframe-modal" id="${this.options?.id}"
+<div class="modal fade c-unicorn-iframe-modal" id="${this.getModalId()}"
     data-iframe-modal>
     <div class="modal-dialog ${this.options?.size || 'modal-xl'}">
         <div class="modal-content">
@@ -95,6 +95,10 @@ class IFrameModal extends HTMLElement {
 
       iframe.style.height = height + 'px';
     }, 30);
+  }
+
+  getModalId() {
+    return this.options?.id || this.id + '__modal';
   }
 }
 
