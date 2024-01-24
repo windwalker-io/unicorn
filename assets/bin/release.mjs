@@ -24,9 +24,9 @@ console.log(`>>> yarn build:prod`);
 exec(`yarn build:prod`, { stdio: 'inherit' });
 
 console.log(`>>> npm version ${args.join(' ')}`);
-const buffer = exec(`npm version ${args.join(' ')}`, { stdio: 'inherit' });
+const buffer = exec(`npm version ${args.join(' ')}`);
 
-const ver = buffer.toString().split("\n").join(' ');
+const ver = buffer.toString().split("\n")[1];
 
 console.log('>>> Git commit all');
 exec(`git add .`, { stdio: 'inherit' });
