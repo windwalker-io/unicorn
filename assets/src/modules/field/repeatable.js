@@ -18,7 +18,10 @@ function prepareItem(item) {
   return item;
 }
 
-document.addEventListener('alpine:init', () => {
+S.import('@main').then(async () => {
+  u.importCSS('@vue2-animate');
+  await u.loadAlpine();
+
   Alpine.data('RepeatableField', ({ items, defaultValues, attrs }, options) => ({
     items,
     defaultValues,
@@ -150,11 +153,6 @@ document.addEventListener('alpine:init', () => {
       return this.options.id;
     }
   }));
-});
-
-S.import('@main').then(async () => {
-  u.importCSS('@vue2-animate');
-  await u.loadAlpine();
 
   u.selectAll('[data-repeatable]', (el) => {
     el.setAttribute('x-data', el.dataset.repeatable);
