@@ -99,6 +99,7 @@ export interface Unicorn extends UnicornApp {
   notify(messages: string|string[], type?: string): void;
   clearNotifies(): void;
   loadAlpine(callback?: () => void): Promise<any>;
+  initAlpine(directive: string): Promise<any>;
   beforeAlpineInit(callback: () => void): void;
   prepareAlpine(callback: () => void): void;
   webComponentPolyfill(): Promise<any>;
