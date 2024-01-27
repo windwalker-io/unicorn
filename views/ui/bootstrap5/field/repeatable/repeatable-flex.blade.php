@@ -49,7 +49,7 @@ $data = AssetService::getJSObject($field->prepareJSData());
 ?>
 
 <div id="{{ $field->getId('-wrap') }}" class="c-repeatable-field"
-    x-data="RepeatableField({{ $data }}, {{ $optString }})">
+    data-repeatable="RepeatableField({{ $data }}, {{ $optString }})">
     <input id="{{ $field->getId('-empty') }}"
         type="hidden"
         :name="fieldName"
