@@ -18,8 +18,10 @@ class Repository
     /**
      * Repository constructor.
      */
-    public function __construct(protected string $entityClass, public ?string $connection = null)
-    {
+    public function __construct(
+        protected string $entityClass = '',
+        public ?string $connection = null
+    ) {
     }
 
     /**

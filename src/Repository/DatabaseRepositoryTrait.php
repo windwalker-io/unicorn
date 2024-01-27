@@ -38,7 +38,7 @@ trait DatabaseRepositoryTrait
      */
     public function getTable(): string
     {
-        return $this->getMetaAttribute()->getTableAttribute()->getName();
+        return $this->getMetaAttribute()?->getTableAttribute()->getName() ?? '';
     }
 
     /**
@@ -48,10 +48,10 @@ trait DatabaseRepositoryTrait
      */
     public function getEntityClass(): string
     {
-        return $this->getMetaAttribute()->getEntityClass();
+        return $this->getMetaAttribute()?->getEntityClass() ?? '';
     }
 
-    protected function getMetaAttribute(): Repository
+    protected function getMetaAttribute(): ?Repository
     {
         return $this->metaAttribute ??= AttributesAccessor::getFirstAttributeInstance(
             static::class,
@@ -76,7 +76,7 @@ trait DatabaseRepositoryTrait
     public function getDb(): DatabaseAdapter
     {
         return $this->db
-            ??= $this->databaseManager->get($this->getMetaAttribute()->getConnection());
+            ??= $this->databaseManager->get($this->getMetaAttribute()?->getConnection());
     }
 
     /**
