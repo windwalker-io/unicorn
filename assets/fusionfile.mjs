@@ -17,17 +17,22 @@ import fusion, {
   webpackBundle
 } from '@windwalker-io/fusion';
 import { babelBasicOptions } from '@windwalker-io/fusion/src/utilities/babel.js';
+import * as path from 'path';
 import * as moduleTasks from './src/fusion/modules.mjs';
 export * from './src/fusion/modules.mjs';
 
 export async function main() {
   return webpackBundle(
-    './src/unicorn/unicorn.js',
+    './src/unicorn/unicorn.ts',
     './dist/unicorn.js',
     (options) => {
       options.output.library = 'Unicorn';
       options.output.libraryTarget = 'umd';
       options.output.clean = false;
+
+      options.resolve.alias = options.resolve.alias || {};
+      options.resolve.alias['@'] = path.resolve('./src');
+
     }
   );
   // Compile end

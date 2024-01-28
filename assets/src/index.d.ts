@@ -1,4 +1,5 @@
 
+import type UnicornAlpine2 from '@/unicorn/plugin/alpine2';
 import { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { getInstance } from './modules/aws/s3-uploader';
 import { UIBootstrap5 } from './modules/ui/ui-bootstrap5';
@@ -38,13 +39,13 @@ export interface Unicorn extends UnicornApp {
   }
 
   tap<T>(value: T, callback: ((T) => void)): T;
-  data(name: string, data: any): any;
-  data(name: string): any;
-  data(ele: Element, name: string): any;
-  data(ele: Element, name: string, data?: any): any;
+  // data(name: string, data: any): any;
+  // data(name: string): any;
+  // data(ele: Element, name: string): any;
+  // data(ele: Element, name: string, data?: any): any;
   use(plugin: any, options?: any): this;
-  removeData(name: string): any;
-  removeData(ele: Element, name: string): any;
+  // removeData(name: string): any;
+  // removeData(ele: Element, name: string): any;
   on(event: string|string[], handler: Function): this;
   once(event: string|string[], handler: Function): this;
   off(event: string, handler?: Function): this;
@@ -54,6 +55,9 @@ export interface Unicorn extends UnicornApp {
   asset(type: string): string|undefined;
   wait(callback: (resolve: Function, reject: Function) => void): Promise<any>;
   completed(): Promise<any>;
+
+  // alpine2
+  $alpine2: UnicornAlpine2;
 
   // animate.js
   $animate: UnicornAnimate;
@@ -107,11 +111,11 @@ export interface Unicorn extends UnicornApp {
 
   // loader.js
   $loader: UnicornLoader;
-  import(...src): Promise<any>;
-  importSync(...src): Promise<any>;
-  importCSS(...src): Promise<any>;
-  minFileName(fileName: string): string;
-  afterImported(name: string, callback: (resolve: Function, reject?: Function) => void): Promise<any>;
+  import: typeof UnicornLoader.prototype.import;
+  importSync: typeof UnicornLoader.prototype.importSync;
+  importCSS: typeof UnicornLoader.prototype.importCSS;
+  minFileName: typeof UnicornLoader.prototype.minFileName;
+  afterImported: typeof UnicornLoader.prototype.afterImported;
 
   // helper.js
   $helper: UnicornHelper;
@@ -119,6 +123,7 @@ export interface Unicorn extends UnicornApp {
   selectOne<E extends Element = Element>(ele: string): E|null;
   selectOne<E extends Element = Element>(ele: E): E;
   selectOne<K extends keyof HTMLElementTagNameMap>(ele: K): HTMLElementTagNameMap[K]|null;
+  selectOne<E extends Element = Element>(ele: string|E): E|null;
   selectOne(ele: string): Element;
   selectAll<E extends Element = Element>(ele: string, callback?: ((ele: E) => any)): NodeListOf<E>;
   selectAll<E extends Element = Element>(ele: NodeListOf<E>|E[], callback?: ((ele: E) => any)): E[];
@@ -276,4 +281,8 @@ export interface S3UploaderRequestOptions {
   'Content-Disposition'?: string;
   key?: string;
   [name: string]: any
+}
+
+export interface UnicornPlugin {
+  install(app: UnicornApp): void;
 }

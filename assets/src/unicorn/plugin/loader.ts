@@ -1,8 +1,9 @@
+import type { Unicorn } from '@/index';
 
 const imports = {};
 
 export default class UnicornLoader {
-  static install(app) {
+  static install(app: Unicorn) {
     const loader = app.$loader = new this(app);
 
     app.import = loader.import.bind(loader);
@@ -12,15 +13,11 @@ export default class UnicornLoader {
     app.afterImported = loader.afterImported.bind(loader);
   }
 
-  constructor(app) {
-    this.app = app;
+  constructor(protected app: Unicorn) {
+    //
   }
 
-  /**
-   * @param {string} src
-   * @returns {Promise<*>}
-   */
-  doImport(src) {
+  doImport(src: string): Promise<any> {
     const s = window.System;
 
     return s.import(src);
@@ -28,12 +25,8 @@ export default class UnicornLoader {
 
   /**
    * Import modules or scripts.
-   * @param {string} src
-   * @returns {Promise<any[]|any>}
    */
-  import(...src) {
-    const s = window.System;
-
+  import(...src: any[]): Promise<any|any[]> {
     if (src.length === 1) {
       return this.doImport(src[0]);
     }
@@ -51,12 +44,10 @@ export default class UnicornLoader {
 
   /**
    * Import sync.
-   * @param src
-   * @returns {Promise<void>}
    */
-  importSync(...src) {
-    let promise = Promise.resolve();
-    let url = null;
+  importSync(...src: any): Promise<any|any[]> {
+    let promise: Promise<any> = Promise.resolve();
+    let url: string[];
     const modules = [];
 
     while (url = src.shift()) {
@@ -78,26 +69,20 @@ export default class UnicornLoader {
 
   /**
    * Import CSS files.
-   * @param src
-   * @returns {Promise<*>}
    */
-  importCSS(...src) {
-    return this.import(...src).then((modules) => {
-      if (!Array.isArray(modules)) {
-        modules = [ modules ];
-      }
+  async importCSS(...src: any): Promise<any|any[]> {
+    let modules = await this.import(...src);
 
-      const styles = modules.map(module => module.default);
+    if (!Array.isArray(modules)) {
+      modules = [modules];
+    }
 
-      document.adoptedStyleSheets = [...document.adoptedStyleSheets, ...styles];
-    });
+    const styles: CSSStyleSheet[] = modules.map(module => module.default);
+
+    document.adoptedStyleSheets = [...document.adoptedStyleSheets, ...styles];
   }
 
-  /**
-   * @param {string} fileName
-   * @returns {string}
-   */
-  minFileName(fileName) {
+  minFileName(fileName: string): string {
     const segments = fileName.split('.');
     const ext = segments.pop();
 
@@ -108,10 +93,7 @@ export default class UnicornLoader {
     return fileName;
   }
 
-  /**
-   * @param {string} name
-   */
-  asImported(name) {
+  asImported(name: string) {
     if (!imports[name]) {
       imports[name] = {
         promise: Promise.resolve(),
@@ -124,11 +106,8 @@ export default class UnicornLoader {
 
   /**
    * Add after import hook for some url or id.
-   * @param {string} name
-   * @param {function(resolve: function, reject?: function): void} callback
-   * @returns {Promise<any>}
    */
-  afterImported(name, callback) {
+  afterImported(name: string, callback: (resolve: Function, reject?: Function) => void): Promise<any> {
     if (!imports[name]) {
       let r;
       imports[name] = {
@@ -145,3 +124,5 @@ export default class UnicornLoader {
     return imports[name].promise;
   }
 }
+
+

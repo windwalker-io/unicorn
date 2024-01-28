@@ -1,25 +1,21 @@
 
+import type { UnicornPlugin } from '@/index';
 import { EventMixin } from './events.js';
 import { mix } from './mixwith.js';
 import { defaultsDeep } from 'lodash-es';
 import { getData, defData, setData, removeData } from './utilities.js';
 
+const defaultOptions: Record<string, any> = {};
+
 export default class UnicornApp extends mix(class {}).with(EventMixin) {
   plugins = {};
   _listeners = {};
   waits = [];
-
-  /**
-   * Default options.
-   * @returns {Object}
-   */
-  static get defaultOptions() {
-    return {};
-  }
+  options: Record<string, any>;
 
   constructor(options = {}) {
     super();
-    this.options = defaultsDeep({}, options, this.constructor.defaultOptions);
+    this.options = defaultsDeep({}, options, defaultOptions);
 
     // Wait dom ready
     this.wait((resolve) => {
@@ -32,12 +28,7 @@ export default class UnicornApp extends mix(class {}).with(EventMixin) {
     });
   }
 
-  /**
-   * @param {UnicornPlugin} plugin
-   * @param {*} options
-   * @returns {UnicornApp}
-   */
-  use(plugin, options = {}) {
+  use(plugin: UnicornPlugin, options: Record<string, any> = {}) {
     if (Array.isArray(plugin)) {
       plugin.forEach(p => this.use(p));
       return this;
@@ -54,11 +45,7 @@ export default class UnicornApp extends mix(class {}).with(EventMixin) {
     return this;
   }
 
-  /**
-   * @param {UnicornPlugin} plugin
-   * @returns {UnicornApp}
-   */
-  detach(plugin) {
+  detach(plugin: any) {
     if (plugin.uninstall) {
       plugin.uninstall(this);
     }
@@ -68,12 +55,7 @@ export default class UnicornApp extends mix(class {}).with(EventMixin) {
     return this;
   }
 
-  /**
-   * @param {*} value
-   * @param {function(): *} callback
-   * @returns {*}
-   */
-  tap(value, callback) {
+  tap<T>(value: T, callback: Function): T {
     callback(value);
 
     return value;
@@ -87,11 +69,15 @@ export default class UnicornApp extends mix(class {}).with(EventMixin) {
   //   });
   // }
 
-  data(ele, name = undefined, value = undefined) {
+  data(name: string, data: any): any;
+  data(name: string): any;
+  data(ele: Element, name: string): any;
+  data(ele: Element, name: string, data?: any): any;
+  data(ele: Element | string, name: any = undefined, value: any = undefined) {
     if (!(ele instanceof HTMLElement)) {
       value = name;
       name = ele;
-      ele = document;
+      ele = document as any as Element;
     }
 
     this.trigger('unicorn.data', name, value);
@@ -115,10 +101,12 @@ export default class UnicornApp extends mix(class {}).with(EventMixin) {
     return this;
   }
 
-  removeData(ele, name) {
+  removeData(name: string): any;
+  removeData(ele: Element, name: string): any;
+  removeData(ele: Element|string, name: any = undefined) {
     if (!(ele instanceof HTMLElement)) {
       name = ele;
-      ele = document;
+      ele = document as any as Element;
     }
 
     removeData(ele, name);
@@ -126,15 +114,15 @@ export default class UnicornApp extends mix(class {}).with(EventMixin) {
     return this;
   }
 
-  uri(type) {
+  uri(type: string) {
     return this.data('unicorn.uri')[type];
   }
 
-  asset(type) {
+  asset(type: string) {
     return this.uri('asset')[type];
   }
 
-  wait(callback) {
+  wait(callback: Function): Promise<any> {
     const p = new Promise((resolve, reject) => {
       const promise = callback(resolve, reject);
 
@@ -148,7 +136,7 @@ export default class UnicornApp extends mix(class {}).with(EventMixin) {
     return p;
   }
 
-  completed() {
+  completed(): Promise<any[]> {
     const promise = Promise.all(this.waits);
 
     this.waits = [];
