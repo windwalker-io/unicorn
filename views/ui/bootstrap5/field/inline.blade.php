@@ -35,7 +35,7 @@ $showLabel = $field->getShowLabel() ?? false;
 $i = 0;
 $widths = $field->getWidths();
 
-$inputElement->addClass('c-inline-field d-flex flex-wrap w-100');
+$inputElement->addClass('c-inline-field d-flex flex-wrap gap-3 w-100');
 
 $labelClass = $showLabel ? '' : 'visually-hidden';
 ?>
@@ -49,15 +49,13 @@ $labelClass = $showLabel ? '' : 'visually-hidden';
             $style = 'flex: 1 0 0%;';
         } elseif (is_numeric($w)) {
             $w = 100 / 12 * $w;
-            $style = "flex: 0 0 auto; width: $w%;";
+            $style = "flex: 0 0 auto; width: calc($w% - .5rem);";
         } else {
             $style = "width: $w;";
         }
-
-        $class = $i === 0 ? '' : 'ps-3';
         ?>
         <div class="c-inline-field__column" style="{{ $style }}">
-            <x-field :field="$subField" :class="$class" :label-class="$labelClass"></x-field>
+            <x-field :field="$subField" :label-class="$labelClass"></x-field>
         </div>
         @php($i++)
     @endforeach

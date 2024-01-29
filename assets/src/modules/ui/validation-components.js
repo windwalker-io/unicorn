@@ -86,6 +86,8 @@ export class UnicornFormValidation {
           event.stopPropagation();
           event.preventDefault();
 
+          this.$form.dispatchEvent(new CustomEvent('invalid'));
+
           return false;
         }
 
