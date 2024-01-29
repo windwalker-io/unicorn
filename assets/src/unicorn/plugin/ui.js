@@ -20,6 +20,7 @@ export default class UnicornUI {
     app.clearNotifies = ui.clearNotifies.bind(ui);
 
     app.loadAlpine = ui.loadAlpine.bind(ui);
+    app.initAlpine = ui.initAlpine.bind(ui);
     app.beforeAlpineInit = ui.prepareAlpine.bind(ui);
     app.prepareAlpine = ui.prepareAlpine.bind(ui);
     app.webComponentPolyfill = ui.webComponentPolyfill.bind(ui);
@@ -72,12 +73,29 @@ export default class UnicornUI {
       });
   }
 
+  async initAlpine(directive) {
+    await this.app.loadAlpine();
+
+    u.selectAll(`[${directive}]`, (el) => {
+      const code = el.getAttribute(directive);
+      el.removeAttribute(directive);
+
+      el.setAttribute('x-data', code);
+
+      Alpine.initTree(el);
+    });
+  }
+
   /**
    * Before Alpine init
    * @param {function} callback
    */
   prepareAlpine(callback) {
-    document.addEventListener('alpine:init', callback);
+    if (window.Alpine) {
+      callback();
+    } else {
+      document.addEventListener('alpine:init', callback);
+    }
   }
 
   /**
