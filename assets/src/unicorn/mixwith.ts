@@ -14,11 +14,9 @@ const _appliedMixin = '__mixwith_appliedMixin';
  *     return "Hello";
  *   }
  * }
- *
- * @typedef {Function} MixinFunction
- * @param {Function} superclass
- * @return {Function} A subclass of `superclass`
  */
+
+declare type MixinFunction = <T extends new (...args: any[]) => any>(superclass: T) => T;
 
 /**
  * Applies `mixin` to `superclass`.
@@ -26,7 +24,7 @@ const _appliedMixin = '__mixwith_appliedMixin';
  * `apply` stores a reference from the mixin application to the unwrapped mixin
  * to make `isApplicationOf` and `hasMixin` work.
  *
- * This function is usefull for mixin wrappers that want to automatically enable
+ * This function is useful for mixin wrappers that want to automatically enable
  * {@link hasMixin} support.
  *
  * @example
@@ -44,11 +42,11 @@ const _appliedMixin = '__mixwith_appliedMixin';
  * @param {MixinFunction} mixin The mixin to apply
  * @return {Function} A subclass of `superclass` produced by `mixin`
  */
-const apply = (superclass, mixin) => {
-  let application = mixin(superclass);
+function apply<T extends object>(superclass: T, mixin: MixinFunction): any {
+  const application = mixin(superclass);
   application.prototype[_appliedMixin] = unwrap(mixin);
   return application;
-};
+}
 
 /**
  * Returns `true` iff `proto` is a prototype created by the application of
@@ -63,8 +61,9 @@ const apply = (superclass, mixin) => {
  * @return {boolean} whether `proto` is a prototype created by the application of
  * `mixin` to a superclass
  */
-const isApplicationOf = (proto, mixin) =>
-  proto.hasOwnProperty(_appliedMixin) && proto[_appliedMixin] === unwrap(mixin);
+function isApplicationOf(proto: object, mixin: MixinFunction): boolean {
+  return proto.hasOwnProperty(_appliedMixin) && proto[_appliedMixin] === unwrap(mixin);
+}
 
 /**
  * Returns `true` iff `o` has an application of `mixin` on its prototype
@@ -76,14 +75,13 @@ const isApplicationOf = (proto, mixin) =>
  * @return {boolean} whether `o` has an application of `mixin` on its prototype
  * chain
  */
-const hasMixin = (o, mixin) => {
+function hasMixin(o: object, mixin: MixinFunction): boolean {
   while (o != null) {
     if (isApplicationOf(o, mixin)) return true;
     o = Object.getPrototypeOf(o);
   }
   return false;
 }
-
 
 // used by wrap() and unwrap()
 const _wrappedMixin = '__mixwith_wrappedMixin';
@@ -104,13 +102,13 @@ const _wrappedMixin = '__mixwith_wrappedMixin';
  * @param {MixinFunction} wrapper A function that wraps {@link mixin}
  * @return {MixinFunction} `wrapper`
  */
-const wrap = (mixin, wrapper) => {
+function wrap(mixin: MixinFunction, wrapper: MixinFunction): MixinFunction {
   Object.setPrototypeOf(wrapper, mixin);
   if (!mixin[_wrappedMixin]) {
     mixin[_wrappedMixin] = mixin;
   }
   return wrapper;
-};
+}
 
 /**
  * Unwraps the function `wrapper` to return the original function wrapped by
@@ -121,7 +119,9 @@ const wrap = (mixin, wrapper) => {
  * @param {MixinFunction} wrapper A wrapped mixin produced by {@link wrap}
  * @return {MixinFunction} The originally wrapped mixin
  */
-const unwrap = (wrapper) => wrapper[_wrappedMixin] || wrapper;
+function unwrap(wrapper: MixinFunction): MixinFunction {
+  return wrapper[_wrappedMixin] || wrapper;
+}
 
 const _cachedApplications = '__mixwith_cachedApplications';
 
@@ -139,25 +139,27 @@ const _cachedApplications = '__mixwith_cachedApplications';
  * @param {MixinFunction} mixin The mixin to wrap with caching behavior
  * @return {MixinFunction} a new mixin function
  */
-const Cached = (mixin) => wrap(mixin, (superclass) => {
-  // Get or create a symbol used to look up a previous application of mixin
-  // to the class. This symbol is unique per mixin definition, so a class will have N
-  // applicationRefs if it has had N mixins applied to it. A mixin will have
-  // exactly one _cachedApplicationRef used to store its applications.
+function Cached(mixin: MixinFunction): MixinFunction {
+  return wrap(mixin, (superclass) => {
+    // Get or create a symbol used to look up a previous application of mixin
+    // to the class. This symbol is unique per mixin definition, so a class will have N
+    // applicationRefs if it has had N mixins applied to it. A mixin will have
+    // exactly one _cachedApplicationRef used to store its applications.
 
-  let cachedApplications = superclass[_cachedApplications];
-  if (!cachedApplications) {
-    cachedApplications = superclass[_cachedApplications] = new Map();
-  }
+    let cachedApplications = superclass[_cachedApplications];
+    if (!cachedApplications) {
+      cachedApplications = superclass[_cachedApplications] = new Map();
+    }
 
-  let application = cachedApplications.get(mixin);
-  if (!application) {
-    application = mixin(superclass);
-    cachedApplications.set(mixin, application);
-  }
+    let application = cachedApplications.get(mixin);
+    if (!application) {
+      application = mixin(superclass);
+      cachedApplications.set(mixin, application);
+    }
 
-  return application;
-});
+    return application;
+  });
+}
 
 /**
  * Decorates `mixin` so that it only applies if it's not already on the
@@ -167,10 +169,12 @@ const Cached = (mixin) => wrap(mixin, (superclass) => {
  * @param {MixinFunction} mixin The mixin to wrap with deduplication behavior
  * @return {MixinFunction} a new mixin function
  */
-const DeDupe = (mixin) => wrap(mixin, (superclass) =>
-  (hasMixin(superclass.prototype, mixin))
-    ? superclass
-    : mixin(superclass));
+function DeDupe(mixin: MixinFunction) {
+  return wrap(mixin, (superclass) =>
+    (hasMixin(superclass.prototype, mixin))
+      ? superclass
+      : mixin(superclass));
+}
 
 /**
  * Adds [Symbol.hasInstance] (ES2015 custom instanceof support) to `mixin`.
@@ -179,16 +183,16 @@ const DeDupe = (mixin) => wrap(mixin, (superclass) =>
  * @param {MixinFunction} mixin The mixin to add [Symbol.hasInstance] to
  * @return {MixinFunction} the given mixin function
  */
-const HasInstance = (mixin) => {
+function HasInstance(mixin: MixinFunction): MixinFunction {
   if (Symbol && Symbol.hasInstance && !mixin[Symbol.hasInstance]) {
     Object.defineProperty(mixin, Symbol.hasInstance, {
-      value(o) {
+      value(o: object) {
         return hasMixin(o, mixin);
       },
     });
   }
   return mixin;
-};
+}
 
 /**
  * A basic mixin decorator that applies the mixin with {@link apply} so that it
@@ -199,7 +203,9 @@ const HasInstance = (mixin) => {
  * @param {MixinFunction} mixin The mixin to wrap
  * @return {MixinFunction} a new mixin function
  */
-const BareMixin = (mixin) => wrap(mixin, (s) => apply(s, mixin));
+function BareMixin(mixin: MixinFunction): MixinFunction {
+  return wrap(mixin, (s) => apply(s, mixin));
+}
 
 /**
  * Decorates a mixin function to add deduplication, application caching and
@@ -209,7 +215,9 @@ const BareMixin = (mixin) => wrap(mixin, (s) => apply(s, mixin));
  * @param {MixinFunction} mixin The mixin to wrap
  * @return {MixinFunction} a new mixin function
  */
-export const Mixin = (mixin) => DeDupe(Cached(BareMixin(mixin)));
+export function Mixin(mixin: MixinFunction): MixinFunction {
+  return DeDupe(Cached(BareMixin(mixin)));
+}
 
 /**
  * A fluent interface to apply a list of mixins to a superclass.
@@ -231,12 +239,14 @@ export const Mixin = (mixin) => DeDupe(Cached(BareMixin(mixin)));
  * @param {Function} [superclass=Object]
  * @return {MixinBuilder}
  */
-export const mix = (superclass) => new MixinBuilder(superclass);
+export function mix<T extends object>(superclass: T): MixinBuilder<T> {
+  return new MixinBuilder(superclass);
+}
 
-export class MixinBuilder {
+export class MixinBuilder<T extends object> {
 
-  constructor(superclass) {
-    this.superclass = superclass || class {};
+  constructor(public superclass: T|{}|undefined) {
+    this.superclass = this.superclass || class {};
   }
 
   /**
@@ -245,7 +255,7 @@ export class MixinBuilder {
    * @param {Array.<Mixin>} mixins
    * @return {Function} a subclass of `superclass` with `mixins` applied
    */
-  with(...mixins) {
+  with(...mixins: any[]) {
     return mixins.reduce((c, m) => m(c), this.superclass);
   }
 }
@@ -255,12 +265,12 @@ export class MixinBuilder {
 (function() {
   Object.setPrototypeOf = Object.setPrototypeOf || ({__proto__: []} instanceof Array ? setProtoOf : mixinProperties);
 
-  function setProtoOf(obj, proto) {
+  function setProtoOf(obj: any, proto: any) {
     obj.__proto__ = proto;
     return obj;
   }
 
-  function mixinProperties(obj, proto) {
+  function mixinProperties(obj: any, proto: any) {
     for (const prop in proto) {
       if (!obj.hasOwnProperty(prop)) {
         obj[prop] = proto[prop];

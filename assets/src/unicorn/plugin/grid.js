@@ -1,4 +1,4 @@
-import { defData } from '../utilities.js';
+import { defData } from '../utilities';
 
 /**
  * UnicornGrid

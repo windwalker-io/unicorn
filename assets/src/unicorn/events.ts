@@ -1,4 +1,4 @@
-import { Mixin } from './mixwith.js';
+import { Mixin } from './mixwith';
 
 export const EventMixin = Mixin(function (superclass) {
   return class extends superclass {
@@ -13,7 +13,7 @@ export const EventMixin = Mixin(function (superclass) {
      * @param {function} handler
      * @returns {this}
      */
-    on(event, handler) {
+    on(event: string | string[], handler: Function): this {
       if (Array.isArray(event)) {
         event.forEach(e => this.on(e, handler));
         return this;
@@ -33,13 +33,14 @@ export const EventMixin = Mixin(function (superclass) {
      * @param {function} handler
      * @returns {this}
      */
-    once(event, handler) {
+    once(event: string | string[], handler: Function): this {
       if (Array.isArray(event)) {
         event.forEach(e => this.once(e, handler));
         return this;
       }
 
-      handler._once = true;
+      handler[Symbol.for('once')] = true;
+      // handler._once = true;
 
       this.on(event, handler);
     }
@@ -49,8 +50,8 @@ export const EventMixin = Mixin(function (superclass) {
      * @param {?function} handler
      * @returns {this}
      */
-    off(event, handler = null) {
-      if (handler !== null) {
+    off(event: string, handler: Function | undefined = undefined): this {
+      if (handler != null) {
         this._listeners[event] = this.listeners(event).filter((listener) => listener !== handler);
         return this;
       }
@@ -65,7 +66,7 @@ export const EventMixin = Mixin(function (superclass) {
      * @param {any[]} args
      * @returns {this}
      */
-    trigger(event, ...args) {
+    trigger(event: string | string[], ...args: any[]): this {
       if (Array.isArray(event)) {
         event.forEach(e => this.trigger(e));
         return this;
@@ -76,7 +77,7 @@ export const EventMixin = Mixin(function (superclass) {
       });
 
       // Remove once
-      this._listeners[event] = this.listeners(event).filter((listener) => listener._once !== true);
+      this._listeners[event] = this.listeners(event).filter((listener) => listener[Symbol.for('once')] !== true);
 
       return this;
     }
@@ -85,7 +86,7 @@ export const EventMixin = Mixin(function (superclass) {
      * @param {string} event
      * @returns {Function[]}
      */
-    listeners(event) {
+    listeners(event: string): Function[] {
       if (typeof event !== 'string') {
         throw new Error(`get listeners event name should only use string.`);
       }
@@ -95,4 +96,18 @@ export const EventMixin = Mixin(function (superclass) {
   };
 });
 
-export class EventBus extends EventMixin(class {}) {}
+export class EventBus extends EventMixin(class {
+}) {
+}
+
+export interface EventAwareInterface {
+  on(event: string | string[], handler: Function): this;
+
+  once(event: string | string[], handler: Function): this;
+
+  off(event: string, handler?: Function): this;
+
+  trigger(event: string | string[], ...args: any[]): this;
+
+  listeners(event: string): Function[];
+}

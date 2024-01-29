@@ -1,13 +1,13 @@
 
 import type { UnicornPlugin } from '@/index';
-import { EventMixin } from './events.js';
-import { mix } from './mixwith.js';
+import { type EventAwareInterface, EventMixin } from './events';
+import { mix } from './mixwith';
 import { defaultsDeep } from 'lodash-es';
-import { getData, defData, setData, removeData } from './utilities.js';
+import { getData, defData, setData, removeData } from './utilities';
 
 const defaultOptions: Record<string, any> = {};
 
-export default class UnicornApp extends mix(class {}).with(EventMixin) {
+class UnicornApp extends mix(class {}).with(EventMixin) {
   plugins = {};
   _listeners = {};
   waits = [];
@@ -144,3 +144,9 @@ export default class UnicornApp extends mix(class {}).with(EventMixin) {
     return promise;
   }
 }
+
+interface UnicornApp extends EventAwareInterface {
+  //
+}
+
+export default UnicornApp;

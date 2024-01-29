@@ -1,6 +1,6 @@
 import { defaultsDeep, each } from 'lodash-es';
 import 'sprintf-js';
-import { defData, prepareData } from './../utilities.js';
+import { defData, prepareData } from './../utilities';
 
 const domReady = null;
 const characters ='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';

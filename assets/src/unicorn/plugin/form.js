@@ -1,5 +1,5 @@
 
-import { defData } from '../utilities.js';
+import { defData } from '../utilities';
 import { each } from 'lodash-es';
 
 export default class UnicornForm {

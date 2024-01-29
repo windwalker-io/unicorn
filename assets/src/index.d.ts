@@ -59,9 +59,9 @@ export interface Unicorn extends UnicornApp {
   // alpine2
   $alpine2: UnicornAlpine2;
 
-  // animate.js
+  // animate.ts
   $animate: UnicornAnimate;
-  animate(element: Element|string, styles: { [name: string]: any }, options?: number | KeyframeAnimationOptions): Animation;
+  animate: typeof UnicornAnimate.prototype.to;
 
   // crypto.js
   $crypto: UnicornCrypto;

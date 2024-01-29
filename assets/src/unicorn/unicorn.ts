@@ -1,11 +1,11 @@
 
-export * from './events.js';
-export * from './mixwith.js';
+export * from './events';
+export * from './mixwith';
 
-import './polyfill.js';
+import './polyfill';
 import type { Unicorn } from '../index';
 
-import UnicornAnimate from './plugin/animate.js';
+import UnicornAnimate from './plugin/animate';
 import UnicornCrypto from './plugin/crypto.js';
 import UnicornDirective from './plugin/directive.js';
 import UnicornLang from './plugin/lang.js';
@@ -15,14 +15,14 @@ import UnicornUI from './plugin/ui.js';
 import UnicornGrid from './plugin/grid.js';
 import UnicornForm from './plugin/form.js';
 import UnicornTinymce from './plugin/tinymce.js';
-import UnicornLoader from './plugin/loader.ts';
+import UnicornLoader from './plugin/loader';
 import UnicornHelper from './plugin/helper.js';
 import UnicornHttp from './plugin/http.js';
 import UnicornUri from './plugin/uri.js';
 import UnicornStack from './plugin/stack.js';
 import UnicornQueue from './plugin/queue.js';
-import UnicornAlpine2 from './plugin/alpine2.ts';
-import UnicornApp from './app.ts';
+import UnicornAlpine2 from './plugin/alpine2';
+import UnicornApp from './app';
 
 export function createApp(options = {}) {
   return new UnicornApp(options);

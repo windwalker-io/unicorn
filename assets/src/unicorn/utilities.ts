@@ -1,5 +1,5 @@
 
-export function getData(element, name) {
+export function getData(element: Element, name: string | undefined = undefined) {
   prepareData(element);
 
   if (name === undefined) {
@@ -9,19 +9,19 @@ export function getData(element, name) {
   return element.__unicorn[name];
 }
 
-export function setData(element, name, value) {
+export function setData(element: Element, name: string, value: any) {
   prepareData(element);
   element.__unicorn[name] = value;
 }
 
-export function defData(element, name, defCallback) {
+export function defData(element: Element, name: string, defCallback: Function) {
   prepareData(element);
   element.__unicorn[name] = element.__unicorn[name] || defCallback(element);
 
   return element.__unicorn[name];
 }
 
-export function removeData(element, name) {
+export function removeData(element: Element, name: string) {
   prepareData(element);
 
   const v = element.__unicorn[name];
@@ -30,11 +30,17 @@ export function removeData(element, name) {
   return v;
 }
 
-export function prepareData(element) {
+export function prepareData(element: Element) {
   if (!element) {
     return element;
   }
 
   element.__unicorn = element.__unicorn || {};
   return element;
+}
+
+declare global {
+  interface Element {
+    __unicorn?: any;
+  }
 }
