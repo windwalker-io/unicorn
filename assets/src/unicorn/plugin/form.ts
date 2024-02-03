@@ -1,35 +1,40 @@
-
-import { defData } from '../utilities';
+import type { Unicorn } from '@/index';
 import { each } from 'lodash-es';
+import { defData } from '../utilities';
+
+const defaultOptions = {};
 
 export default class UnicornForm {
   static get is() {
     return 'form';
   }
 
-  static install(app, options = {}) {
-    app.form = (ele = null, options = {}) => {
-      if (ele == null) {
-        return new UnicornFormElement(null, null, options, app);
+  static install(app: Unicorn, options = {}) {
+    app.form = (ele: string | Element | undefined = undefined, options: Record<string, any> = {}) => {
+      if (ele == undefined) {
+        return new UnicornFormElement(app, undefined, undefined, options);
       }
 
-      const selector = typeof ele === 'string' ? ele : null;
-      ele = app.selectOne(ele);
+      const selector = typeof ele === 'string' ? ele : undefined;
+      const el = app.selectOne<HTMLFormElement>(ele as string);
 
-      if (!ele) {
+      if (!el) {
         throw new Error(`Form element of: ${selector} not found.`);
       }
 
       return defData(
-        ele,
+        el,
         'form.plugin',
-        () => new UnicornFormElement(selector, ele, options, app)
+        () => new UnicornFormElement(app, selector, el, options)
       );
     };
   }
 }
 
 export class UnicornFormElement {
+  element: HTMLFormElement | undefined;
+  options: Record<string, any>;
+
   /**
    * Constructor.
    * @param {?string}      selector
@@ -37,14 +42,18 @@ export class UnicornFormElement {
    * @param {Object}      options
    * @param {UnicornApp}  app
    */
-  constructor(selector = null, $form = null, options, app) {
-    this.app = app;
+  constructor(
+    protected app: Unicorn,
+    selector: string | Element | undefined = undefined,
+    $form: HTMLFormElement | undefined = undefined,
+    options: Record<string, any> = {},
+  ) {
 
     // If form not found, create one
     if (!$form) {
       $form = document.createElement('form');
 
-      if (selector && selector.indexOf('#') === 0) {
+      if (typeof selector === 'string' && selector.indexOf('#') === 0) {
         $form.setAttribute('id', selector.substr(1));
         $form.setAttribute('name', selector.substr(1));
       }
@@ -64,7 +73,7 @@ export class UnicornFormElement {
       document.body.appendChild($form);
     }
 
-    options = Object.assign( {}, this.constructor.defaultOptions, options);
+    options = Object.assign({}, defaultOptions, options);
 
     this.element = $form;
     this.options = options;
@@ -95,10 +104,14 @@ export class UnicornFormElement {
       Alpine.store(store, this.useState(custom));
     });
   }
+
   useState(custom = {}) {
-    const state = {};
+    const state: Record<string, any> = {};
     Object.getOwnPropertyNames(Object.getPrototypeOf(this))
-      .map(item => state[item] = this[item].bind(this));
+      .map(item => {
+        // @ts-ignore
+        return state[item] = this[item].bind(this);
+      });
 
     return Object.assign(
       state,
@@ -110,21 +123,16 @@ export class UnicornFormElement {
     return this.element;
   }
 
-  /**
-   * Make a request.
-   *
-   * @param  {?string} url
-   * @param  {?Object} data
-   * @param  {?string} method
-   * @param  {?string} customMethod
-   *
-   * @returns {boolean}
-   */
-  submit(url = null, data = null, method = null, customMethod = null) {
-    const form = this.element;
+  submit(
+    url: string | undefined = undefined,
+    data: Record<string, any> | undefined = undefined,
+    method: string | undefined = undefined,
+    customMethod: string | undefined = undefined
+  ): boolean {
+    const form = this.element!;
 
     if (customMethod) {
-      let methodInput = form.querySelector('input[name="_method"]');
+      let methodInput = form.querySelector<HTMLInputElement>('input[name="_method"]');
 
       if (!methodInput) {
         methodInput = document.createElement('input');
@@ -132,17 +140,17 @@ export class UnicornFormElement {
         methodInput.setAttribute('type', 'hidden');
 
         form.appendChild(methodInput);
+      } else {
+        methodInput.value = customMethod;
       }
-
-      methodInput.value = customMethod;
     }
 
     // Set data into form.
     if (data) {
-      const flatted = this.constructor.flattenObject(data);
+      const flatted = UnicornFormElement.flattenObject(data);
 
-      each(flatted, (value, key) => {
-        const fieldName = this.constructor.buildFieldName(key);
+      each(flatted, (value: any, key: string) => {
+        const fieldName = UnicornFormElement.buildFieldName(key);
         this.injectInput(fieldName, value);
       });
     }
@@ -161,8 +169,8 @@ export class UnicornFormElement {
     return true;
   }
 
-  injectInput(name, value) {
-    let input = this.element.querySelector(`input[name="${name}"]`);
+  injectInput(name: string, value: any) {
+    let input = this.element!.querySelector<HTMLInputElement>(`input[name="${name}"]`);
 
     if (!input) {
       input = document.createElement('input');
@@ -170,7 +178,7 @@ export class UnicornFormElement {
       input.setAttribute('type', 'hidden');
       input.setAttribute('data-role', 'temp-input');
 
-      this.element.appendChild(input);
+      this.element!.appendChild(input);
     }
 
     input.value = value;
@@ -179,27 +187,23 @@ export class UnicornFormElement {
 
   /**
    * Make a GET request.
-   *
-   * @param  {?string} url
-   * @param  {?Object} data
-   * @param  {?string} customMethod
-   *
-   * @returns {boolean}
    */
-  get(url = null, data = null, customMethod = null) {
+  get(
+    url: string | undefined = undefined,
+    data: Record<string, any>|undefined = undefined,
+    customMethod: string | undefined = undefined
+  ): boolean {
     return this.submit(url, data, 'GET', customMethod);
   }
 
   /**
    * Post form.
-   *
-   * @param  {?string} url
-   * @param  {?Object} data
-   * @param  {?string} customMethod
-   *
-   * @returns {boolean}
    */
-  post(url = null, data = null, customMethod = null) {
+  post(
+    url: string | undefined = undefined,
+    data: Record<string, any>|undefined = undefined,
+    customMethod: string | undefined = undefined
+  ) {
     customMethod = customMethod || 'POST';
 
     return this.submit(url, data, 'POST', customMethod);
@@ -207,37 +211,31 @@ export class UnicornFormElement {
 
   /**
    * Make a PUT request.
-   *
-   * @param  {?string} url
-   * @param  {?Object} data
-   *
-   * @returns {boolean}
    */
-  put(url = null, data = null) {
+  put(
+    url: string | undefined = undefined,
+    data: Record<string, any>|undefined = undefined,
+  ) {
     return this.post(url, data, 'PUT');
   }
 
   /**
    * Make a PATCH request.
-   *
-   * @param  {?string} url
-   * @param  {?Object} data
-   *
-   * @returns {boolean}
    */
-  patch(url = null, data = null) {
+  patch(
+    url: string | undefined = undefined,
+    data: Record<string, any>|undefined = undefined,
+  ) {
     return this.post(url, data, 'PATCH');
   }
 
   /**
    * Make a DELETE request.
-   *
-   * @param  {?string} url
-   * @param  {?Object} data
-   *
-   * @returns {boolean}
    */
-  delete(url = null, data = null) {
+  delete(
+    url: string | undefined = undefined,
+    data: Record<string, any>|undefined = undefined,
+  ) {
     return this.post(url, data, 'DELETE');
   }
 
@@ -247,8 +245,8 @@ export class UnicornFormElement {
    * @param {Object} ob
    * @returns {Object}
    */
-  static flattenObject(ob) {
-    const toReturn = {};
+  static flattenObject(ob: Record<string, any>) {
+    const toReturn: Record<string, any> = {};
 
     for (let i in ob) {
       if (!ob.hasOwnProperty(i)) {
@@ -272,7 +270,7 @@ export class UnicornFormElement {
     return toReturn;
   }
 
-  static buildFieldName(field) {
+  static buildFieldName(field: string) {
     const names = field.split('/');
 
     const first = names.shift();

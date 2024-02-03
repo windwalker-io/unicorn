@@ -5,24 +5,24 @@ export * from './mixwith';
 import './polyfill';
 import type { Unicorn } from '../index';
 
+import UnicornApp from './app';
 import UnicornAnimate from './plugin/animate';
-import UnicornCrypto from './plugin/crypto.js';
-import UnicornDirective from './plugin/directive.js';
+import UnicornCrypto from './plugin/crypto';
+import UnicornDirective from './plugin/directive';
+import UnicornForm from './plugin/form';
 import UnicornLang from './plugin/lang.js';
 import UnicornValidation from './plugin/validation.js';
 import UnicornRouter from './plugin/router.js';
 import UnicornUI from './plugin/ui.js';
 import UnicornGrid from './plugin/grid.js';
-import UnicornForm from './plugin/form.js';
 import UnicornTinymce from './plugin/tinymce.js';
 import UnicornLoader from './plugin/loader';
-import UnicornHelper from './plugin/helper.js';
+import UnicornHelper from './plugin/helper';
 import UnicornHttp from './plugin/http.js';
 import UnicornUri from './plugin/uri.js';
 import UnicornStack from './plugin/stack.js';
 import UnicornQueue from './plugin/queue.js';
 import UnicornAlpine2 from './plugin/alpine2';
-import UnicornApp from './app';
 
 export function createApp(options = {}) {
   return new UnicornApp(options);
@@ -36,7 +36,7 @@ export function noConflict() {
   return uni;
 }
 
-const u = createApp() as Unicorn;
+const u = createApp();
 
 window.u = u;
 

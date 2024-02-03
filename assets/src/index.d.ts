@@ -5,7 +5,7 @@ import { getInstance } from './modules/aws/s3-uploader';
 import { UIBootstrap5 } from './modules/ui/ui-bootstrap5';
 import { UnicornFormValidation, UnicornFieldValidation } from './modules/ui/validation-components';
 import { EventMixin } from './unicorn/events';
-import UnicornApp from './unicorn/app.js';
+import UnicornApp from './unicorn/app';
 import { MixinBuilder, Mixin } from './unicorn/mixwith';
 import UnicornAnimate from './unicorn/plugin/animate';
 import UnicornCrypto from './unicorn/plugin/crypto';
@@ -120,15 +120,15 @@ export interface Unicorn extends UnicornApp {
   // helper.js
   $helper: UnicornHelper;
   domready(callback?: () => any): Promise<any>;
-  selectOne<E extends Element = Element>(ele: string): E|null;
-  selectOne<E extends Element = Element>(ele: E): E;
-  selectOne<K extends keyof HTMLElementTagNameMap>(ele: K): HTMLElementTagNameMap[K]|null;
-  selectOne<E extends Element = Element>(ele: string|E): E|null;
-  selectOne(ele: string): Element;
-  selectAll<E extends Element = Element>(ele: string, callback?: ((ele: E) => any)): NodeListOf<E>;
-  selectAll<E extends Element = Element>(ele: NodeListOf<E>|E[], callback?: ((ele: E) => any)): E[];
-  selectAll<E extends keyof HTMLElementTagNameMap>(ele: E, callback?: ((ele: HTMLElementTagNameMap[E]) => any)): HTMLElementTagNameMap[E][];
-  selectAll(ele: string, callback?: ((ele: Element) => any)): Element[];
+  // selectOne<E extends Element = Element>(ele: string): E|null;
+  // selectOne<E extends Element = Element>(ele: E): E;
+  // selectOne<K extends keyof HTMLElementTagNameMap>(ele: K): HTMLElementTagNameMap[K]|null;
+  // selectOne<E extends Element = Element>(ele: string|E): E|null;
+  // selectOne(ele: string): Element;
+  // selectAll<E extends Element = Element>(ele: string, callback?: ((ele: E) => any)): NodeListOf<E>;
+  // selectAll<E extends Element = Element>(ele: NodeListOf<E>|E[], callback?: ((ele: E) => any)): E[];
+  // selectAll<E extends keyof HTMLElementTagNameMap>(ele: E, callback?: ((ele: HTMLElementTagNameMap[E]) => any)): HTMLElementTagNameMap[E][];
+  // selectAll(ele: string, callback?: ((ele: Element) => any)): Element[];
   each(collection: any, iteratee: (item: any, i: number|string) => void): void;
   getBoundedInstance<M, E extends Element = Element>(selector: E, name: string, callback?: ((ele: E) => M)): M;
   getBoundedInstance<M, E extends keyof HTMLElementTagNameMap>(selector: E, name: string, callback?: ((ele: HTMLElementTagNameMap[E]) => M)): M;
@@ -178,22 +178,6 @@ export interface UnicornPlugin {
   install?(app: UnicornApp, options?: any): void;
   uninstall?(app: UnicornApp, options?: any): void;
 }
-
-// Directive
-export interface UnicornDirectiveHandler {
-  mounted?: UnicornDirectiveHandlerHook;
-  unmounted?: UnicornDirectiveHandlerHook;
-  updated?: UnicornDirectiveHandlerHook;
-}
-
-export type UnicornDirectiveHandlerHook = (node: Element, bindings: {
-  directive: string;
-  node: Element;
-  value: any;
-  oldValue: any;
-  mutation: MutationRecord;
-  dir: UnicornDirectiveHandler;
-}) => void
 
 // Validation
 export interface Validator {

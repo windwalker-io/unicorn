@@ -51,6 +51,7 @@
     "@babel/plugin-proposal-optional-chaining": "^7.13.12",
     "@babel/preset-env": "^7.13.12",
     "@ryangjchandler/spruce": "^2.0",
+    "@types/lodash-es": "^4.17.12",
     "@vue/compiler-sfc": "^3.1.1",
     "@vue/reactivity": "^3.3.7",
     "@windwalker-io/fusion": "^1.0",

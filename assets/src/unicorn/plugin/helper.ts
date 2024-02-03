@@ -1,3 +1,4 @@
+import type { Unicorn } from '@/index';
 import { defaultsDeep, each } from 'lodash-es';
 import 'sprintf-js';
 import { defData, prepareData } from './../utilities';
@@ -10,7 +11,7 @@ export default class UnicornHelper {
     return 'helper';
   }
 
-  static install(app, options = {}) {
+  static install(app: Unicorn, options = {}) {
     const helper = app.$helper = new this(app);
 
     app.domready = helper.domready.bind(helper);
@@ -37,24 +38,21 @@ export default class UnicornHelper {
     app.defaultsDeep = helper.defaultsDeep;
   }
 
-  constructor(app) {
-    this.app = app;
+  constructor(protected app: Unicorn) {
+    //
   }
 
   /**
    * @see https://stackoverflow.com/a/9899701
-   * @param {Function} callback
-   *
-   * @return {Promise}
    */
-  domready(callback = null) {
-    let promise = domReady || new Promise((resolve) => {
+  domready(callback: ((value: any) => void) | undefined = undefined): Promise<void> {
+    let promise: Promise<void> = domReady || new Promise<void>((resolve) => {
       // see if DOM is already available
       if (document.readyState === 'complete' || document.readyState === 'interactive') {
         // call on next available tick
         setTimeout(resolve, 0);
       } else {
-        document.addEventListener('DOMContentLoaded', resolve);
+        document.addEventListener('DOMContentLoaded', () => resolve());
       }
     });
 
@@ -65,38 +63,48 @@ export default class UnicornHelper {
     return promise;
   }
 
-  /**
-   * @param {Element|string} ele
-   * @returns {Element|null}
-   */
-  selectOne(ele) {
+  selectOne<E extends Element = Element>(ele: string): E|null;
+  selectOne<E extends Element = Element>(ele: E): E;
+  selectOne<K extends keyof HTMLElementTagNameMap>(ele: K): HTMLElementTagNameMap[K]|null;
+  selectOne<E extends Element = Element>(ele: string|E): E|null;
+  selectOne(ele: string): Element;
+  selectOne(ele: Element | string): Element | null {
+    let r: Element|null;
+
     if (typeof ele === 'string') {
-      ele = document.querySelector(ele);
+      r = document.querySelector(ele);
+    } else {
+      r = ele;
     }
 
-    return prepareData(ele);
+    if (!r) {
+      return r;
+    }
+
+    return prepareData(r);
   }
 
-  /**
-   * @param {NodeListOf<Element>|string} ele
-   * @param {Function} callback
-   * @returns {Element[]|NodeListOf<Element>}
-   */
-  selectAll(ele, callback) {
+  selectAll<E extends Element = Element>(ele: string, callback?: ((ele: E) => any)): NodeListOf<E>;
+  selectAll<E extends Element = Element>(ele: NodeListOf<E>|E[], callback?: ((ele: E) => any)): E[];
+  selectAll<E extends keyof HTMLElementTagNameMap>(ele: E, callback?: ((ele: HTMLElementTagNameMap[E]) => any)): HTMLElementTagNameMap[E][];
+  selectAll(ele: string, callback?: ((ele: Element) => any)): Element[];
+  selectAll(ele: NodeListOf<Element> | Element[] | string, callback: ((el: Element) => any) | undefined = undefined): Element[]|NodeListOf<Element> {
     if (typeof ele === 'string') {
       ele = document.querySelectorAll(ele);
     }
 
-    const resultSet = [].slice.call(ele);
+    const resultSet: Element[] = [].slice.call(ele);
 
     if (callback) {
-      return resultSet.map(callback);
+      return resultSet.map((el) => {
+        return callback(el) || el;
+      });
     }
 
     return resultSet;
   }
 
-  each(collection, iteratee) {
+  each(collection: any, iteratee: (item: any, i: number|string) => void) {
     return each(collection, iteratee);
   }
 
