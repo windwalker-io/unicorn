@@ -165,12 +165,7 @@ export default class UnicornHelper {
     return div.children[0];
   }
 
-  /**
-   * @param {*} obj
-   * @param {string} path
-   * @returns {*}
-   */
-  get(obj, path) {
+  get(obj: Record<string, any>, path: string): any {
     const keys = Array.isArray(path) ? path : path.split('.');
 
     for (let i = 0; i < keys.length; i++) {
@@ -187,13 +182,7 @@ export default class UnicornHelper {
     return obj;
   }
 
-  /**
-   * @param {*} obj
-   * @param {string} path
-   * @param {*} value
-   * @returns {*}
-   */
-  set(obj, path, value) {
+  set<SetValue = any>(obj: Record<string, any>, path: string, value: SetValue): SetValue {
     const keys = Array.isArray(path) ? path : path.split('.');
     let i;
 
@@ -223,7 +212,7 @@ export default class UnicornHelper {
    * @param { (e: Event) => void } callback
    * @returns {(function(): void)}
    */
-  delegate(wrapper, selector, eventName, callback) {
+  delegate(wrapper: Element | string, selector: Element | string, eventName: string, callback: (e: Event) => void) {
     if (typeof selector === 'undefined' || selector === '') {
       throw new Error('The provided selector is empty.');
     }
@@ -232,12 +221,12 @@ export default class UnicornHelper {
       throw new Error('Please specify an callback.');
     }
 
-    const delegationSelectorsMap = {};
+    const delegationSelectorsMap: Record<string, Function[]> = {};
 
-    wrapper = this.app.selectOne(wrapper);
+    wrapper = this.selectOne(wrapper);
 
     wrapper.addEventListener(eventName, function (event) {
-      let element = event.target;
+      let element = event.target as Element;
       let forceBreak = false;
 
       while (element && element !== wrapper) {
