@@ -4,7 +4,7 @@ import 'sprintf-js';
 import { defData, prepareData } from './../utilities';
 
 const domReady = null;
-const characters ='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
 export default class UnicornHelper {
   static get is() {
@@ -63,13 +63,13 @@ export default class UnicornHelper {
     return promise;
   }
 
-  selectOne<E extends Element = Element>(ele: string): E|null;
+  selectOne<E extends Element = Element>(ele: string): E | null;
   selectOne<E extends Element = Element>(ele: E): E;
-  selectOne<K extends keyof HTMLElementTagNameMap>(ele: K): HTMLElementTagNameMap[K]|null;
-  selectOne<E extends Element = Element>(ele: string|E): E|null;
+  selectOne<K extends keyof HTMLElementTagNameMap>(ele: K): HTMLElementTagNameMap[K] | null;
+  selectOne<E extends Element = Element>(ele: string | E): E | null;
   selectOne(ele: string): Element;
   selectOne(ele: Element | string): Element | null {
-    let r: Element|null;
+    let r: Element | null;
 
     if (typeof ele === 'string') {
       r = document.querySelector(ele);
@@ -85,10 +85,13 @@ export default class UnicornHelper {
   }
 
   selectAll<E extends Element = Element>(ele: string, callback?: ((ele: E) => any)): NodeListOf<E>;
-  selectAll<E extends Element = Element>(ele: NodeListOf<E>|E[], callback?: ((ele: E) => any)): E[];
-  selectAll<E extends keyof HTMLElementTagNameMap>(ele: E, callback?: ((ele: HTMLElementTagNameMap[E]) => any)): HTMLElementTagNameMap[E][];
+  selectAll<E extends Element = Element>(ele: NodeListOf<E> | E[], callback?: ((ele: E) => any)): E[];
+  selectAll<E extends Element = Element>(ele: string | NodeListOf<E> | E[], callback?: ((ele: E) => any)): E[];
+  selectAll<E extends keyof HTMLElementTagNameMap>(ele: E,
+                                                   callback?: ((ele: HTMLElementTagNameMap[E]) => any)): HTMLElementTagNameMap[E][];
   selectAll(ele: string, callback?: ((ele: Element) => any)): Element[];
-  selectAll(ele: NodeListOf<Element> | Element[] | string, callback: ((el: Element) => any) | undefined = undefined): Element[]|NodeListOf<Element> {
+  selectAll(ele: NodeListOf<Element> | Element[] | string,
+            callback: ((el: Element) => any) | undefined = undefined): Element[] | NodeListOf<Element> {
     if (typeof ele === 'string') {
       ele = document.querySelectorAll(ele);
     }
@@ -104,17 +107,11 @@ export default class UnicornHelper {
     return resultSet;
   }
 
-  each(collection: any, iteratee: (item: any, i: number|string) => void) {
+  each(collection: any, iteratee: (item: any, i: number | string) => void) {
     return each(collection, iteratee);
   }
 
-  /**
-   * @param {string|Element} selector
-   * @param {string} name
-   * @param { (ele: Element) => any } callback
-   * @returns {*}
-   */
-  getBoundedInstance(selector, name, callback = () => null) {
+  getBoundedInstance(selector: string | Element, name: string, callback: ((el: Element) => any) = () => null): any {
     const element = this.selectOne(selector);
 
     if (!element) {
@@ -124,37 +121,29 @@ export default class UnicornHelper {
     return defData(element, name, callback);
   }
 
-  /**
-   * @param {string|NodeListOf<Element>} selector
-   * @param {string} name
-   * @param { (ele: Element) => any } callback
-   * @returns {*}
-   */
-  getBoundedInstanceList(selector, name, callback = () => null) {
-    return this.app.selectAll(selector, (ele) => {
+  getBoundedInstanceList(
+    selector: string | NodeListOf<Element>,
+    name: string,
+    callback: ((el: Element) => any) = () => null
+  ) {
+    return this.selectAll(selector, (ele) => {
       return this.getBoundedInstance(ele, name, callback);
     });
   }
 
-  module(ele, name, callback = () => null) {
+  module(ele: string | Element | NodeListOf<Element>, name: string, callback: ((el: Element) => any) = () => null) {
     if (typeof ele === 'string') {
       return this.getBoundedInstanceList(ele, name, callback);
     }
 
-    if (ele instanceof HTMLElement) {
+    if (ele instanceof Element) {
       return this.getBoundedInstance(ele, name, callback);
     }
 
     return this.getBoundedInstanceList(ele, name, callback);
   }
 
-  /**
-   * @param {string} element
-   * @param {{ [name: string]: any }} attrs
-   * @param {string|Element} content
-   * @returns {Element}
-   */
-  h(element, attrs = {}, content = null) {
+  h(element: string, attrs: Record<string, any> = {}, content: any = undefined): HTMLElement {
     const ele = document.createElement(element);
 
     for (let i in attrs) {
@@ -170,11 +159,7 @@ export default class UnicornHelper {
     return ele;
   }
 
-  /**
-   * @param {string} html
-   * @returns {Element}
-   */
-  html(html) {
+  html(html: string): Element {
     const div = document.createElement('div');
     div.innerHTML = html;
     return div.children[0];
@@ -314,7 +299,7 @@ export default class UnicornHelper {
    */
   debounce(handler, wait = 1) {
     let timer, result;
-    return function(...args) {
+    return function (...args) {
       clearTimeout(timer);
       timer = setTimeout(() => result = handler.call(this, ...args), wait);
       return result;
@@ -328,7 +313,7 @@ export default class UnicornHelper {
    */
   throttle(handler, wait = 1) {
     let timer, result;
-    return function(...args) {
+    return function (...args) {
       if (!timer) {
         return result = handler.call(this, ...args);
       }
@@ -374,7 +359,8 @@ export default class UnicornHelper {
     return Promise.resolve(true);
   }
 
-  nextTick(callback = () => {}) {
+  nextTick(callback = () => {
+  }) {
     return Promise.resolve().then(callback);
   }
 
