@@ -23,6 +23,12 @@ class StateButtonComponent extends AbstractComponent
     public mixed $value = '';
 
     #[Prop]
+    public mixed $id = null;
+
+    #[Prop]
+    public ?int $row = null;
+
+    #[Prop]
     public StateButton|WorkflowController|array $states;
 
     #[Prop]
