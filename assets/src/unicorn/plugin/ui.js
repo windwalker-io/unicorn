@@ -244,7 +244,7 @@ export default class UnicornUI {
 
               const t = new UnicornTomSelect(ele, options);
 
-              ele.addEventListener('list.updated', () => {
+              ele.addEventListener('list:updated', () => {
                 t.syncOptionsWithoutKeepSelected();
               });
 
