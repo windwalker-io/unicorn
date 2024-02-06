@@ -76,25 +76,25 @@ $color = \Windwalker\Utilities\Str::ensureLeft($state->getColor(), 'text-');
         @if (!empty($state->getOnclick()))
             @if (is_callable($state->getOnclick()))
                 onclick="{{ $state->getOnclick()($value, $state, $options) }}"
-        @else
-            onclick="{!! $state->getOnclick() !!}"
-        @endif
+            @else
+                onclick="{!! $state->getOnclick() !!}"
+            @endif
         @elseif ($state->getHref())
             @if (is_callable($state->getHref()))
                 onclick="{{ $state->getHref()($value, $state, $options) }}"
-        @else
-            onclick="location.href = '{{ $state->getHref() }}'"
-        @endif
+            @else
+                onclick="location.href = '{{ $state->getHref() }}'"
+           @endif
         @elseif ($state->getTask())
             @if (is_callable($state->getTask()))
                 @click="{{ $state->getTask()($value, $state, $options) }}"
-        @else
-            @if ($row ?? null)
-                @click="$store.{{ $store }}.updateRowByTask('{{ $state->getTask() }}', '{{ $row }}')"
-        @elseif ($id ?? null)
-            @click="$store.{{ $store }}.updateItemByTask('{{ $state->getTask() }}', '{{ $id }}')"
-        @endif
-        @endif
+            @else
+                @if ($row ?? null)
+                    @click="$store.{{ $store }}.updateRowByTask('{{ $state->getTask() }}', '{{ $row }}')"
+                @elseif ($id ?? null)
+                    @click="$store.{{ $store }}.updateItemByTask('{{ $state->getTask() }}', '{{ $id }}')"
+                @endif
+            @endif
         @endif
     >
         <span class="c-state-button__icon {{ $color }} {{ $state->getIcon() }}"></span>
