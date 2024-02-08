@@ -23,8 +23,8 @@ export default class UnicornHelper {
     app.module = helper.module.bind(helper);
     app.h = helper.h;
     app.html = helper.html;
-    app.$get = helper.$get;
-    app.$set = helper.$set;
+    app.$get = helper.get;
+    app.$set = helper.set;
     app.delegate = helper.delegate.bind(helper);
     app.debounce = helper.debounce.bind(helper);
     app.throttle = helper.throttle.bind(helper);
@@ -143,6 +143,7 @@ export default class UnicornHelper {
     return this.getBoundedInstanceList(ele, name, callback);
   }
 
+  h<T extends keyof HTMLElementTagNameMap>(element: T, attrs?: Record<string, any>, content?: any): HTMLElementTagNameMap[T]
   h(element: string, attrs: Record<string, any> = {}, content: any = undefined): HTMLElement {
     const ele = document.createElement(element);
 
@@ -167,19 +168,20 @@ export default class UnicornHelper {
 
   get(obj: Record<string, any>, path: string): any {
     const keys = Array.isArray(path) ? path : path.split('.');
+    let data: typeof obj | undefined = obj;
 
     for (let i = 0; i < keys.length; i++) {
       const key = keys[i];
 
-      if (!obj || !obj.hasOwnProperty(key)) {
-        obj = undefined;
+      if (!data || !data.hasOwnProperty(key)) {
+        data = undefined;
         break;
       }
 
-      obj = obj[key];
+      data = data[key];
     }
 
-    return obj;
+    return data;
   }
 
   set<SetValue = any>(obj: Record<string, any>, path: string, value: SetValue): SetValue {
@@ -207,12 +209,12 @@ export default class UnicornHelper {
    * @see https://gist.github.com/iagobruno/4db2ed62dc40fa841bb9a5c7de92f5f8
    *
    * @param {Element|string} wrapper
-   * @param {Element|string} selector
+   * @param {string} selector
    * @param {string} eventName
    * @param { (e: Event) => void } callback
    * @returns {(function(): void)}
    */
-  delegate(wrapper: Element | string, selector: Element | string, eventName: string, callback: (e: Event) => void) {
+  delegate(wrapper: Element | string, selector: string, eventName: string, callback: (e: Event) => void) {
     if (typeof selector === 'undefined' || selector === '') {
       throw new Error('The provided selector is empty.');
     }
@@ -223,13 +225,13 @@ export default class UnicornHelper {
 
     const delegationSelectorsMap: Record<string, Function[]> = {};
 
-    wrapper = this.selectOne(wrapper);
+    const wrapperElement = this.selectOne(wrapper);
 
-    wrapper.addEventListener(eventName, function (event) {
-      let element = event.target as Element;
+    wrapperElement?.addEventListener(eventName, function (event) {
+      let element: HTMLElement | null = event.target as HTMLElement;
       let forceBreak = false;
 
-      while (element && element !== wrapper) {
+      while (element && element !== wrapperElement) {
         for (const selector in delegationSelectorsMap) {
           if (element.matches(selector)) {
             event.stopPropagation = function () {
@@ -281,14 +283,9 @@ export default class UnicornHelper {
     };
   }
 
-  /**
-   * @param {Function} handler
-   * @param {number} wait
-   * @returns {Function}
-   */
-  debounce(handler, wait = 1) {
-    let timer, result;
-    return function (...args) {
+  debounce(handler: Function, wait = 1) {
+    let timer: number, result: any;
+    return function (this: any, ...args: any[]) {
       clearTimeout(timer);
       timer = setTimeout(() => result = handler.call(this, ...args), wait);
       return result;
@@ -300,9 +297,9 @@ export default class UnicornHelper {
    * @param {number} wait
    * @returns {Function}
    */
-  throttle(handler, wait = 1) {
-    let timer, result;
-    return function (...args) {
+  throttle(handler: Function, wait = 1) {
+    let timer: number | undefined, result: any;
+    return function (this: any, ...args: any[]) {
       if (!timer) {
         return result = handler.call(this, ...args);
       }
@@ -317,14 +314,7 @@ export default class UnicornHelper {
     return Boolean(this.app.data('windwalker.debug'));
   }
 
-  /**
-   * Confirm popup.
-   *
-   * @param {string}   message
-   *
-   * @return {Promise}
-   */
-  confirm(message) {
+  confirm(message: string): Promise<any> {
     message = message || 'Are you sure?';
 
     return new Promise((resolve) => {
@@ -338,7 +328,7 @@ export default class UnicornHelper {
    * @param {string} type
    * @returns {Promise<boolean>}
    */
-  alert(title, text = '', type = 'info') {
+  alert(title: string, text = '', type = 'info') {
     if (text) {
       title += ' | ' + text;
     }
@@ -348,12 +338,11 @@ export default class UnicornHelper {
     return Promise.resolve(true);
   }
 
-  nextTick(callback = () => {
-  }) {
+  nextTick(callback = () => {}) {
     return Promise.resolve().then(callback);
   }
 
-  addUriBase(uri, type = 'path') {
+  addUriBase(uri: string, type = 'path') {
     if (uri.substr(0, 2) === '/\/' || uri.substr(0, 4) === 'http') {
       return uri;
     }
@@ -370,7 +359,7 @@ export default class UnicornHelper {
    * @param {string}        thousandsSep
    * @returns {string}
    */
-  numberFormat(number, decimals = 0, decPoint = '.', thousandsSep = ',') {
+  numberFormat(number: string | number, decimals = 0, decPoint = '.', thousandsSep = ',') {
     number = Number(number);
 
     const str = number.toFixed(decimals ? decimals : 0).toString().split('.');
@@ -390,7 +379,7 @@ export default class UnicornHelper {
    * @param {number} length
    * @returns {string}
    */
-  genRandomString(length) {
+  genRandomString(length: number): string {
     let result = '';
     const charactersLength = characters.length;
 
@@ -401,7 +390,7 @@ export default class UnicornHelper {
     return result;
   }
 
-  defaultsDeep(...args) {
+  defaultsDeep(...args: any[]) {
     return defaultsDeep(...args);
   }
 }
