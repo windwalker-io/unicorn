@@ -1,5 +1,6 @@
 
 import type UnicornAlpine2 from '@/unicorn/plugin/alpine2';
+import type UnicornHttp from '@/unicorn/plugin/http';
 import { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { getInstance } from './modules/aws/s3-uploader';
 import { UIBootstrap5 } from './modules/ui/ui-bootstrap5';
@@ -119,7 +120,7 @@ export interface Unicorn extends UnicornApp {
 
   // helper.js
   $helper: UnicornHelper;
-  domready(callback?: () => any): Promise<any>;
+  domready: (callback?: () => any) => Promise<any>;
   selectOne: typeof UnicornHelper.prototype.selectOne;
   selectAll: typeof UnicornHelper.prototype.selectAll;
   // selectOne<E extends Element = Element>(ele: E): E;
@@ -205,21 +206,21 @@ export type UnicornHttpOptions = AxiosRequestConfig | {
   vars?: Record<string, any>;
 };
 
-export interface UnicornHttp {
-  axios: AxiosInstance;
-  createHttp(): Promise<AxiosInstance>;
-  getHttp(): Promise<AxiosInstance>;
-  prepareAxios(axios: AxiosInstance): void;
-  requestMiddleware(callback: (config: UnicornHttpOptions) => AxiosRequestConfig): void;
-  get(url: string, options?: UnicornHttpOptions): Promise<AxiosResponse>;
-  post(url: string, data?: any, options?: UnicornHttpOptions): Promise<AxiosResponse>;
-  put(url: string, data?: any, options?: UnicornHttpOptions): Promise<AxiosResponse>;
-  patch(url: string, data?: any, options?: UnicornHttpOptions): Promise<AxiosResponse>;
-  delete(url: string, data?: any, options?: UnicornHttpOptions): Promise<AxiosResponse>;
-  head(url: string, options?: UnicornHttpOptions): Promise<AxiosResponse>;
-  options(url: string, options?: UnicornHttpOptions): Promise<AxiosResponse>;
-  request(options: UnicornHttpOptions): Promise<AxiosResponse>;
-}
+// export interface UnicornHttp {
+//   axios: AxiosInstance;
+//   createHttp(): Promise<AxiosInstance>;
+//   getHttp(): Promise<AxiosInstance>;
+//   prepareAxios(axios: AxiosInstance): void;
+//   requestMiddleware(callback: (config: UnicornHttpOptions) => AxiosRequestConfig): void;
+//   get(url: string, options?: UnicornHttpOptions): Promise<AxiosResponse>;
+//   post(url: string, data?: any, options?: UnicornHttpOptions): Promise<AxiosResponse>;
+//   put(url: string, data?: any, options?: UnicornHttpOptions): Promise<AxiosResponse>;
+//   patch(url: string, data?: any, options?: UnicornHttpOptions): Promise<AxiosResponse>;
+//   delete(url: string, data?: any, options?: UnicornHttpOptions): Promise<AxiosResponse>;
+//   head(url: string, options?: UnicornHttpOptions): Promise<AxiosResponse>;
+//   options(url: string, options?: UnicornHttpOptions): Promise<AxiosResponse>;
+//   request(options: UnicornHttpOptions): Promise<AxiosResponse>;
+// }
 
 // Uri
 export interface UnicornUriExtended {

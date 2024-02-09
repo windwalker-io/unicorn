@@ -4,7 +4,7 @@
     ],
     "include": [
         "./src/types/**/*.ts",
-        "./src/unicorn/*.d.ts"
+        "./src/unicorn/types/*.d.ts"
     ],
     "exclude": [
         "node_modules/**/*"

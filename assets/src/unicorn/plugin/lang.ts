@@ -1,37 +1,27 @@
+import type { Unicorn } from '@/index';
 
 export default class UnicornLang {
-  keys = {};
-
   static get is() { return 'lang'; }
 
-  static install(app, options = {}) {
+  static install(app: Unicorn) {
     const $lang = app.$lang = new this(app);
 
     app.__ = $lang.__.bind($lang);
     app.trans = $lang.trans.bind($lang);
   }
 
-  constructor(app) {
-    this.app = app;
+  constructor(protected app: Unicorn) {
+    //
   }
 
-  /**
-   * @param {string} text
-   * @param {Array}  args
-   * @returns {string}
-   */
-  __(text, ...args) {
+  __(text: string, ...args: any[]): string {
     return this.trans(text, ...args);
   }
 
   /**
    * Translate a string.
-   *
-   * @param {string} text
-   * @param {Array}  args
-   * @returns {string}
    */
-  trans(text, ...args) {
+  trans(text: string, ...args: any[]): string {
     const key = this.normalize(text);
 
     let translated = this.find(key) || '';
@@ -45,20 +35,16 @@ export default class UnicornLang {
 
   /**
    * Sptintf language string.
-   * @param {string} text
-   * @param {Array} args
    */
-  sprintf(text, ...args) {
+  sprintf(text: string, ...args: any[]): string {
     return this.app.vsprintf(text, args);
   }
 
   /**
    * Find text.
-   * @param {string} key
-   * @returns {string|null}
    */
-  find(key) {
-    const langs = this.app.data('unicorn.languages') || {};
+  find(key: string): string | null {
+    const langs = this.getStrings();
 
     if (langs[key]) {
       return langs[key];
@@ -69,25 +55,18 @@ export default class UnicornLang {
 
   /**
    * Has language key.
-   * @param {string} key
-   * @returns {boolean}
    */
-  has(key) {
-    const langs = this.app.data('unicorn.languages');
+  has(key: string): boolean {
+    const langs = this.getStrings();
 
     return langs[key] !== undefined;
   }
 
   /**
    * Add language key.
-   *
-   * @param {string} key
-   * @param {string} value
-   *
-   * @return {this}
    */
-  add(key, value) {
-    const data = this.app.data('unicorn.languages') || {};
+  add(key: string, value: string): this {
+    const data = this.getStrings();
 
     data[this.normalize(key)] = value;
 
@@ -98,21 +77,12 @@ export default class UnicornLang {
 
   /**
    * Replace all symbols to dot(.).
-   *
-   * @param {string} text
-   *
-   * @return {string}
    */
-  normalize(text) {
+  normalize(text: string): string {
     return text.replace(/[^A-Z0-9]+/ig, '.');
   }
 
-  /**
-   * @param {string} text
-   * @param {boolean} success
-   * @returns {string}
-   */
-  wrapDebug(text, success) {
+  wrapDebug(text: string, success: boolean): string {
     if (this.app.isDebug()) {
       if (success) {
         return '**' + text + '**';
@@ -122,5 +92,9 @@ export default class UnicornLang {
     }
 
     return text;
+  }
+
+  getStrings(): Record<string, string> {
+    return this.app.data('unicorn.languages') || {};
   }
 }

@@ -1,40 +1,25 @@
+import type { Unicorn } from '@/index';
+
 export default class UnicornQueue {
-  /**
-   * @type {{ [name: string]: SimpleQueue }}
-   */
-  queues = {};
+  queues: Record<string, SimpleQueue> = {};
 
   static is = 'queue';
 
-  static install(app, options = {}) {
-    const $queue = app.$queue = new this(app, options);
+  static install(app: Unicorn) {
+    const $queue = app.$queue = new this(app);
 
     app.queue = $queue.get.bind($queue);
   }
 
-  constructor(app, options = {}) {
+  constructor(protected app: Unicorn) {
     this.app = app;
-    this.$options = options;
   }
 
-  /**
-   * @param {number} maxRunning
-   * @returns {SimpleQueue}
-   */
-  create(maxRunning = 1) {
-    if (name == null) {
-      throw new Error('Please provide a name.');
-    }
-
+  create(maxRunning: number = 1): SimpleQueue {
     return new SimpleQueue(maxRunning);
   }
 
-  /**
-   * @param {string} name
-   * @param {number} maxRunning
-   * @returns {SimpleQueue}
-   */
-  get(name, maxRunning = 1) {
+  get(name?: string, maxRunning: number = 1): SimpleQueue {
     if (name == null) {
       throw new Error('Please provide a name.');
     }
@@ -46,60 +31,41 @@ export default class UnicornQueue {
     return this.queues[name];
   }
 
-  /**
-   * @param {string} name
-   * @param {SimpleQueue} queue
-   * @returns {UnicornQueue}
-   */
-  set(name, queue) {
-    if (name == null) {
-      throw new Error('Please provide a name.');
-    }
-
+  set(name: string, queue: SimpleQueue) {
     this.queues[name] = queue;
 
     return this;
   }
 
-  /**
-   * @param {string} name
-   * @returns {UnicornQueue}
-   */
-  remove(name) {
+  remove(name: string): this {
     delete this.queues[name];
 
     return this;
   }
 
-  /**
-   * @returns {{[p: string]: SimpleQueue}}
-   */
   all() {
     return this.queues;
   }
 }
 
 export class SimpleQueue {
-  items = [];
-
-  maxRunning = 1;
+  items: (() => Promise<any>)[] = [];
 
   currentRunning = 0;
 
   running = false;
 
-  observers = [];
+  observers: {
+    handler: Function;
+    once: boolean;
+  }[] = [];
 
-  constructor(maxRunning = 1) {
-    this.maxRunning = maxRunning;
+  constructor(protected maxRunning = 1) {
+    //
   }
 
-  /**
-   * @param {Function} callback
-   * @returns {Promise<any>}
-   */
-  push(callback) {
-    const p = new Promise((resolve, reject) => {
+  push(callback: Function): Promise<any> {
+    const p = new Promise<any>((resolve, reject) => {
       this.items.push(() => {
         return Promise.resolve(callback()).then(resolve);
       });
@@ -110,7 +76,7 @@ export class SimpleQueue {
     return p;
   }
 
-  run() {
+  run(): void {
     if (!this.running) {
       this.running = true;
     }
@@ -118,7 +84,7 @@ export class SimpleQueue {
     this.pop();
   }
 
-  pop() {
+  async pop() {
     const callback = this.items.shift();
 
     // If empty, stop running.
@@ -137,16 +103,13 @@ export class SimpleQueue {
 
     this.notice();
 
-    return callback()
-      .then((v) => {
-        this.endPop();
-        return v;
-      })
-      .catch((e) => {
-        this.endPop();
-
-        return Promise.reject(e);
-      });
+    try {
+      return await callback();
+    } catch (e) {
+      throw e;
+    } finally {
+      this.endPop();
+    }
   }
 
   endPop() {
@@ -163,17 +126,11 @@ export class SimpleQueue {
     return this;
   }
 
-  /**
-   * @returns {boolean}
-   */
-  isEmpty() {
+  isEmpty(): boolean {
     return this.items.length === 0;
   }
 
-  /**
-   * @returns {number}
-   */
-  get length() {
+  get length(): number {
     return this.items.length;
   }
 
@@ -181,12 +138,7 @@ export class SimpleQueue {
     return this.items;
   }
 
-  /**
-   * @param {Function} handler
-   * @param {{ once?: boolean; [ name: string ]: any; }} options
-   * @returns {(function(): void)}
-   */
-  observe(handler, options = {}) {
+  observe(handler: ObserverFunction, options: { once?: boolean } = {}): () => void {
     this.observers.push({
       handler,
       once: options.once || false
@@ -197,28 +149,18 @@ export class SimpleQueue {
     };
   }
 
-  /**
-   * @param {Function} handler
-   * @param {{ [ name: string ]: any; }} options
-   * @returns {(function(): void)}
-   */
-  once(handler, options = {}) {
+  once(handler: ObserverFunction, options: { once?: boolean } = {}): () => void {
     options.once = true;
 
     return this.observe(handler, options);
   }
 
-  /**
-   * @param {Function} handler
-   * @param {{ once?: boolean; [ name: string ]: any; }} options
-   * @returns {(function(): void)}
-   */
-  onEnd(callback, options = {}) {
+  onEnd(callback: ObserverFunction, options: { once?: boolean } = {}) {
     return this.observe((queue, length, running) => {
       if (length === 0 && running === 0) {
         callback(queue, length, running);
       }
-    });
+    }, options);
   }
 
   notice() {
@@ -226,13 +168,13 @@ export class SimpleQueue {
       observer.handler(this, this.length, this.currentRunning);
     });
 
-    this.observers = this.observers.filter((observer) => observer.once !== true);
+    this.observers = this.observers.filter((observer) => !observer.once);
 
     return this;
   }
 
-  off(callback = undefined) {
-    if (callback === undefined) {
+  off(callback?: Function) {
+    if (callback == null) {
       this.observers = [];
       return this;
     }
@@ -241,3 +183,5 @@ export class SimpleQueue {
     return this;
   }
 }
+
+declare type ObserverFunction = (queue: SimpleQueue, length: number, running: number) => void

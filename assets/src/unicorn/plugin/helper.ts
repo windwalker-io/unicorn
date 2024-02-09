@@ -1,6 +1,6 @@
 import type { Unicorn } from '@/index';
 import { defaultsDeep, each } from 'lodash-es';
-import 'sprintf-js';
+import { sprintf, vsprintf } from 'sprintf-js';
 import { defData, prepareData } from './../utilities';
 
 const domReady = null;
@@ -63,11 +63,11 @@ export default class UnicornHelper {
     return promise;
   }
 
+  selectOne<K extends keyof HTMLElementTagNameMap>(ele: K): HTMLElementTagNameMap[K] | null;
   selectOne<E extends Element = Element>(ele: string): E | null;
   selectOne<E extends Element = Element>(ele: E): E;
-  selectOne<K extends keyof HTMLElementTagNameMap>(ele: K): HTMLElementTagNameMap[K] | null;
   selectOne<E extends Element = Element>(ele: string | E): E | null;
-  selectOne(ele: string): Element;
+  // selectOne(ele: string): Element;
   selectOne(ele: Element | string): Element | null {
     let r: Element | null;
 
@@ -314,7 +314,7 @@ export default class UnicornHelper {
     return Boolean(this.app.data('windwalker.debug'));
   }
 
-  confirm(message: string): Promise<any> {
+  confirm(message: string): Promise<boolean> {
     message = message || 'Are you sure?';
 
     return new Promise((resolve) => {

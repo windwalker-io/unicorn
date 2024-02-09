@@ -1,3 +1,5 @@
+import type { Unicorn } from '@/index';
+import type { UnicornFormElement } from '@/unicorn/plugin/form';
 import { defData } from '../utilities';
 
 /**
@@ -6,21 +8,31 @@ import { defData } from '../utilities';
 export default class UnicornGrid {
   static get is() { return 'grid'; }
 
-  static install(app, options = {}) {
-    app.grid = (ele, options = {}) => {
-      const selector = typeof ele === 'string' ? ele : null;
-      ele = app.selectOne(ele);
+  static install(app: Unicorn, options = {}) {
+    app.grid = (ele: string | HTMLElement, options: Record<string, any> | undefined = {}) => {
+      const selector = typeof ele === 'string' ? ele : '';
+      const element = app.selectOne(ele);
+
+      if (!element) {
+        throw new Error('Element is empty');
+      }
 
       return defData(
-        ele,
+        element,
         'grid.plugin',
-        () => new UnicornGridElement(selector, ele, options, app)
+        () => new UnicornGridElement(app, selector, element, options)
       );
     };
   }
 }
 
+const defaultOptions: Record<string, any> = {};
+
 export class UnicornGridElement {
+  app: Unicorn;
+  element: HTMLElement;
+  options: Record<string, any>;
+  form: UnicornFormElement;
   ordering = '';
   state = {};
 
@@ -30,9 +42,9 @@ export class UnicornGridElement {
     }
   }
 
-  constructor(selector, element, options, app) {
+  constructor(app: Unicorn, selector: string, element: HTMLElement, options: Record<string, any> = {}) {
     this.element = element;
-    this.options = Object.assign({}, this.constructor.defaultOptions, options);
+    this.options = Object.assign({}, defaultOptions, options);
     this.app = app;
     this.form = app.form(selector || element);
 
@@ -49,19 +61,17 @@ export class UnicornGridElement {
         ch.dispatchEvent(new CustomEvent('change'));
       });
       ch.addEventListener('change', () => {
-        if (this.form) {
-          const event = new CustomEvent('unicorn:checked', {
-            detail: { grid: this }
-          });
+        const event = new CustomEvent('unicorn:checked', {
+          detail: { grid: this }
+        });
 
-          this.form.element.dispatchEvent(event);
-        }
+        this.form.element?.dispatchEvent(event);
       });
     });
   }
 
   initComponent(store = 'grid', custom = {}) {
-    this.ordering = this.element?.dataset?.ordering;
+    this.ordering = this.element?.dataset?.ordering || '';
 
     if (this.ordering) {
       if (!this.ordering.toLowerCase().endsWith(' asc')
@@ -70,17 +80,16 @@ export class UnicornGridElement {
       }
     }
 
-    return this.app.loadAlpine((m) => {
+    return this.app.loadAlpine(() => {
       Alpine.store(store, this.useState(custom));
-
-      return m;
     });
   }
 
-  useState(custom = {}) {
-    const state = {
+  useState(this: any, custom: Record<string, any> = {}) {
+    const state: Partial<Record<string, any>> = {
       form: this.form.useState(custom),
     };
+
     Object.getOwnPropertyNames(Object.getPrototypeOf(this))
       .map(item => state[item] = this[item].bind(this));
 
@@ -94,7 +103,7 @@ export class UnicornGridElement {
     return this.element;
   }
 
-  sendFilter($event, method = null) {
+  sendFilter($event: Event | undefined = undefined, method = null) {
     if ($event) {
       $event.preventDefault();
     }
@@ -102,15 +111,15 @@ export class UnicornGridElement {
     this.form.submit(null, null, method);
   }
 
-  clearFilters(element, method = null) {
+  clearFilters(element: HTMLElement, method?: Nullable<string>) {
     element.querySelectorAll('input, textarea, select').forEach((ele) => {
-      ele.value = '';
+      (ele as HTMLInputElement).value = '';
     });
 
     this.form.submit(null, null, method);
   }
 
-  toggleFilters(open, filterForm) {
+  toggleFilters(open: boolean, filterForm: HTMLElement) {
     if (open) {
       this.app.$ui.slideDown(filterForm);
     } else {
@@ -118,11 +127,7 @@ export class UnicornGridElement {
     }
   }
 
-  /**
-   * @param {Element} $el
-   * @returns {boolean}
-   */
-  sort($el) {
+  sort($el: HTMLElement): boolean {
     const dir = this.getDirection($el);
 
     const field = $el.dataset.field;
@@ -143,13 +148,13 @@ export class UnicornGridElement {
 
   /**
    * Sort two items.
-   *
-   * @param {string} ordering
-   *
-   * @returns {boolean}
    */
-  sortBy(ordering) {
-    let orderingInput = this.element.querySelector('input[name=list_ordering]');
+  sortBy(ordering: Nullable<string>): boolean {
+    if (!ordering) {
+      return false;
+    }
+
+    let orderingInput = this.element.querySelector<HTMLInputElement>('input[name=list_ordering]');
 
     if (!orderingInput) {
       orderingInput = this.app.h('input', { name: 'list_ordering', type: 'hidden', value: '' });
@@ -162,19 +167,11 @@ export class UnicornGridElement {
     return this.form.put();
   }
 
-  /**
-   * @param {Element} $el
-   * @returns {boolean}
-   */
-  isSortActive($el) {
+  isSortActive($el: HTMLElement): boolean {
     return this.getDirection($el) != null;
   }
 
-  /**
-   * @param {HTMLElement} $el
-   * @returns {string|null}
-   */
-  getDirection($el) {
+  getDirection($el: HTMLElement): "ASC" | "DESC" | null {
     const field = $el.dataset.field;
     let asc = $el.dataset.asc;
     let desc = $el.dataset.desc;
@@ -193,7 +190,7 @@ export class UnicornGridElement {
     return null;
   }
 
-  orderingEquals(a, b) {
+  orderingEquals(a: Nullable<string>, b: Nullable<string>) {
     a = a || '';
     b = b || '';
 
@@ -205,11 +202,8 @@ export class UnicornGridElement {
 
   /**
    * Check a row's checkbox.
-   *
-   * @param {number}  row
-   * @param {boolean} value
    */
-  checkRow(row, value = true) {
+  checkRow(row: number, value = true) {
     const ch = this.getCheckboxByRow(row);
 
     if (!ch) {
@@ -221,35 +215,27 @@ export class UnicornGridElement {
     ch.dispatchEvent(new Event('change'));
   }
 
-  getCheckboxByRow(row) {
-    return this.form.element.querySelector(`input[data-role=grid-checkbox][data-row-number="${row}"]`);
+  getCheckboxByRow(row: number): Nullable<HTMLInputElement> {
+    return this.form.element?.querySelector<HTMLInputElement>(`input[data-role=grid-checkbox][data-row-number="${row}"]`);
   }
 
   /**
    * Update a row.
-   *
-   * @param  {number} row
-   * @param  {?string} url
-   * @param  {?Object} data
-   *
-   * @returns {boolean}
    */
-  updateRow(row, url = null, data = null) {
+  updateRow(row: number, url?: Nullable<string>, data?: Nullable<Record<string, any>>) {
     const ch = this.getCheckboxByRow(row);
+
+    if (!ch) {
+      return false;
+    }
 
     return this.updateItem(ch.value, url, data);
   }
 
   /**
-   * Update a row.
-   *
-   * @param  {string|number} id
-   * @param  {?string} url
-   * @param  {?Object} data
-   *
-   * @returns {boolean}
+   * Update an item by id.
    */
-  updateItem(id, url = null, data = null) {
+  updateItem(id: string | number , url?: Nullable<string>, data?: Nullable<Record<string, any>>): boolean {
     this.toggleAll(false);
 
     this.disableAllCheckboxes();
@@ -261,15 +247,8 @@ export class UnicornGridElement {
 
   /**
    * Update a item with batch task.
-   *
-   * @param  {string} task
-   * @param  {string} id
-   * @param  {?string} url
-   * @param  {?Object} data
-   *
-   * @returns {boolean}
    */
-  updateItemByTask(task, id, url = null, data = null) {
+  updateItemByTask(task: string, id: string | number, url?: Nullable<string>, data?: Nullable<Record<string, any>>): boolean {
     data = data || {};
     data.task = task;
 
@@ -278,67 +257,42 @@ export class UnicornGridElement {
 
   /**
    * Update a row with batch task.
-   *
-   * @param  {string} task
-   * @param  {number} row
-   * @param  {?string} url
-   * @param  {?Object} data
-   *
-   * @returns {boolean}
    */
-  updateRowByTask(task, row, url = null, data = null) {
+  updateRowByTask(task: string, row: number, url?: Nullable<string>, data?: Nullable<Record<string, any>>): boolean {
     const ch = this.getCheckboxByRow(row);
+
+    if (!ch) {
+      return false;
+    }
 
     return this.updateItemByTask(task, ch.value, url, data);
   }
 
   /**
-   * @param {string} task
-   * @param {any} id
-   * @param {string|null} url
-   * @param {*|null} data
-   * @returns {boolean}
+   * @deprecated  Use updateItemByTask() instead.
    */
-  doTask(task, id, url = null, data = null) {
+  doTask(task: string, id: number | string, url?: Nullable<string>, data?: Nullable<Record<string, any>>): boolean {
     return this.updateItemByTask(task, id, url, data);
   }
 
   /**
    * Batch update items.
-   *
-   * @param  {string} task
-   * @param  {?string} url
-   * @param  {*|null} data
-   *
-   * @returns {boolean}
    */
-  updateByTask(task, url = null, data = null) {
+  updateByTask(task: string, url?: Nullable<string>, data?: Nullable<Record<string, any>>): boolean {
     data = data || {};
     data.task = task;
 
     return this.form.patch(url, data);
   }
 
-  /**
-   * @param {string} task
-   * @param {string|null} url
-   * @param {*|null} data
-   * @returns {boolean}
-   */
-  batch(task, url = null, data = null) {
+  batch(task: string, url?: Nullable<string>, data?: Nullable<Record<string, any>>): boolean {
     return this.updateByTask(task, url, data);
   }
 
   /**
    * Copy a row.
-   *
-   * @param  {string|number} id
-   * @param  {?string} url
-   * @param  {*|null} data
-   *
-   * @returns {boolean}
    */
-  copyItem(id, url = null, data = null) {
+  copyItem(id: string | number, url?: Nullable<string>, data?: Nullable<Record<string, any>>): boolean {
     this.toggleAll(false);
 
     this.disableAllCheckboxes();
@@ -350,29 +304,21 @@ export class UnicornGridElement {
 
   /**
    * Copy a row.
-   *
-   * @param  {number} row
-   * @param  {?string} url
-   * @param  {Object} data
-   *
-   * @returns {boolean}
    */
-  copyRow(row, url = null, data = null) {
+  copyRow(row: number, url?: Nullable<string>, data?: Nullable<Record<string, any>>): boolean {
     const ch = this.getCheckboxByRow(row);
+
+    if (!ch) {
+      return false;
+    }
 
     return this.copyItem(ch.value, url, data);
   }
 
   /**
    * Delete checked items.
-   *
-   * @param  {?string} message
-   * @param  {?string} url
-   * @param  {?Object} data
-   *
-   * @returns {boolean}
    */
-  deleteList(message = null, url = null, data = null) {
+  deleteList(message?: Nullable<string> | false, url?: Nullable<string>, data?: Nullable<Record<string, any>>): boolean {
     if (!this.validateChecked()) {
       return false;
     }
@@ -393,36 +339,26 @@ export class UnicornGridElement {
   }
 
   /**
-   * Delete an item.
-   *
-   * @param  {number} row
-   * @param  {?string} msg
-   * @param  {?string} url
-   * @param  {Object} data
-   *
-   * @returns {boolean}
+   * Delete an item by row.
    */
-  deleteRow(row, msg = null, url = null, data = null) {
+  async deleteRow(row: number, msg?: Nullable<string>, url?: Nullable<string>, data?: Nullable<Record<string, any>>): Promise<boolean> {
     const  ch = this.getCheckboxByRow(row);
 
+    if (!ch) {
+      return false;
+    }
+    
     return this.deleteItem(ch.value, msg, url, data);
   }
 
   /**
    * Delete an item.
-   *
-   * @param  {number|string} id
-   * @param  {?string} msg
-   * @param  {?string} url
-   * @param  {Object} data
-   *
-   * @returns {boolean}
    */
-  deleteItem(id, msg = null, url = null, data = null) {
+  async deleteItem(id: string, msg?: Nullable<string>, url?: Nullable<string>, data?: Nullable<Record<string, any>>): Promise<boolean> {
     msg = msg || this.app.__('unicorn.message.delete.confirm');
 
     return this.app.confirm(msg)
-      .then(isConfirm => {
+      .then((isConfirm) => {
         if (isConfirm) {
           // this.toggleAll(false);
           // this.checkRow(row);
@@ -432,23 +368,23 @@ export class UnicornGridElement {
 
           this.form.delete(url, data);
         }
+        
+        return isConfirm;
       });
   }
 
   /**
    * Toggle all checkboxes.
-   *
-   * @param  {boolean}          value     Checked or unchecked.
    */
-  toggleAll(value) {
+  toggleAll(value: boolean) {
     this.app.selectAll(
-      this.element.querySelectorAll('input[data-role=grid-checkbox][type=checkbox]')
+      this.element.querySelectorAll<HTMLInputElement>('input[data-role=grid-checkbox][type=checkbox]')
     )
       .map((input) => {
         input.checked = value;
 
-        input.dispatchEvent(new Event('input'));
-        input.dispatchEvent(new Event('change'));
+        input.dispatchEvent(new CustomEvent('input'));
+        input.dispatchEvent(new CustomEvent('change'));
       });
 
     return this;
@@ -456,7 +392,7 @@ export class UnicornGridElement {
 
   disableAllCheckboxes() {
     this.app.selectAll(
-      this.element.querySelectorAll('input[data-role=grid-checkbox][type=checkbox]'),
+      this.element.querySelectorAll<HTMLInputElement>('input[data-role=grid-checkbox][type=checkbox]'),
       (input) => {
         input.disabled = true;
       }
@@ -465,41 +401,28 @@ export class UnicornGridElement {
 
   /**
    * Count checked checkboxes.
-   *
-   * @returns {int}
    */
-  countChecked() {
+  countChecked(): number {
     return this.getChecked().length;
   }
 
   /**
    * Get Checked boxes.
-   *
-   * @returns {HTMLInputElement[]}
    */
-  getChecked() {
+  getChecked(): HTMLInputElement[] {
     return this.app.selectAll(
-      this.element.querySelectorAll('input[data-role=grid-checkbox][type=checkbox]:checked')
+      this.element.querySelectorAll<HTMLInputElement>('input[data-role=grid-checkbox][type=checkbox]:checked')
     );
   }
-
-  /**
-   * @returns {string[]}
-   */
-  getCheckedValues() {
+  
+  getCheckedValues(): string[] {
     return this.getChecked().map(input => input.value);
   }
 
   /**
    * Validate there has one or more checked boxes.
-   *
-   * @param   {Event}     event
-   * @param   {Function}  callback
-   * @param   {?string}    msg
-   *
-   * @returns {boolean}
    */
-  validateChecked(event= null, callback = null, msg = null) {
+  validateChecked(event?: Event, callback?: Function, msg?: string): this {
     msg = msg || this.app.__('unicorn.message.grid.checked');
 
     if (!this.hasChecked()) {
@@ -512,7 +435,7 @@ export class UnicornGridElement {
         event.preventDefault();
       }
 
-      return false;
+      return this;
     }
 
     if (callback) {
@@ -521,66 +444,36 @@ export class UnicornGridElement {
 
     return this;
   }
-
-  /**
-   * @return {boolean}
-   */
-  hasChecked() {
+  
+  hasChecked(): boolean {
     return this.countChecked() > 0;
   }
 
   /**
    * Reorder all.
-   *
-   * @param   {?string}  url
-   * @param   {Object}  data
-   *
-   * @returns {boolean}
    */
-  reorderAll(url = null, data = null) {
+  reorderAll(url?: Nullable<string>, data?: Nullable<Record<string, any>>) {
     return this.batch('reorder', url, data);
   }
 
   /**
    * Reorder items.
-   *
-   * @param  {int}     id
-   * @param  {int}     delta
-   * @param  {?string}  url
-   * @param  {Object}  data
-   *
-   * @returns {boolean}
    */
-  moveItem(id, delta, url = null, data = null) {
+  moveItem(id: number | string, delta: number, url?: Nullable<string>, data?: Nullable<Record<string, any>>): boolean {
     data = data || {};
     data.delta = delta;
 
-    return this.updateRowByTask('move', id, url, data);
+    return this.updateItemByTask('move', id, url, data);
   }
-
-  /**
-   * @param  {int}     id
-   * @param  {?string}  url
-   * @param  {Object}  data
-   *
-   * @returns {boolean}
-   */
-  moveUp(id, url = null, data = null) {
+  
+  moveUp(id: string | number, url?: Nullable<string>, data?: Nullable<Record<string, any>>): boolean {
     return this.moveItem(id, -1, url, data);
   }
-
-  /**
-   * @param  {int}     id
-   * @param  {?string}  url
-   * @param  {Object}  data
-   *
-   * @returns {boolean}
-   */
-  moveDown(id, url = null, data = null) {
+  moveDown(id: string | number, url?: Nullable<string>, data?: Nullable<Record<string, any>>): boolean {
     return this.moveItem(id, 1, url, data);
   }
 
   getId(suffix = '') {
-    return this.form.element.id + suffix;
+    return this.form.element?.id + suffix;
   }
 }

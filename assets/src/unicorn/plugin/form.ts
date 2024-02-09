@@ -44,8 +44,8 @@ export class UnicornFormElement {
    */
   constructor(
     protected app: Unicorn,
-    selector: string | Element | undefined = undefined,
-    $form: HTMLFormElement | undefined = undefined,
+    selector?: Nullable<string | Element>,
+    $form?: Nullable<HTMLFormElement>,
     options: Record<string, any> = {},
   ) {
 
@@ -124,10 +124,10 @@ export class UnicornFormElement {
   }
 
   submit(
-    url: string | undefined = undefined,
-    data: Record<string, any> | undefined = undefined,
-    method: string | undefined = undefined,
-    customMethod: string | undefined = undefined
+    url?: Nullable<string>,
+    data?: Nullable<Record<string, any>>,
+    method?: Nullable<string>,
+    customMethod?: Nullable<string>,
   ): boolean {
     const form = this.element!;
 
@@ -138,6 +138,7 @@ export class UnicornFormElement {
         methodInput = document.createElement('input');
         methodInput.setAttribute('name', '_method');
         methodInput.setAttribute('type', 'hidden');
+        methodInput.value = customMethod;
 
         form.appendChild(methodInput);
       } else {
@@ -189,9 +190,9 @@ export class UnicornFormElement {
    * Make a GET request.
    */
   get(
-    url: string | undefined = undefined,
-    data: Record<string, any>|undefined = undefined,
-    customMethod: string | undefined = undefined
+    url?: Nullable<string>,
+    data?: Nullable<Record<string, any>>,
+    customMethod?: Nullable<string>,
   ): boolean {
     return this.submit(url, data, 'GET', customMethod);
   }
@@ -200,9 +201,9 @@ export class UnicornFormElement {
    * Post form.
    */
   post(
-    url: string | undefined = undefined,
-    data: Record<string, any>|undefined = undefined,
-    customMethod: string | undefined = undefined
+    url?: Nullable<string>,
+    data?: Nullable<Record<string, any>>,
+    customMethod?: Nullable<string>,
   ) {
     customMethod = customMethod || 'POST';
 
@@ -213,8 +214,8 @@ export class UnicornFormElement {
    * Make a PUT request.
    */
   put(
-    url: string | undefined = undefined,
-    data: Record<string, any>|undefined = undefined,
+    url?: Nullable<string>,
+    data?: Nullable<Record<string, any>>,
   ) {
     return this.post(url, data, 'PUT');
   }
@@ -223,8 +224,8 @@ export class UnicornFormElement {
    * Make a PATCH request.
    */
   patch(
-    url: string | undefined = undefined,
-    data: Record<string, any>|undefined = undefined,
+    url?: Nullable<string>,
+    data?: Nullable<Record<string, any>>,
   ) {
     return this.post(url, data, 'PATCH');
   }
@@ -233,8 +234,8 @@ export class UnicornFormElement {
    * Make a DELETE request.
    */
   delete(
-    url: string | undefined = undefined,
-    data: Record<string, any>|undefined = undefined,
+    url?: Nullable<string>,
+    data?: Nullable<Record<string, any>>,
   ) {
     return this.post(url, data, 'DELETE');
   }
@@ -245,7 +246,7 @@ export class UnicornFormElement {
    * @param {Object} ob
    * @returns {Object}
    */
-  static flattenObject(ob: Record<string, any>) {
+  static flattenObject(ob: Record<string, any>): Record<string, any> {
     const toReturn: Record<string, any> = {};
 
     for (let i in ob) {

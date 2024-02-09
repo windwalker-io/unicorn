@@ -27,6 +27,7 @@
   },
   "homepage": "https://github.com/ventoviro/unicorn#readme",
   "dependencies": {
+    "@types/alpinejs": "^3.13.6",
     "@webcomponents/webcomponentsjs": "^2.5.0",
     "alpinejs": "^2.0||^3.0",
     "awesome-bootstrap-checkbox": "^1.0.1",
@@ -51,7 +52,9 @@
     "@babel/plugin-proposal-optional-chaining": "^7.13.12",
     "@babel/preset-env": "^7.13.12",
     "@ryangjchandler/spruce": "^2.0",
+    "@types/alpinejs": "^3.13.6",
     "@types/lodash-es": "^4.17.12",
+    "@types/sprintf-js": "^1.1.4",
     "@vue/compiler-sfc": "^3.1.1",
     "@vue/reactivity": "^3.3.7",
     "@windwalker-io/fusion": "^1.0",
