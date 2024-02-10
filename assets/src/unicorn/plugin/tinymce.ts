@@ -1,104 +1,68 @@
-
+import type { Unicorn } from '@/index';
+import type UnicornUI from '@/unicorn/plugin/ui';
+import { AxiosError } from 'axios';
 import { defaultsDeep } from 'lodash-es';
+import type { Editor, EditorManager, EditorOptions } from 'tinymce';
 
 let imported = false;
 
+declare type UploadHandlerParams = Parameters<NonNullable<EditorOptions['images_upload_handler']>>;
+
 export default class UnicornTinymce {
-  /**
-   * @type {{ [name: string]: TinymceEditor }}
-   */
-  instances = {};
+  instances: Record<string, TinymceEditor> = {};
 
-  hooks = [];
+  hooks: Function[] = [];
 
-  static install(app) {
-    app.$ui.tinymce = new this(app.$ui);
+  static install(app: Unicorn) {
+    app.$ui.tinymce = new this(app, app.$ui);
   }
 
-  constructor(ui) {
-    this.ui = ui;
-    this.app = ui.app;
+  constructor(protected app: Unicorn, protected ui: UnicornUI) {
+    //
   }
 
-  /**
-   * @returns {Promise<TinyMCE>}
-   */
-  loadTinymce() {
-    return this.app.import('@tinymce')
-      .then((tinymce) => {
-        if (imported) {
-          return tinymce;
-        }
+  async loadTinymce(): Promise<EditorManager> {
+    let tinymce = await this.app.import('@tinymce');
 
-        imported = true;
-
-        for (const hook of this.hooks) {
-          hook(tinymce);
-        }
-
-        return registerDragPlugin().then(() => tinymce);
-      });
+    if (imported) {
+      return tinymce;
+    }
+    imported = true;
+    for (const hook of this.hooks) {
+      hook(tinymce);
+    }
+    await registerDragPlugin();
+    return await tinymce;
   }
 
-  /**
-   * @param {(tinymce: TinyMCE) => void} callback
-   * @returns {this}
-   */
-  configure(callback) {
+  configure(callback: (tinymce: Editor) => void) {
     this.hooks.push(callback);
 
     return this;
   }
 
-  /**
-   * @param {string} selector
-   * @param {object} options
-   * @returns {TinymceEditor}
-   */
-  init(selector, options = {}) {
-    return this.loadTinymce().then(() => {
-      return this.instances[selector] = this.create(document.querySelector(selector), options);
-    });
+  async init(selector: string, options: Record<string, any> = {}): Promise<TinymceEditor> {
+    await this.loadTinymce();
+
+    return this.instances[selector] = this.create(document.querySelector(selector)!, options);
   }
 
-  /**
-   * @param {string} selector
-   * @returns {TinymceEditor}
-   */
-  get(selector) {
+  get(selector: string): TinymceEditor {
     return this.instances[selector];
   }
 
-  /**
-   * @param {string|Element} ele
-   * @param {?any} options
-   * @returns {TinymceEditor}
-   */
-  create(ele, options = {}) {
-    return new TinymceEditor(ele, options, this.app);
+  create(ele: HTMLElement, options: Record<string, any> = {}): TinymceEditor {
+    return new TinymceEditor(this.app, ele, options);
   }
 }
 
+const defaultOptions: Record<string, any> = {};
+
 export class TinymceEditor {
-  static defaultOptions = {
+  editor?: Editor;
+  options: Record<string, any> = {};
 
-  };
-
-  /**
-   * @type {Editor}
-   */
-  editor;
-
-  /**
-   *
-   * @param {Element} element
-   * @param {object} options
-   * @param {Unicorn} app
-   */
-  constructor(element, options, app) {
-    this.app = app;
-    this.element = element;
-
+  constructor(protected app: Unicorn, protected element: HTMLElement, options: Record<string, any>) {
     options.target = element;
 
     this.options = defaultsDeep(
@@ -111,32 +75,30 @@ export class TinymceEditor {
       }
     );
 
-    tinymce.init(this.options).then((editor) => {
+    tinymce.EditorManager.init(this.options).then((editor) => {
       this.editor = editor[0];
     });
   }
 
-  /**
-   * @returns {Editor}
-   */
-  getEditor() {
-    return this.editor;
+  getEditor(): Editor {
+    return this.editor!;
   }
 
-  prepareOptions(options, verion = '6') {
-    const defaults = {};
+  prepareOptions(options: Record<string, any>, version = '6') {
+    const defaults: Partial<EditorOptions> = {};
 
     if (options.images_upload_url) {
       defaults.paste_data_images = true;
       defaults.remove_script_host = false;
       defaults.relative_urls = false;
 
-      if (Number(verion) >= 6) {
+      if (Number(version) >= 6) {
         defaults.images_upload_handler = (blobInfo, progress) =>
           this.imageUploadHandler(blobInfo, progress);
       } else {
         options.plugins.push('paste');
 
+        // @ts-ignore
         defaults.images_upload_handler = (blobInfo, success, failure, progress) =>
           this.imageUploadHandler(blobInfo, progress)
             .then((url) => {
@@ -153,7 +115,7 @@ export class TinymceEditor {
     // defaults.file_picker_callback = (...args) => this.filePickerCallback(...args);
 
     defaults.plugins = defaults.plugins || [];
-    
+
     defaults.setup = (editor) => {
       editor.on('change', () => {
         tinymce.triggerSave();
@@ -169,26 +131,16 @@ export class TinymceEditor {
     return options;
   }
 
-  /**
-   * @param {string} text
-   */
-  insert(text) {
-    return this.editor.insertContent(text);
+  insert(text: string) {
+    this.editor?.insertContent(text);
   }
 
-  /**
-   * @returns {string}
-   */
-  getValue() {
-    return this.editor.getContent();
+  getValue(): string {
+    return this.editor?.getContent() ?? '';
   }
 
-  /**
-   * @param {string} text
-   * @returns {string}
-   */
-  setValue(text) {
-    return this.editor.setContent(text);
+  setValue(text: string): string {
+    return this.editor?.setContent(text) ?? '';
   }
 
   // filePickerCallback(callback, value, meta) {
@@ -223,12 +175,7 @@ export class TinymceEditor {
   //   input.click();
   // }
 
-  /**
-   * @param {object} blobInfo
-   * @param {Function} progress
-   * @returns {Promise<string>}
-   */
-  imageUploadHandler(blobInfo, progress) {
+  async imageUploadHandler(blobInfo: UploadHandlerParams[0], progress: UploadHandlerParams[1]) {
     const element = this.element;
 
     element.dispatchEvent(new CustomEvent('upload-start'));
@@ -239,43 +186,48 @@ export class TinymceEditor {
     const stack = u.stack(this.options.unicorn.stack_name);
     stack.push(true);
 
-    return u.$http.post(
-      this.options.images_upload_url,
-      formData,
-      {
-        withCredentials: false,
-        onUploadProgress: (e) => {
-          progress(e.loaded / e.total * 100);
+    try {
+      let res = await u.$http.post(
+        this.options.images_upload_url,
+        formData,
+        {
+          withCredentials: false,
+          onUploadProgress: (e) => {
+            progress(e.loaded / e.total! * 100);
+          }
         }
-      }
-    )
-      .then((res) => {
-        element.dispatchEvent(new CustomEvent('upload-success'));
+      );
+      element.dispatchEvent(new CustomEvent('upload-success'));
 
-        return res.data.data.url;
-      })
-      .catch((e) => {
-        const message = e?.response?.data?.message || e.message;
-        console.error(e?.response?.data?.message || e.message, e);
-        element.dispatchEvent(new CustomEvent('upload-error', { detail: e }));
+      return res.data.data.url;
+    } catch (err) {
+      if (err instanceof AxiosError) {
+        const message = err?.response?.data?.message || err.message;
+        console.error(err?.response?.data?.message || err.message, err);
+        element.dispatchEvent(new CustomEvent('upload-error', { detail: err }));
 
         return Promise.reject({ message, remove: true });
-      })
-      .finally(() => {
-        element.dispatchEvent(new CustomEvent('upload-complete'));
-        stack.pop();
-      });
+      }
+
+      throw err;
+    } finally {
+      element.dispatchEvent(new CustomEvent('upload-complete'));
+      stack.pop();
+    }
   }
 }
 
 function registerDragPlugin() {
-  tinymce.PluginManager.add('unicorndragdrop', function(editor) {
+  tinymce.PluginManager.add('unicorndragdrop', function (editor) {
     // Reset the drop area border
-    tinyMCE.DOM.bind(document, 'dragleave', function(e) {
+    tinymce.DOM.bind(document, 'dragleave', function (e) {
       e.stopPropagation();
       e.preventDefault();
-      tinyMCE.activeEditor.contentAreaContainer.style.transition = 'all .3s';
-      tinyMCE.activeEditor.contentAreaContainer.style.borderWidth = '';
+
+      if (tinymce.activeEditor) {
+        tinymce.activeEditor.contentAreaContainer.style.transition = 'all .3s';
+        tinymce.activeEditor.contentAreaContainer.style.borderWidth = '';
+      }
 
       return false;
     });
@@ -291,8 +243,11 @@ function registerDragPlugin() {
       // Notify user when file is over the drop area
       editor.on('dragover', e => {
         e.preventDefault();
-        tinyMCE.activeEditor.contentAreaContainer.style.transition = 'all .3s';
-        tinyMCE.activeEditor.contentAreaContainer.style.border = '3px dashed rgba(0, 0, 0, .35)';
+
+        if (tinymce.activeEditor) {
+          tinymce.activeEditor.contentAreaContainer.style.transition = 'all .3s';
+          tinymce.activeEditor.contentAreaContainer.style.border = '3px dashed rgba(0, 0, 0, .35)';
+        }
 
         return false;
       });

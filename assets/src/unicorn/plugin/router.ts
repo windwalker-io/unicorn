@@ -1,4 +1,5 @@
 
+import type { Unicorn } from '@/index';
 import { parse, stringify } from 'qs';
 
 export default class UnicornRouter {
@@ -6,25 +7,20 @@ export default class UnicornRouter {
 
   static get is() { return 'router'; }
 
-  static install(app, options = {}) {
+  static install(app: Unicorn) {
     const $router = app.$router = new this(app);
 
     app.route = $router.route.bind($router);
   }
 
-  constructor(app) {
-    this.app = app;
+  constructor(protected app: Unicorn) {
+    //
   }
 
   /**
    * Add a route.
-   *
-   * @param route
-   * @param url
-   *
-   * @returns {UnicornRouter}
    */
-  add(route, url) {
+  add(route: string, url: string): this {
     const data = this.app.data('unicorn.routes') || {};
     data[route] = url;
 
@@ -35,12 +31,8 @@ export default class UnicornRouter {
 
   /**
    * Get route.
-   *
-   * @param {string} route
-   * @param {*} query
-   * @returns {String|UnicornRouter}
    */
-  route(route, query = null) {
+  route(route: string, query?: Record<string, any>): string {
     const source = route;
     const extract = this.extractRoute(source);
     route = extract.route;
@@ -79,39 +71,25 @@ export default class UnicornRouter {
     return this.addQuery(url, query);
   }
 
-  /**
-   * @param {string} route
-   * @param {string} sep
-   * @returns {{ path: string; route: string }}
-   */
-  extractRoute(route, sep = '/') {
+  extractRoute(route: string, sep: string = '/'): { path: string; route: string } {
     if (route.indexOf(sep) === -1) {
       return { route, path: '' }
     }
 
     const segments = route.split(sep);
 
-    route = segments.shift();
+    route = segments.shift() || '';
     const path = segments.join(sep);
 
     return { route, path };
   }
 
-  /**
-   * @param {string} route
-   * @returns {boolean}
-   */
-  has(route) {
+  has(route: string): boolean {
     return undefined !== this.app.data('unicorn.routes')[route];
   }
 
-  /**
-   * @param {string} url
-   * @param {*} query
-   * @returns {string}
-   */
-  addQuery(url, query = null) {
-    if (query === null) {
+  addQuery(url: string, query?: Record<string, any>): string {
+    if (query == null) {
       return url;
     }
 
@@ -150,27 +128,15 @@ export default class UnicornRouter {
     return url + (/\?/.test(url) ? `&${queryString}` : `?${queryString}`);
   }
 
-  /**
-   * @param {string} queryString
-   * @returns {object}
-   */
-  parseQuery(queryString) {
+  parseQuery(queryString: string): Record<string, any> {
     return parse(queryString);
   }
 
-  /**
-   * @param {object} query
-   * @returns {string}
-   */
-  buildQuery(query) {
+  buildQuery(query: Record<string, any>): string {
     return stringify(query);
   }
 
-  /**
-   * @param {object|string} data
-   * @returns {this}
-   */
-  push(data) {
+  push(data: string | Record<string, any>): this {
     if (typeof data === 'string') {
       // eslint-disable-next-line no-param-reassign
       data = { uri: data };
@@ -185,11 +151,7 @@ export default class UnicornRouter {
     return this;
   }
 
-  /**
-   * @param {object|string} data
-   * @returns {UnicornRouter}
-   */
-  replace(data) {
+  replace(data: string | Record<string, any>): this {
     if (typeof data === 'string') {
       // eslint-disable-next-line no-param-reassign
       data = { uri: data };
@@ -204,10 +166,7 @@ export default class UnicornRouter {
     return this;
   }
 
-  /**
-   * @returns {any}
-   */
-  state() {
+  state(): any {
     return window.history.state;
   }
 
@@ -222,7 +181,7 @@ export default class UnicornRouter {
   /**
    * @param {number} num
    */
-  go(num) {
+  go(num: number) {
     window.history.go(num);
   }
 }
