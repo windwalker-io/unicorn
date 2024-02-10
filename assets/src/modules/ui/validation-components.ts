@@ -7,6 +7,10 @@ declare type Validator = {
   options?: Record<string, any>;
 };
 
+const validatorHandlers: Record<string, ValidationHandler> = {};
+
+type InputElements = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
+
 export interface FormValidationOptions {
   scroll: boolean;
   validatedClass: null;
@@ -27,8 +31,6 @@ export interface FieldValidationOptions {
   invalidClass: string;
   errorMessageClass: string
 }
-
-const validators: Record<string, Validator> = {};
 
 const defaultOptions: FormValidationOptions = {
   scroll: false,
@@ -196,22 +198,18 @@ export class UnicornFormValidation {
     return firstFail === null;
   }
 
-  /**
-   * @param {Element[]} fields
-   * @returns {boolean}
-   */
-  async validateAllAsync(fields = null) {
+  async validateAllAsync(fields?: Nullable<HTMLElement[]>): Promise<boolean> {
     this.markFormAsUnvalidated();
 
     fields = fields || this.findFields();
-    let firstFail = null;
-    const promises = [];
+    let firstFail: HTMLElement | null = null;
+    const promises: Promise<boolean>[] = [];
 
-    fields.forEach((field) => {
+    for (const field of fields) {
       const fv = this.getFieldComponent(field);
 
       if (!fv) {
-        return;
+        continue;
       }
 
       promises.push(
@@ -219,9 +217,11 @@ export class UnicornFormValidation {
           if (!result && !firstFail) {
             firstFail = field;
           }
+
+          return result;
         })
       );
-    });
+    }
 
     await Promise.all(promises);
 
@@ -234,13 +234,10 @@ export class UnicornFormValidation {
     return firstFail === null;
   }
 
-  /**
-   * @param {Element} element
-   */
-  scrollTo(element) {
+  scrollTo(element: HTMLElement): void {
     const offset = this.scrollOffset;
     const elementPosition = element.getBoundingClientRect().top;
-    const offsetPosition = elementPosition + window.pageYOffset + offset;
+    const offsetPosition = elementPosition + window.scrollY + offset;
 
     window.scrollTo({
       top: offsetPosition,
@@ -248,7 +245,7 @@ export class UnicornFormValidation {
     });
   }
 
-  markFormAsValidated() {
+  markFormAsValidated(): void {
     if (!this.$form) {
       return;
     }
@@ -256,7 +253,7 @@ export class UnicornFormValidation {
     this.$form.classList.add(this.validatedClass);
   }
 
-  markFormAsUnvalidated() {
+  markFormAsUnvalidated(): void {
     if (!this.$form) {
       return;
     }
@@ -264,11 +261,7 @@ export class UnicornFormValidation {
     this.$form.classList.remove(this.validatedClass);
   }
 
-  /**
-   * @param {Element} field
-   * @returns {this}
-   */
-  addField(field) {
+  addField(field: HTMLElement): this {
     this.presetFields.push(field);
 
     this.prepareFieldWrapper(field);
@@ -276,26 +269,21 @@ export class UnicornFormValidation {
     return this;
   }
 
-  registerDefaultValidators() {
-    for (let name in validators) {
-      this.addValidator(name, validators[name]);
+  registerDefaultValidators(): void {
+    for (let name in validatorHandlers) {
+      this.addValidator(name, validatorHandlers[name]);
     }
   }
 
   /**
    * Add validator handler.
-   *
-   * @param {string} name
-   * @param {Validator} validator
-   * @param {ValidationOptions} options
-   * @returns {this}
    */
-  addValidator(name, validator, options = {}) {
+  addValidator(name: string, handler: ValidationHandler, options: Record<string, any> = {}) {
     options = options || {};
 
     this.validators[name] = {
-      handler: validator,
-      options: options
+      handler,
+      options
     };
 
     return this;
@@ -303,18 +291,13 @@ export class UnicornFormValidation {
 
   /**
    * Add validator handler.
-   *
-   * @param {string} name
-   * @param {Validator} validator
-   * @param {ValidationOptions} options
-   * @returns {this}
    */
-  static addGlobalValidator(name, validator, options = {}) {
+  static addGlobalValidator(name: string, handler: ValidationHandler, options: Record<string, any> = {}) {
     options = options || {};
 
     this.globalValidators[name] = {
-      handler: validator,
-      options: options
+      handler,
+      options
     };
 
     return this;
@@ -322,71 +305,74 @@ export class UnicornFormValidation {
 }
 
 export class UnicornFieldValidation {
-  /**
-   * @type {HTMLInputElement|HTMLSelectElement|HTMLTextAreaElement}
-   */
-  $input;
+  $input: InputElements;
+  options: FieldValidationOptions;
 
   static is = 'uni-field-validate';
 
-  constructor(el, options = {}) {
-    this.el = el;
-    this.setOptions(options);
+  constructor(protected el: HTMLElement, options: Partial<FieldValidationOptions> = {}) {
+    this.options = defaultsDeep({}, options, defaultFieldOptions);
+
+    this.$input = this.selectInput();
 
     this.init();
   }
 
-  setOptions(options) {
+  setOptions(options: Partial<FormValidationOptions>) {
     this.options = defaultsDeep({}, options, defaultFieldOptions);
   }
 
-  get $form() {
+  get $form(): HTMLFormElement {
     return this.getForm();
   }
 
-  get errorSelector() {
+  get errorSelector(): string {
     return this.options.errorSelector;
   }
 
-  get selector() {
+  get selector(): string {
     return this.options.selector;
   }
 
-  get validClass() {
+  get validClass(): string {
     return this.options.validClass;
   }
 
-  get invalidClass() {
+  get invalidClass(): string {
     return this.options.invalidClass;
   }
 
-  get isVisible() {
+  get isVisible(): boolean {
     return !!(this.el.offsetWidth || this.el.offsetHeight || this.el.getClientRects().length);
   }
 
-  get isInputOptions() {
+  get isInputOptions(): boolean {
     return Boolean(this.options.inputOptions);
   }
 
-  get validationMessage() {
-    return this.$input.validationMessage;
+  get validationMessage(): string {
+    return this.$input?.validationMessage || '';
   }
 
-  get validity() {
-    return this.$input.validity;
+  get validity(): ValidityState | undefined {
+    return this.$input?.validity;
   }
 
-  selectInput() {
+  selectInput(): InputElements {
     let selector = this.selector;
 
     if (this.options.inputOptions) {
       selector += ', ' + this.options.inputOptionsWrapperSelector;
     }
 
-    let input = this.el.querySelector(selector);
+    let input = this.el.querySelector<InputElements>(selector);
 
     if (!input) {
-      input = this.el.querySelector('input, select, textarea');
+      input = this.el.querySelector<InputElements>('input, select, textarea');
+    }
+
+    if (!input) {
+      throw new Error('Input not found');
     }
 
     return this.$input = input;
@@ -400,11 +386,14 @@ export class UnicornFieldValidation {
     this.prepareWrapper();
 
     if (this.isInputOptions) {
-      this.$input.validationMessage = '';
-      this.$input.setCustomValidity = (msg) => {
-        this.$input.validationMessage = String(msg);
+      const $input = this.$input as any;
+
+      $input.validationMessage = '';
+      $input.setCustomValidity = (msg: string) => {
+        $input.validationMessage = String(msg);
       };
-      this.$input.checkValidity = () => {
+
+      $input.checkValidity = () => {
         return this.checkInputOptionsValidity();
       };
     }
@@ -491,7 +480,7 @@ export class UnicornFieldValidation {
 
         // If return is a promise, push to stack and resolve later
         if (r instanceof Promise || (typeof r === 'object' && r.then)) {
-          r.then((result) => {
+          r.then((result: boolean) => {
             this.handleAsyncCustomResult(result, validator);
           });
           continue;
@@ -529,14 +518,12 @@ export class UnicornFieldValidation {
     return valid;
   }
 
-  async runCustomValidityAsync() {
+  async runCustomValidityAsync(): Promise<boolean> {
     // Check custom validity
     const validates = (this.$input.getAttribute('data-validate') || '').split('|');
-    /** @type Array<boolean|string|undefined> */
-    const results = [];
 
-    /** @type Promise<boolean>[] */
-    const promises = [];
+    const results: Array<boolean|string|undefined> = [];
+    const promises: Promise<boolean>[] = [];
 
     if (this.$input.value !== '' && validates.length) {
       if (!this.checkCustomDataAttributeValidity()) {
@@ -556,6 +543,8 @@ export class UnicornFieldValidation {
           Promise.resolve(validator.handler(this.$input.value, this.$input, options, this))
             .then((r) => {
               results.push(this.handleAsyncCustomResult(r, validator));
+
+              return r;
             })
         );
       }
@@ -572,13 +561,13 @@ export class UnicornFieldValidation {
     return true;
   }
 
-  checkCustomDataAttributeValidity() {
+  checkCustomDataAttributeValidity(): boolean {
     const error = this.$input.dataset.validationFail;
 
     return this.handleCustomResult(error);
   }
 
-  checkInputOptionsValidity() {
+  checkInputOptionsValidity(): boolean {
     const isRequired = this.$input.getAttribute('required') != null;
     const optionWrappers = this.$input.querySelectorAll(this.options.inputOptionsSelector);
     let result = true;
@@ -590,7 +579,7 @@ export class UnicornFieldValidation {
         result = false;
 
         // Only need one checked
-        if (input.checked) {
+        if (input?.checked) {
           result = true;
           break;
         }
@@ -607,13 +596,13 @@ export class UnicornFieldValidation {
 
     n.checkValidity();
 
-    this.$input.validationMessage = n.validationMessage;
-    this.$input.validity = n.validity;
+    (this.$input as any).validationMessage = n.validationMessage;
+    (this.$input as any).validity = n.validity;
 
     for (const optionWrapper of optionWrappers) {
-      const input = optionWrapper.querySelector('input');
+      const input = optionWrapper.querySelector<HTMLInputElement>('input');
 
-      input.setCustomValidity(n.validationMessage);
+      input?.setCustomValidity(n.validationMessage);
     }
 
     if (!result) {
@@ -683,13 +672,7 @@ export class UnicornFieldValidation {
     return [validator, options];
   }
 
-  /**
-   * @param result {boolean|string|undefined}
-   * @param validator {Validator|null}
-   *
-   * @return {boolean}
-   */
-  handleCustomResult(result, validator = null) {
+  handleCustomResult(result: boolean|string|undefined, validator?: Nullable<Validator>): boolean {
     if (typeof result === 'string') {
       this.$input.setCustomValidity(result);
       result = result === '';
@@ -862,7 +845,7 @@ export class UnicornFieldValidation {
   }
 
   getForm() {
-    return this.el.closest(this.options.formSelector || '[uni-form-validate]');
+    return this.el.closest(this.options.formSelector || '[uni-form-validate]') as HTMLFormElement;
   }
 
   findLabel() {
@@ -887,33 +870,33 @@ function camelTo(str, sep) {
   return str.replace(/([a-z])([A-Z])/g, `$1${sep}$2`).toLowerCase();
 }
 
-validators.username = function (value, element) {
+validatorHandlers.username = function (value, element) {
   const regex = new RegExp('[\<|\>|"|\'|\%|\;|\(|\)|\&]', 'i');
   return !regex.test(value);
 };
 
-validators.numeric = function (value, element) {
+validatorHandlers.numeric = function (value, element) {
   const regex = /^(\d|-)?(\d|,)*\.?\d*$/;
   return regex.test(value);
 };
 
-validators.email = function (value, element) {
+validatorHandlers.email = function (value, element) {
   value = punycode.toASCII(value);
   const regex = /^[a-zA-Z0-9.!#$%&â€™*+\/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
   return regex.test(value);
 };
 
-validators.url = function (value, element) {
+validatorHandlers.url = function (value, element) {
   const regex = /^(?:(?:https?|ftp):\/\/)(?:\S+(?::\S*)?@)?(?:(?!10(?:\.\d{1,3}){3})(?!127(?:\.\d{1,3}){3})(?!169\.254(?:\.\d{1,3}){2})(?!192\.168(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:\/[^\s]*)?$/i;
   return regex.test(value);
 };
 
-validators.alnum = function (value, element) {
+validatorHandlers.alnum = function (value, element) {
   const regex = /^[a-zA-Z0-9]*$/;
   return regex.test(value);
 };
 
-validators.color = function (value, element) {
+validatorHandlers.color = function (value, element) {
   const regex = /^#(?:[0-9a-f]{3}){1,2}$/;
   return regex.test(value);
 };
@@ -921,17 +904,17 @@ validators.color = function (value, element) {
 /**
  * @see  http://www.virtuosimedia.com/dev/php/37-tested-php-perl-and-javascript-regular-expressions
  */
-validators.creditcard = function (value, element) {
+validatorHandlers.creditcard = function (value, element) {
   const regex = /^(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14}|6011[0-9]{12}|622((12[6-9]|1[3-9][0-9])|([2-8][0-9][0-9])|(9(([0-1][0-9])|(2[0-5]))))[0-9]{10}|64[4-9][0-9]{13}|65[0-9]{14}|3(?:0[0-5]|[68][0-9])[0-9]{11}|3[47][0-9]{13})*$/;
   return regex.test(value);
 };
 
-validators.ip = function (value, element) {
+validatorHandlers.ip = function (value, element) {
   const regex = /^((?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))*$/;
   return regex.test(value);
 };
 
-validators['password-confirm'] = function (value, element) {
+validatorHandlers['password-confirm'] = function (value, element) {
   const selector = element.dataset.confirmTarget;
 
   if (!selector) {
