@@ -111,7 +111,7 @@ export default class UnicornHelper {
     return each(collection, iteratee);
   }
 
-  getBoundedInstance(selector: string | Element, name: string, callback: ((el: Element) => any) = () => null): any {
+  getBoundedInstance(selector: string | HTMLElement, name: string, callback: ((el: HTMLElement) => any) = () => null): any {
     const element = this.selectOne(selector);
 
     if (!element) {
@@ -122,21 +122,21 @@ export default class UnicornHelper {
   }
 
   getBoundedInstanceList(
-    selector: string | NodeListOf<Element>,
+    selector: string | NodeListOf<HTMLElement>,
     name: string,
-    callback: ((el: Element) => any) = () => null
+    callback: ((el: HTMLElement) => any) = () => null
   ) {
     return this.selectAll(selector, (ele) => {
       return this.getBoundedInstance(ele, name, callback);
     });
   }
 
-  module(ele: string | Element | NodeListOf<Element>, name: string, callback: ((el: Element) => any) = () => null) {
+  module(ele: string | HTMLElement | NodeListOf<HTMLElement>, name: string, callback: ((el: HTMLElement) => any) = () => null) {
     if (typeof ele === 'string') {
       return this.getBoundedInstanceList(ele, name, callback);
     }
 
-    if (ele instanceof Element) {
+    if (ele instanceof HTMLElement) {
       return this.getBoundedInstance(ele, name, callback);
     }
 

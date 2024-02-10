@@ -1,14 +1,36 @@
-
 import { defaultsDeep } from 'lodash-es';
 
-/**
- * Default validators
- *
- * @type {{ [name: string]: ValidationHandler }}
- */
-const validators = {};
+declare type ValidationHandler = (input: HTMLElement, value: any) => any;
 
-const defaultOptions = {
+declare type Validator = {
+  handler: ValidationHandler,
+  options?: Record<string, any>;
+};
+
+export interface FormValidationOptions {
+  scroll: boolean;
+  validatedClass: null;
+  fieldSelector: null;
+  scrollOffset: number;
+  enabled: boolean
+}
+
+export interface FieldValidationOptions {
+  validClass: string;
+  errorSelector: string;
+  inputOptions: boolean;
+  inputOptionsSelector: string;
+  formSelector: string;
+  selector: string;
+  inputOptionsWrapperSelector: string;
+  events: string[];
+  invalidClass: string;
+  errorMessageClass: string
+}
+
+const validators: Record<string, Validator> = {};
+
+const defaultOptions: FormValidationOptions = {
   scroll: false,
   scrollOffset: -100,
   enabled: true,
@@ -16,7 +38,7 @@ const defaultOptions = {
   validatedClass: null,
 };
 
-const defaultFieldOptions = {
+const defaultFieldOptions: FieldValidationOptions = {
   formSelector: '[uni-form-validate]',
   errorSelector: '[data-field-error]',
   selector: 'input[data-field-input], select[data-field-input], textarea[data-field-input]',
@@ -30,39 +52,31 @@ const defaultFieldOptions = {
 };
 
 export class UnicornFormValidation {
-  /**
-   * @type {Element[]}
-   */
-  presetFields = [];
+  presetFields: HTMLElement[] = [];
 
-  /**
-   * @type {{ [name: string]: Validator }}
-   */
-  static globalValidators = {};
+  static globalValidators: Record<string, Validator> = {};
 
-  /**
-   * @type {{ [name: string]: Validator }}
-   */
-  validators = {};
-  $form;
+  validators: Record<string, Validator> = {};
+  options: FormValidationOptions;
+  $form: HTMLElement;
 
   static is = 'uni-form-validate';
 
-  constructor(el, options = {}) {
+  constructor(el: HTMLElement, options = {}) {
     this.$form = u.selectOne(el);
-    this.setOptions(options);
+    this.options = defaultsDeep({}, options, defaultOptions);
 
     this.registerDefaultValidators();
 
     this.init();
   }
 
-  setOptions(options) {
+  setOptions(options: Partial<FormValidationOptions>) {
     this.options = defaultsDeep({}, options, defaultOptions);
   }
 
   get scrollEnabled() {
-    return this.options.scroll === true;
+    return this.options.scroll;
   }
 
   get scrollOffset() {
@@ -79,7 +93,7 @@ export class UnicornFormValidation {
 
   init() {
     if (this.$form.tagName === 'FORM') {
-      this.$form.setAttribute('novalidate', true);
+      this.$form.setAttribute('novalidate', 'true');
       this.$form.addEventListener('submit', (event) => {
         if (this.options.enabled && !this.validateAll()) {
           event.stopImmediatePropagation(); // Stop following events
@@ -99,18 +113,11 @@ export class UnicornFormValidation {
     this.prepareFields(this.presetFields);
   }
 
-  /**
-   * @returns {Element[]}
-   */
-  findDOMFields() {
-    return u.selectAll(this.$form.querySelectorAll(this.fieldSelector));
+  findDOMFields(): HTMLElement[] {
+    return u.selectAll(this.$form.querySelectorAll<HTMLElement>(this.fieldSelector));
   }
 
-  /**
-   * @param {Element[]} inputs
-   * @returns {Promise<void>}
-   */
-  prepareFields(inputs) {
+  prepareFields(inputs: HTMLElement[]): Promise<void> {
     inputs.forEach((input) => {
       this.prepareFieldWrapper(input);
     });
@@ -119,16 +126,12 @@ export class UnicornFormValidation {
     return Promise.resolve();
   }
 
-  /**
-   * @param {Element} input
-   * @returns {Element}
-   */
-  prepareFieldWrapper(input) {
+  prepareFieldWrapper(input: HTMLElement): HTMLElement | null {
     if (['INPUT', 'SELECT', 'TEXTAREA'].indexOf(input.tagName) !== -1) {
-      let wrapper = input.closest('[uni-field-validate]');
+      let wrapper: HTMLElement | null = input.closest('[uni-field-validate]');
 
       if (!wrapper) {
-        wrapper = input.closest('[data-input-container]') || input.parentNode;
+        wrapper = input.closest('[data-input-container]') || input.parentElement;
 
         wrapper.setAttribute('uni-field-validate', '{}');
       }
@@ -139,33 +142,22 @@ export class UnicornFormValidation {
     return input;
   }
 
-  /**
-   * @param {boolean} containsPresets
-   * @returns {Element[]}
-   */
-  findFields(containsPresets = true) {
+  findFields(containsPresets: boolean = true): HTMLElement[] {
     let inputs = this.findDOMFields();
 
     if (containsPresets) {
       inputs.push(...this.presetFields);
     }
 
-    inputs = inputs.map((input) => {
-      return this.prepareFieldWrapper(input);
-    });
-
-    return inputs.filter(input => input != null);
+    return inputs.map((input) => this.prepareFieldWrapper(input))
+      .filter(input => input != null) as HTMLElement[];
   }
 
-  /**
-   * @param input {Element}
-   * @returns {UnicornFieldValidation|null}
-   */
-  getFieldComponent(input) {
+  getFieldComponent(input: HTMLElement): UnicornFieldValidation | null {
     let v = u.getBoundedInstance(input, 'field.validation');
 
     if (!v) {
-      const wrapper = input.closest('[uni-field-validate]');
+      const wrapper = input.closest('[uni-field-validate]') as HTMLElement | null;
 
       if (wrapper) {
         v = u.getBoundedInstance(wrapper, 'field.validation');
@@ -175,21 +167,17 @@ export class UnicornFormValidation {
     return v;
   }
 
-  /**
-   * @param {Element[]} fields
-   * @returns {boolean}
-   */
-  validateAll(fields = null) {
+  validateAll(fields?: Nullable<HTMLElement[]>): boolean {
     this.markFormAsUnvalidated();
 
     fields = fields || this.findFields();
-    let firstFail = null;
+    let firstFail: HTMLElement | null = null;
 
-    fields.forEach((field) => {
+    for (const field of fields) {
       const fv = this.getFieldComponent(field);
 
       if (!fv) {
-        return;
+        continue;
       }
 
       const result = fv.checkValidity();
@@ -197,7 +185,7 @@ export class UnicornFormValidation {
       if (!result && !firstFail) {
         firstFail = field;
       }
-    });
+    }
 
     this.markFormAsValidated();
 
@@ -298,7 +286,7 @@ export class UnicornFormValidation {
    * Add validator handler.
    *
    * @param {string} name
-   * @param {ValidationHandler} validator
+   * @param {Validator} validator
    * @param {ValidationOptions} options
    * @returns {this}
    */
@@ -317,7 +305,7 @@ export class UnicornFormValidation {
    * Add validator handler.
    *
    * @param {string} name
-   * @param {ValidationHandler} validator
+   * @param {Validator} validator
    * @param {ValidationOptions} options
    * @returns {this}
    */
@@ -484,14 +472,14 @@ export class UnicornFieldValidation {
     // Check custom validity
     const validates = (this.$input.getAttribute('data-validate') || '').split('|');
     let result = true;
-    
+
     if (this.$input.value !== '' && validates.length) {
       if (!this.checkCustomDataAttributeValidity()) {
         return false;
       }
 
       for (const validatorName of validates) {
-        const [ validator, options ] = this.getValidator(validatorName) || [ null, {} ];
+        const [validator, options] = this.getValidator(validatorName) || [null, {}];
 
         if (!validator) {
           continue;
@@ -556,7 +544,7 @@ export class UnicornFieldValidation {
       }
 
       for (const validatorName of validates) {
-        const [ validator, options ] = this.getValidator(validatorName) || [ null, {} ];
+        const [validator, options] = this.getValidator(validatorName) || [null, {}];
 
         if (!validator) {
           continue;
@@ -675,12 +663,12 @@ export class UnicornFieldValidation {
     }
 
     const validatorName = matches.groups.type || '';
-    
+
     const params = matches.groups.params || '';
 
     const fv = this.getFormValidation(this.$form);
     const validator = fv.validators[validatorName] || fv.constructor.globalValidators[validatorName];
-    
+
     if (!validator) {
       return null;
     }
@@ -692,7 +680,7 @@ export class UnicornFieldValidation {
       options[paramMatch.groups.key] = handleParamValue(paramMatch.groups.value);
     }
 
-    return [ validator, options ];
+    return [validator, options];
   }
 
   /**
@@ -783,7 +771,7 @@ export class UnicornFieldValidation {
     /** @type ValidityState */
     const state = this.$input.validity;
     let message = this.$input.validationMessage;
-    
+
     for (let key in state) {
       if (state[key] === true && this.$input.dataset[key + 'Message']) {
         message = this.$input.dataset[key + 'Message'];

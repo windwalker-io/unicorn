@@ -1,15 +1,17 @@
+import type { Unicorn } from '@/index';
 
 export default class UnicornValidation {
-  static install(app, options = {}) {
+  static install(app: Unicorn) {
     const $validation = app.$validation = new this(app);
 
-    app.formValidation = (selector = '[uni-form-validation]') => {
-      return $validation.import().then(() => $validation.get(selector));
+    app.formValidation = async (selector: string = '[uni-form-validation]') => {
+      await $validation.import();
+      return $validation.get(selector);
     };
   }
 
-  constructor(app) {
-    this.app = app;
+  constructor(protected app: Unicorn) {
+    //
   }
 
   /**
@@ -24,7 +26,7 @@ export default class UnicornValidation {
    * @param {string|Element} selector
    * @returns {UnicornFormValidation}
    */
-  get(selector) {
+  get(selector: string): UnicornFormValidation {
     return this.app.$helper.getBoundedInstance(selector, 'form.validation');
   }
 
@@ -32,14 +34,15 @@ export default class UnicornValidation {
    * @param {string|Element} selector
    * @returns {UnicornFieldValidation}
    */
-  getField(selector) {
+  getField(selector: string | HTMLElement) {
     return this.app.$helper.getBoundedInstance(selector, 'field.validation');
   }
 
-  addGlobalValidator(name, validator, options = {}) {
-    return this.import().then((m) => {
-      UnicornFormValidation.addGlobalValidator(name, validator, options);
-      return m;
-    });
+  async addGlobalValidator(name: string, validator: any, options = {}) {
+    let m = await this.import();
+
+    UnicornFormValidation.addGlobalValidator(name, validator, options);
+
+    return m;
   }
 }

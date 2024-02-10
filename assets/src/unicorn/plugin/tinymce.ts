@@ -67,6 +67,7 @@ export class TinymceEditor {
 
     this.options = defaultsDeep(
       {},
+      defaultOptions,
       this.prepareOptions(options, tinymce.majorVersion),
       {
         unicorn: {

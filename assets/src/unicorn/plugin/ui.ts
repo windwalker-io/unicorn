@@ -1,18 +1,16 @@
-
+import type { Unicorn } from '@/index';
 import { defaultsDeep } from 'lodash-es';
+import type { SpectrumOptions } from 'spectrum-vanilla/dist/types/types';
 
 export default class UnicornUI {
-  theme;
+  theme?: any;
+  aliveHandle?: any;
 
   static get is() {
     return 'ui';
   }
 
-  /**
-   * @param {UnicornApp} app
-   * @param {object} options
-   */
-  static install(app, options = {}) {
+  static install(app: Unicorn) {
     const ui = app.$ui = new this(app);
     app.addMessage = ui.renderMessage.bind(ui);
     app.clearMessages = ui.clearMessages.bind(ui);
@@ -25,8 +23,6 @@ export default class UnicornUI {
     app.prepareAlpine = ui.prepareAlpine.bind(ui);
     app.webComponentPolyfill = ui.webComponentPolyfill.bind(ui);
     app.defineCustomElement = ui.defineCustomElement.bind(ui);
-
-    this.prepareInpageCSS();
   }
 
   static get defaultOptions() {
@@ -35,49 +31,45 @@ export default class UnicornUI {
     };
   }
 
-  installTheme(theme) {
+  installTheme(theme: any) {
     this.theme = theme;
   }
 
   /**
    * @param {Unicorn} app
    */
-  constructor(app) {
-    this.app = app;
-    this.aliveHandle = null;
+  constructor(protected app: Unicorn) {
+    //
   }
 
-  loadAlpine(callback = null) {
+  async loadAlpine(callback?: Nullable<() => void>) {
     // For V3
     if (callback) {
       this.prepareAlpine(callback);
     }
 
-    return this.app.import('@alpinejs')
-      .then((m) => {
-        // For V2
-        if (Alpine.version.startsWith('2.')) {
-          return this.app.$alpine2.loadSpruce()
-            .then((s) => {
-              Alpine.store = Spruce.store.bind(Spruce);
-              callback();
-              return m;
-            })
-            .then(() => {
-              this.app.$alpine2.startAlpine();
-              return m;
-            });
-        }
+    let m = await this.app.import('@alpinejs');
 
-        return m;
-      });
+    if (Alpine.version.startsWith('2.')) {
+      await this.app.$alpine2.loadSpruce();
+      Alpine.store = Spruce.store.bind(Spruce);
+
+      if (callback) {
+        callback();
+      }
+
+      await this.app.$alpine2.startAlpine();
+      return m;
+    }
+
+    return m;
   }
 
-  async initAlpine(directive) {
+  async initAlpine(directive: string) {
     await this.app.loadAlpine();
 
-    u.selectAll(`[${directive}]`, (el) => {
-      const code = el.getAttribute(directive);
+    u.selectAll<HTMLElement>(`[${directive}]`, (el) => {
+      const code = el.getAttribute(directive) || '';
       el.removeAttribute(directive);
 
       el.setAttribute('x-data', code);
@@ -88,9 +80,8 @@ export default class UnicornUI {
 
   /**
    * Before Alpine init
-   * @param {function} callback
    */
-  prepareAlpine(callback) {
+  prepareAlpine(callback: () => void) {
     if (window.Alpine) {
       callback();
     } else {
@@ -100,10 +91,8 @@ export default class UnicornUI {
 
   /**
    * Render Messages.
-   * @param {string|string[]} messages
-   * @param {string} type
    */
-  renderMessage(messages, type = 'info') {
+  renderMessage(messages: string | string[], type: string = 'info') {
     this.theme.renderMessage(messages, type);
   }
 
@@ -116,10 +105,8 @@ export default class UnicornUI {
 
   /**
    * Show notify.
-   * @param {string|string[]} messages
-   * @param {string} type
    */
-  notify(messages, type = 'info') {
+  notify(messages: string | string[], type: string = 'info') {
     this.theme.renderMessage(messages, type);
   }
 
@@ -132,16 +119,15 @@ export default class UnicornUI {
 
   /**
    * webComponentPolyfill
-   * @returns Promise<*>
    */
-  webComponentPolyfill() {
+  async webComponentPolyfill() {
     return new Promise((resolve) => {
       this.app.import('@vendor/@webcomponents/webcomponentsjs/webcomponents-loader.js')
         .then((m) => {
           if (window?.WebComponents?.ready === true) {
             resolve(m);
           } else {
-            window.addEventListener('WebComponentsReady', function() {
+            window.addEventListener('WebComponentsReady', function () {
               resolve(m);
             });
           }
@@ -149,21 +135,11 @@ export default class UnicornUI {
     });
   }
 
-  /**
-   *
-   * @param {string} is
-   * @param {*} target
-   * @param {*} options
-   * @returns Promise<*>
-   */
-  defineCustomElement(is, target, options) {
-    const promise = this.app.import('@vendor/@webcomponents/webcomponentsjs/custom-elements-es5-adapter.js');
+  async defineCustomElement(is: string, constructor: CustomElementConstructor, options?: ElementDefinitionOptions) {
+    const m = await this.app.import('@vendor/@webcomponents/webcomponentsjs/custom-elements-es5-adapter.js');
 
-    return promise.then(m => {
-      customElements.define(is, target, options);
-
-      return m;
-    });
+    customElements.define(is, constructor, options);
+    return m;
   }
 
   /**
@@ -174,7 +150,7 @@ export default class UnicornUI {
    * @param options
    * @returns Promise<any>
    */
-  mark(selector = null, keyword = '', options = {}) {
+  mark(selector?: string | HTMLElement, keyword: string = '', options: Record<string, any> = {}) {
     return this.app.import('@vendor/mark.js/dist/mark.min.js')
       .catch((e) => {
         console.error('Package "mark.js" not found.', e);
@@ -190,11 +166,12 @@ export default class UnicornUI {
 
   /**
    * @see https://tom-select.js.org/
-   * @param {string | Element} selector
-   * @param {object} options
-   * @param {string} theme
    */
-  tomSelect(selector, options = {}, theme = 'bootstrap5') {
+  tomSelect(
+    selector?: Nullable<string | HTMLElement | NodeListOf<HTMLElement>>,
+    options: Record<string, any> = {},
+    theme: string = 'bootstrap5'
+  ) {
     return this.app.import(
       this.app.minFileName('@vendor/tom-select/dist/js/tom-select.complete.js'),
       this.app.importCSS(
@@ -216,7 +193,7 @@ export default class UnicornUI {
                 }
               });
 
-              if (ele.multiple) {
+              if ((ele as HTMLSelectElement).multiple) {
                 options.plugins.remove_button = {};
               } else {
                 options.plugins.dropdown_input = {};
@@ -234,9 +211,10 @@ export default class UnicornUI {
 
                   if (ele.value !== oldValue) {
                     this.setValue(
-                      ele.querySelector(`option[value="${oldValue}"]`)?.value
-                      ?? ele.querySelector('option')?.value,
-                        true
+                      ele.querySelector<HTMLOptionElement>(`option[value="${oldValue}"]`)?.value
+                      ?? ele.querySelector<HTMLOptionElement>('option')?.value
+                      ?? '',
+                      true
                     );
                   }
                 }
@@ -259,13 +237,10 @@ export default class UnicornUI {
 
   /**
    * Choices.js
-   * @param {string} selector
-   * @param {object} options
-   * @returns {Promise<T>}
    *
    * @deprecated Use TomSelect() instead.
    */
-  choices(selector = null, options = {}) {
+  choices(selector: Nullable<string | HTMLElement>, options: Record<string, any> = {}) {
     return this.app.import(
       '@vendor/choices.js/public/assets/scripts/choices.min.js',
       this.app.importCSS('@vendor/choices.js/public/assets/styles/choices.min.css')
@@ -291,152 +266,132 @@ export default class UnicornUI {
 
   /**
    * Flatpickr
-   * @returns {Promise<*>}
    */
-  flatpickr() {
+  flatpickr(): Promise<any> {
     return this.app.import('@unicorn/ui/flatpickr-components.js');
   }
 
-  /**
-   *
-   * @param {string|Element} element
-   * @param {string|Element} dependent
-   * @param {object} options
-   * @returns {Promise<*>}
-   */
-  listDependent(element = null, dependent = null, options = {}) {
-    return this.app.import('@unicorn/ui/list-dependent.js').then((module) => {
-      if (element) {
-        module.ListDependent.handle(element, dependent, options);
-      }
+  async listDependent(
+    element?: Nullable<string | HTMLElement>,
+    dependent?: Nullable<string | HTMLElement>,
+    options: Record<string, any> = {}
+  ): Promise<any> {
+    const module = await this.app.import('@unicorn/ui/list-dependent.js');
 
-      return module;
-    });
+    if (element) {
+      module.ListDependent.handle(element, dependent, options);
+    }
+
+    return module;
   }
 
   /**
    * Cascade Select
-   * @returns {Promise<*>}
    */
-  cascadeSelect() {
+  cascadeSelect(): Promise<any> {
     return this.app.import('@unicorn/field/cascade-select.js');
   }
 
   /**
    * Single Drag Image
-   * @returns {Promise<*>}
    */
-  sid() {
+  sid(): Promise<any> {
     return this.app.import('@unicorn/field/single-image-drag.js');
   }
 
   /**
    * File Drag
-   * @returns {Promise<*>}
    */
-  fileDrag() {
+  fileDrag(): Promise<any> {
     return this.app.import('@unicorn/field/file-drag.js');
   }
 
   /**
    * Iframe Modal
-   * @returns {Promise<*>}
    */
-  iframeModal() {
+  iframeModal(): Promise<any> {
     return this.app.import('@unicorn/ui/iframe-modal.js');
   }
 
   /**
    * Modal Field
-   * @returns {Promise<*>}
    */
-  modalField() {
+  modalField(): Promise<any> {
     return this.app.import('@unicorn/field/modal-field.js');
   }
 
   /**
-   * Miltuple Uploader
-   * @returns {Promise<*>}
+   * Multiple Uploader
    */
-  multiUploader() {
+  multiUploader(): Promise<any> {
     return this.app.import('@unicorn/field/multi-uploader.js');
   }
 
   /**
    * Repeatable
-   * @returns {Promise<*>}
    */
-  repeatable() {
+  repeatable(): Promise<any> {
     return this.app.import('@unicorn/field/repeatable.js');
   }
 
-  modalTree() {
+  modalTree(): Promise<any> {
     return this.app.import('@unicorn/field/modal-tree.js');
   }
 
   /**
    * S3 Uploader.
-   * @param {string} name
-   * @returns {Promise<S3Uploader>}
    */
-  s3Uploader(name = null) {
-    return u.import('@unicorn/aws/s3-uploader.js').then(function (module) {
-      if (name) {
-        return S3Uploader.get(name);
-      }
+  async s3Uploader(name?: Nullable<string>): Promise<any> {
+    const module = await u.import('@unicorn/aws/s3-uploader.js');
 
-      return module;
-    });
+    if (name) {
+      return S3Uploader.get(name);
+    }
+
+    return module;
   }
 
-  /**
-   * @param {string|Elemet} target
-   * @param {number} duration
-   */
-  slideUp(target, duration = 300) {
-    target = this.app.selectOne(target);
+  async slideUp(target: string | HTMLElement, duration: number = 300): Promise<Animation | void> {
+    const ele = this.app.selectOne(target);
 
-    if (!target) {
+    if (!ele) {
       return Promise.resolve();
     }
 
-    target.style.overflow = 'hidden';
+    ele.style.overflow = 'hidden';
 
     const animation = u.animate(
-      target,
+      ele,
       { height: 0, paddingTop: 0, paddingBottom: 0 },
       { duration, easing: 'ease-out' }
     );
 
-    return animation.finished.then((r) => {
-      target.style.display = 'none';
-      return r;
-    });
+    const r = await animation.finished;
+
+    ele.style.display = 'none';
+
+    return r;
   }
 
-  /**
-   * @param {string|Element} target
-   * @param {number} duration
-   * @param {string} display
-   * @returns {Promise<*}
-   */
-  slideDown(target, duration = 300, display = 'block') {
-    target = this.app.selectOne(target);
+  slideDown(target: string | HTMLElement,
+            duration: number = 300,
+            display: string = 'block'): Promise<Animation | void> {
+    const ele = this.app.selectOne(target);
 
-    if (!target) {
+    if (!ele) {
       return Promise.resolve();
     }
 
-    target.style.display = display;
+    ele.style.display = display;
 
     // Get height
     let maxHeight = 0;
-    [].forEach.call(target.children, (child) => {
+    for (const child of Array.from(ele.children) as HTMLElement[]) {
       maxHeight = Math.max(child.offsetHeight, maxHeight);
-    });
+    }
 
     const animation = u.animate(
-      target,
+      ele,
       {
         height: [
           0,
@@ -447,8 +402,8 @@ export default class UnicornUI {
     );
 
     animation.addEventListener('finish', () => {
-        target.style.height = '';
-        target.style.overflow = 'visible';
+      ele.style.height = '';
+      ele.style.overflow = 'visible';
     });
 
     return animation.finished;
@@ -456,53 +411,51 @@ export default class UnicornUI {
 
   /**
    * slideToggle
-   * @param {string|Element} target
-   * @param {number} duration
-   * @param {string} display
-   * @returns {Promise<*>}
    */
-  slideToggle(target, duration = 500, display = 'block') {
-    target = this.app.selectOne(target);
+  slideToggle(target: string | HTMLElement,
+              duration: number = 500,
+              display: string = 'block'): Promise<Animation | void> {
+    const ele = this.app.selectOne(target);
 
-    if (!target) {
+    if (!ele) {
       return Promise.resolve();
     }
 
-    if (window.getComputedStyle(target).display === 'none') {
-      return this.slideDown(target, duration, display);
+    if (window.getComputedStyle(ele).display === 'none') {
+      return this.slideDown(ele, duration, display);
     } else {
-      return this.slideUp(target, duration);
+      return this.slideUp(ele, duration);
     }
   }
 
-  /**
-   * @param {string|Element} el
-   * @param {number} duration
-   * @returns {Promise<*>}
-   */
-  fadeOut(el, duration = 500) {
-    el = this.app.selectOne(el);
+  async fadeOut(selector: string | HTMLElement, duration: number = 500): Promise<Animation | void> {
+    const el = this.app.selectOne(selector);
+
+    if (!el) {
+      return;
+    }
 
     const animation = u.animate(el, { opacity: 0 }, { duration, easing: 'ease-out' });
 
-    return animation.finished.then(() => {
-      el.style.display = 'none';
-    });
+    const p = await animation.finished;
+    el.style.display = 'none';
+
+    return p;
   };
 
-  /**
-   * @param {string|Element} el
-   * @param {number} duration
-   * @param {string} display
-   * @returns {Promise<*>}
-   */
-  fadeIn(el, duration = 500, display = 'block') {
-    el = this.app.selectOne(el);
+  async fadeIn(selector: string | HTMLElement,
+               duration: number = 500,
+               display: string = 'block'): Promise<Animation | void> {
+    const el = this.app.selectOne(selector);
+
+    if (!el) {
+      return;
+    }
 
     el.style.display = '';
 
     if (window.getComputedStyle(el).display !== display) {
-        el.style.display = display;
+      el.style.display = display;
     }
 
     const animation = u.animate(el, { opacity: 1 }, { duration, easing: 'ease-out' });
@@ -510,71 +463,64 @@ export default class UnicornUI {
     return animation.finished;
   };
 
-  /**
-   * @param {string|Element} element
-   * @param {string} color
-   * @param {number} duration
-   * @returns {string|Element}
-   */
-  highlight(element, color = '#ffff99', duration = 600) {
-    element = this.app.selectOne(element);
+  async highlight(selector: string | HTMLElement,
+                  color: string = '#ffff99',
+                  duration: number = 600): Promise<Animation | void> {
+    const ele = this.app.selectOne(selector);
+
+    if (!ele) {
+      return;
+    }
 
     duration /= 2;
-    const bg = window.getComputedStyle(element).backgroundColor;
-    const animation = this.app.animate(element, { backgroundColor: color }, { duration });
+    const bg = window.getComputedStyle(ele).backgroundColor;
 
-    return animation.finished.then(() => {
-      return this.app.animate(element, { backgroundColor: bg }, { duration });
-    });
+    const animation = this.app.animate(ele, { backgroundColor: color }, { duration });
+
+    await animation.finished;
+
+    return this.app.animate(ele, { backgroundColor: bg }, { duration });
   }
 
   /**
    * Color Picker.
-   *
-   * @param {string|HTMLElement|null} selector
-   * @param {SpectrumOptions} options
-   *
-   * @return Promise<Spectrum>
    */
-  colorPicker(selector = null, options = {}) {
+  async colorPicker(
+    selector?: Nullable<string | HTMLElement | NodeListOf<HTMLElement>>,
+    options: Partial<SpectrumOptions> = {}
+  ): Promise<any> {
     if (options?.theme === 'dark') {
       this.app.importCSS('@spectrum/spectrum-dark.min.css');
-    } else if (options?.theme !== false) {
+    } else if (!options?.theme) {
       this.app.importCSS('@spectrum/spectrum.min.css');
     }
 
-    return this.app.import('@spectrum')
-      .then((m) => {
-        if (typeof options.locale === 'string') {
-          let ls = options.locale.split('-').map((l) => l.toLocaleString());
+    const m = await this.app.import('@spectrum');
 
-          if (ls[0] === ls[1]) {
-            ls = [ls];
-          }
+    // Locale
+    if (typeof options.locale === 'string') {
+      let ls: any = options.locale.split('-').map((l) => l.toLocaleString());
 
-          ls = ls.join('-');
+      if (ls[0] === ls[1]) {
+        ls = [ls];
+      }
 
-          return this.app.import(`@spectrum/i18n/${ls}.js`)
-            .then(() => m)
-            .catch(() => m);
-        }
+      ls = ls.join('-');
+      await this.app.import(`@spectrum/i18n/${ls}.js`);
+    }
 
-        return m;
-      })
-      .then((m) => {
-        if (selector) {
-          u.module(selector, 'spectrum', (ele) => Spectrum.getInstance(ele, options));
-        }
-        return m;
-      });
+    if (selector) {
+      u.module(selector, 'spectrum', (ele) => Spectrum.getInstance(ele, options));
+    }
+
+    return m;
   }
 
-  /**
-   * @param {string|Element} formSelector
-   * @param {string|Element} buttonSelector
-   * @param {object} options
-   */
-  disableOnSubmit(formSelector = '#admin-form', buttonSelector = null, options = {}) {
+  disableOnSubmit(
+    formSelector: string | HTMLFormElement = '#admin-form',
+    buttonSelector: string = '',
+    options: Record<string, any> = {}
+  ) {
     buttonSelector = buttonSelector || [
       '#admin-toolbar button',
       '#admin-toolbar a',
@@ -592,7 +538,7 @@ export default class UnicornUI {
     const event = options.event || 'submit';
     const spinnerClass = options.spinnerClass || 'spinner-border spinner-border-sm';
 
-    this.app.selectAll(buttonSelector, (button) => {
+    this.app.selectAll<HTMLElement>(buttonSelector, (button) => {
       button.addEventListener('click', (e) => {
         button.dataset.clicked = '1';
 
@@ -602,16 +548,16 @@ export default class UnicornUI {
       });
     });
 
-    const form = this.app.selectOne(formSelector);
+    const form = this.app.selectOne<HTMLFormElement>(formSelector);
     form?.addEventListener(event, (e) => {
       setTimeout(() => {
         if (!form.checkValidity()) {
           return;
         }
 
-        this.app.selectAll(buttonSelector, (button) => {
-          button.disabled = true;
+        this.app.selectAll<HTMLElement>(buttonSelector, (button) => {
           button.style.pointerEvents = 'none';
+          button.setAttribute('disabled', 'disabled');
           button.classList.add('disabled');
 
           if (button.dataset.clicked) {
@@ -632,74 +578,64 @@ export default class UnicornUI {
     });
   }
 
-  disableIfStackNotEmpty(buttonSelector = '[data-task=save]', stackName = 'uploading') {
+  disableIfStackNotEmpty(buttonSelector: string = '[data-task=save]', stackName: string = 'uploading') {
     const stack = u.stack(stackName);
 
     stack.observe((stack, length) => {
-      for (const button of u.selectAll(buttonSelector)) {
-        button.disabled = length > 0;
+      for (const button of u.selectAll<HTMLElement>(buttonSelector)) {
+        if (length > 0) {
+          button.setAttribute('disabled', 'disabled');
+          button.classList.add('disabled');
+        } else {
+          button.removeAttribute('disabled');
+          button.classList.remove('disabled');
+        }
       }
     });
   }
 
-  /**
-   * @param {string|Element} selector
-   * @param {object} options
-   * @returns {Promise<*>}
-   */
-  checkboxesMultiSelect(selector = null, options = {}) {
-    return this.app.import('@unicorn/ui/checkboxes-multi-select.js')
-      .then((m) => {
-        if (selector) {
-          return m.CheckboxesMultiSelect.handle(selector, options);
-        }
+  async checkboxesMultiSelect(selector?: Nullable<string | HTMLElement>, options: Record<string, any> = {}): Promise<any> {
+    const m = await this.app.import('@unicorn/ui/checkboxes-multi-select.js');
 
-        return m;
-      });
+    if (selector) {
+      m.CheckboxesMultiSelect.handle(selector, options);
+    }
+
+    return m;
   }
 
   /**
    * Keep alive.
-   *
-   * @param {string} url
-   * @param {Number} time
-   *
-   * @return {number}
    */
-  keepAlive(url, time = 60000) {
+  keepAlive(url: string, time: number = 60000): () => void {
     const aliveHandle = window.setInterval(() => fetch(url), time);
 
     return () => {
-      clearInterval(aliveHandle)
+      clearInterval(aliveHandle);
     };
   }
 
   /**
    * Init Form Show On
-   * @returns {Promise<*>}
    */
-  initShowOn() {
+  initShowOn(): Promise<any> {
     return u.import('@unicorn/ui/show-on.js');
   }
 
   /**
    * Vue component field.
-   * @param {Element|string|null} selector
-   * @param {any} value
-   * @param {any} options
-   * @returns {Promise<any>}
    */
-  vueComponentField(selector = null, value = null, options = {}) {
-    return u.import('@unicorn/field/vue-component-field.js').then((m) => {
-      if (selector) {
-        VueComponentField.init(selector, value, options);
-      }
+  async vueComponentField(
+    selector?: Nullable<string | HTMLElement>,
+    value?: any,
+    options: Record<string, any> = {}
+  ): Promise<any> {
+    const m = await u.import('@unicorn/field/vue-component-field.js');
 
-      return m;
-    });
-  }
+    if (selector) {
+      m.VueComponentField.init(selector, value, options);
+    }
 
-  static prepareInpageCSS() {
-    //
+    return m;
   }
 }

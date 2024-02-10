@@ -1,4 +1,5 @@
-import fusion, { webpack, watch, wait } from '@windwalker-io/fusion';
+import fusion, { webpack, watch, wait, webpackBundle } from '@windwalker-io/fusion';
+import path from 'path';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 
 export async function uiBootstrap5() {
@@ -16,16 +17,17 @@ export async function uiBootstrap5() {
 }
 
 export async function validation() {
-  watch(
-    ['src/modules/**/*.js', 'scss/**/*.scss']
-  );
+  return webpackBundle(
+    './src/modules/ui/validation-components.ts',
+    './dist/ui/validation-components.js',
+    (options) => {
+      // options.output.library = 'Unicorn';
+      options.output.libraryTarget = 'umd';
+      options.output.clean = false;
 
-  return wait(
-    webpack('./src/modules/ui/validation-components.js', './dist/ui/', {
-      override: (options) => {
-        options.output.libraryTarget = 'umd';
-      }
-    })
+      options.resolve.alias = options.resolve.alias || {};
+      options.resolve.alias['@'] = path.resolve('./src');
+    }
   );
 }
 
@@ -221,6 +223,7 @@ export async function vueComponentField() {
   return wait(
     webpack('./src/modules/field/vue-component-field.js', './dist/field/', {
       override: (options) => {
+        options.output.library = 'VueComponentField';
         options.output.libraryTarget = 'umd';
       }
     })
