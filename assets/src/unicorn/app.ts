@@ -1,8 +1,8 @@
 
-import type { UnicornPlugin } from '@/index';
 import { type EventAwareInterface, EventMixin } from './events';
 import { mix } from './mixwith';
 import { defaultsDeep } from 'lodash-es';
+import type { UnicornPlugin } from './types/base';
 import { getData, defData, setData, removeData } from './utilities';
 
 const defaultOptions: Record<string, any> = {};
@@ -43,6 +43,14 @@ class UnicornApp extends mix(class {}).with(EventMixin) {
     this.trigger('plugin.installed', plugin);
 
     return this;
+  }
+
+  inject<T>(plugin: string): T {
+    if (typeof this[plugin] === undefined) {
+      throw new Error(`Plugin: ${plugin} not found.`);
+    }
+
+    return this[plugin] as T;
   }
 
   detach(plugin: any) {

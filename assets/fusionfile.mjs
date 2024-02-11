@@ -17,6 +17,7 @@ import fusion, {
   webpackBundle
 } from '@windwalker-io/fusion';
 import { babelBasicOptions } from '@windwalker-io/fusion/src/utilities/babel.js';
+import dtsBundle from 'bundle-declarations-webpack-plugin';
 import * as path from 'path';
 import * as moduleTasks from './src/fusion/modules.mjs';
 export * from './src/fusion/modules.mjs';
@@ -33,6 +34,17 @@ export async function main() {
       options.resolve.alias = options.resolve.alias || {};
       options.resolve.alias['@'] = path.resolve('./src');
 
+      options.module.rules[2].options.configFile = path.resolve('tsconfig.json');
+      options.module.rules[2].options.transpileOnly = true;
+
+      options.plugins.push(new dtsBundle.BundleDeclarationsWebpackPlugin({
+        outFile: 'unicorn.d.ts',
+        compilationOptions: {
+          preferredConfigPath: path.resolve('tsconfig.json'),
+        },
+      }));
+
+      // console.log(options.module.rules[2].options.transpileOnly);
     }
   );
   // Compile end

@@ -14,8 +14,9 @@
         "allowJs": true,
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
+//        "declaration": true,
         "paths": {
-            "@/*": ["./src/*"],
+//            "@/*": ["./src/*"],
         }
     }
 }

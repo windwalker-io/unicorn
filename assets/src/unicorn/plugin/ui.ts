@@ -1,6 +1,16 @@
-import type { Unicorn } from '@/index';
+import type AlpineGlobal from 'alpinejs';
 import { defaultsDeep } from 'lodash-es';
+import type { default as SpectrumGlobal } from 'spectrum-vanilla';
 import type { SpectrumOptions } from 'spectrum-vanilla/dist/types/types';
+import type Tinymce from 'tinymce';
+import type { default as TomSelectGlobal } from 'tom-select';
+import type { TomInput } from 'tom-select/dist/types/types';
+import UnicornApp from '../app';
+import type { Nullable } from '../types/base';
+import UnicornAnimate from './animate';
+import UnicornHelper from './helper';
+import UnicornLoader from './loader';
+import UnicornStack from './stack';
 
 export default class UnicornUI {
   theme?: any;
@@ -10,7 +20,7 @@ export default class UnicornUI {
     return 'ui';
   }
 
-  static install(app: Unicorn) {
+  static install(app: UnicornApp) {
     const ui = app.$ui = new this(app);
     app.addMessage = ui.renderMessage.bind(ui);
     app.clearMessages = ui.clearMessages.bind(ui);
@@ -34,11 +44,20 @@ export default class UnicornUI {
   installTheme(theme: any) {
     this.theme = theme;
   }
+  
+  get $loader() {
+    return this.app.inject<UnicornLoader>('$loader');
+  }
+  
+  get $helper() {
+    return this.app.inject<UnicornHelper>('$helper');
+  }
 
-  /**
-   * @param {Unicorn} app
-   */
-  constructor(protected app: Unicorn) {
+  get $animate() {
+    return this.app.inject<UnicornAnimate>('$animate');
+  }
+
+  constructor(protected app: UnicornApp) {
     //
   }
 
@@ -48,7 +67,7 @@ export default class UnicornUI {
       this.prepareAlpine(callback);
     }
 
-    let m = await this.app.import('@alpinejs');
+    let m = await this.$loader.import('@alpinejs');
 
     if (Alpine.version.startsWith('2.')) {
       await this.app.$alpine2.loadSpruce();
@@ -68,7 +87,7 @@ export default class UnicornUI {
   async initAlpine(directive: string) {
     await this.app.loadAlpine();
 
-    u.selectAll<HTMLElement>(`[${directive}]`, (el) => {
+    this.$helper.selectAll<HTMLElement>(`[${directive}]`, (el) => {
       const code = el.getAttribute(directive) || '';
       el.removeAttribute(directive);
 
@@ -122,9 +141,9 @@ export default class UnicornUI {
    */
   async webComponentPolyfill() {
     return new Promise((resolve) => {
-      this.app.import('@vendor/@webcomponents/webcomponentsjs/webcomponents-loader.js')
+      this.$loader.import('@vendor/@webcomponents/webcomponentsjs/webcomponents-loader.js')
         .then((m) => {
-          if (window?.WebComponents?.ready === true) {
+          if (WebComponents?.ready === true) {
             resolve(m);
           } else {
             window.addEventListener('WebComponentsReady', function () {
@@ -136,7 +155,7 @@ export default class UnicornUI {
   }
 
   async defineCustomElement(is: string, constructor: CustomElementConstructor, options?: ElementDefinitionOptions) {
-    const m = await this.app.import('@vendor/@webcomponents/webcomponentsjs/custom-elements-es5-adapter.js');
+    const m = await this.$loader.import('@vendor/@webcomponents/webcomponentsjs/custom-elements-es5-adapter.js');
 
     customElements.define(is, constructor, options);
     return m;
@@ -151,7 +170,7 @@ export default class UnicornUI {
    * @returns Promise<any>
    */
   mark(selector?: string | HTMLElement, keyword: string = '', options: Record<string, any> = {}) {
-    return this.app.import('@vendor/mark.js/dist/mark.min.js')
+    return this.$loader.import('@vendor/mark.js/dist/mark.min.js')
       .catch((e) => {
         console.error('Package "mark.js" not found.', e);
       })
@@ -172,15 +191,15 @@ export default class UnicornUI {
     options: Record<string, any> = {},
     theme: string = 'bootstrap5'
   ) {
-    return this.app.import(
-      this.app.minFileName('@vendor/tom-select/dist/js/tom-select.complete.js'),
-      this.app.importCSS(
-        this.app.minFileName(`@vendor/tom-select/dist/css/tom-select.${theme}.css`)
+    return this.$loader.import(
+      this.$loader.minFileName('@vendor/tom-select/dist/js/tom-select.complete.js'),
+      this.$loader.importCSS(
+        this.$loader.minFileName(`@vendor/tom-select/dist/css/tom-select.${theme}.css`)
       )
     )
       .then((m) => {
         if (selector) {
-          this.app.module(
+          this.$helper.module<any, HTMLSelectElement>(
             selector,
             'tom.select',
             (ele) => {
@@ -220,7 +239,7 @@ export default class UnicornUI {
                 }
               }
 
-              const t = new UnicornTomSelect(ele, options);
+              const t = new UnicornTomSelect(ele as TomInput, options);
 
               ele.addEventListener('list:updated', () => {
                 t.syncOptionsWithoutKeepSelected();
@@ -241,9 +260,9 @@ export default class UnicornUI {
    * @deprecated Use TomSelect() instead.
    */
   choices(selector: Nullable<string | HTMLElement>, options: Record<string, any> = {}) {
-    return this.app.import(
+    return this.$loader.import(
       '@vendor/choices.js/public/assets/scripts/choices.min.js',
-      this.app.importCSS('@vendor/choices.js/public/assets/styles/choices.min.css')
+      this.$loader.importCSS('@vendor/choices.js/public/assets/styles/choices.min.css')
     )
       .catch((e) => {
         console.error('Package "choices.js" not found.', e);
@@ -268,7 +287,7 @@ export default class UnicornUI {
    * Flatpickr
    */
   flatpickr(): Promise<any> {
-    return this.app.import('@unicorn/ui/flatpickr-components.js');
+    return this.$loader.import('@unicorn/ui/flatpickr-components.js');
   }
 
   async listDependent(
@@ -276,7 +295,7 @@ export default class UnicornUI {
     dependent?: Nullable<string | HTMLElement>,
     options: Record<string, any> = {}
   ): Promise<any> {
-    const module = await this.app.import('@unicorn/ui/list-dependent.js');
+    const module = await this.$loader.import('@unicorn/ui/list-dependent.js');
 
     if (element) {
       module.ListDependent.handle(element, dependent, options);
@@ -289,63 +308,63 @@ export default class UnicornUI {
    * Cascade Select
    */
   cascadeSelect(): Promise<any> {
-    return this.app.import('@unicorn/field/cascade-select.js');
+    return this.$loader.import('@unicorn/field/cascade-select.js');
   }
 
   /**
    * Single Drag Image
    */
   sid(): Promise<any> {
-    return this.app.import('@unicorn/field/single-image-drag.js');
+    return this.$loader.import('@unicorn/field/single-image-drag.js');
   }
 
   /**
    * File Drag
    */
   fileDrag(): Promise<any> {
-    return this.app.import('@unicorn/field/file-drag.js');
+    return this.$loader.import('@unicorn/field/file-drag.js');
   }
 
   /**
    * Iframe Modal
    */
   iframeModal(): Promise<any> {
-    return this.app.import('@unicorn/ui/iframe-modal.js');
+    return this.$loader.import('@unicorn/ui/iframe-modal.js');
   }
 
   /**
    * Modal Field
    */
   modalField(): Promise<any> {
-    return this.app.import('@unicorn/field/modal-field.js');
+    return this.$loader.import('@unicorn/field/modal-field.js');
   }
 
   /**
    * Multiple Uploader
    */
   multiUploader(): Promise<any> {
-    return this.app.import('@unicorn/field/multi-uploader.js');
+    return this.$loader.import('@unicorn/field/multi-uploader.js');
   }
 
   /**
    * Repeatable
    */
   repeatable(): Promise<any> {
-    return this.app.import('@unicorn/field/repeatable.js');
+    return this.$loader.import('@unicorn/field/repeatable.js');
   }
 
   modalTree(): Promise<any> {
-    return this.app.import('@unicorn/field/modal-tree.js');
+    return this.$loader.import('@unicorn/field/modal-tree.js');
   }
 
   /**
    * S3 Uploader.
    */
   async s3Uploader(name?: Nullable<string>): Promise<any> {
-    const module = await u.import('@unicorn/aws/s3-uploader.js');
+    const module = await this.$loader.import('@unicorn/aws/s3-uploader.js');
 
     if (name) {
-      return S3Uploader.get(name);
+      return module.S3Uploader.get(name);
     }
 
     return module;
@@ -360,7 +379,7 @@ export default class UnicornUI {
 
     ele.style.overflow = 'hidden';
 
-    const animation = u.animate(
+    const animation = this.$animate.to(
       ele,
       { height: 0, paddingTop: 0, paddingBottom: 0 },
       { duration, easing: 'ease-out' }
@@ -390,7 +409,7 @@ export default class UnicornUI {
       maxHeight = Math.max(child.offsetHeight, maxHeight);
     }
 
-    const animation = u.animate(
+    const animation = this.$animate.to(
       ele,
       {
         height: [
@@ -435,7 +454,7 @@ export default class UnicornUI {
       return;
     }
 
-    const animation = u.animate(el, { opacity: 0 }, { duration, easing: 'ease-out' });
+    const animation = this.$animate.to(el, { opacity: 0 }, { duration, easing: 'ease-out' });
 
     const p = await animation.finished;
     el.style.display = 'none';
@@ -458,7 +477,7 @@ export default class UnicornUI {
       el.style.display = display;
     }
 
-    const animation = u.animate(el, { opacity: 1 }, { duration, easing: 'ease-out' });
+    const animation = this.$animate.to(el, { opacity: 1 }, { duration, easing: 'ease-out' });
 
     return animation.finished;
   };
@@ -490,12 +509,12 @@ export default class UnicornUI {
     options: Partial<SpectrumOptions> = {}
   ): Promise<any> {
     if (options?.theme === 'dark') {
-      this.app.importCSS('@spectrum/spectrum-dark.min.css');
+      this.$loader.importCSS('@spectrum/spectrum-dark.min.css');
     } else if (!options?.theme) {
-      this.app.importCSS('@spectrum/spectrum.min.css');
+      this.$loader.importCSS('@spectrum/spectrum.min.css');
     }
 
-    const m = await this.app.import('@spectrum');
+    const m = await this.$loader.import('@spectrum');
 
     // Locale
     if (typeof options.locale === 'string') {
@@ -506,11 +525,11 @@ export default class UnicornUI {
       }
 
       ls = ls.join('-');
-      await this.app.import(`@spectrum/i18n/${ls}.js`);
+      await this.$loader.import(`@spectrum/i18n/${ls}.js`);
     }
 
     if (selector) {
-      u.module(selector, 'spectrum', (ele) => Spectrum.getInstance(ele, options));
+      this.$helper.module(selector, 'spectrum', (ele) => Spectrum.getInstance(ele, options));
     }
 
     return m;
@@ -538,7 +557,7 @@ export default class UnicornUI {
     const event = options.event || 'submit';
     const spinnerClass = options.spinnerClass || 'spinner-border spinner-border-sm';
 
-    this.app.selectAll<HTMLElement>(buttonSelector, (button) => {
+    this.$helper.selectAll<HTMLElement>(buttonSelector, (button) => {
       button.addEventListener('click', (e) => {
         button.dataset.clicked = '1';
 
@@ -548,14 +567,14 @@ export default class UnicornUI {
       });
     });
 
-    const form = this.app.selectOne<HTMLFormElement>(formSelector);
+    const form = this.$helper.selectOne<HTMLFormElement>(formSelector);
     form?.addEventListener(event, (e) => {
       setTimeout(() => {
         if (!form.checkValidity()) {
           return;
         }
 
-        this.app.selectAll<HTMLElement>(buttonSelector, (button) => {
+        this.$helper.selectAll<HTMLElement>(buttonSelector, (button) => {
           button.style.pointerEvents = 'none';
           button.setAttribute('disabled', 'disabled');
           button.classList.add('disabled');
@@ -564,7 +583,7 @@ export default class UnicornUI {
             let icon = button.querySelector(iconSelector);
 
             if (icon) {
-              const i = u.html('<i></i>');
+              const i = this.$helper.html('<i></i>');
               icon.parentNode.replaceChild(i, icon);
 
               i.setAttribute('class', spinnerClass);
@@ -579,10 +598,10 @@ export default class UnicornUI {
   }
 
   disableIfStackNotEmpty(buttonSelector: string = '[data-task=save]', stackName: string = 'uploading') {
-    const stack = u.stack(stackName);
+    const stack = this.app.inject<UnicornStack>('$stack').get(stackName);
 
     stack.observe((stack, length) => {
-      for (const button of u.selectAll<HTMLElement>(buttonSelector)) {
+      for (const button of this.$helper.selectAll<HTMLElement>(buttonSelector)) {
         if (length > 0) {
           button.setAttribute('disabled', 'disabled');
           button.classList.add('disabled');
@@ -595,7 +614,7 @@ export default class UnicornUI {
   }
 
   async checkboxesMultiSelect(selector?: Nullable<string | HTMLElement>, options: Record<string, any> = {}): Promise<any> {
-    const m = await this.app.import('@unicorn/ui/checkboxes-multi-select.js');
+    const m = await this.$loader.import('@unicorn/ui/checkboxes-multi-select.js');
 
     if (selector) {
       m.CheckboxesMultiSelect.handle(selector, options);
@@ -619,7 +638,7 @@ export default class UnicornUI {
    * Init Form Show On
    */
   initShowOn(): Promise<any> {
-    return u.import('@unicorn/ui/show-on.js');
+    return this.$loader.import('@unicorn/ui/show-on.js');
   }
 
   /**
@@ -630,7 +649,7 @@ export default class UnicornUI {
     value?: any,
     options: Record<string, any> = {}
   ): Promise<any> {
-    const m = await u.import('@unicorn/field/vue-component-field.js');
+    const m = await this.$loader.import('@unicorn/field/vue-component-field.js');
 
     if (selector) {
       m.VueComponentField.init(selector, value, options);
@@ -638,4 +657,15 @@ export default class UnicornUI {
 
     return m;
   }
+}
+
+declare global {
+  var Alpine: typeof AlpineGlobal;
+  var tinymce: typeof Tinymce;
+  var TomSelect: typeof TomSelectGlobal;
+  var Spectrum: typeof SpectrumGlobal;
+  var Choices: any;
+  var WebComponents: any;
+  var Mark: any;
+  var Spruce: any;
 }

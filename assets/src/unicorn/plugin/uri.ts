@@ -1,11 +1,14 @@
-import type { Unicorn } from '@/index';
+import UnicornApp from '../app';
 
 export default class UnicornUri {
   static is = 'uri';
 
-  asset = {};
+  asset = {
+    path: (path?: string) => '',
+    root: (path?: string) => '',
+  };
 
-  static install(app: Unicorn) {
+  static install(app: UnicornApp) {
     const $uri = app.$uri = new this(app);
 
     $uri.asset.path = (path = '') => {
@@ -17,7 +20,7 @@ export default class UnicornUri {
     };
   }
 
-  constructor(protected app: Unicorn) {
+  constructor(protected app: UnicornApp) {
     //
   }
 
