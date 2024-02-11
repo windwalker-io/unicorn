@@ -1,4 +1,4 @@
-import type { Unicorn } from '../../index';
+import type { Unicorn } from '@/index';
 import { defaultsDeep, each } from 'lodash-es';
 import { sprintf, vsprintf } from 'sprintf-js';
 import { defData, prepareData } from './../utilities';
@@ -64,13 +64,12 @@ export default class UnicornHelper {
   }
 
   selectOne<K extends keyof HTMLElementTagNameMap>(ele: K): HTMLElementTagNameMap[K] | null;
-  selectOne<E extends HTMLElement = HTMLElement>(ele: string): E | null;
-  selectOne<E extends HTMLElement = HTMLElement>(ele: E): E;
-  selectOne<E extends HTMLElement = HTMLElement>(ele: string | E): E | null;
+  selectOne<E extends Element = Element>(ele: string): E | null;
+  selectOne<E extends Element = Element>(ele: E): E;
+  selectOne<E extends Element = Element>(ele: string | E): E | null;
   // selectOne(ele: string): Element;
-  selectOne(ele: HTMLElement | string): HTMLElement | null;
-  selectOne(ele: HTMLElement | string): HTMLElement | null {
-    let r: HTMLElement | null;
+  selectOne(ele: Element | string): Element | null {
+    let r: Element | null;
 
     if (typeof ele === 'string') {
       r = document.querySelector(ele);
@@ -85,19 +84,19 @@ export default class UnicornHelper {
     return prepareData(r);
   }
 
-  selectAll<E extends HTMLElement = HTMLElement>(ele: string, callback?: ((ele: E) => any)): NodeListOf<E>;
-  selectAll<E extends HTMLElement = HTMLElement>(ele: NodeListOf<E> | E[], callback?: ((ele: E) => any)): E[];
-  selectAll<E extends HTMLElement = HTMLElement>(ele: string | NodeListOf<E> | E[], callback?: ((ele: E) => any)): E[];
+  selectAll<E extends Element = Element>(ele: string, callback?: ((ele: E) => any)): NodeListOf<E>;
+  selectAll<E extends Element = Element>(ele: NodeListOf<E> | E[], callback?: ((ele: E) => any)): E[];
+  selectAll<E extends Element = Element>(ele: string | NodeListOf<E> | E[], callback?: ((ele: E) => any)): E[];
   selectAll<E extends keyof HTMLElementTagNameMap>(ele: E,
                                                    callback?: ((ele: HTMLElementTagNameMap[E]) => any)): HTMLElementTagNameMap[E][];
-  selectAll(ele: string, callback?: ((ele: HTMLElement) => any)): HTMLElement[];
-  selectAll(ele: NodeListOf<HTMLElement> | HTMLElement[] | string,
-            callback: ((el: HTMLElement) => any) | undefined = undefined): HTMLElement[] | NodeListOf<HTMLElement> {
+  selectAll(ele: string, callback?: ((ele: Element) => any)): Element[];
+  selectAll(ele: NodeListOf<Element> | Element[] | string,
+            callback: ((el: Element) => any) | undefined = undefined): Element[] | NodeListOf<Element> {
     if (typeof ele === 'string') {
       ele = document.querySelectorAll(ele);
     }
 
-    const resultSet: HTMLElement[] = [].slice.call(ele);
+    const resultSet: Element[] = [].slice.call(ele);
 
     if (callback) {
       return resultSet.map((el) => {
@@ -112,7 +111,7 @@ export default class UnicornHelper {
     return each(collection, iteratee);
   }
 
-  getBoundedInstance<T = any, E extends HTMLElement = HTMLElement>(selector: string | E, name: string, callback: ((el: E) => any) = () => null): T | null {
+  getBoundedInstance<T = any, E = HTMLElement>(selector: string | HTMLElement, name: string, callback: ((el: E) => any) = () => null): T | null {
     const element = this.selectOne(selector);
 
     if (!element) {
@@ -122,25 +121,25 @@ export default class UnicornHelper {
     return defData(element, name, callback);
   }
 
-  getBoundedInstanceList<T = any, E extends HTMLElement = HTMLElement>(
+  getBoundedInstanceList<T = any, E = HTMLElement>(
     selector: string | NodeListOf<HTMLElement>,
     name: string,
     callback: ((el: E) => any) = () => null
   ): (T | null)[] {
     return this.selectAll(selector)
-      .map((ele) => this.getBoundedInstance<T, typeof ele>(ele, name, callback));
+      .map((ele) => this.getBoundedInstance(ele, name, callback));
   }
 
-  module<T = any, E extends HTMLElement = HTMLElement>(ele: string, name: string, callback?: ((el: E) => any)): (T | null)[];
-  module<T = any, E extends HTMLElement = HTMLElement>(ele: NodeListOf<HTMLElement>, name: string, callback?: ((el: E) => any)): (T | null)[];
-  module<T = any, E extends HTMLElement = HTMLElement>(ele: E, name: string, callback?: ((el: E) => any)): T | null;
-  module<T = any, E extends HTMLElement = HTMLElement>(
-    ele: string | E | NodeListOf<HTMLElement>,
+  module<T = any, E = HTMLElement>(ele: string, name: string, callback?: ((el: E) => any)): (T | null)[];
+  module<T = any, E = HTMLElement>(ele: NodeListOf<HTMLElement>, name: string, callback?: ((el: E) => any)): (T | null)[];
+  module<T = any, E = HTMLElement>(ele: HTMLElement, name: string, callback?: ((el: E) => any)): T | null;
+  module<T = any, E = HTMLElement>(
+    ele: string | HTMLElement | NodeListOf<HTMLElement>,
     name: string,
     callback?: ((el: E) => any)
   ): (T | null)[] | T | null;
-  module<T = any, E extends HTMLElement = HTMLElement>(
-    ele: string | E | NodeListOf<HTMLElement>,
+  module<T = any, E = HTMLElement>(
+    ele: string | HTMLElement | NodeListOf<HTMLElement>,
     name: string,
     callback: ((el: E) => any) = () => null
   ): (T | null)[] | T | null {
@@ -149,10 +148,10 @@ export default class UnicornHelper {
     }
 
     if (ele instanceof HTMLElement) {
-      return this.getBoundedInstance<T>(ele, name, callback);
+      return this.getBoundedInstance<T, E>(ele, name, callback);
     }
 
-    return this.getBoundedInstanceList<T>(ele, name, callback);
+    return this.getBoundedInstanceList<T, E>(ele, name, callback);
   }
 
   h<T extends keyof HTMLElementTagNameMap>(element: T, attrs?: Record<string, any>, content?: any): HTMLElementTagNameMap[T]

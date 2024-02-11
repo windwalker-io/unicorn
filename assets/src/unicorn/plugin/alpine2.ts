@@ -1,4 +1,5 @@
-import type { Unicorn } from '../../index';
+import UnicornApp from '../app';
+import UnicornLoader from './loader';
 
 declare global {
   interface Window {
@@ -7,29 +8,33 @@ declare global {
 }
 
 export default class UnicornAlpine2 {
-  static install(app: Unicorn): void {
+  static install(app: UnicornApp): void {
     // Disable Alpine auto load for Apline v2.
     window.deferLoadingAlpine = () => {};
 
     const self = app.$alpine2 = new this(app);
   }
 
-  constructor(protected app: Unicorn) {
+  constructor(protected app: UnicornApp) {
     //
   }
 
+  import(...args: any[]) {
+    return this.app.inject<UnicornLoader>('$loader').import(...args);
+  }
+
   ie11(): Promise<any> {
-    return this.app.import('@vendor/alpinejs/dist/alpine-ie11.js');
+    return this.import('@vendor/alpinejs/dist/alpine-ie11.js');
   }
 
   loadAlpine(): Promise<any> {
-    return this.app.import('@alpinejs');
+    return this.import('@alpinejs');
   }
 
   loadSpruce(): Promise<Awaited<any>[]> {
     return Promise.all([
       this.loadAlpine(),
-      this.app.import('@spruce')
+      this.import('@spruce')
     ]);
   }
 

@@ -1,18 +1,18 @@
-import type { Unicorn } from '../../index';
+import UnicornApp from '../app';
 
 export default class UnicornQueue {
   queues: Record<string, SimpleQueue> = {};
 
   static is = 'queue';
 
-  static install(app: Unicorn) {
+  static install(app: UnicornApp) {
     const $queue = app.$queue = new this(app);
 
     app.queue = $queue.get.bind($queue);
   }
 
-  constructor(protected app: Unicorn) {
-    this.app = app;
+  constructor(protected app: UnicornApp) {
+    //
   }
 
   create(maxRunning: number = 1): SimpleQueue {

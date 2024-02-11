@@ -3,6 +3,7 @@ import AlpineGlobal from 'alpinejs';
 import { default as SpectrumGlobal } from 'spectrum-vanilla';
 import Tinymce, { EditorManager } from 'tinymce';
 import { default as TomSelectGlobal } from 'tom-select';
+import UnicornApp from '../app';
 
 
 declare module 'md5-es' {
@@ -12,6 +13,7 @@ declare module 'md5-es' {
 }
 
 declare global {
+  var u: UnicornApp;
   var Alpine = AlpineGlobal;
   var tinymce = Tinymce;
   var TomSelect = TomSelectGlobal;
@@ -21,5 +23,7 @@ declare global {
   var UnicornFormValidation = UnicornFormValidationGlobal;
   var UnicornFieldValidation = UnicornFieldValidationGlobal;
 
-  declare type Nullable<T> = T | null | undefined;
+  interface Window {
+    u?: UnicornApp;
+  }
 }

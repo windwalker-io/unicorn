@@ -65,9 +65,9 @@ export default class UnicornAnimate {
   }
 }
 
-declare global {
-  interface UnicornApp {
-    $animate: UnicornAnimate;
-    animate: typeof UnicornAnimate.prototype.to;
-  }
-}
+// declare global {
+//   interface UnicornApp {
+//     $animate: UnicornAnimate;
+//     animate: typeof UnicornAnimate.prototype.to;
+//   }
+// }

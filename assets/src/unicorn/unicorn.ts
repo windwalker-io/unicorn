@@ -3,8 +3,7 @@ export * from './events';
 export * from './mixwith';
 
 import './polyfill';
-import './types';
-import type { Unicorn } from '../index';
+// import type { Unicorn } from '../index';
 
 import UnicornApp from './app';
 import UnicornAnimate from './plugin/animate';
@@ -64,5 +63,6 @@ u.selectOne('[uni-cloak]')?.removeAttribute('uni-cloak');
 declare global {
   interface Window {
     System: any;
+    u?: UnicornApp;
   }
 }
