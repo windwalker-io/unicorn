@@ -111,7 +111,7 @@ export default class UnicornHelper {
     return each(collection, iteratee);
   }
 
-  getBoundedInstance(selector: string | HTMLElement, name: string, callback: ((el: HTMLElement) => any) = () => null): any {
+  getBoundedInstance<T = any>(selector: string | HTMLElement, name: string, callback: ((el: HTMLElement) => any) = () => null): T | null {
     const element = this.selectOne(selector);
 
     if (!element) {
@@ -121,26 +121,32 @@ export default class UnicornHelper {
     return defData(element, name, callback);
   }
 
-  getBoundedInstanceList(
+  getBoundedInstanceList<T = any>(
     selector: string | NodeListOf<HTMLElement>,
     name: string,
     callback: ((el: HTMLElement) => any) = () => null
-  ) {
-    return this.selectAll(selector, (ele) => {
-      return this.getBoundedInstance(ele, name, callback);
-    });
+  ): (T | null)[] {
+    return this.selectAll(selector)
+      .map((ele) => this.getBoundedInstance(ele, name, callback));
   }
 
-  module(ele: string | HTMLElement | NodeListOf<HTMLElement>, name: string, callback: ((el: HTMLElement) => any) = () => null) {
+  module<T = any>(ele: string, name: string, callback?: ((el: HTMLElement) => any)): (T | null)[]
+  module<T = any>(ele: NodeListOf<HTMLElement>, name: string, callback?: ((el: HTMLElement) => any)): (T | null)[]
+  module<T = any>(ele: HTMLElement, name: string, callback?: ((el: HTMLElement) => any)): T | null
+  module<T = any>(
+    ele: string | HTMLElement | NodeListOf<HTMLElement>,
+    name: string,
+    callback: ((el: HTMLElement) => any) = () => null
+  ): (T | null)[] | T | null {
     if (typeof ele === 'string') {
-      return this.getBoundedInstanceList(ele, name, callback);
+      return this.getBoundedInstanceList<T>(ele, name, callback);
     }
 
     if (ele instanceof HTMLElement) {
-      return this.getBoundedInstance(ele, name, callback);
+      return this.getBoundedInstance<T>(ele, name, callback);
     }
 
-    return this.getBoundedInstanceList(ele, name, callback);
+    return this.getBoundedInstanceList<T>(ele, name, callback);
   }
 
   h<T extends keyof HTMLElementTagNameMap>(element: T, attrs?: Record<string, any>, content?: any): HTMLElementTagNameMap[T]
