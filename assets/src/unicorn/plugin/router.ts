@@ -1,5 +1,5 @@
 
-import type { Unicorn } from '@/index';
+import type { Unicorn } from '../../index';
 import { parse, stringify } from 'qs';
 
 export default class UnicornRouter {

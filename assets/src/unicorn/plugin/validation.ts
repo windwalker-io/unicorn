@@ -1,5 +1,5 @@
-import type { Unicorn } from '@/index';
-import type { UnicornFormValidation, UnicornFieldValidation } from '@/modules/ui/validation-components';
+import type { Unicorn } from '../../index';
+import type { UnicornFormValidation, UnicornFieldValidation } from '../../modules/ui/validation-components';
 
 export default class UnicornValidation {
   static install(app: Unicorn) {

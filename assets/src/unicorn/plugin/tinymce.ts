@@ -1,5 +1,5 @@
-import type { Unicorn } from '@/index';
-import type UnicornUI from '@/unicorn/plugin/ui';
+import type { Unicorn } from '../../index';
+import type UnicornUI from './ui';
 import { AxiosError } from 'axios';
 import { defaultsDeep } from 'lodash-es';
 import type { Editor, EditorManager, EditorOptions } from 'tinymce';

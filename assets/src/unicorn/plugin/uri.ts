@@ -1,9 +1,12 @@
-import type { Unicorn } from '@/index';
+import type { Unicorn } from '../../index';
 
 export default class UnicornUri {
   static is = 'uri';
 
-  asset = {};
+  asset = {
+    path: () => '',
+    root: () => '',
+  };
 
   static install(app: Unicorn) {
     const $uri = app.$uri = new this(app);

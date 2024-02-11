@@ -1,4 +1,5 @@
-import type { Unicorn } from '@/index';
+import '../types';
+import type { Unicorn } from '../../index';
 import { defaultsDeep } from 'lodash-es';
 import type { SpectrumOptions } from 'spectrum-vanilla/dist/types/types';
 
@@ -168,7 +169,7 @@ export default class UnicornUI {
    * @see https://tom-select.js.org/
    */
   tomSelect(
-    selector?: Nullable<string | HTMLElement | NodeListOf<HTMLElement>>,
+    selector?: Nullable<string | HTMLSelectElement | NodeListOf<HTMLSelectElement>>,
     options: Record<string, any> = {},
     theme: string = 'bootstrap5'
   ) {
@@ -180,7 +181,7 @@ export default class UnicornUI {
     )
       .then((m) => {
         if (selector) {
-          this.app.module(
+          this.app.module<any, HTMLSelectElement>(
             selector,
             'tom.select',
             (ele) => {

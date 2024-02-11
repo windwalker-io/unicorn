@@ -1,4 +1,4 @@
-import type { Unicorn } from '@/index';
+import type { Unicorn } from '../../index';
 
 export default class UnicornStack {
   stacks: Record<string, Stack> = {};

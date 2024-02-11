@@ -1,4 +1,4 @@
-import type { Unicorn } from '@/index';
+import type { Unicorn } from '../../index';
 import { defaultsDeep, each } from 'lodash-es';
 
 export default class UnicornAnimate {

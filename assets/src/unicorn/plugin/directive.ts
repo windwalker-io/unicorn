@@ -1,4 +1,4 @@
-import type { Unicorn } from '@/index';
+import type { Unicorn } from '../../index';
 import { keys } from 'lodash-es';
 
 const disconnectKey = '_unicornDirectiveDisconnectors';

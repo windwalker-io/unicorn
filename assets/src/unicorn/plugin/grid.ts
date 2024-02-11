@@ -1,5 +1,5 @@
-import type { Unicorn } from '@/index';
-import type { UnicornFormElement } from '@/unicorn/plugin/form';
+import type { Unicorn } from '../../index';
+import type { UnicornFormElement } from './form';
 import { defData } from '../utilities';
 
 /**

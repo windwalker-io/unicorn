@@ -1,4 +1,4 @@
-import type { Unicorn } from '@/index';
+import type { Unicorn } from '../../index';
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosStatic } from 'axios';
 import { AxiosError } from 'axios';
 import { parseTemplate } from 'url-template';

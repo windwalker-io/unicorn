@@ -1,4 +1,4 @@
-import type { Unicorn } from '@/index';
+import type { Unicorn } from '../../index';
 import { each } from 'lodash-es';
 import { defData } from '../utilities';
 

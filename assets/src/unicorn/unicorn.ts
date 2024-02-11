@@ -3,6 +3,7 @@ export * from './events';
 export * from './mixwith';
 
 import './polyfill';
+import './types';
 import type { Unicorn } from '../index';
 
 import UnicornApp from './app';

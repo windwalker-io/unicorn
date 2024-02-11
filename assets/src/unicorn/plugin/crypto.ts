@@ -1,4 +1,4 @@
-import type { Unicorn } from '@/index';
+import type { Unicorn } from '../../index';
 import MD5 from 'md5-es';
 
 let globalSerial = 1;

@@ -1,5 +1,5 @@
 
-import type { UnicornPlugin } from '@/index';
+import type { UnicornPlugin } from '../index';
 import { type EventAwareInterface, EventMixin } from './events';
 import { mix } from './mixwith';
 import { defaultsDeep } from 'lodash-es';
