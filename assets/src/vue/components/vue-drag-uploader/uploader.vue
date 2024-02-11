@@ -61,14 +61,14 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
   import '../../../../scss/field/vue-drag-uploader.scss';
-  import VueDragUploaderItem from './item';
+  import VueDragUploaderItem from './item.vue';
   import { itemStates, swal } from './util';
   import * as Vue from 'vue';
-  const { ref, reactive, toRefs, onMounted, computed, watch } = Vue;
+  const { ref, reactive, toRefs, onMounted, computed, watch, defineComponent } = Vue;
 
-  export default {
+  export default defineComponent({
     name: 'vue-drag-uploader',
     components: {
       VueDragUploaderItem
@@ -333,7 +333,7 @@
         isReadonly
       };
     }
-  };
+  });
 
   function prepareSelectEvents(el, uploadFiles) {
     el.value.addEventListener('dragover', event => {

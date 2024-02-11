@@ -1,4 +1,4 @@
-import { SimpleQueue } from '../../../unicorn/plugin/queue.js';
+import { SimpleQueue } from '../../../unicorn/plugin/queue';
 
 export let swal;
 
@@ -15,7 +15,7 @@ export const itemStates = {
   STOP: 'stop',
 };
 
-export function isImage(filePath) {
+export function isImage(filePath: string) {
   const ext = filePath.split('.').pop().split('?').shift();
 
   const allow = [
@@ -32,7 +32,7 @@ export function isImage(filePath) {
 
 const queues = {};
 
-export function getQueue(name, maxRunning = 2) {
+export function getQueue(name: string, maxRunning: number = 2): SimpleQueue {
   queues[name] = queues[name] || new SimpleQueue(maxRunning);
 
   return queues[name];

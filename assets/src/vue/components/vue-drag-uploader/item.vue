@@ -34,12 +34,12 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
   import { isImage as isImageType, itemStates, swal, getQueue } from './util';
   import * as Vue from 'vue';
-  const { ref, reactive, computed, watch, toRefs, onMounted } = Vue;
+  const { ref, reactive, computed, watch, toRefs, onMounted, defineComponent } = Vue;
 
-  export default {
+  export default defineComponent({
     name: 'vue-drag-uploader-item',
     props: {
       item: Object,
@@ -94,13 +94,13 @@
         emit('upload-start', uniqid);
 
         return u.$http.post(props.uploadUrl, formData, {
-            onUploadProgress: (progressEvent) => {
-              if (progressEvent.lengthComputable) {
-                state.progress = progressEvent.loaded / progressEvent.total;
-                emit('upload-progress', uniqid, state.progress);
-              }
-            },
-          })
+          onUploadProgress: (progressEvent) => {
+            if (progressEvent.lengthComputable) {
+              state.progress = progressEvent.loaded / progressEvent.total;
+              emit('upload-progress', uniqid, state.progress);
+            }
+          },
+        })
           .then(res => {
             state.state = itemStates.COMPLETED;
 
@@ -202,5 +202,5 @@
         fileName
       };
     }
-  };
+  });
 </script>
