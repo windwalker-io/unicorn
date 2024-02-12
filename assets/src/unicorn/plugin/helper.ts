@@ -1,7 +1,7 @@
-import type { Unicorn } from '@/index';
 import { defaultsDeep, each } from 'lodash-es';
 import { sprintf, vsprintf } from 'sprintf-js';
-import { defData, prepareData } from './../utilities';
+import UnicornApp from '../app';
+import { defData, prepareData } from '../utilities';
 
 const domReady = null;
 const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -11,7 +11,7 @@ export default class UnicornHelper {
     return 'helper';
   }
 
-  static install(app: Unicorn, options = {}) {
+  static install(app: UnicornApp, options = {}) {
     const helper = app.$helper = new this(app);
 
     app.domready = helper.domready.bind(helper);
@@ -38,7 +38,7 @@ export default class UnicornHelper {
     app.defaultsDeep = helper.defaultsDeep;
   }
 
-  constructor(protected app: Unicorn) {
+  constructor(protected app: UnicornApp) {
     //
   }
 
@@ -68,11 +68,11 @@ export default class UnicornHelper {
   selectOne<E extends Element = Element>(ele: E): E;
   selectOne<E extends Element = Element>(ele: string | E): E | null;
   // selectOne(ele: string): Element;
-  selectOne(ele: Element | string): Element | null {
-    let r: Element | null;
+  selectOne<E extends Element = Element>(ele: E | string): E | null {
+    let r: E | null;
 
     if (typeof ele === 'string') {
-      r = document.querySelector(ele);
+      r = document.querySelector<E>(ele);
     } else {
       r = ele;
     }
@@ -294,22 +294,17 @@ export default class UnicornHelper {
     };
   }
 
-  debounce(handler: Function, wait = 1) {
-    let timer: number, result: any;
+  debounce<T extends Function = Function>(handler: T, wait = 1): T {
+    let timer: ReturnType<typeof setTimeout> | number, result: any;
     return function (this: any, ...args: any[]) {
       clearTimeout(timer);
       timer = setTimeout(() => result = handler.call(this, ...args), wait);
       return result;
-    };
+    } as any as T;
   }
 
-  /**
-   * @param {Function} handler
-   * @param {number} wait
-   * @returns {Function}
-   */
-  throttle(handler: Function, wait = 1) {
-    let timer: number | undefined, result: any;
+  throttle<T extends Function = Function>(handler: T, wait: number = 1): T {
+    let timer: ReturnType<typeof setTimeout> | number | undefined, result: any;
     return function (this: any, ...args: any[]) {
       if (!timer) {
         return result = handler.call(this, ...args);
@@ -318,7 +313,7 @@ export default class UnicornHelper {
       clearTimeout(timer);
       timer = setTimeout(() => timer = undefined, wait);
       return result;
-    };
+    } as any as T;
   }
 
   isDebug() {
@@ -401,7 +396,7 @@ export default class UnicornHelper {
     return result;
   }
 
-  defaultsDeep(...args: any[]) {
-    return defaultsDeep(...args);
+  defaultsDeep(obj: any, ...args: any[]) {
+    return defaultsDeep(obj, ...args);
   }
 }

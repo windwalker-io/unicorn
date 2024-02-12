@@ -1,4 +1,4 @@
-import type { Unicorn } from '../../index';
+import UnicornApp from '../app';
 import MD5 from 'md5-es';
 
 let globalSerial = 1;
@@ -6,7 +6,7 @@ let globalSerial = 1;
 export default class UnicornCrypto {
   static is = 'crypto';
 
-  static install(app: Unicorn) {
+  static install(app: UnicornApp) {
     const $crypto = app.$crypto = new this(app);
 
     app.base64Encode = $crypto.base64Encode.bind($crypto);
@@ -18,7 +18,7 @@ export default class UnicornCrypto {
     app.serial = $crypto.serial.bind($crypto);
   }
 
-  constructor(protected app: Unicorn) {
+  constructor(protected app: UnicornApp) {
     //
   }
 

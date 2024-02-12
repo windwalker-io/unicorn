@@ -1,17 +1,17 @@
-import type { Unicorn } from '../../index';
+import UnicornApp from '../app';
 
 export default class UnicornStack {
   stacks: Record<string, Stack> = {};
 
   static is = 'stack';
 
-  static install(app: Unicorn) {
+  static install(app: UnicornApp) {
     const $stack = app.$stack = new this(app);
 
     app.stack = $stack.get.bind($stack);
   }
 
-  constructor(protected app: Unicorn) {
+  constructor(protected app: UnicornApp) {
     //
   }
 

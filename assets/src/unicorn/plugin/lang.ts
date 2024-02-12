@@ -1,16 +1,16 @@
-import type { Unicorn } from '../../index';
+import UnicornApp from '../app';
 
 export default class UnicornLang {
   static get is() { return 'lang'; }
 
-  static install(app: Unicorn) {
+  static install(app: UnicornApp) {
     const $lang = app.$lang = new this(app);
 
     app.__ = $lang.__.bind($lang);
     app.trans = $lang.trans.bind($lang);
   }
 
-  constructor(protected app: Unicorn) {
+  constructor(protected app: UnicornApp) {
     //
   }
 

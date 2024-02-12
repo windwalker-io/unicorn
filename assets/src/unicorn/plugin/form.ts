@@ -1,6 +1,8 @@
-import type { Unicorn } from '../../index';
 import { each } from 'lodash-es';
+import UnicornApp from '../app';
+import type { Nullable } from '../types/base';
 import { defData } from '../utilities';
+import UnicornHelper from './helper';
 
 const defaultOptions = {};
 
@@ -9,41 +11,41 @@ export default class UnicornForm {
     return 'form';
   }
 
-  static install(app: Unicorn, options = {}) {
-    app.form = (ele: string | Element | undefined = undefined, options: Record<string, any> = {}) => {
-      if (ele == undefined) {
-        return new UnicornFormElement(app, undefined, undefined, options);
-      }
+  static install(app: UnicornApp, options = {}) {
+    const form = new this(app);
 
-      const selector = typeof ele === 'string' ? ele : undefined;
-      const el = app.selectOne<HTMLFormElement>(ele as string);
-
-      if (!el) {
-        throw new Error(`Form element of: ${selector} not found.`);
-      }
-
-      return defData(
-        el,
-        'form.plugin',
-        () => new UnicornFormElement(app, selector, el, options)
-      );
-    };
+    app.form = form.get.bind(form);
   }
+
+  constructor(protected app: UnicornApp) {
+  }
+
+  get(ele: Nullable<string | Element>, options: Record<string, any> = {}) {
+    if (ele == null) {
+      return new UnicornFormElement(this.app, undefined, undefined, options);
+    }
+
+    const selector = typeof ele === 'string' ? ele : undefined;
+    const el = this.app.inject<UnicornHelper>('$helper').selectOne<HTMLFormElement>(ele as string);
+
+    if (!el) {
+      throw new Error(`Form element of: ${selector} not found.`);
+    }
+
+    return defData(
+      el,
+      'form.plugin',
+      () => new UnicornFormElement(this.app, selector, el, options)
+    );
+  };
 }
 
 export class UnicornFormElement {
   element: HTMLFormElement | undefined;
   options: Record<string, any>;
 
-  /**
-   * Constructor.
-   * @param {?string}      selector
-   * @param {HTMLElement} $form
-   * @param {Object}      options
-   * @param {UnicornApp}  app
-   */
   constructor(
-    protected app: Unicorn,
+    protected app: UnicornApp,
     selector?: Nullable<string | Element>,
     $form?: Nullable<HTMLFormElement>,
     options: Record<string, any> = {},

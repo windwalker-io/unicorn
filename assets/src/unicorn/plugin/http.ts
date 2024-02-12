@@ -1,4 +1,4 @@
-import type { Unicorn } from '../../index';
+import UnicornApp from '../app';
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosStatic } from 'axios';
 import { AxiosError } from 'axios';
 import { parseTemplate } from 'url-template';
@@ -26,11 +26,11 @@ export default class UnicornHttp {
     return 'http';
   }
 
-  static install(app: Unicorn) {
+  static install(app: UnicornApp) {
     app.$http = new this(app);
   }
 
-  constructor(protected app: Unicorn) {
+  constructor(protected app: UnicornApp) {
     this.data = {};
   }
 

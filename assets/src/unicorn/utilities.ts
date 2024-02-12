@@ -30,7 +30,7 @@ export function removeData(element: HTMLElement, name: string) {
   return v;
 }
 
-export function prepareData(element: HTMLElement) {
+export function prepareData<T extends Node>(element: T): T {
   if (!element) {
     return element;
   }
@@ -40,7 +40,7 @@ export function prepareData(element: HTMLElement) {
 }
 
 declare global {
-  interface Element {
+  interface Node {
     __unicorn?: any;
   }
 }

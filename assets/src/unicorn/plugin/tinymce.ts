@@ -1,4 +1,6 @@
-import type { Unicorn } from '../../index';
+import UnicornApp from '../app';
+import UnicornHttp from './http';
+import UnicornStack from './stack';
 import type UnicornUI from './ui';
 import { AxiosError } from 'axios';
 import { defaultsDeep } from 'lodash-es';
@@ -13,11 +15,11 @@ export default class UnicornTinymce {
 
   hooks: Function[] = [];
 
-  static install(app: Unicorn) {
+  static install(app: UnicornApp) {
     app.$ui.tinymce = new this(app, app.$ui);
   }
 
-  constructor(protected app: Unicorn, protected ui: UnicornUI) {
+  constructor(protected app: UnicornApp, protected ui: UnicornUI) {
     //
   }
 
@@ -62,7 +64,7 @@ export class TinymceEditor {
   editor?: Editor;
   options: Record<string, any> = {};
 
-  constructor(protected app: Unicorn, protected element: HTMLElement, options: Record<string, any>) {
+  constructor(protected app: UnicornApp, protected element: HTMLElement, options: Record<string, any>) {
     options.target = element;
 
     this.options = defaultsDeep(
@@ -79,6 +81,10 @@ export class TinymceEditor {
     tinymce.EditorManager.init(this.options).then((editor) => {
       this.editor = editor[0];
     });
+  }
+
+  get $http() {
+    return this.app.inject<UnicornHttp>('$http');
   }
 
   getEditor(): Editor {
@@ -184,11 +190,11 @@ export class TinymceEditor {
     const formData = new FormData();
     formData.append('file', blobInfo.blob(), blobInfo.filename());
 
-    const stack = u.stack(this.options.unicorn.stack_name);
+    const stack = this.app.inject<UnicornStack>('$stack').get(this.options.unicorn.stack_name);
     stack.push(true);
 
     try {
-      let res = await u.$http.post(
+      let res = await this.$http.post(
         this.options.images_upload_url,
         formData,
         {

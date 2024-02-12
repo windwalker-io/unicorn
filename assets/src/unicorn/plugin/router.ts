@@ -1,5 +1,5 @@
 
-import type { Unicorn } from '../../index';
+import UnicornApp from '../app';
 import { parse, stringify } from 'qs';
 
 export default class UnicornRouter {
@@ -7,13 +7,13 @@ export default class UnicornRouter {
 
   static get is() { return 'router'; }
 
-  static install(app: Unicorn) {
+  static install(app: UnicornApp) {
     const $router = app.$router = new this(app);
 
     app.route = $router.route.bind($router);
   }
 
-  constructor(protected app: Unicorn) {
+  constructor(protected app: UnicornApp) {
     //
   }
 

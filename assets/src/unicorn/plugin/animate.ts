@@ -1,13 +1,13 @@
-import type { Unicorn } from '../../index';
+import UnicornApp from '../app';
 import { defaultsDeep, each } from 'lodash-es';
 
 export default class UnicornAnimate {
-  static install(app: Unicorn) {
+  static install(app: UnicornApp) {
     const self = app.$animate = new this(app);
     app.animate = self.to.bind(self);
   }
 
-  constructor(protected app: Unicorn) {
+  constructor(protected app: UnicornApp) {
     //
   }
 

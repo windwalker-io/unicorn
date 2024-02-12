@@ -1,6 +1,9 @@
-import type { Unicorn } from '../../index';
+import UnicornApp from '../app';
+import type { Nullable } from '../types/base';
 import type { UnicornFormElement } from './form';
 import { defData } from '../utilities';
+import UnicornHelper from './helper';
+import UnicornLang from './lang';
 
 /**
  * UnicornGrid
@@ -8,28 +11,34 @@ import { defData } from '../utilities';
 export default class UnicornGrid {
   static get is() { return 'grid'; }
 
-  static install(app: Unicorn, options = {}) {
-    app.grid = (ele: string | HTMLElement, options: Record<string, any> | undefined = {}) => {
-      const selector = typeof ele === 'string' ? ele : '';
-      const element = app.selectOne(ele);
+  static install(app: UnicornApp, options = {}) {
+    const grid = new this(app);
 
-      if (!element) {
-        throw new Error('Element is empty');
-      }
-
-      return defData(
-        element,
-        'grid.plugin',
-        () => new UnicornGridElement(app, selector, element, options)
-      );
-    };
+    app.grid = grid.get.bind(grid);
   }
+
+  constructor(protected app: UnicornApp) {
+  }
+
+  get(ele: string | HTMLElement, options: Record<string, any> | undefined = {}) {
+    const selector = typeof ele === 'string' ? ele : '';
+    const element = this.app.inject<UnicornHelper>('$helper').selectOne(ele);
+
+    if (!element) {
+      throw new Error('Element is empty');
+    }
+
+    return defData(
+      element,
+      'grid.plugin',
+      () => new UnicornGridElement(this.app, selector, element, options)
+    );
+  };
 }
 
 const defaultOptions: Record<string, any> = {};
 
 export class UnicornGridElement {
-  app: Unicorn;
   element: HTMLElement;
   options: Record<string, any>;
   form: UnicornFormElement;
@@ -42,10 +51,9 @@ export class UnicornGridElement {
     }
   }
 
-  constructor(app: Unicorn, selector: string, element: HTMLElement, options: Record<string, any> = {}) {
+  constructor(protected app: UnicornApp, selector: string, element: HTMLElement, options: Record<string, any> = {}) {
     this.element = element;
     this.options = Object.assign({}, defaultOptions, options);
-    this.app = app;
     this.form = app.form(selector || element);
 
     if (!this.form) {
@@ -55,8 +63,16 @@ export class UnicornGridElement {
     this.bindEvents();
   }
 
+  get $helper() {
+    return this.app.inject<UnicornHelper>('$helper');
+  }
+
+  get $lang() {
+    return this.app.inject<UnicornLang>('$lang');
+  }
+
   bindEvents() {
-    this.app.selectAll('input[data-role=grid-checkbox]', (ch) => {
+    this.$helper.selectAll('input[data-role=grid-checkbox]', (ch) => {
       ch.addEventListener('click', () => {
         ch.dispatchEvent(new CustomEvent('change'));
       });
@@ -157,7 +173,7 @@ export class UnicornGridElement {
     let orderingInput = this.element.querySelector<HTMLInputElement>('input[name=list_ordering]');
 
     if (!orderingInput) {
-      orderingInput = this.app.h('input', { name: 'list_ordering', type: 'hidden', value: '' });
+      orderingInput = this.$helper.h('input', { name: 'list_ordering', type: 'hidden', value: '' });
 
       this.element.appendChild(orderingInput);
     }
@@ -323,10 +339,10 @@ export class UnicornGridElement {
       return false;
     }
 
-    message = message == null ? this.app.__('unicorn.message.delete.confirm') : message;
+    message = message == null ? this.$lang.__('unicorn.message.delete.confirm') : message;
 
     if (message !== false) {
-      this.app.confirm(message).then(isConfirm => {
+      this.$helper.confirm(message).then(isConfirm => {
         if (isConfirm) {
           this.form.delete(url, data);
         }
@@ -355,9 +371,9 @@ export class UnicornGridElement {
    * Delete an item.
    */
   async deleteItem(id: string, msg?: Nullable<string>, url?: Nullable<string>, data?: Nullable<Record<string, any>>): Promise<boolean> {
-    msg = msg || this.app.__('unicorn.message.delete.confirm');
+    msg = msg || this.$lang.__('unicorn.message.delete.confirm');
 
-    return this.app.confirm(msg)
+    return this.$helper.confirm(msg)
       .then((isConfirm) => {
         if (isConfirm) {
           // this.toggleAll(false);
@@ -377,7 +393,7 @@ export class UnicornGridElement {
    * Toggle all checkboxes.
    */
   toggleAll(value: boolean) {
-    this.app.selectAll(
+    this.$helper.selectAll(
       this.element.querySelectorAll<HTMLInputElement>('input[data-role=grid-checkbox][type=checkbox]')
     )
       .map((input) => {
@@ -391,7 +407,7 @@ export class UnicornGridElement {
   }
 
   disableAllCheckboxes() {
-    this.app.selectAll(
+    this.$helper.selectAll(
       this.element.querySelectorAll<HTMLInputElement>('input[data-role=grid-checkbox][type=checkbox]'),
       (input) => {
         input.disabled = true;
@@ -410,7 +426,7 @@ export class UnicornGridElement {
    * Get Checked boxes.
    */
   getChecked(): HTMLInputElement[] {
-    return this.app.selectAll(
+    return this.$helper.selectAll(
       this.element.querySelectorAll<HTMLInputElement>('input[data-role=grid-checkbox][type=checkbox]:checked')
     );
   }
@@ -423,7 +439,7 @@ export class UnicornGridElement {
    * Validate there has one or more checked boxes.
    */
   validateChecked(event?: Event, callback?: Function, msg?: string): this {
-    msg = msg || this.app.__('unicorn.message.grid.checked');
+    msg = msg || this.$lang.__('unicorn.message.grid.checked');
 
     if (!this.hasChecked()) {
       if (msg !== '') {

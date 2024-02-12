@@ -1,9 +1,9 @@
-import type { Unicorn } from '../../index';
+import UnicornApp from '../app';
 
-const imports = {};
+const imports: Record<string, { promise: Promise<any>; resolve?: Function; }> = {};
 
 export default class UnicornLoader {
-  static install(app: Unicorn) {
+  static install(app: UnicornApp) {
     const loader = app.$loader = new this(app);
 
     app.import = loader.import.bind(loader);
@@ -13,7 +13,7 @@ export default class UnicornLoader {
     app.afterImported = loader.afterImported.bind(loader);
   }
 
-  constructor(protected app: Unicorn) {
+  constructor(protected app: UnicornApp) {
     //
   }
 
@@ -31,7 +31,7 @@ export default class UnicornLoader {
       return this.doImport(src[0]);
     }
 
-    const promises = [];
+    const promises: Promise<any>[] = [];
 
     src.forEach((link) => {
       promises.push(
@@ -48,7 +48,7 @@ export default class UnicornLoader {
   importSync(...src: any): Promise<any|any[]> {
     let promise: Promise<any> = Promise.resolve();
     let url: string[];
-    const modules = [];
+    const modules: any[] = [];
 
     while (url = src.shift()) {
       if (!Array.isArray(url)) {
@@ -71,13 +71,13 @@ export default class UnicornLoader {
    * Import CSS files.
    */
   async importCSS(...src: any): Promise<any|any[]> {
-    let modules = await this.import(...src);
+    let modules: any = await this.import(...src);
 
     if (!Array.isArray(modules)) {
       modules = [modules];
     }
 
-    const styles: CSSStyleSheet[] = modules.map(module => module.default);
+    const styles: CSSStyleSheet[] = (modules as any[]).map(module => module.default);
 
     document.adoptedStyleSheets = [...document.adoptedStyleSheets, ...styles];
   }
@@ -97,10 +97,10 @@ export default class UnicornLoader {
     if (!imports[name]) {
       imports[name] = {
         promise: Promise.resolve(),
-        resolve: null
+        resolve: undefined
       };
     } else {
-      imports[name].resolve();
+      imports[name]?.resolve?.();
     }
   }
 
