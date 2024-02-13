@@ -1,5 +1,5 @@
 import UnicornApp from '../app';
-import MD5 from 'md5-es';
+import { Md5 } from 'ts-md5';
 
 let globalSerial = 1;
 
@@ -78,8 +78,8 @@ export default class UnicornCrypto {
    * @see  https://gist.github.com/jed/982883
    */
   uuid4(): string {
-    return (function b(a) {
-      return a ? (a ^ Math.random() * 16 >> a / 4).toString(16) : ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, b);
+    return (function b(a?: string) {
+      return a ? (Number(a) ^ Math.random() * 16 >> Number(a) / 4).toString(16) : (1e7.toString() + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, b);
     }());
   }
 
@@ -106,7 +106,7 @@ export default class UnicornCrypto {
 
   randomString(n: number = 12): string {
     const QUOTA = 65536;
-    const crypto = (window.crypto || window.msCrypto);
+    const crypto = window.crypto;
 
     if (!crypto) {
       return String(Math.floor(Math.random() * (n ** 10)));
@@ -124,7 +124,7 @@ export default class UnicornCrypto {
   }
 
   md5(str: string) {
-    return MD5.hash(str);
+    return Md5.hashStr(str);
   }
 
   serial(): number {

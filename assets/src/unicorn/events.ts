@@ -1,12 +1,18 @@
 import { Mixin } from './mixwith';
 
+declare global {
+  interface Function {
+    once?: boolean;
+  }
+}
+
 export const EventMixin = Mixin(function (superclass) {
   return class extends superclass {
     /**
      * @type {{ [event: string]: function[] }}
      * @private
      */
-    _listeners = {};
+    _listeners: Record<string, Function[]> = {};
 
     /**
      * @param {string|Array<string>} event
@@ -39,10 +45,10 @@ export const EventMixin = Mixin(function (superclass) {
         return this;
       }
 
-      handler[Symbol.for('once')] = true;
+      handler.once = true;
       // handler._once = true;
 
-      this.on(event, handler);
+      return this.on(event, handler);
     }
 
     /**
@@ -77,7 +83,7 @@ export const EventMixin = Mixin(function (superclass) {
       });
 
       // Remove once
-      this._listeners[event] = this.listeners(event).filter((listener) => listener[Symbol.for('once')] !== true);
+      this._listeners[event] = this.listeners(event).filter((listener) => listener?.once !== true);
 
       return this;
     }
@@ -87,9 +93,9 @@ export const EventMixin = Mixin(function (superclass) {
      * @returns {Function[]}
      */
     listeners(event: string): Function[] {
-      if (typeof event !== 'string') {
-        throw new Error(`get listeners event name should only use string.`);
-      }
+      // if (typeof event !== 'string') {
+      //   throw new Error(`get listeners event name should only use string.`);
+      // }
 
       return this._listeners[event] === undefined ? [] : this._listeners[event];
     }

@@ -5,13 +5,6 @@ import Tinymce, { EditorManager } from 'tinymce';
 import { default as TomSelectGlobal } from 'tom-select';
 import UnicornApp from '../app';
 
-
-declare module 'md5-es' {
-  export default class MD5 {
-    static hash: (str: string) => string;
-  }
-}
-
 declare global {
   var u: UnicornApp;
   var Alpine = AlpineGlobal;

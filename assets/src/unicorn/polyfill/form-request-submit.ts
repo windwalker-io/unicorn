@@ -1,4 +1,4 @@
-
+// @ts-nocheck
 // @see https://github.com/javan/form-request-submit-polyfill
 (function (prototype) {
   if (typeof prototype.requestSubmit == 'function') {

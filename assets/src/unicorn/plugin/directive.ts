@@ -59,7 +59,7 @@ export default class UnicornDirective {
     return 'directive';
   }
 
-  static install(app: Unicorn, options = {}) {
+  static install(app: UnicornApp, options = {}) {
     const directive = app.$directive = new this();
 
     app.directive = directive.register.bind(directive);

@@ -1,4 +1,10 @@
-import { defaultsDeep } from 'lodash-es';
+import * as punycode from 'punycode';
+import type UnicornApp from '../../unicorn/app';
+import type UnicornDirective from '../../unicorn/plugin/directive';
+import type UnicornHelper from '../../unicorn/plugin/helper';
+import type UnicornLang from '../../unicorn/plugin/lang';
+import type UnicornUI from '../../unicorn/plugin/ui';
+import type { Nullable } from '../../unicorn/types/base';
 
 declare type ValidationHandler = (value: any, input: HTMLElement, options?: Record<string, any>, fv?: UnicornFieldValidation) => any;
 
@@ -64,17 +70,29 @@ export class UnicornFormValidation {
 
   static is = 'uni-form-validate';
 
-  constructor(el: HTMLElement, options = {}) {
-    this.$form = u.selectOne(el);
-    this.options = defaultsDeep({}, options, defaultOptions);
+  constructor(protected app: UnicornApp, el: HTMLElement, options: Partial<FormValidationOptions> = {}) {
+    this.$form = this.$helper.selectOne(el);
+    this.options = this.$helper.defaultsDeep({}, options, defaultOptions);
 
     this.registerDefaultValidators();
 
     this.init();
   }
 
+  get $helper() {
+    return this.app.inject<UnicornHelper>('$helper');
+  }
+
+  get $ui() {
+    return this.app.inject<UnicornUI>('$ui');
+  }
+
+  get $lang() {
+    return this.app.inject<UnicornLang>('$lang');
+  }
+
   setOptions(options: Partial<FormValidationOptions>) {
-    this.options = defaultsDeep({}, options, defaultOptions);
+    this.options = this.$helper.defaultsDeep({}, options, defaultOptions);
   }
 
   get scrollEnabled() {
@@ -116,7 +134,7 @@ export class UnicornFormValidation {
   }
 
   findDOMFields(): HTMLElement[] {
-    return u.selectAll(this.$form.querySelectorAll<HTMLElement>(this.fieldSelector));
+    return this.$helper.selectAll(this.$form.querySelectorAll<HTMLElement>(this.fieldSelector));
   }
 
   prepareFields(inputs: HTMLElement[]): Promise<void> {
@@ -135,7 +153,7 @@ export class UnicornFormValidation {
       if (!wrapper) {
         wrapper = input.closest('[data-input-container]') || input.parentElement;
 
-        wrapper.setAttribute('uni-field-validate', '{}');
+        wrapper?.setAttribute('uni-field-validate', '{}');
       }
 
       return wrapper;
@@ -156,13 +174,13 @@ export class UnicornFormValidation {
   }
 
   getFieldComponent(input: HTMLElement): UnicornFieldValidation | null {
-    let v = u.getBoundedInstance(input, 'field.validation');
+    let v = this.$helper.getBoundedInstance(input, 'field.validation');
 
     if (!v) {
       const wrapper = input.closest('[uni-field-validate]') as HTMLElement | null;
 
       if (wrapper) {
-        v = u.getBoundedInstance(wrapper, 'field.validation');
+        v = this.$helper.getBoundedInstance(wrapper, 'field.validation');
       }
     }
 
@@ -310,16 +328,28 @@ export class UnicornFieldValidation {
 
   static is = 'uni-field-validate';
 
-  constructor(protected el: HTMLElement, options: Partial<FieldValidationOptions> = {}) {
-    this.options = defaultsDeep({}, options, defaultFieldOptions);
+  constructor(protected app: UnicornApp, protected el: HTMLElement, options: Partial<FieldValidationOptions> = {}) {
+    this.options = this.$helper.defaultsDeep({}, options, defaultFieldOptions);
 
     this.$input = this.selectInput();
 
     this.init();
   }
 
+  get $helper() {
+    return this.app.inject<UnicornHelper>('$helper');
+  }
+
+  get $lang() {
+    return this.app.inject<UnicornLang>('$lang');
+  }
+
+  get $ui() {
+    return this.app.inject<UnicornUI>('$ui');
+  }
+
   setOptions(options: Partial<FormValidationOptions>) {
-    this.options = defaultsDeep({}, options, defaultFieldOptions);
+    this.options = this.$helper.defaultsDeep({}, options, defaultFieldOptions);
   }
 
   get $form(): HTMLFormElement {
@@ -633,7 +663,7 @@ export class UnicornFieldValidation {
   }
 
   getFormValidation(element?: Nullable<HTMLFormElement>): UnicornFormValidation | null {
-    return u.getBoundedInstance(element || this.getForm(), 'form.validation')!;
+    return this.$helper.getBoundedInstance(element || this.getForm(), 'form.validation')!;
   }
 
   getValidator(name: string): [Validator, Record<string, any>] | null {
@@ -717,7 +747,7 @@ export class UnicornFieldValidation {
     }
 
     if (this.$input.validationMessage === '') {
-      this.$input.setCustomValidity(u.__('unicorn.message.validation.custom.error'));
+      this.$input.setCustomValidity(this.$lang.__('unicorn.message.validation.custom.error'));
     }
 
     this.$input.dispatchEvent(
@@ -761,7 +791,7 @@ export class UnicornFieldValidation {
         title = this.$input.name;
       }
 
-      u.addMessage(
+      this.$ui.renderMessage(
         `Field: ${title} - ${message}`,
         'warning'
       );
@@ -770,7 +800,7 @@ export class UnicornFieldValidation {
     let $help = this.el.querySelector(this.errorSelector);
 
     if (!$help) {
-      $help = this.createHelpElement();
+      $help = this.createHelpElement()!;
       this.el.appendChild($help);
       this.prepareWrapper();
     }
@@ -782,7 +812,7 @@ export class UnicornFieldValidation {
     const className = this.options.errorMessageClass;
     const parsed = this.parseSelector(this.errorSelector || '');
 
-    const $help = u.html(`<div class="${className}"></div>`);
+    const $help = this.$helper.html(`<div class="${className}"></div>`)!;
 
     $help.classList.add(...parsed.classes);
 
@@ -833,7 +863,7 @@ export class UnicornFieldValidation {
   }
 
   clearInvalidResponse() {
-    const $help = this.el.querySelector(this.errorSelector);
+    const $help = this.el.querySelector(this.errorSelector)!;
 
     $help.textContent = '';
   }
@@ -923,32 +953,37 @@ validatorHandlers['password-confirm'] = function (value: any, element: HTMLEleme
 // customElements.define(UnicornFormValidateElement.is, UnicornFormValidateElement);
 // customElements.define(UnicornFieldValidateElement.is, UnicornFieldValidateElement);
 
-u.directive('form-validate', {
-  mounted(el, binding) {
-    u.getBoundedInstance(el, 'form.validation', (ele) => {
-      return new UnicornFormValidation(ele, JSON.parse(binding.value || '{}'));
-    });
-  },
-  updated(el, binding) {
-    const instance = u.getBoundedInstance(el, 'form.validation');
-    instance.setOptions(JSON.parse(binding.value || '{}'));
-  }
-});
+export function initValidations(app: UnicornApp) {
+  const directive = app.inject<UnicornDirective>('$directive');
+  const helper = app.inject<UnicornHelper>('$helper');
 
-u.directive('field-validate', {
-  mounted(el, binding) {
-    u.getBoundedInstance(el, 'field.validation', (ele) => {
-      return new UnicornFieldValidation(ele, JSON.parse(binding.value || '{}'));
-    });
-  },
+  directive.register('form-validate', {
+    mounted(el, binding) {
+      helper.getBoundedInstance(el, 'form.validation', (ele) => {
+        return new UnicornFormValidation(app, ele as HTMLElement, JSON.parse(binding.value || '{}'));
+      });
+    },
+    updated(el, binding) {
+      const instance = helper.getBoundedInstance(el, 'form.validation');
+      instance.setOptions(JSON.parse(binding.value || '{}'));
+    }
+  });
 
-  updated(el, binding) {
-    const instance = u.getBoundedInstance(el, 'field.validation');
-    instance.setOptions(JSON.parse(binding.value || '{}'));
-  }
-});
+  directive.register('field-validate', {
+    mounted(el, binding) {
+      helper.getBoundedInstance<UnicornFieldValidation>(el, 'field.validation', (ele) => {
+        return new UnicornFieldValidation(app, ele as HTMLElement, JSON.parse(binding.value || '{}'));
+      });
+    },
 
-function handleParamValue(value) {
+    updated(el, binding) {
+      const instance = helper.getBoundedInstance<UnicornFieldValidation>(el, 'field.validation');
+      instance?.setOptions(JSON.parse(binding.value || '{}') || {});
+    }
+  });
+}
+
+function handleParamValue(value: any) {
   if (!isNaN(Number(value))) {
     return Number(value);
   }

@@ -9,8 +9,8 @@ const defaultOptions: Record<string, any> = {};
 
 class UnicornApp extends mix(class {}).with(EventMixin) {
   plugins = {};
-  _listeners = {};
-  waits = [];
+  // _listeners = {};
+  waits: Promise<any>[] = [];
   options: Record<string, any>;
 
   constructor(options = {}) {
@@ -18,8 +18,8 @@ class UnicornApp extends mix(class {}).with(EventMixin) {
     this.options = defaultsDeep({}, options, defaultOptions);
 
     // Wait dom ready
-    this.wait((resolve) => {
-      document.addEventListener('DOMContentLoaded', resolve);
+    this.wait((resolve: Function) => {
+      document.addEventListener('DOMContentLoaded', () => resolve());
     });
 
     // Ready
@@ -38,7 +38,7 @@ class UnicornApp extends mix(class {}).with(EventMixin) {
     //   throw new Error(`Plugin: ${plugin.name} must instance of : ${Plugin.name}`);
     // }
 
-    plugin.install(this, options);
+    plugin?.install?.(this, options);
 
     this.trigger('plugin.installed', plugin);
 

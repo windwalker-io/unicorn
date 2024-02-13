@@ -44,16 +44,16 @@ export default class UnicornUI {
   installTheme(theme: any) {
     this.theme = theme;
   }
-  
-  get $loader() {
+
+  protected get $loader() {
     return this.app.inject<UnicornLoader>('$loader');
   }
-  
-  get $helper() {
+
+  protected get $helper() {
     return this.app.inject<UnicornHelper>('$helper');
   }
 
-  get $animate() {
+  protected get $animate() {
     return this.app.inject<UnicornAnimate>('$animate');
   }
 

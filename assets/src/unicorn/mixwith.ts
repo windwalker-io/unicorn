@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 /**
  * Modified version of mixwith.js. @see https://raw.githubusercontent.com/justinfagnani/mixwith.js/
  */

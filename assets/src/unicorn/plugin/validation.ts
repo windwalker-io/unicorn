@@ -1,3 +1,4 @@
+import { initValidations } from '../../modules/ui/validation-components';
 import type { UnicornFormValidation, UnicornFieldValidation } from '../../modules/ui/validation-components';
 import UnicornApp from '../app';
 import UnicornHelper from './helper';
@@ -21,8 +22,12 @@ export default class UnicornValidation {
    * Import
    * @returns Promise<any>
    */
-  import() {
-    return this.$loader.import('@unicorn/ui/validation-components.js');
+  async import() {
+    const m = await this.$loader.import('@unicorn/ui/validation-components.js');
+
+    m.initValidations(this.app);
+
+    return m;
   }
 
   get $loader() {

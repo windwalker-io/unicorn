@@ -1,2 +1,2 @@
 
-import './polyfill/form-request-submit.js';
+import './polyfill/form-request-submit';

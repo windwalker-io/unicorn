@@ -5,6 +5,8 @@ declare global {
   interface Window {
     deferLoadingAlpine: Function;
   }
+
+  var Spruce: any;
 }
 
 export default class UnicornAlpine2 {
@@ -41,6 +43,7 @@ export default class UnicornAlpine2 {
   async initAlpine(selector: string | Element): Promise<void> {
     await this.loadAlpine();
     const element = this.app.selectOne(selector);
+    // @ts-ignore
     Alpine.initializeComponent(element);
   }
 
@@ -49,17 +52,21 @@ export default class UnicornAlpine2 {
     if (Spruce) {
       Spruce.start();
     }
+
+    // @ts-ignore
     Alpine.start();
   }
 
   async startAlpineSpruce(): Promise<void> {
     await this.loadSpruce();
+    // @ts-ignore
     Alpine.start();
   }
 
   async initAlpineSpruce(selector: string|Element): Promise<void> {
     await this.loadSpruce();
     const element = this.app.selectOne(selector);
+    // @ts-ignore
     Alpine.initializeComponent(element);
   }
 }

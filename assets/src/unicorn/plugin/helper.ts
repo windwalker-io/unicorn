@@ -111,8 +111,10 @@ export default class UnicornHelper {
     return each(collection, iteratee);
   }
 
-  getBoundedInstance<T = any, E = HTMLElement>(selector: string | HTMLElement, name: string, callback: ((el: E) => any) = () => null): T | null {
-    const element = this.selectOne(selector);
+  getBoundedInstance<T = any, E = Element>(selector: E, name: string, callback?: ((el: E) => any)): T;
+  getBoundedInstance<T = any, E extends Element = HTMLElement>(selector: string | E, name: string, callback?: ((el: E) => any)): T | null;
+  getBoundedInstance<T = any, E extends Element = HTMLElement>(selector: string | E, name: string, callback: ((el: E) => any) = () => null): T | null {
+    const element = this.selectOne<E>(selector);
 
     if (!element) {
       return null;
@@ -121,25 +123,25 @@ export default class UnicornHelper {
     return defData(element, name, callback);
   }
 
-  getBoundedInstanceList<T = any, E = HTMLElement>(
-    selector: string | NodeListOf<HTMLElement>,
+  getBoundedInstanceList<T = any, E extends Element = HTMLElement>(
+    selector: string | NodeListOf<E>,
     name: string,
     callback: ((el: E) => any) = () => null
   ): (T | null)[] {
-    return this.selectAll(selector)
-      .map((ele) => this.getBoundedInstance(ele, name, callback));
+    return this.selectAll<E>(selector)
+      .map((ele: E) => this.getBoundedInstance(ele, name, callback));
   }
 
-  module<T = any, E = HTMLElement>(ele: string, name: string, callback?: ((el: E) => any)): (T | null)[];
-  module<T = any, E = HTMLElement>(ele: NodeListOf<HTMLElement>, name: string, callback?: ((el: E) => any)): (T | null)[];
-  module<T = any, E = HTMLElement>(ele: HTMLElement, name: string, callback?: ((el: E) => any)): T | null;
-  module<T = any, E = HTMLElement>(
+  module<T = any, E extends Element = HTMLElement>(ele: string, name: string, callback?: ((el: E) => any)): (T | null)[];
+  module<T = any, E extends Element  = HTMLElement>(ele: NodeListOf<HTMLElement>, name: string, callback?: ((el: E) => any)): (T | null)[];
+  module<T = any, E extends Element  = HTMLElement>(ele: HTMLElement, name: string, callback?: ((el: E) => any)): T | null;
+  module<T = any, E extends Element  = HTMLElement>(
     ele: string | HTMLElement | NodeListOf<HTMLElement>,
     name: string,
     callback?: ((el: E) => any)
   ): (T | null)[] | T | null;
-  module<T = any, E = HTMLElement>(
-    ele: string | HTMLElement | NodeListOf<HTMLElement>,
+  module<T = any, E extends Element = HTMLElement>(
+    ele: string | E | NodeListOf<E>,
     name: string,
     callback: ((el: E) => any) = () => null
   ): (T | null)[] | T | null {
@@ -151,7 +153,7 @@ export default class UnicornHelper {
       return this.getBoundedInstance<T, E>(ele, name, callback);
     }
 
-    return this.getBoundedInstanceList<T, E>(ele, name, callback);
+    return this.getBoundedInstanceList<T, E>(ele as NodeListOf<E>, name, callback);
   }
 
   h<T extends keyof HTMLElementTagNameMap>(element: T, attrs?: Record<string, any>, content?: any): HTMLElementTagNameMap[T]

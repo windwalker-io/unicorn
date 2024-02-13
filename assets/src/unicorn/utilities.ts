@@ -1,5 +1,5 @@
 
-export function getData(element: HTMLElement, name: string | undefined = undefined) {
+export function getData(element: Element, name: string | undefined = undefined) {
   prepareData(element);
 
   if (name === undefined) {
@@ -9,19 +9,19 @@ export function getData(element: HTMLElement, name: string | undefined = undefin
   return element.__unicorn[name];
 }
 
-export function setData(element: HTMLElement, name: string, value: any) {
+export function setData(element: Element, name: string, value: any) {
   prepareData(element);
   element.__unicorn[name] = value;
 }
 
-export function defData(element: HTMLElement, name: string, defCallback: Function) {
+export function defData(element: Element, name: string, defCallback: Function) {
   prepareData(element);
   element.__unicorn[name] = element.__unicorn[name] || defCallback(element);
 
   return element.__unicorn[name];
 }
 
-export function removeData(element: HTMLElement, name: string) {
+export function removeData(element: Element, name: string) {
   prepareData(element);
 
   const v = element.__unicorn[name];

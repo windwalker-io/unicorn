@@ -19,13 +19,13 @@ export default class UnicornAnimate {
     element = this.app.selectOne(element);
 
     const currentStyles = window.getComputedStyle(element);
-    const transitions: Partial<Record<keyof CSSStyleDeclaration, any>> = {};
+    const transitions: Record<string, any[]> = {};
 
-    each(styles, (value: any, name: keyof CSSStyleDeclaration) => {
+    each(styles, (value: any, name: string) => {
       transitions[name] = Array.isArray(value)
         ? value
         : [
-          currentStyles[name],
+          currentStyles.getPropertyValue(name),
           value
         ];
     });
@@ -50,9 +50,12 @@ export default class UnicornAnimate {
 
     animation.addEventListener('finish', () => {
       each(styles, (value: any, name: string) => {
-        element.style[name] = Array.isArray(value)
-          ? value[value.length - 1]
-          : value;
+        element.style.setProperty(
+          name,
+          Array.isArray(value)
+            ? value[value.length - 1]
+            : value
+        );
       });
       animation.cancel();
     });
@@ -60,7 +63,7 @@ export default class UnicornAnimate {
     return animation;
   }
 
-  getCurrentStyle(element: Element, name: string): any {
+  getCurrentStyle(element: Element, name: keyof CSSStyleDeclaration): any {
     return window.getComputedStyle(element)[name];
   }
 }
