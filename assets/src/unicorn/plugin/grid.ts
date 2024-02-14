@@ -107,7 +107,15 @@ export class UnicornGridElement {
     };
 
     Object.getOwnPropertyNames(Object.getPrototypeOf(this))
-      .map(item => state[item] = this[item].bind(this));
+      .map(item => {
+        const prop = this[item];
+
+        if (typeof prop === 'function') {
+          return state[item] = this[item].bind(this);
+        }
+
+        return item;
+      });
 
     return Object.assign(
       state,

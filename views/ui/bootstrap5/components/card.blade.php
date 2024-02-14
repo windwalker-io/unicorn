@@ -53,7 +53,7 @@ $titleTag ??= 'h4';
     @endif
 
     @if ($body ?? null)
-        {!! $body(bodyClass: $bodyClass) !!}
+        {!! $body(bodyClass: $bodyClass ?? '') !!}
     @else
         @if ($slot ?? null)
             <div class="card-body {{ $bodyClass ?? '' }}">

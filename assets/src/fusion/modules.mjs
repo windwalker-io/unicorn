@@ -23,6 +23,7 @@ export async function validation() {
     (options) => {
       // options.output.library = 'Unicorn';
       options.output.libraryTarget = 'umd';
+      options.output.library = 'UnicornValidation';
       options.output.clean = false;
 
       options.resolve.alias = options.resolve.alias || {};

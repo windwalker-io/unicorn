@@ -950,6 +950,8 @@ validatorHandlers['password-confirm'] = function (value: any, element: HTMLEleme
   return target?.value === value;
 };
 
+export { validatorHandlers as validators };
+
 // customElements.define(UnicornFormValidateElement.is, UnicornFormValidateElement);
 // customElements.define(UnicornFieldValidateElement.is, UnicornFieldValidateElement);
 

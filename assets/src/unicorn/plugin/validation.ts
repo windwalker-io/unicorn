@@ -24,7 +24,7 @@ export default class UnicornValidation {
    */
   async import() {
     const m = await this.$loader.import('@unicorn/ui/validation-components.js');
-
+    console.log(m);
     m.initValidations(this.app);
 
     return m;
