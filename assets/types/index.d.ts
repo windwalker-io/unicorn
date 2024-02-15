@@ -1,34 +1,13 @@
-// import type UnicornAlpine2 from '@/unicorn/plugin/alpine2';
-// import type UnicornHttp from '@/unicorn/plugin/http';
-// import { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
-// import { getInstance } from './modules/aws/s3-uploader';
-// import { UIBootstrap5 } from './modules/ui/ui-bootstrap5';
-// import { UnicornFormValidation, UnicornFieldValidation } from './modules/ui/validation-components';
-// import { EventMixin } from './unicorn/events';
-// import UnicornApp from './unicorn/app';
-// import { MixinBuilder, Mixin } from './unicorn/mixwith';
-// import UnicornAnimate from './unicorn/plugin/animate';
-// import UnicornCrypto from './unicorn/plugin/crypto';
-// import UnicornDirective from './unicorn/plugin/directive';
-// import UnicornForm, { UnicornFormElement } from './unicorn/plugin/form';
-// import UnicornGrid, { UnicornGridElement } from './unicorn/plugin/grid';
-// import UnicornHelper from './unicorn/plugin/helper';
-// import UnicornLang from './unicorn/plugin/lang';
-// import UnicornLoader from './unicorn/plugin/loader';
-// import UnicornQueue, { SimpleQueue } from './unicorn/plugin/queue';
-// import UnicornRouter from './unicorn/plugin/router';
-// import UnicornStack, { Stack } from './unicorn/plugin/stack';
-// import UnicornTinymce from './unicorn/plugin/tinymce';
-// import UnicornUI from './unicorn/plugin/ui';
-// import UnicornUri from './unicorn/plugin/uri';
-// import UnicornValidation from './unicorn/plugin/validation';
+/// <reference types="./unicorn" />
 
-import { MixinBuilder } from './unicorn';
+export * from './unicorn';
+import type { UIBootstrap5 } from '../src/modules/ui/ui-bootstrap5';
 import type {
+  MixinBuilder,
   SimpleQueue,
   Stack,
   UnicornAlpine2,
-  UnicornAnimate, UnicornApp,
+  UnicornAnimate,
   UnicornCrypto,
   UnicornDirective,
   UnicornDirectiveHandler,
@@ -44,199 +23,163 @@ import type {
   UnicornQueue,
   UnicornRouter,
   UnicornStack,
+  UnicornTinymce,
   UnicornUI,
   UnicornUri,
   UnicornValidation
 } from './unicorn';
+import { UnicornApp } from './unicorn';
+import type { sprintf, vsprintf } from 'sprintf-js';
 
 declare global {
-  var u: Unicorn;
-  var Unicorn: Unicorn['constructor'];
-  var S3Uploader: S3Uploader['constructor'];
+    var u: Unicorn;
+    var Unicorn: Unicorn['constructor'];
+    var S3Uploader: S3Uploader['constructor'];
 }
 
 export interface Unicorn extends UnicornApp {
-  constructor: {
-    createApp(): Unicorn;
-    noConflict(): Unicorn;
-    mix<T>(superclass: T): MixinBuilder;
-    Mixin<T>(mixin: (superclass: Function) => T): T;
-    EventMixin: typeof EventMixin;
-  };
+    constructor: {
+        createApp(): Unicorn;
+        noConflict(): Unicorn;
+        mix<T>(superclass: T): MixinBuilder;
+        Mixin<T>(mixin: (superclass: Function) => T): T;
+        EventMixin: typeof EventMixin;
+    };
 
-  tap<T>(value: T, callback: ((T) => void)): T;
+    // alpine2
+    $alpine2: UnicornAlpine2;
 
-  // data(name: string, data: any): any;
-  // data(name: string): any;
-  // data(ele: Element, name: string): any;
-  // data(ele: Element, name: string, data?: any): any;
-  use(plugin: any, options?: any): this;
+    // animate.ts
+    $animate: UnicornAnimate;
+    animate: typeof UnicornAnimate.prototype.to;
 
-  // removeData(name: string): any;
-  // removeData(ele: Element, name: string): any;
-  on(event: string | string[], handler: Function): this;
+    // crypto.js
+    $crypto: UnicornCrypto;
 
-  once(event: string | string[], handler: Function): this;
+    base64Encode(string: string): string;
 
-  off(event: string, handler?: Function): this;
+    base64Decode(string: string): string;
 
-  trigger(event: string | string[], ...args: any[]): this;
+    uuid4(): string;
 
-  listeners(event: string): Function[];
+    uid(prefix?: string, timebase?: boolean): string;
 
-  uri(type: string): string | undefined;
+    tid(prefix?: string): string;
 
-  asset(type: string): string | undefined;
+    md5(str: string): string;
 
-  wait(callback: (resolve: Function, reject: Function) => void): Promise<any>;
+    serial(): number;
 
-  completed(): Promise<any>;
+    // directive.js
+    $directive: UnicornDirective;
 
-  // alpine2
-  $alpine2: UnicornAlpine2;
+    directive(name: string, handler: UnicornDirectiveHandler): void;
 
-  // animate.ts
-  $animate: UnicornAnimate;
-  animate: typeof UnicornAnimate.prototype.to;
+    // lang.js
+    $lang: UnicornLang;
 
-  // crypto.js
-  $crypto: UnicornCrypto;
+    __(text: string, ...args: any[]): string;
 
-  base64Encode(string: string): string;
+    trans(text: string, ...args: any[]): string;
 
-  base64Decode(string: string): string;
+    // validation.js
+    $validation: UnicornValidation;
 
-  uuid4(): string;
+    formValidation(selector?: string): Promise<UnicornFormValidation | null>;
 
-  uid(prefix?: string, timebase?: boolean): string;
+    // router.js
+    $router: UnicornRouter;
 
-  tid(prefix?: string): string;
+    route(route: string, query?: any): string;
 
-  md5(str: string): string;
+    $grid: UnicornGrid;
 
-  serial(): number;
+    grid(ele?: string | Element, options?: object): UnicornGridElement;
 
-  // directive.js
-  $directive: UnicornDirective;
+    $form: UnicornForm;
 
-  directive(name: string, handler: UnicornDirectiveHandler): void;
+    form(ele?: string | Element, options?: object): UnicornFormElement;
 
-  // lang.js
-  $lang: UnicornLang;
+    // ui.js
+    $ui: UnicornUIExtended & UnicornUI;
 
-  __(text: string, ...args: any[]): string;
+    addMessage(messages: string[] | string, type?: string): void;
 
-  trans(text: string, ...args: any[]): string;
+    clearMessages(): void;
 
-  // validation.js
-  $validation: UnicornValidation;
+    notify(messages: string | string[], type?: string): void;
 
-  formValidation(selector?: string): Promise<UnicornFormValidation | null>;
+    clearNotifies(): void;
 
-  // router.js
-  $router: UnicornRouter;
+    loadAlpine(callback?: () => void): Promise<any>;
 
-  route(route: string, query?: any): string;
+    initAlpine(directive: string): Promise<any>;
 
-  $grid: UnicornGrid;
+    beforeAlpineInit(callback: () => void): void;
 
-  grid(ele?: string | Element, options?: object): UnicornGridElement;
+    prepareAlpine(callback: () => void): void;
 
-  $form: UnicornForm;
+    webComponentPolyfill(): Promise<any>;
 
-  form(ele?: string | Element, options?: object): UnicornFormElement;
+    defineCustomElement(name: string,
+                        constructor: CustomElementConstructor,
+                        options?: ElementDefinitionOptions): Promise<any>;
 
-  // ui.js
-  $ui: UnicornUIExtended & UnicornUI;
+    // loader.js
+    $loader: UnicornLoader;
+    import: typeof UnicornLoader.prototype.import;
+    importSync: typeof UnicornLoader.prototype.importSync;
+    importCSS: typeof UnicornLoader.prototype.importCSS;
+    minFileName: typeof UnicornLoader.prototype.minFileName;
+    afterImported: typeof UnicornLoader.prototype.afterImported;
 
-  addMessage(messages: string[] | string, type?: string): void;
+    // helper.js
+    $helper: UnicornHelper;
+    domready: (callback?: () => any) => Promise<any>;
+    selectOne: typeof UnicornHelper.prototype.selectOne;
+    selectAll: typeof UnicornHelper.prototype.selectAll;
+    each: typeof UnicornHelper.prototype.selectAll;
+    getBoundedInstance: typeof UnicornHelper.prototype.getBoundedInstance;
+    getBoundedInstanceList: typeof UnicornHelper.prototype.getBoundedInstanceList;
+    // getBoundedInstanceList<M, E extends Element = Element>(selector: NodeListOf<E>|E[], name: string, callback?: ((ele: E) => M)): M[];
+    // getBoundedInstanceList<M, E extends keyof HTMLElementTagNameMap>(selector: E, name: string, callback?: ((ele: HTMLElementTagNameMap[E]) => M)): M[];
+    // getBoundedInstanceList<M>(selector: string, name: string, callback?: ((ele: M) => M)): M[];
+    module: typeof UnicornHelper.prototype.module;
+    // module<M, E extends Element = Element>(selector: E[]|NodeListOf<E>, name: string, callback?: ((ele: E) => M)): M[];
+    // module<M, E extends Element = Element>(selector: E, name: string, callback?: ((ele: E) => M)): M;
+    // module<M, E extends keyof HTMLElementTagNameMap>(selector: E, name: string, callback?: ((ele: HTMLElementTagNameMap[E]) => M)): M;
+    // module<M>(selector: string, name: string, callback?: ((ele: Element) => M)): M;
+    h: typeof UnicornHelper.prototype.h;
+    html: typeof UnicornHelper.prototype.html;
+    $get: typeof UnicornHelper.prototype.get;
+    $set: typeof UnicornHelper.prototype.set;
+    delegate: typeof UnicornHelper.prototype.delegate;
+    debounce: typeof UnicornHelper.prototype.debounce;
+    throttle: typeof UnicornHelper.prototype.throttle;
+    isDebug: typeof UnicornHelper.prototype.isDebug;
+    confirm: typeof UnicornHelper.prototype.confirm;
+    alert: typeof UnicornHelper.prototype.alert;
+    numberFormat: typeof UnicornHelper.prototype.numberFormat;
+    sprintf: typeof sprintf;
+    vsprintf: typeof vsprintf;
+    genRandomString: typeof UnicornHelper.prototype.genRandomString;
+    defaultsDeep: typeof UnicornHelper.prototype.defaultsDeep;
 
-  clearMessages(): void;
+    // http.js
+    $http: UnicornHttp;
 
-  notify(messages: string | string[], type?: string): void;
+    // uri.js
+    $uri: UnicornUri & UnicornUriExtended;
 
-  clearNotifies(): void;
+    // stack.js
+    $stack: UnicornStack;
 
-  loadAlpine(callback?: () => void): Promise<any>;
+    stack(name: string, store?: any[]): Stack;
 
-  initAlpine(directive: string): Promise<any>;
+    // queue.js
+    $queue: UnicornQueue;
 
-  beforeAlpineInit(callback: () => void): void;
-
-  prepareAlpine(callback: () => void): void;
-
-  webComponentPolyfill(): Promise<any>;
-
-  defineCustomElement(name: string,
-                      constructor: CustomElementConstructor,
-                      options?: ElementDefinitionOptions): Promise<any>;
-
-  // loader.js
-  $loader: UnicornLoader;
-  import: typeof UnicornLoader.prototype.import;
-  importSync: typeof UnicornLoader.prototype.importSync;
-  importCSS: typeof UnicornLoader.prototype.importCSS;
-  minFileName: typeof UnicornLoader.prototype.minFileName;
-  afterImported: typeof UnicornLoader.prototype.afterImported;
-
-  // helper.js
-  $helper: UnicornHelper;
-  domready: (callback?: () => any) => Promise<any>;
-  selectOne: typeof UnicornHelper.prototype.selectOne;
-  selectAll: typeof UnicornHelper.prototype.selectAll;
-  // selectOne<E extends Element = Element>(ele: E): E;
-  // selectOne<K extends keyof HTMLElementTagNameMap>(ele: K): HTMLElementTagNameMap[K]|null;
-  // selectOne<E extends Element = Element>(ele: string|E): E|null;
-  // selectOne(ele: string): Element;
-  // selectAll<E extends Element = Element>(ele: string, callback?: ((ele: E) => any)): NodeListOf<E>;
-  // selectAll<E extends Element = Element>(ele: NodeListOf<E>|E[], callback?: ((ele: E) => any)): E[];
-  // selectAll<E extends keyof HTMLElementTagNameMap>(ele: E, callback?: ((ele: HTMLElementTagNameMap[E]) => any)): HTMLElementTagNameMap[E][];
-  // selectAll(ele: string, callback?: ((ele: Element) => any)): Element[];
-  each: typeof UnicornHelper.prototype.selectAll;
-  getBoundedInstance: typeof UnicornHelper.prototype.getBoundedInstance;
-  // getBoundedInstance<M, E extends Element = Element>(selector: E, name: string, callback?: ((ele: E) => M)): M;
-  // getBoundedInstance<M, E extends keyof HTMLElementTagNameMap>(selector: E, name: string, callback?: ((ele: HTMLElementTagNameMap[E]) => M)): M;
-  // getBoundedInstance<M>(selector: string, name: string, callback?: ((ele: Element) => M)): M;
-  getBoundedInstanceList: typeof UnicornHelper.prototype.getBoundedInstanceList;
-  // getBoundedInstanceList<M, E extends Element = Element>(selector: NodeListOf<E>|E[], name: string, callback?: ((ele: E) => M)): M[];
-  // getBoundedInstanceList<M, E extends keyof HTMLElementTagNameMap>(selector: E, name: string, callback?: ((ele: HTMLElementTagNameMap[E]) => M)): M[];
-  // getBoundedInstanceList<M>(selector: string, name: string, callback?: ((ele: M) => M)): M[];
-  module: typeof UnicornHelper.prototype.module;
-  // module<M, E extends Element = Element>(selector: E[]|NodeListOf<E>, name: string, callback?: ((ele: E) => M)): M[];
-  // module<M, E extends Element = Element>(selector: E, name: string, callback?: ((ele: E) => M)): M;
-  // module<M, E extends keyof HTMLElementTagNameMap>(selector: E, name: string, callback?: ((ele: HTMLElementTagNameMap[E]) => M)): M;
-  // module<M>(selector: string, name: string, callback?: ((ele: Element) => M)): M;
-  h: typeof UnicornHelper.prototype.h;
-  html: typeof UnicornHelper.prototype.html;
-  $get: typeof UnicornHelper.prototype.get;
-  $set: typeof UnicornHelper.prototype.set;
-  delegate: typeof UnicornHelper.prototype.delegate;
-  debounce: typeof UnicornHelper.prototype.debounce;
-  throttle: typeof UnicornHelper.prototype.throttle;
-  isDebug: typeof UnicornHelper.prototype.isDebug;
-  confirm: typeof UnicornHelper.prototype.confirm;
-  alert: typeof UnicornHelper.prototype.alert;
-  numberFormat: typeof UnicornHelper.prototype.numberFormat;
-  sprintf: typeof sprintf;
-  vsprintf: typeof vsprintf;
-  genRandomString: typeof UnicornHelper.prototype.genRandomString;
-  defaultsDeep: typeof UnicornHelper.prototype.defaultsDeep;
-
-  // http.js
-  $http: UnicornHttp;
-
-  // uri.js
-  $uri: UnicornUri & UnicornUriExtended;
-
-  // stack.js
-  $stack: UnicornStack;
-
-  stack(name: string, store?: any[]): Stack;
-
-  // queue.js
-  $queue: UnicornQueue;
-
-  queue(name: string, maxRunning?: number): SimpleQueue;
+    queue(name: string, maxRunning?: number): SimpleQueue;
 }
 
 //
@@ -258,41 +201,29 @@ export interface Unicorn extends UnicornApp {
 //   notice?: string | ((input: Element, field: UnicornFieldValidation) => string);
 // }
 //
-// // UI
-// export interface UnicornUIExtended {
-//   tinymce: UnicornTinymce;
-//   bootstrap: UIBootstrap5;
-//   theme: UIBootstrap5;
-// }
+// UI
+export interface UnicornUIExtended {
+    tinymce: UnicornTinymce;
+    bootstrap: UIBootstrap5;
+    theme: UIBootstrap5;
+}
+
 //
-// // Http
-// export type UnicornHttpOptions = AxiosRequestConfig | {
-//   vars?: Record<string, any>;
-// };
-//
-// // export interface UnicornHttp {
-// //   axios: AxiosInstance;
-// //   createHttp(): Promise<AxiosInstance>;
-// //   getHttp(): Promise<AxiosInstance>;
-// //   prepareAxios(axios: AxiosInstance): void;
-// //   requestMiddleware(callback: (config: UnicornHttpOptions) => AxiosRequestConfig): void;
-// //   get(url: string, options?: UnicornHttpOptions): Promise<AxiosResponse>;
-// //   post(url: string, data?: any, options?: UnicornHttpOptions): Promise<AxiosResponse>;
-// //   put(url: string, data?: any, options?: UnicornHttpOptions): Promise<AxiosResponse>;
-// //   patch(url: string, data?: any, options?: UnicornHttpOptions): Promise<AxiosResponse>;
-// //   delete(url: string, data?: any, options?: UnicornHttpOptions): Promise<AxiosResponse>;
-// //   head(url: string, options?: UnicornHttpOptions): Promise<AxiosResponse>;
-// //   options(url: string, options?: UnicornHttpOptions): Promise<AxiosResponse>;
-// //   request(options: UnicornHttpOptions): Promise<AxiosResponse>;
-// // }
-//
-// // Uri
-// export interface UnicornUriExtended {
-//   asset: {
-//     path(path: string): string;
-//     root(path: string): string;
-//   }
-// }
+// Http
+declare module 'axios' {
+    interface AxiosRequestConfig {
+        vars?: Record<string, any>;
+    }
+}
+
+// Uri
+export interface UnicornUriExtended {
+    asset: {
+        path(path: string): string;
+        root(path: string): string;
+    };
+}
+
 //
 // // S3Uploader
 // export interface S3Uploader {
@@ -305,36 +236,7 @@ export interface Unicorn extends UnicornApp {
 //   upload(file: string|Blob|File, path: string, options?: S3UploaderRequestOptions): Promise<S3UploaderResponse>;
 // }
 //
-// export interface S3UploaderResponse extends AxiosResponse {
-//   url: string;
-// }
-//
-// export interface S3UploaderGlobalOptions {
-//   endpoint?: string;
-//   subfolder?: string;
-//   viewerHost?: string;
-//   starts_with: any[];
-//   formInputs?: {
-//     acl: string;
-//     bucket: string;
-//     key: string;
-//     Policy: string;
-//     'X-Amz-Algorithm': string;
-//     'X-Amz-Credential': string;
-//     'X-Amz-Date': string;
-//     'X-Amz-Signature': string;
-//     [name: string]: any
-//   },
-// }
-//
-// export interface S3UploaderRequestOptions {
-//   formInputs?: { [name: string]: any };
-//   onUploadProgress?: (e: ProgressEvent) => void;
-//   'Content-Type'?: string;
-//   'Content-Disposition'?: string;
-//   key?: string;
-//   [name: string]: any
-// }
+
 //
 // export interface UnicornPlugin {
 //   install(app: UnicornApp): void;

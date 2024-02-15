@@ -28,7 +28,7 @@
   "homepage": "https://github.com/ventoviro/unicorn#readme",
   "dependencies": {
     "@types/alpinejs": "^3.13.6",
-    "@vue/compiler-sfc": "^3.3.13",
+    "@types/bootstrap": "^5.2.10",
     "@webcomponents/webcomponentsjs": "^2.5.0",
     "@windwalker-io/core": "^4.0",
     "alpinejs": "^2.0||^3.0",

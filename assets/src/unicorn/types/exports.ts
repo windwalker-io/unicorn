@@ -1,3 +1,4 @@
+export type { default as UnicornApp } from '../app';
 export type { default as UnicornAlpine2 } from '../plugin/alpine2';
 export type { default as UnicornAnimate } from '../plugin/animate';
 export type { default as UnicornCrypto } from '../plugin/crypto';

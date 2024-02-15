@@ -367,7 +367,7 @@ export default class UnicornUI {
       return module.S3Uploader.get(name);
     }
 
-    return module;
+    return null;
   }
 
   async slideUp(target: string | HTMLElement, duration: number = 300): Promise<Animation | void> {

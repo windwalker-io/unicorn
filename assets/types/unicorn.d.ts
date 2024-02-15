@@ -65,26 +65,6 @@ declare class TinymceEditor {
 	setValue(text: string): string;
 	imageUploadHandler(blobInfo: UploadHandlerParams[0], progress: UploadHandlerParams[1]): Promise<any>;
 }
-declare class UnicornApp extends UnicornApp_base {
-	plugins: {};
-	waits: Promise<any>[];
-	options: Record<string, any>;
-	constructor(options?: {});
-	use(plugin: UnicornPlugin, options?: Record<string, any>): this;
-	inject<T>(plugin: string): T;
-	detach(plugin: any): this;
-	tap<T>(value: T, callback: Function): T;
-	data(name: string, data: any): any;
-	data(name: string): any;
-	data(ele: Element, name: string): any;
-	data(ele: Element, name: string, data?: any): any;
-	removeData(name: string): any;
-	removeData(ele: Element, name: string): any;
-	uri(type: string): any;
-	asset(type: string): any;
-	wait(callback: Function): Promise<any>;
-	completed(): Promise<any[]>;
-}
 declare class UnicornFieldValidation {
 	protected app: UnicornApp;
 	protected el: HTMLElement;
@@ -189,6 +169,7 @@ declare const EventBus_base: {
 	new (): {};
 };
 declare const UnicornApp_base: any;
+declare const u: UnicornApp;
 export declare class EventBus extends EventBus_base {
 }
 export declare class MixinBuilder<T extends object> {
@@ -221,6 +202,26 @@ export declare class UnicornAnimate {
 	constructor(app: UnicornApp);
 	to(element: HTMLElement, styles: Partial<Record<keyof CSSStyleDeclaration, any>>, options?: number | KeyframeAnimationOptions): Animation;
 	getCurrentStyle(element: Element, name: keyof CSSStyleDeclaration): any;
+}
+export declare class UnicornApp extends UnicornApp_base {
+	plugins: {};
+	waits: Promise<any>[];
+	options: Record<string, any>;
+	constructor(options?: {});
+	use(plugin: UnicornPlugin, options?: Record<string, any>): this;
+	inject<T>(plugin: string): T;
+	detach(plugin: any): this;
+	tap<T>(value: T, callback: Function): T;
+	data(name: string, data: any): any;
+	data(name: string): any;
+	data(ele: Element, name: string): any;
+	data(ele: Element, name: string, data?: any): any;
+	removeData(name: string): any;
+	removeData(ele: Element, name: string): any;
+	uri(type: string): any;
+	asset(type: string): any;
+	wait(callback: Function): Promise<any>;
+	completed(): Promise<any[]>;
 }
 export declare class UnicornCrypto {
 	protected app: UnicornApp;
@@ -1009,4 +1010,8 @@ export interface UnicornPlugin {
 export type InputElements = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
 export type Nullable<T> = T | null | undefined;
 export type UnicornDirectiveHandlerHook = (node: Element, bindings: UnicornDirectiveBinding) => void;
+
+export {
+	u as default,
+};
 

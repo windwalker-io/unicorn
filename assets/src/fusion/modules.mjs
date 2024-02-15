@@ -3,16 +3,17 @@ import path from 'path';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 
 export async function uiBootstrap5() {
-  watch(
-    ['src/modules/**/*.js', 'scss/**/*.scss']
-  );
+  return webpackBundle(
+    './src/modules/ui/ui-bootstrap5.ts',
+    './dist/ui/ui-bootstrap5.js',
+    (options) => {
+      options.output.libraryTarget = 'umd';
+      options.output.library = 'UIBootstrap5';
+      options.output.clean = false;
 
-  return wait(
-    webpack('./src/modules/ui/ui-bootstrap5.js', './dist/ui/', {
-      override: (options) => {
-        options.output.libraryTarget = 'system';
-      }
-    })
+      options.resolve.alias = options.resolve.alias || {};
+      options.resolve.alias['@'] = path.resolve('./src');
+    }
   );
 }
 
@@ -190,17 +191,18 @@ export async function repeatable() {
 }
 
 export async function s3Uploader() {
-  watch(
-    ['src/modules/**/*.js', 'scss/**/*.scss']
-  );
+  return webpackBundle(
+    './src/modules/aws/s3-uploader.ts',
+    './dist/aws/s3-uploader.ts',
+    (options) => {
+      // options.output.library = 'Unicorn';
+      options.output.libraryTarget = 'umd';
+      options.output.library = 'S3Uploader';
+      options.output.clean = false;
 
-  return wait(
-    webpack('./src/modules/aws/s3-uploader.js', './dist/aws/', {
-      override: (options) => {
-        options.output.library = 'S3Uploader';
-        options.output.libraryTarget = 'umd';
-      }
-    })
+      options.resolve.alias = options.resolve.alias || {};
+      options.resolve.alias['@'] = path.resolve('./src');
+    }
   );
 }
 

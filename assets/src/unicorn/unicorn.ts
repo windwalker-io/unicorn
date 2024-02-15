@@ -33,6 +33,7 @@ export function createApp(options = {}) {
 export function noConflict() {
   const uni = window.u;
 
+  // @ts-ignore
   delete window.u;
 
   return uni;
@@ -40,6 +41,7 @@ export function noConflict() {
 
 const u = createApp();
 
+// @ts-ignore
 window.u = u;
 
 u.use(UnicornLoader);
@@ -68,3 +70,5 @@ declare global {
     u?: UnicornApp;
   }
 }
+
+export default u;

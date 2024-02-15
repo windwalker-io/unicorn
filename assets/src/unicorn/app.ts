@@ -7,6 +7,10 @@ import { getData, defData, setData, removeData } from './utilities';
 
 const defaultOptions: Record<string, any> = {};
 
+interface UnicornApp extends EventAwareInterface {
+  //
+}
+
 class UnicornApp extends mix(class {}).with(EventMixin) {
   plugins = {};
   // _listeners = {};
@@ -151,10 +155,6 @@ class UnicornApp extends mix(class {}).with(EventMixin) {
 
     return promise;
   }
-}
-
-interface UnicornApp extends EventAwareInterface {
-  //
 }
 
 export default UnicornApp;

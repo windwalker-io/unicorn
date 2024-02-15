@@ -16,7 +16,7 @@ declare global {
   var UnicornFormValidation = UnicornFormValidationGlobal;
   var UnicornFieldValidation = UnicornFieldValidationGlobal;
 
-  interface Window {
-    u?: UnicornApp;
-  }
+  // interface Window {
+  //   u?: UnicornApp;
+  // }
 }
