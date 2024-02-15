@@ -6,7 +6,6 @@ import { default as TomSelectGlobal } from 'tom-select';
 import UnicornApp from '../app';
 
 declare global {
-  var u: UnicornApp;
   var Alpine = AlpineGlobal;
   var tinymce = Tinymce;
   var TomSelect = TomSelectGlobal;

@@ -76,8 +76,8 @@ export default class UnicornDirective {
     this.directives[directive] = handler;
 
     [].forEach.call(
-      this.listenTarget.querySelectorAll('[' + directive + ']'),
-      (el: Element) => {
+      this.listenTarget.querySelectorAll<HTMLElement>('[' + directive + ']'),
+      (el) => {
         this.runDirectiveIfExists(directive, el, 'mounted');
       }
     );
@@ -107,13 +107,13 @@ export default class UnicornDirective {
         // Added Nodes
         [].forEach.call(mutation.addedNodes, (node: Node) => {
           this.findDirectivesFromNode(node as Element).forEach((directive) => {
-            this.runDirectiveIfExists(directive, node as Element, 'mounted', mutation);
+            this.runDirectiveIfExists(directive, node as HTMLElement, 'mounted', mutation);
           });
 
           // Find children with all directives
           for (const directive in this.directives) {
             if ('querySelectorAll' in node) {
-              (node as Element).querySelectorAll(`[${directive}]`).forEach((node: Element) => {
+              (node as HTMLElement).querySelectorAll<HTMLElement>(`[${directive}]`).forEach((node: HTMLElement) => {
                 this.runDirectiveIfExists(directive, node, 'mounted', mutation);
               });
             }
@@ -127,7 +127,7 @@ export default class UnicornDirective {
         });
 
         if (mutation.type === 'attributes' && mutation.oldValue == null) {
-          this.runDirectiveIfExists(mutation.attributeName!, mutation.target as Element, 'mounted', mutation);
+          this.runDirectiveIfExists(mutation.attributeName!, mutation.target as HTMLElement, 'mounted', mutation);
         }
       });
     });
@@ -150,13 +150,13 @@ export default class UnicornDirective {
       mutations.forEach((mutation) => {
         // Remove
         if (mutation.type === 'attributes' && !(mutation.target as Element).getAttribute(mutation.attributeName!)) {
-          this.runDirectiveIfExists(mutation.attributeName!, mutation.target as Element, 'unmounted', mutation);
+          this.runDirectiveIfExists(mutation.attributeName!, mutation.target as HTMLElement, 'unmounted', mutation);
         }
 
         this.findDirectivesFromNode(mutation.target as Element).forEach((directive) => {
           // Attributes
           if (mutation.type === 'attributes' || mutation.type === 'childList') {
-            this.runDirectiveIfExists(directive, mutation.target as Element, 'updated', mutation);
+            this.runDirectiveIfExists(directive, mutation.target as HTMLElement, 'updated', mutation);
           }
         });
       });
@@ -218,7 +218,7 @@ export default class UnicornDirective {
 
   runDirectiveIfExists(
     directive: string,
-    node: Element,
+    node: HTMLElement,
     task: 'mounted' | 'unmounted' | 'updated',
     mutation: MutationRecord | undefined = undefined
   ) {
@@ -261,18 +261,18 @@ export default class UnicornDirective {
   }
 }
 
-declare type DirectiveBaseHook = (directive: string, node: Element) => void;
+declare type DirectiveBaseHook = (directive: string, node: HTMLElement) => void;
 
 export interface UnicornDirectiveBinding {
   directive: string;
-  node: Element;
+  node: HTMLElement;
   value: any;
   oldValue: any;
   mutation?: MutationRecord;
   dir: UnicornDirectiveHandler;
 }
 
-export type UnicornDirectiveHandlerHook = (node: Element, bindings: UnicornDirectiveBinding) => void
+export type UnicornDirectiveHandlerHook = (node: HTMLElement, bindings: UnicornDirectiveBinding) => void
 
 // Directive
 export interface UnicornDirectiveHandler {

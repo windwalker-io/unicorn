@@ -113,7 +113,7 @@ export default class UnicornHttp {
    */
   post<T = any, D = any>(
     url: string,
-    data: any,
+    data?: any,
     options: Partial<AxiosRequestConfig> = {}
   ): Promise<AxiosResponse<T, D>> {
     options.url = url;
@@ -134,7 +134,7 @@ export default class UnicornHttp {
    */
   put<T = any, D = any>(
     url: string,
-    data: any,
+    data?: any,
     options: Partial<AxiosRequestConfig> = {}
   ): Promise<AxiosResponse<T, D>> {
     options.url = url;
@@ -155,7 +155,7 @@ export default class UnicornHttp {
    */
   patch<T = any, D = any>(
     url: string,
-    data: any,
+    data?: any,
     options: Partial<AxiosRequestConfig> = {}
   ): Promise<AxiosResponse<T, D>> {
     options.url = url;
@@ -176,7 +176,7 @@ export default class UnicornHttp {
    */
   delete<T = any, D = any>(
     url: string,
-    data: any,
+    data?: any,
     options: Partial<AxiosRequestConfig> = {}
   ): Promise<AxiosResponse<T, D>> {
     options.url = url;

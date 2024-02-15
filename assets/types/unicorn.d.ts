@@ -296,7 +296,7 @@ export declare class UnicornDirective {
 	listen(): () => void;
 	disconnect(): void;
 	getDirective(directive: string): UnicornDirectiveHandler;
-	runDirectiveIfExists(directive: string, node: Element, task: "mounted" | "unmounted" | "updated", mutation?: MutationRecord | undefined): void;
+	runDirectiveIfExists(directive: string, node: HTMLElement, task: "mounted" | "unmounted" | "updated", mutation?: MutationRecord | undefined): void;
 	findDirectivesFromNode(node: Element): string[];
 }
 export declare class UnicornForm {
@@ -560,7 +560,7 @@ export declare class UnicornHttp {
 	/**
 	 * Send a POST request.
 	 */
-	post<T = any, D = any>(url: string, data: any, options?: Partial<AxiosRequestConfig>): Promise<AxiosResponse<T, D>>;
+	post<T = any, D = any>(url: string, data?: any, options?: Partial<AxiosRequestConfig>): Promise<AxiosResponse<T, D>>;
 	/**
 	 * Send a PUT request.
 	 *
@@ -570,7 +570,7 @@ export declare class UnicornHttp {
 	 *
 	 * @returns {Promise<AxiosResponse>}
 	 */
-	put<T = any, D = any>(url: string, data: any, options?: Partial<AxiosRequestConfig>): Promise<AxiosResponse<T, D>>;
+	put<T = any, D = any>(url: string, data?: any, options?: Partial<AxiosRequestConfig>): Promise<AxiosResponse<T, D>>;
 	/**
 	 * Send a PATCH request.
 	 *
@@ -580,7 +580,7 @@ export declare class UnicornHttp {
 	 *
 	 * @returns {Promise<AxiosResponse>}
 	 */
-	patch<T = any, D = any>(url: string, data: any, options?: Partial<AxiosRequestConfig>): Promise<AxiosResponse<T, D>>;
+	patch<T = any, D = any>(url: string, data?: any, options?: Partial<AxiosRequestConfig>): Promise<AxiosResponse<T, D>>;
 	/**
 	 * Send a DELETE request.
 	 *
@@ -590,7 +590,7 @@ export declare class UnicornHttp {
 	 *
 	 * @returns {Promise<AxiosResponse>}
 	 */
-	delete<T = any, D = any>(url: string, data: any, options?: Partial<AxiosRequestConfig>): Promise<AxiosResponse<T, D>>;
+	delete<T = any, D = any>(url: string, data?: any, options?: Partial<AxiosRequestConfig>): Promise<AxiosResponse<T, D>>;
 	/**
 	 * Send a HEAD request.
 	 *
@@ -942,7 +942,7 @@ export declare function createApp(options?: {}): UnicornApp;
  */
 export declare function mix<T extends object>(superclass: T): MixinBuilder<T>;
 export declare function noConflict(): UnicornApp | undefined;
-export declare type DirectiveBaseHook = (directive: string, node: Element) => void;
+export declare type DirectiveBaseHook = (directive: string, node: HTMLElement) => void;
 /**
  * A function that returns a subclass of its argument.
  *
@@ -992,7 +992,7 @@ export interface UnicornApp extends EventAwareInterface {
 }
 export interface UnicornDirectiveBinding {
 	directive: string;
-	node: Element;
+	node: HTMLElement;
 	value: any;
 	oldValue: any;
 	mutation?: MutationRecord;
@@ -1009,7 +1009,7 @@ export interface UnicornPlugin {
 }
 export type InputElements = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
 export type Nullable<T> = T | null | undefined;
-export type UnicornDirectiveHandlerHook = (node: Element, bindings: UnicornDirectiveBinding) => void;
+export type UnicornDirectiveHandlerHook = (node: HTMLElement, bindings: UnicornDirectiveBinding) => void;
 
 export {
 	u as default,
