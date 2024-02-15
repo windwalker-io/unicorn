@@ -1,6 +1,30 @@
 import fusion, { webpack, watch, wait, webpackBundle } from '@windwalker-io/fusion';
+import dtsBundle from 'bundle-declarations-webpack-plugin';
 import path from 'path';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
+
+export async function main() {
+  return webpackBundle(
+    './src/unicorn/unicorn.ts',
+    './dist/unicorn.js',
+    (options) => {
+      options.output.library = 'Unicorn';
+      options.output.libraryTarget = 'umd';
+      options.output.clean = false;
+
+      options.resolve.alias = options.resolve.alias || {};
+      options.resolve.alias['@'] = path.resolve('./src');
+
+      options.module.rules[2].options.configFile = path.resolve('tsconfig.json');
+      options.module.rules[2].options.transpileOnly = true;
+
+      outputDeclaration(options, '../types/unicorn.d.ts');
+
+      // console.log(options.module.rules[2].options.transpileOnly);
+    }
+  );
+  // Compile end
+}
 
 export async function uiBootstrap5() {
   return webpackBundle(
@@ -29,6 +53,8 @@ export async function validation() {
 
       options.resolve.alias = options.resolve.alias || {};
       options.resolve.alias['@'] = path.resolve('./src');
+
+      outputDeclaration(options, '../types/validation.d.ts');
     }
   );
 }
@@ -202,6 +228,8 @@ export async function s3Uploader() {
 
       options.resolve.alias = options.resolve.alias || {};
       options.resolve.alias['@'] = path.resolve('./src');
+
+      outputDeclaration(options, '../types/s3-uploader.d.ts');
     }
   );
 }
@@ -231,4 +259,13 @@ export async function vueComponentField() {
       }
     })
   );
+}
+
+function outputDeclaration(options, outFile) {
+  options.plugins.push(new dtsBundle.BundleDeclarationsWebpackPlugin({
+    outFile,
+    compilationOptions: {
+      preferredConfigPath: path.resolve('tsconfig.json'),
+    },
+  }));
 }

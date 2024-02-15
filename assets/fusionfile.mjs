@@ -22,34 +22,6 @@ import * as path from 'path';
 import * as moduleTasks from './src/fusion/modules.mjs';
 export * from './src/fusion/modules.mjs';
 
-export async function main() {
-  return webpackBundle(
-    './src/unicorn/unicorn.ts',
-    './dist/unicorn.js',
-    (options) => {
-      options.output.library = 'Unicorn';
-      options.output.libraryTarget = 'umd';
-      options.output.clean = false;
-
-      options.resolve.alias = options.resolve.alias || {};
-      options.resolve.alias['@'] = path.resolve('./src');
-
-      options.module.rules[2].options.configFile = path.resolve('tsconfig.json');
-      options.module.rules[2].options.transpileOnly = true;
-
-      options.plugins.push(new dtsBundle.BundleDeclarationsWebpackPlugin({
-        outFile: '../types/unicorn.d.ts',
-        compilationOptions: {
-          preferredConfigPath: path.resolve('tsconfig.json'),
-        },
-      }));
-
-      // console.log(options.module.rules[2].options.transpileOnly);
-    }
-  );
-  // Compile end
-}
-
 export async function js() {
   // Watch start
   fusion.watch(['src/js/**/*.js', 'src/systemjs/**/*.js']);
@@ -140,7 +112,6 @@ export async function vue() {
 // }
 
 export default parallel(
-  main,
   js,
   css,
   modules,
