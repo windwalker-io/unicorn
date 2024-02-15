@@ -1,10 +1,15 @@
-/// <reference types="../../../types" />
-
 import type { AxiosProgressEvent, AxiosResponse } from 'axios';
 import { defaultsDeep } from 'lodash-es';
-import type { EventAwareInterface } from '../../unicorn/events';
+import type { EventAwareInterface, UnicornApp, UnicornHttp, UnicornLoader } from '../../unicorn/types';
+
+declare global {
+  // @ts-ignore
+  var Unicorn: any;
+}
 
 const instances: Record<string, S3Uploader> = {};
+
+let u: UnicornApp;
 
 export function getInstance(name: string, options: Partial<S3UploaderGlobalOptions> = {}): S3Uploader {
   if (!instances[name]) {
@@ -29,6 +34,12 @@ export function destroy(name: string) {
   delete instances[name];
 }
 
+export function init(app: UnicornApp) {
+  u = app;
+
+  u.inject<UnicornLoader>('$loader').asImported('s3.uploader');
+}
+
 const defaultOptions = {
   endpoint: '',
   subfolder: '',
@@ -46,8 +57,7 @@ const defaultOptions = {
   }
 };
 
-class S3Uploader extends Unicorn.mix(class {
-}).with(Unicorn.EventMixin) {
+class S3Uploader extends Unicorn.mix(class {}).with(Unicorn.EventMixin) {
   options: S3UploaderGlobalOptions;
 
   constructor(protected name: string, options: Partial<S3UploaderGlobalOptions> = {}) {
@@ -104,7 +114,7 @@ class S3Uploader extends Unicorn.mix(class {
     this.trigger('start', fileData);
 
     try {
-      let res = await u.$http.post(
+      let res = await u.inject<UnicornHttp>('$http').post(
         this.options.endpoint || '',
         fileData,
         {
@@ -139,8 +149,6 @@ class S3Uploader extends Unicorn.mix(class {
 function trimSlashes(str: string) {
   return str.replace(/^\/+|\/+$/g, '');
 }
-
-u.$loader.asImported('s3.uploader');
 
 export interface S3UploaderResponse extends AxiosResponse {
   url: string;

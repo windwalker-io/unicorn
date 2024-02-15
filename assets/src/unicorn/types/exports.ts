@@ -21,5 +21,6 @@ export type { default as UnicornTinymce } from '../plugin/tinymce';
 export type { default as UnicornUI } from '../plugin/ui';
 export type { default as UnicornUri } from '../plugin/uri';
 export type { default as UnicornValidation } from '../plugin/validation';
+export type { EventAwareInterface, EventMixin, EventBus } from '../events';
 // export type { default as Unicorn } from './plugin/';
 

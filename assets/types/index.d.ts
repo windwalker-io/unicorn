@@ -1,6 +1,7 @@
 /// <reference types="./unicorn" />
 
 export * from './unicorn';
+import * as S3UploaderGlobal from '../src/modules/aws/s3-uploader';
 import type { UIBootstrap5 } from '../src/modules/ui/ui-bootstrap5';
 import type {
   MixinBuilder,
@@ -34,7 +35,7 @@ import type { sprintf, vsprintf } from 'sprintf-js';
 declare global {
     var u: Unicorn;
     var Unicorn: Unicorn['constructor'];
-    var S3Uploader: S3Uploader['constructor'];
+    var S3Uploader: typeof S3UploaderGlobal;
 }
 
 export interface Unicorn extends UnicornApp {
@@ -223,21 +224,3 @@ export interface UnicornUriExtended {
         root(path: string): string;
     };
 }
-
-//
-// // S3Uploader
-// export interface S3Uploader {
-//   constructor: {
-//     getInstance(name: string, options?: S3UploaderGlobalOptions): S3Uploader;
-//     get(name: string, options?: S3UploaderGlobalOptions): Promise<S3Uploader>;
-//     create(name: string, options?: S3UploaderGlobalOptions): S3Uploader;
-//     destory(name: string): void;
-//   }
-//   upload(file: string|Blob|File, path: string, options?: S3UploaderRequestOptions): Promise<S3UploaderResponse>;
-// }
-//
-
-//
-// export interface UnicornPlugin {
-//   install(app: UnicornApp): void;
-// }

@@ -2,7 +2,7 @@ import type { UnicornApp, UnicornHelper, UnicornLoader, UnicornUI } from '../../
 
 declare type ElementSelector = Parameters<typeof UnicornHelper.prototype.module>[0];
 
-export default class UIBootstrap5 {
+export class UIBootstrap5 {
   static install(app: UnicornApp) {
     app.$ui.bootstrap = new this(app, app.$ui);
     app.$ui.theme = app.$ui.bootstrap;

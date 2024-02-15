@@ -5,8 +5,9 @@ import type { SpectrumOptions } from 'spectrum-vanilla/dist/types/types';
 import type Tinymce from 'tinymce';
 import type { default as TomSelectGlobal } from 'tom-select';
 import type { TomInput } from 'tom-select/dist/types/types';
+import type { S3Uploader } from '../../modules/aws/s3-uploader';
 import UnicornApp from '../app';
-import type { Nullable } from '../types/base';
+import type { Nullable } from '../types';
 import UnicornAnimate from './animate';
 import UnicornHelper from './helper';
 import UnicornLoader from './loader';
@@ -360,11 +361,15 @@ export default class UnicornUI {
   /**
    * S3 Uploader.
    */
-  async s3Uploader(name?: Nullable<string>): Promise<any> {
+  s3Uploader(name: string): Promise<S3Uploader>;
+  s3Uploader(name?: null): Promise<null>;
+  async s3Uploader(name?: Nullable<string>): Promise<S3Uploader | null> {
     const module = await this.$loader.import('@unicorn/aws/s3-uploader.js');
 
+    module.init(this.app);
+
     if (name) {
-      return module.S3Uploader.get(name);
+      return module.get(name);
     }
 
     return null;
@@ -613,7 +618,8 @@ export default class UnicornUI {
     });
   }
 
-  async checkboxesMultiSelect(selector?: Nullable<string | HTMLElement>, options: Record<string, any> = {}): Promise<any> {
+  async checkboxesMultiSelect(selector?: Nullable<string | HTMLElement>,
+                              options: Record<string, any> = {}): Promise<any> {
     const m = await this.$loader.import('@unicorn/ui/checkboxes-multi-select.js');
 
     if (selector) {

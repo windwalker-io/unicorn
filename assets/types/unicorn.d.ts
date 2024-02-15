@@ -1,7 +1,16 @@
-import { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import { AxiosInstance, AxiosProgressEvent, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { SpectrumOptions } from 'spectrum-vanilla/dist/types/types';
 import { Editor, EditorManager, EditorOptions } from 'tinymce';
 
+declare class S3Uploader extends S3Uploader_base {
+	protected name: string;
+	options: S3UploaderGlobalOptions;
+	constructor(name: string, options?: Partial<S3UploaderGlobalOptions>);
+	/**
+	 * Do upload.
+	 */
+	upload(file: string | File | Blob, path: string, options?: Partial<S3UploaderRequestOptions>): Promise<S3UploaderResponse>;
+}
 declare class SimpleQueue {
 	protected maxRunning: number;
 	items: (() => Promise<any>)[];
@@ -65,7 +74,7 @@ declare class TinymceEditor {
 	setValue(text: string): string;
 	imageUploadHandler(blobInfo: UploadHandlerParams[0], progress: UploadHandlerParams[1]): Promise<any>;
 }
-declare class UnicornFieldValidation {
+declare class UnicornFieldValidation$1 {
 	protected app: UnicornApp;
 	protected el: HTMLElement;
 	$input: InputElements;
@@ -99,7 +108,7 @@ declare class UnicornFieldValidation {
 	 * @param valid {boolean}
 	 */
 	updateValidClass(valid: Boolean): void;
-	getFormValidation(element?: Nullable<HTMLFormElement>): UnicornFormValidation | null;
+	getFormValidation(element?: Nullable<HTMLFormElement>): UnicornFormValidation$1 | null;
 	getValidator(name: string): [
 		Validator,
 		Record<string, any>
@@ -126,7 +135,7 @@ declare class UnicornFieldValidation {
 	getForm(): HTMLFormElement;
 	findLabel(): Element | null;
 }
-declare class UnicornFormValidation {
+declare class UnicornFormValidation$1 {
 	protected app: UnicornApp;
 	presetFields: HTMLElement[];
 	static globalValidators: Record<string, Validator>;
@@ -148,7 +157,7 @@ declare class UnicornFormValidation {
 	prepareFields(inputs: HTMLElement[]): Promise<void>;
 	prepareFieldWrapper(input: HTMLElement): HTMLElement | null;
 	findFields(containsPresets?: boolean): HTMLElement[];
-	getFieldComponent(input: HTMLElement): UnicornFieldValidation | null;
+	getFieldComponent(input: HTMLElement): UnicornFieldValidation$1 | null;
 	validateAll(fields?: Nullable<HTMLElement[]>): boolean;
 	validateAllAsync(fields?: Nullable<HTMLElement[]>): Promise<boolean>;
 	scrollTo(element: HTMLElement): void;
@@ -163,11 +172,12 @@ declare class UnicornFormValidation {
 	/**
 	 * Add validator handler.
 	 */
-	static addGlobalValidator(name: string, handler: ValidationHandler, options?: Record<string, any>): typeof UnicornFormValidation;
+	static addGlobalValidator(name: string, handler: ValidationHandler, options?: Record<string, any>): typeof UnicornFormValidation$1;
 }
 declare const EventBus_base: {
 	new (): {};
 };
+declare const S3Uploader_base: any;
 declare const UnicornApp_base: any;
 declare const u: UnicornApp;
 export declare class EventBus extends EventBus_base {
@@ -848,7 +858,8 @@ export declare class UnicornUI {
 	/**
 	 * S3 Uploader.
 	 */
-	s3Uploader(name?: Nullable<string>): Promise<any>;
+	s3Uploader(name: string): Promise<S3Uploader>;
+	s3Uploader(name?: null): Promise<null>;
 	slideUp(target: string | HTMLElement, duration?: number): Promise<Animation | void>;
 	slideDown(target: string | HTMLElement, duration?: number, display?: string): Promise<Animation | void>;
 	/**
@@ -905,8 +916,8 @@ export declare class UnicornValidation {
 	import(): Promise<any>;
 	get $loader(): UnicornLoader;
 	get $helper(): UnicornHelper;
-	get(selector: string): UnicornFormValidation | null;
-	getField(selector: string | HTMLElement): UnicornFieldValidation | null;
+	get(selector: string): UnicornFormValidation$1 | null;
+	getField(selector: string | HTMLElement): UnicornFieldValidation$1 | null;
 	addGlobalValidator(name: string, validator: any, options?: Record<string, any>): Promise<any>;
 }
 export declare const EventMixin: <T extends new (...args: any[]) => any>(superclass: T) => T;
@@ -957,7 +968,7 @@ export declare type MixinFunction = <T extends new (...args: any[]) => any>(supe
 export declare type ObserverFunction = (queue: SimpleQueue, length: number, running: number) => void;
 export declare type StackHandler = (stack: Stack, length: number) => void;
 export declare type UploadHandlerParams = Parameters<NonNullable<EditorOptions["images_upload_handler"]>>;
-export declare type ValidationHandler = (value: any, input: HTMLElement, options?: Record<string, any>, fv?: UnicornFieldValidation) => any;
+export declare type ValidationHandler = (value: any, input: HTMLElement, options?: Record<string, any>, fv?: UnicornFieldValidation$1) => any;
 export declare type Validator = {
 	handler: ValidationHandler;
 	options?: Record<string, any>;
@@ -987,6 +998,38 @@ export interface FormValidationOptions {
 	fieldSelector: null;
 	scrollOffset: number;
 	enabled: boolean;
+}
+export interface S3Uploader extends EventAwareInterface {
+}
+export interface S3UploaderGlobalOptions {
+	endpoint?: string;
+	subfolder?: string;
+	viewerHost?: string;
+	starts_with: any[];
+	formInputs?: {
+		acl: string;
+		bucket: string;
+		key: string;
+		Policy: string;
+		"X-Amz-Algorithm": string;
+		"X-Amz-Credential": string;
+		"X-Amz-Date": string;
+		"X-Amz-Signature": string;
+		[name: string]: any;
+	};
+}
+export interface S3UploaderRequestOptions {
+	formInputs?: {
+		[name: string]: any;
+	};
+	onUploadProgress?: (e: AxiosProgressEvent) => void;
+	"Content-Type"?: string;
+	"Content-Disposition"?: string;
+	key?: string;
+	[name: string]: any;
+}
+export interface S3UploaderResponse extends AxiosResponse {
+	url: string;
 }
 export interface UnicornApp extends EventAwareInterface {
 }

@@ -193,7 +193,7 @@ export async function repeatable() {
 export async function s3Uploader() {
   return webpackBundle(
     './src/modules/aws/s3-uploader.ts',
-    './dist/aws/s3-uploader.ts',
+    './dist/aws/s3-uploader.js',
     (options) => {
       // options.output.library = 'Unicorn';
       options.output.libraryTarget = 'umd';
