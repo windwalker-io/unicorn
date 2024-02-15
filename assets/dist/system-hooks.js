@@ -1,16 +1,2 @@
-function hookSystemJS(version) {
-  System.constructor.prototype.createScript = function (url) {
-    if (url.indexOf('?') !== -1) {
-      url += '&' + version;
-    } else {
-      url += '?' + version;
-    }
-    return Object.assign(document.createElement('script'), {
-      src: url
-    });
-  };
-}
-if (document.currentScript) {
-  hookSystemJS(document.currentScript.dataset.version);
-}
+var t;document.currentScript&&(t=document.currentScript.dataset.version,System.constructor.prototype.createScript=function(e){return-1!==e.indexOf("?")?e+="&"+t:e+="?"+t,Object.assign(document.createElement("script"),{src:e})});
 //# sourceMappingURL=system-hooks.js.map
