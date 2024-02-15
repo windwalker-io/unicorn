@@ -24,7 +24,7 @@ import UnicornStack from './plugin/stack';
 import UnicornQueue from './plugin/queue';
 import UnicornAlpine2 from './plugin/alpine2';
 
-export type * from './types';
+export type * from './types/exports';
 
 export function createApp(options = {}) {
   return new UnicornApp(options);

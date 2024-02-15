@@ -38,7 +38,7 @@ export async function main() {
       options.module.rules[2].options.transpileOnly = true;
 
       options.plugins.push(new dtsBundle.BundleDeclarationsWebpackPlugin({
-        outFile: 'unicorn.d.ts',
+        outFile: '../types/unicorn.d.ts',
         compilationOptions: {
           preferredConfigPath: path.resolve('tsconfig.json'),
         },
