@@ -86,11 +86,11 @@ export default class UnicornHttp {
     return axios;
   }
 
-  requestMiddleware(callback: Parameters<typeof axios.interceptors.request.use>[0]) {
+  requestMiddleware(callback: Parameters<AxiosInstance['interceptors']['request']['use']>[0]) {
     return this.getHttp().then(axios => axios.interceptors.request.use(callback));
   }
 
-  responseMiddleware(callback: Parameters<typeof axios.interceptors.response.use>[0]) {
+  responseMiddleware(callback: Parameters<AxiosInstance['interceptors']['response']['use']>[0]) {
     return this.getHttp().then(axios => axios.interceptors.response.use(callback));
   }
 

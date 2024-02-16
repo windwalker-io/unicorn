@@ -54,7 +54,7 @@ export async function validation() {
       options.resolve.alias = options.resolve.alias || {};
       options.resolve.alias['@'] = path.resolve('./src');
 
-      outputDeclaration(options, '../types/validation.d.ts');
+      outputDeclaration(options, '../../types/validation.d.ts');
     }
   );
 }
@@ -229,7 +229,7 @@ export async function s3Uploader() {
       options.resolve.alias = options.resolve.alias || {};
       options.resolve.alias['@'] = path.resolve('./src');
 
-      outputDeclaration(options, '../types/s3-uploader.d.ts');
+      outputDeclaration(options, '../../types/s3-uploader.d.ts');
     }
   );
 }
@@ -263,9 +263,19 @@ export async function vueComponentField() {
 
 function outputDeclaration(options, outFile) {
   options.plugins.push(new dtsBundle.BundleDeclarationsWebpackPlugin({
+    // entry: {
+    //   filePath: options.entry,
+    //   output: {
+    //     exportReferencedTypes: false,
+    //     inlineDeclareExternals: false,
+    //   }
+    // },
     outFile,
     compilationOptions: {
       preferredConfigPath: path.resolve('tsconfig.json'),
     },
+    removeEmptyLines: false,
+    removeEmptyExports: false,
+    removeRelativeReExport: false,
   }));
 }

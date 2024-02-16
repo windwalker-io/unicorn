@@ -66,7 +66,7 @@ u.selectOne('[uni-cloak]')?.removeAttribute('uni-cloak');
 
 declare global {
   interface Window {
-    System: any;
+    System?: any;
     u?: UnicornApp;
   }
 }

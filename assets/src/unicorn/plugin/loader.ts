@@ -1,6 +1,13 @@
 import UnicornApp from '../app';
+import type UnicornHelper from './helper';
 
 const imports: Record<string, { promise: Promise<any>; resolve?: Function; }> = {};
+
+declare global {
+  interface Window {
+    System?: any;
+  }
+}
 
 export default class UnicornLoader {
   static install(app: UnicornApp) {
@@ -86,7 +93,7 @@ export default class UnicornLoader {
     const segments = fileName.split('.');
     const ext = segments.pop();
 
-    if (this.app.isDebug()) {
+    if (this.app.inject<UnicornHelper>('$helper').isDebug()) {
       return segments.join('.') + '.min.' + ext;
     }
 
