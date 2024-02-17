@@ -131,5 +131,3 @@ export default class UnicornLoader {
     return imports[name].promise;
   }
 }
-
-

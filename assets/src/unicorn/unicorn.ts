@@ -69,6 +69,8 @@ declare global {
     System?: any;
     u?: UnicornApp;
   }
+
+  var S: any;
 }
 
 export default u;

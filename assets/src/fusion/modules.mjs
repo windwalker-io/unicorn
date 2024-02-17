@@ -89,16 +89,12 @@ export async function listDependent() {
 }
 
 export async function cascadeSelect() {
-  watch(
-    ['src/modules/**/*.js', 'scss/**/*.scss']
-  );
-
-  return wait(
-    webpack('./src/modules/field/cascade-select.js', './dist/field/', {
-      override: (options) => {
-        options.output.libraryTarget = 'umd';
-      }
-    })
+  return doCompile(
+    './src/modules/field/cascade-select.ts',
+    './dist/field/cascade-select.js',
+    (options) => {
+      options.output.library = 'CascadeSelect';
+    }
   );
 }
 
@@ -258,6 +254,28 @@ export async function vueComponentField() {
         options.output.libraryTarget = 'umd';
       }
     })
+  );
+}
+
+/**
+ * @param src
+ * @param dest
+ * @param {(options: WebpackOptionsNested) => void} override
+ * @returns {Promise<any>}
+ */
+function doCompile(src, dest, override) {
+  return webpackBundle(
+    src,
+    dest,
+    (options) => {
+      options.output.libraryTarget = 'umd';
+      options.output.clean = false;
+
+      options.resolve.alias = options.resolve.alias || {};
+      options.resolve.alias['@'] = path.resolve('./src');
+
+      override(options);
+    }
   );
 }
 
