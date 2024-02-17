@@ -1,7 +1,8 @@
 /// <reference types="../../../types/index" />
 
 // import from 'alpinejs';
-import { AlpineComponent, Component } from '@rubenbimmel/alpine-class-component';
+import AlpineComponent from '@rubenbimmel/alpine-class-component/dist/alpineComponent';
+import Component from '@rubenbimmel/alpine-class-component/dist/decorators/component';
 
 interface CascadeSelectOptions {
   id: string;
