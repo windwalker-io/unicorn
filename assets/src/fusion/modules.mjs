@@ -8,19 +8,8 @@ export async function main() {
     './src/unicorn/unicorn.ts',
     './dist/unicorn.js',
     (options) => {
-      options.output.library = 'Unicorn';
-      options.output.libraryTarget = 'umd';
-      options.output.clean = false;
-
-      options.resolve.alias = options.resolve.alias || {};
-      options.resolve.alias['@'] = path.resolve('./src');
-
-      options.module.rules[2].options.configFile = path.resolve('tsconfig.json');
-      options.module.rules[2].options.transpileOnly = true;
-
+      libraryConfigure(options, 'Unicorn');
       outputDeclaration(options, '../types/unicorn.d.ts');
-
-      // console.log(options.module.rules[2].options.transpileOnly);
     }
   );
   // Compile end
@@ -31,12 +20,7 @@ export async function uiBootstrap5() {
     './src/modules/ui/ui-bootstrap5.ts',
     './dist/ui/ui-bootstrap5.js',
     (options) => {
-      options.output.libraryTarget = 'umd';
-      options.output.library = 'UIBootstrap5';
-      options.output.clean = false;
-
-      options.resolve.alias = options.resolve.alias || {};
-      options.resolve.alias['@'] = path.resolve('./src');
+      libraryConfigure(options, 'UIBootstrap5');
     }
   );
 }
@@ -46,15 +30,7 @@ export async function validation() {
     './src/modules/ui/validation-components.ts',
     './dist/ui/validation-components.js',
     (options) => {
-      // options.output.library = 'Unicorn';
-      options.output.libraryTarget = 'umd';
-      options.output.library = 'UnicornValidation';
-      options.output.clean = false;
-
-      options.resolve.alias = options.resolve.alias || {};
-      options.resolve.alias['@'] = path.resolve('./src');
-
-      outputDeclaration(options, '../../types/validation.d.ts');
+      libraryConfigure(options, 'UnicornValidation');
     }
   );
 }
@@ -89,11 +65,11 @@ export async function listDependent() {
 }
 
 export async function cascadeSelect() {
-  return doCompile(
+  return webpackBundle(
     './src/modules/field/cascade-select.ts',
     './dist/field/cascade-select.js',
     (options) => {
-      options.output.library = 'CascadeSelect';
+      libraryConfigure(options, 'CascadeSelect');
     }
   );
 }
@@ -113,16 +89,12 @@ export async function sid() {
 }
 
 export async function fileDrag() {
-  watch(
-    ['src/modules/**/*.js', 'scss/**/*.scss']
-  );
-
-  return wait(
-    webpack('./src/modules/field/file-drag.js', './dist/field/', {
-      override: (options) => {
-        options.output.libraryTarget = 'umd';
-      }
-    })
+  return webpackBundle(
+    './src/modules/field/file-drag.ts',
+    './dist/field/file-drag.js',
+    (options) => {
+      //
+    }
   );
 }
 
@@ -217,15 +189,7 @@ export async function s3Uploader() {
     './src/modules/aws/s3-uploader.ts',
     './dist/aws/s3-uploader.js',
     (options) => {
-      // options.output.library = 'Unicorn';
-      options.output.libraryTarget = 'umd';
-      options.output.library = 'S3Uploader';
-      options.output.clean = false;
-
-      options.resolve.alias = options.resolve.alias || {};
-      options.resolve.alias['@'] = path.resolve('./src');
-
-      outputDeclaration(options, '../../types/s3-uploader.d.ts');
+      libraryConfigure(options, 'S3Uploader');
     }
   );
 }
@@ -257,37 +221,23 @@ export async function vueComponentField() {
   );
 }
 
-/**
- * @param src
- * @param dest
- * @param {(options: WebpackOptionsNested) => void} override
- * @returns {Promise<any>}
- */
-function doCompile(src, dest, override) {
-  return webpackBundle(
-    src,
-    dest,
-    (options) => {
-      options.output.libraryTarget = 'umd';
-      options.output.clean = false;
+function libraryConfigure(options, libName = undefined) {
+  if (libName) {
+    options.output.library = libName;
+  }
 
-      options.resolve.alias = options.resolve.alias || {};
-      options.resolve.alias['@'] = path.resolve('./src');
+  options.output.libraryTarget = 'umd';
+  options.output.clean = false;
 
-      override(options);
-    }
-  );
+  options.resolve.alias = options.resolve.alias || {};
+  options.resolve.alias['@'] = path.resolve('./src');
+
+  options.module.rules[2].options.configFile = path.resolve('tsconfig.json');
+  options.module.rules[2].options.transpileOnly = true;
 }
 
 function outputDeclaration(options, outFile) {
   options.plugins.push(new dtsBundle.BundleDeclarationsWebpackPlugin({
-    // entry: {
-    //   filePath: options.entry,
-    //   output: {
-    //     exportReferencedTypes: false,
-    //     inlineDeclareExternals: false,
-    //   }
-    // },
     outFile,
     compilationOptions: {
       preferredConfigPath: path.resolve('tsconfig.json'),

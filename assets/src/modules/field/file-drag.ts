@@ -1,9 +1,28 @@
+/// <reference types="../../../types/index" />
 
 import '../../../scss/field/file-drag.scss';
 
+export interface FileDragOptions {
+  maxFiles: number | undefined;
+  maxSize: number | undefined;
+  placeholder: string;
+  height: number;
+}
+
+const defaultOptions: FileDragOptions = {
+  maxFiles: undefined,
+  maxSize: undefined,
+  placeholder: '',
+  height: 100,
+}
+
 class FileDrag extends HTMLElement {
   static is = 'uni-file-drag';
-  
+
+  element: HTMLInputElement;
+  overlayLabel: HTMLLabelElement;
+  options: FileDragOptions;
+
   get inputSelector() {
     return this.getAttribute('selector') || 'input[type=file]';
   }
@@ -12,10 +31,12 @@ class FileDrag extends HTMLElement {
     return this.element.multiple;
   }
 
-  connectedCallback() {
+  connectedCallback(): void {
     this.element = this.querySelector(this.inputSelector);
     this.overlayLabel = this.querySelector('[data-overlay-label]');
-    this.options = JSON.parse(this.getAttribute('options') || '{}');
+    const options = JSON.parse(this.getAttribute('options') || '{}') || {};
+
+    this.options = u.defaultsDeep({}, options, defaultOptions);
     
     this.bindEvent();
 
@@ -47,7 +68,7 @@ class FileDrag extends HTMLElement {
     });
   }
 
-  onChange(e) {
+  onChange(evt?: Event) {
     const files = this.element.files;
     const limit = this.options.maxFiles;
     const maxSize = this.options.maxSize;
@@ -65,7 +86,7 @@ class FileDrag extends HTMLElement {
         return v;
       });
 
-    let text;
+    let text: string;
 
     if (!placeholder) {
       if (this.multiple) {
@@ -78,7 +99,7 @@ class FileDrag extends HTMLElement {
     // Files limit
     if (limit && files.length > limit) {
       this.alert(u.__('unicorn.field.file.drag.message.max.files', limit), '', 'warning');
-      e.preventDefault();
+      evt?.preventDefault();
       return;
     }
 
@@ -99,7 +120,7 @@ class FileDrag extends HTMLElement {
         '',
         'warning'
       );
-      e.preventDefault();
+      evt?.preventDefault();
       return;
     }
 
@@ -115,7 +136,7 @@ class FileDrag extends HTMLElement {
     this.overlayLabel.querySelector('span').innerHTML = text;
   }
 
-  checkFileType(accepted, file) {
+  checkFileType(accepted: string[], file: File) {
     const fileExt = file.name.split('.').pop();
 
     if (accepted.length) {
@@ -148,7 +169,7 @@ class FileDrag extends HTMLElement {
     }
   }
 
-  compareMimeType(accepted, mime) {
+  compareMimeType(accepted: string, mime: string) {
     const accepted2 = accepted.split('/');
     const mime2 = mime.split('/');
 
@@ -159,7 +180,7 @@ class FileDrag extends HTMLElement {
     return accepted === mime;
   }
 
-  alert(title, text = '', type = 'info') {
+  alert(title: string, text: string = '', type: string = 'info') {
     if (window.swal) {
       window.swal(title, text, type);
     } else {
@@ -173,3 +194,9 @@ class FileDrag extends HTMLElement {
 }
 
 u.defineCustomElement(FileDrag.is, FileDrag);
+
+declare global {
+  interface Window {
+    swal: any;
+  }
+}
