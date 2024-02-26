@@ -1,8 +1,19 @@
+/// <reference types="../../../types/index" />
 
-import { defaultsDeep } from 'lodash-es';
+interface IFrameModalOptions {
+  id?: string;
+  size?: string;
+  resize?: string;
+  height?: string;
+}
 
-class IFrameModal extends HTMLElement {
+export class IFrameModal extends HTMLElement {
   static is = 'uni-iframe-modal';
+
+  options: IFrameModalOptions;
+  modalElement: HTMLDivElement;
+  modal: any;
+  iframe: HTMLIFrameElement;
 
   template() {
     return `
@@ -30,9 +41,10 @@ class IFrameModal extends HTMLElement {
     }
 
     this.modalElement = this.querySelector(this.selector);
-    this.modal = new bootstrap.Modal(this.modalElement);
-    this.iframe = this.modalElement.querySelector('iframe');
+    this.modal = u.$ui.bootstrap.modal(this.modalElement);
+    this.iframe = this.modalElement.querySelector<HTMLIFrameElement>('iframe');
 
+    // @ts-ignore
     this.iframe.modalLink = () => {
       return this;
     };
@@ -46,8 +58,8 @@ class IFrameModal extends HTMLElement {
     });
   }
 
-  open(href, options = {}) {
-    options = defaultsDeep(
+  open(href: string, options: IFrameModalOptions = {}) {
+    options = u.defaultsDeep(
       options,
       this.options,
       {
@@ -83,7 +95,7 @@ class IFrameModal extends HTMLElement {
     this.iframe.src = '';
   }
 
-  resize(iframe) {
+  resize(iframe: HTMLIFrameElement) {
     setTimeout(() => {
       let height = iframe.contentWindow.document.documentElement.scrollHeight;
 
@@ -106,7 +118,7 @@ u.defineCustomElement(IFrameModal.is, IFrameModal);
 
 u.directive('modal-link', {
   mounted(el, binding) {
-    let options = {};
+    let options: IFrameModalOptions = {};
 
     options.height = el.dataset.height;
     options.resize = el.dataset.resize;
@@ -125,9 +137,9 @@ u.directive('modal-link', {
         return;
       }
       
-      if (el.src) {
+      if ('src' in el) {
         im.open(el.src, options);
-      } else if (el.href) {
+      } else if ('href' in el) {
         im.open(el.href, options);
       }
     });

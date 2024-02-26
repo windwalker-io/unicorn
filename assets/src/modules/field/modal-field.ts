@@ -1,15 +1,30 @@
 import { template } from 'lodash-es';
+import type { UnicornApp, UnicornUI } from '../../../types';
+import type { IFrameModal } from '../ui/iframe-modal';
+import type { UIBootstrap5 } from '../ui/ui-bootstrap5';
 
-class ModalField {
-  static install(app, options = {}) {
+declare global {
+  var Sortable: any;
+}
+
+export class ModalField {
+  static install(app: UnicornApp, options = {}) {
     app.$modalField = new this(app);
   }
 
-  constructor(app) {
-    this.app = app;
+  constructor(protected app: UnicornApp) {
+    //
   }
 
-  createCallback(type, selector, modalSelector) {
+  get $ui() {
+    return this.app.inject<UnicornUI>('$ui');
+  }
+
+  get $bootstrap() {
+    return this.$ui['bootstrap'] as UIBootstrap5;
+  }
+
+  createCallback(type: string, selector: string, modalSelector: string) {
     switch (type) {
       // case 'tag':
       //   return () => {
@@ -17,12 +32,12 @@ class ModalField {
       //   };
       case 'list':
         return (item) => {
-          const modalList = document.querySelector(selector);
+          const modalList = document.querySelector(selector) as any as ModalList;
 
           if (!modalList.querySelector(`[data-value="${item.value}"]`)) {
-            modalList.append(item, true);
+            modalList.appendItem(item, true);
 
-            document.querySelector(modalSelector).close();
+            this.$bootstrap.modal(modalSelector).close();
           } else {
             alert(u.__('unicorn.field.modal.already.selected'));
           }
@@ -31,11 +46,11 @@ class ModalField {
       case 'single':
       default:
         return (item) => {
-          const element = document.querySelector(selector);
+          const element = document.querySelector<HTMLDivElement>(selector);
 
-          const image = element.querySelector('[data-role=image]');
-          const title = element.querySelector('[data-role=title]');
-          const store = element.querySelector('[data-role=value]');
+          const image = element.querySelector<HTMLDivElement>('[data-role=image]');
+          const title = element.querySelector<HTMLInputElement>('[data-role=title]');
+          const store = element.querySelector<HTMLInputElement>('[data-role=value]');
 
           if (image && item.image) {
             image.style.backgroundImage = `url(${item.image});`;
@@ -46,7 +61,7 @@ class ModalField {
 
           store.dispatchEvent(new CustomEvent('change'));
 
-          document.querySelector(modalSelector).close();
+          this.$bootstrap.modal(modalSelector).close();
 
           u.$ui.highlight(title);
         };
@@ -54,26 +69,37 @@ class ModalField {
   }
 }
 
+interface ModalListOptions {
+  modalSelector: string;
+  itemTemplate: string;
+  sortable: boolean;
+  dataKey: string;
+  max: number;
+}
+
 class ModalList extends HTMLElement {
   static is = 'uni-modal-list';
 
+  itemTemplate: ReturnType<typeof template>;
+  options: ModalListOptions;
+
   get listContainer() {
-    return this.querySelector('[data-role=list-container]');
+    return this.querySelector<HTMLDivElement>('[data-role=list-container]');
   }
 
   get modal() {
-    return document.querySelector(this.options.modalSelector);
+    return document.querySelector<IFrameModal>(this.options.modalSelector);
   }
 
-  get items() {
-    return this.listContainer.children;
+  get items(): Element[] {
+    return Array.from(this.listContainer.children);
   }
 
   connectedCallback() {
     this.options = JSON.parse(this.getAttribute('options') || '{}');
     this.itemTemplate = template(document.querySelector(this.options.itemTemplate).innerHTML);
 
-    const emptyInput = this.querySelector('[data-role=empty]');
+    const emptyInput = this.querySelector<HTMLInputElement>('[data-role=empty]');
 
     if (emptyInput) {
       emptyInput.name = emptyInput.dataset.name;
@@ -85,14 +111,14 @@ class ModalList extends HTMLElement {
       });
     }
 
-    const selectButton = this.querySelector('[data-role=select]');
+    const selectButton = this.querySelector<HTMLButtonElement>('[data-role=select]');
     selectButton.addEventListener('click', (e) => {
       this.open(e);
     });
 
     this.querySelector('[data-role=clear]').addEventListener('click', () => {
-      [].forEach.call(this.items, (item) => {
-        item.querySelector('[data-role=remove]').click();
+      this.items.forEach((item) => {
+        item.querySelector<HTMLButtonElement>('[data-role=remove]').click();
       });
     });
 
@@ -105,11 +131,11 @@ class ModalList extends HTMLElement {
     const items = u.data('unicorn.modal-field')[this.options.dataKey] || [];
 
     items.forEach((item) => {
-      this.append(item);
+      this.appendItem(item);
     });
   }
 
-  append(item, highlight = false) {
+  appendItem(item: any, highlight = false) {
     const itemHtml = u.html(this.itemTemplate({ item }));
 
     itemHtml.dataset.value = item.value;
@@ -129,7 +155,7 @@ class ModalList extends HTMLElement {
   }
 
   toggleRequired() {
-    const placeholder = this.querySelector('[data-role=validation-placeholder]');
+    const placeholder = this.querySelector<HTMLInputElement>('[data-role=validation-placeholder]');
 
     if (placeholder) {
       placeholder.disabled = this.listContainer.children.length !== 0;

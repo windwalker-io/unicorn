@@ -74,7 +74,7 @@ export interface Unicorn extends UnicornApp {
     // directive.js
     $directive: UnicornDirective;
 
-    directive(name: string, handler: UnicornDirectiveHandler): void;
+    directive<T extends Element = HTMLElement>(name: string, handler: UnicornDirectiveHandler<T>): void;
 
     // lang.js
     $lang: UnicornLang;

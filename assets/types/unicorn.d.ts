@@ -120,7 +120,7 @@ declare class UnicornFieldValidation$1 {
 	setCustomValidity(error: string): void;
 	reportValidity(): void;
 	showInvalidResponse(): void;
-	createHelpElement(): Element;
+	createHelpElement(): HTMLElement;
 	/**
 	 * @see https://stackoverflow.com/a/17888178
 	 */
@@ -500,7 +500,7 @@ export declare class UnicornHelper {
 	module<T = any, E extends Element = HTMLElement>(ele: HTMLElement, name: string, callback?: ((el: E) => any)): T | null;
 	module<T = any, E extends Element = HTMLElement>(ele: string | HTMLElement | NodeListOf<HTMLElement>, name: string, callback?: ((el: E) => any)): (T | null)[] | T | null;
 	h<T extends keyof HTMLElementTagNameMap>(element: T, attrs?: Record<string, any>, content?: any): HTMLElementTagNameMap[T];
-	html(html: string): Element;
+	html<T extends Element = HTMLElement>(html: string): T;
 	get(obj: Record<string, any>, path: string): any;
 	set<SetValue = any>(obj: Record<string, any>, path: string, value: SetValue): SetValue;
 	/**
@@ -1033,18 +1033,18 @@ export interface S3UploaderResponse extends AxiosResponse {
 }
 export interface UnicornApp extends EventAwareInterface {
 }
-export interface UnicornDirectiveBinding {
+export interface UnicornDirectiveBinding<T extends Element = HTMLElement> {
 	directive: string;
-	node: HTMLElement;
+	node: T;
 	value: any;
 	oldValue: any;
 	mutation?: MutationRecord;
-	dir: UnicornDirectiveHandler;
+	dir: UnicornDirectiveHandler<T>;
 }
-export interface UnicornDirectiveHandler {
-	mounted?: UnicornDirectiveHandlerHook;
-	unmounted?: UnicornDirectiveHandlerHook;
-	updated?: UnicornDirectiveHandlerHook;
+export interface UnicornDirectiveHandler<T extends Element = HTMLElement> {
+	mounted?: UnicornDirectiveHandlerHook<T>;
+	unmounted?: UnicornDirectiveHandlerHook<T>;
+	updated?: UnicornDirectiveHandlerHook<T>;
 }
 export interface UnicornPlugin {
 	install?(app: UnicornApp, options?: any): void;
@@ -1052,7 +1052,7 @@ export interface UnicornPlugin {
 }
 export type InputElements = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
 export type Nullable<T> = T | null | undefined;
-export type UnicornDirectiveHandlerHook = (node: HTMLElement, bindings: UnicornDirectiveBinding) => void;
+export type UnicornDirectiveHandlerHook<T extends Element = HTMLElement> = (node: T, bindings: UnicornDirectiveBinding) => void;
 
 export {
 	u as default,

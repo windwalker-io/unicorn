@@ -173,10 +173,10 @@ export default class UnicornHelper {
     return ele;
   }
 
-  html(html: string): Element {
+  html<T extends Element = HTMLElement>(html: string): T {
     const div = document.createElement('div');
     div.innerHTML = html;
-    return div.children[0];
+    return div.children[0] as T;
   }
 
   get(obj: Record<string, any>, path: string): any {

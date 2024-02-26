@@ -263,20 +263,20 @@ export default class UnicornDirective {
 
 declare type DirectiveBaseHook = (directive: string, node: HTMLElement) => void;
 
-export interface UnicornDirectiveBinding {
+export interface UnicornDirectiveBinding<T extends Element = HTMLElement> {
   directive: string;
-  node: HTMLElement;
+  node: T;
   value: any;
   oldValue: any;
   mutation?: MutationRecord;
-  dir: UnicornDirectiveHandler;
+  dir: UnicornDirectiveHandler<T>;
 }
 
-export type UnicornDirectiveHandlerHook = (node: HTMLElement, bindings: UnicornDirectiveBinding) => void
+export type UnicornDirectiveHandlerHook<T extends Element = HTMLElement> = (node: T, bindings: UnicornDirectiveBinding) => void
 
 // Directive
-export interface UnicornDirectiveHandler {
-  mounted?: UnicornDirectiveHandlerHook;
-  unmounted?: UnicornDirectiveHandlerHook;
-  updated?: UnicornDirectiveHandlerHook;
+export interface UnicornDirectiveHandler<T extends Element = HTMLElement> {
+  mounted?: UnicornDirectiveHandlerHook<T>;
+  unmounted?: UnicornDirectiveHandlerHook<T>;
+  updated?: UnicornDirectiveHandlerHook<T>;
 }

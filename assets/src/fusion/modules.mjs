@@ -99,30 +99,22 @@ export async function fileDrag() {
 }
 
 export async function iframeModal() {
-  watch(
-    ['src/modules/**/*.js', 'scss/**/*.scss']
-  );
-
-  return wait(
-    webpack('./src/modules/ui/iframe-modal.js', './dist/ui/', {
-      override: (options) => {
-        options.output.libraryTarget = 'umd';
-      }
-    })
+  return webpackBundle(
+    './src/modules/ui/iframe-modal.ts',
+    './dist/ui/iframe-modal.js',
+    (options) => {
+      libraryConfigure(options, 'IframeModal');
+    }
   );
 }
 
 export async function modalField() {
-  watch(
-    ['src/modules/**/*.js', 'scss/**/*.scss']
-  );
-
-  return wait(
-    webpack('./src/modules/field/modal-field.js', './dist/field/', {
-      override: (options) => {
-        options.output.libraryTarget = 'umd';
-      }
-    })
+  return webpackBundle(
+    './src/modules/field/modal-field.ts',
+    './dist/field/modal-field.js',
+    (options) => {
+      libraryConfigure(options, 'ModalField');
+    }
   );
 }
 
