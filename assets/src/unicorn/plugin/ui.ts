@@ -534,7 +534,7 @@ export default class UnicornUI {
     }
 
     if (selector) {
-      this.$helper.module(selector, 'spectrum', (ele) => Spectrum.getInstance(ele, options));
+      this.$helper.module<any, HTMLElement>(selector, 'spectrum', (ele) => Spectrum.getInstance(ele, options));
     }
 
     return m;

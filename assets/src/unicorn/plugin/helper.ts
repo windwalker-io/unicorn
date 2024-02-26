@@ -84,14 +84,17 @@ export default class UnicornHelper {
     return prepareData(r);
   }
 
-  selectAll<E extends Element = Element>(ele: string, callback?: ((ele: E) => any)): NodeListOf<E>;
+  selectAll<E extends Element = Element>(ele: string, callback?: ((ele: E) => any)): E[];
   selectAll<E extends Element = Element>(ele: NodeListOf<E> | E[], callback?: ((ele: E) => any)): E[];
   selectAll<E extends Element = Element>(ele: string | NodeListOf<E> | E[], callback?: ((ele: E) => any)): E[];
-  selectAll<E extends keyof HTMLElementTagNameMap>(ele: E,
-                                                   callback?: ((ele: HTMLElementTagNameMap[E]) => any)): HTMLElementTagNameMap[E][];
-  selectAll(ele: string, callback?: ((ele: Element) => any)): Element[];
-  selectAll(ele: NodeListOf<Element> | Element[] | string,
-            callback: ((el: Element) => any) | undefined = undefined): Element[] | NodeListOf<Element> {
+  selectAll<E extends keyof HTMLElementTagNameMap>(
+    ele: E,
+    callback?: ((ele: HTMLElementTagNameMap[E]) => any)
+  ): HTMLElementTagNameMap[E][];
+  selectAll(
+    ele: NodeListOf<Element> | Element[] | string,
+    callback: ((el: Element) => any) | undefined = undefined
+  ): Element[] {
     if (typeof ele === 'string') {
       ele = document.querySelectorAll(ele);
     }
@@ -99,9 +102,7 @@ export default class UnicornHelper {
     const resultSet: Element[] = [].slice.call(ele);
 
     if (callback) {
-      return resultSet.map((el) => {
-        return callback(el) || el;
-      });
+      return resultSet.map((el) => callback(el) || el);
     }
 
     return resultSet;
@@ -112,8 +113,8 @@ export default class UnicornHelper {
   }
 
   getBoundedInstance<T = any, E = Element>(selector: E, name: string, callback?: ((el: E) => any)): T;
-  getBoundedInstance<T = any, E extends Element = HTMLElement>(selector: string | E, name: string, callback?: ((el: E) => any)): T | null;
-  getBoundedInstance<T = any, E extends Element = HTMLElement>(selector: string | E, name: string, callback: ((el: E) => any) = () => null): T | null {
+  getBoundedInstance<T = any, E extends Element = Element>(selector: string | E, name: string, callback?: ((el: E) => any)): T | null;
+  getBoundedInstance<T = any, E extends Element = Element>(selector: string | E, name: string, callback: ((el: E) => any) = () => null): T | null {
     const element = this.selectOne<E>(selector);
 
     if (!element) {
@@ -123,7 +124,7 @@ export default class UnicornHelper {
     return defData(element, name, callback);
   }
 
-  getBoundedInstanceList<T = any, E extends Element = HTMLElement>(
+  getBoundedInstanceList<T = any, E extends Element = Element>(
     selector: string | NodeListOf<E>,
     name: string,
     callback: ((el: E) => any) = () => null
@@ -132,15 +133,15 @@ export default class UnicornHelper {
       .map((ele: E) => this.getBoundedInstance(ele, name, callback));
   }
 
-  module<T = any, E extends Element = HTMLElement>(ele: string, name: string, callback?: ((el: E) => any)): (T | null)[];
-  module<T = any, E extends Element  = HTMLElement>(ele: NodeListOf<HTMLElement>, name: string, callback?: ((el: E) => any)): (T | null)[];
-  module<T = any, E extends Element  = HTMLElement>(ele: HTMLElement, name: string, callback?: ((el: E) => any)): T | null;
-  module<T = any, E extends Element  = HTMLElement>(
-    ele: string | HTMLElement | NodeListOf<HTMLElement>,
+  module<T = any, E extends Element = Element>(ele: string, name: string, callback?: ((el: E) => any)): (T | null)[];
+  module<T = any, E extends Element  = Element>(ele: NodeListOf<Element>, name: string, callback?: ((el: E) => any)): (T | null)[];
+  module<T = any, E extends Element  = Element>(ele: Element, name: string, callback?: ((el: E) => any)): T | null;
+  module<T = any, E extends Element  = Element>(
+    ele: string | Element | NodeListOf<Element>,
     name: string,
     callback?: ((el: E) => any)
   ): (T | null)[] | T | null;
-  module<T = any, E extends Element = HTMLElement>(
+  module<T = any, E extends Element = Element>(
     ele: string | E | NodeListOf<E>,
     name: string,
     callback: ((el: E) => any) = () => null
