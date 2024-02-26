@@ -37,7 +37,7 @@ export class ModalField {
           if (!modalList.querySelector(`[data-value="${item.value}"]`)) {
             modalList.appendItem(item, true);
 
-            this.$bootstrap.modal(modalSelector).close();
+            u.selectOne<IFrameModal>(modalSelector).close();
           } else {
             alert(u.__('unicorn.field.modal.already.selected'));
           }
@@ -61,7 +61,7 @@ export class ModalField {
 
           store.dispatchEvent(new CustomEvent('change'));
 
-          this.$bootstrap.modal(modalSelector).close();
+          u.selectOne<IFrameModal>(modalSelector).close();
 
           u.$ui.highlight(title);
         };
@@ -97,7 +97,7 @@ class ModalList extends HTMLElement {
 
   connectedCallback() {
     this.options = JSON.parse(this.getAttribute('options') || '{}');
-    this.itemTemplate = template(document.querySelector(this.options.itemTemplate).innerHTML);
+    this.itemTemplate = template(document.querySelector(this.options.itemTemplate)!.innerHTML);
 
     const emptyInput = this.querySelector<HTMLInputElement>('[data-role=empty]');
 
