@@ -1,6 +1,6 @@
 import UnicornApp from '../app';
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosStatic } from 'axios';
-import { AxiosError } from 'axios';
+import type { AxiosError } from 'axios';
 import { parseTemplate } from 'url-template';
 
 declare global {
@@ -226,15 +226,17 @@ export default class UnicornHttp {
   async request<T = any, D = any>(options: AxiosRequestConfig): Promise<AxiosResponse<T, D>> {
     try {
       let axiosInstance = await this.getHttp();
-      return axiosInstance(options);
+      return await axiosInstance(options);
     } catch (e) {
       (e as any).originMessage = (e as Error).message;
 
-      if (e instanceof AxiosError && e.response?.data?.message) {
-        e.message = e.response.data.message;
+      const err = e as AxiosError<any>;
+
+      if (err.response?.data?.message) {
+        err.message = err.response.data.message;
       }
 
-      throw e;
+      throw err;
     }
 
     // let reqOptions = options;
