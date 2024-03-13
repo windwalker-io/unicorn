@@ -77,7 +77,7 @@ declare class TinymceEditor {
 declare class UnicornFieldValidation$1 {
 	protected app: UnicornApp;
 	protected el: HTMLElement;
-	$input: InputElements;
+	$input: InputElements | undefined;
 	options: FieldValidationOptions;
 	static is: string;
 	constructor(app: UnicornApp, el: HTMLElement, options?: Partial<FieldValidationOptions>);
@@ -94,7 +94,7 @@ declare class UnicornFieldValidation$1 {
 	get isInputOptions(): boolean;
 	get validationMessage(): string;
 	get validity(): ValidityState | undefined;
-	selectInput(): InputElements;
+	selectInput(): InputElements | undefined;
 	init(): void;
 	bindEvents(): void;
 	prepareWrapper(): void;
