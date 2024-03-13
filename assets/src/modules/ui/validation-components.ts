@@ -4,7 +4,7 @@ import type UnicornDirective from '../../unicorn/plugin/directive';
 import type UnicornHelper from '../../unicorn/plugin/helper';
 import type UnicornLang from '../../unicorn/plugin/lang';
 import type UnicornUI from '../../unicorn/plugin/ui';
-import type { Nullable } from '../../unicorn/types/base';
+import type { Nullable } from '../../unicorn/types';
 
 declare type ValidationHandler = (value: any, input: HTMLElement, options?: Record<string, any>, fv?: UnicornFieldValidation) => any;
 
@@ -323,7 +323,7 @@ export class UnicornFormValidation {
 }
 
 export class UnicornFieldValidation {
-  $input: InputElements;
+  $input: InputElements | undefined;
   options: FieldValidationOptions;
 
   static is = 'uni-field-validate';
@@ -388,7 +388,7 @@ export class UnicornFieldValidation {
     return this.$input?.validity;
   }
 
-  selectInput(): InputElements {
+  selectInput(): InputElements | undefined {
     let selector = this.selector;
 
     if (this.options.inputOptions) {
@@ -402,7 +402,8 @@ export class UnicornFieldValidation {
     }
 
     if (!input) {
-      throw new Error('Input not found');
+      console.error('Input not found');
+      return undefined;
     }
 
     return this.$input = input;
@@ -441,7 +442,7 @@ export class UnicornFieldValidation {
     const events = this.options.events;
 
     events.forEach((eventName) => {
-      this.$input.addEventListener(eventName, () => {
+      this.$input?.addEventListener(eventName, () => {
         this.checkValidity();
       });
     });
@@ -488,6 +489,10 @@ export class UnicornFieldValidation {
   }
 
   runCustomValidity() {
+    if (!this.$input) {
+      return true;
+    }
+
     // Check custom validity
     const validates = (this.$input.getAttribute('data-validate') || '').split('|');
     let result = true;
@@ -549,6 +554,10 @@ export class UnicornFieldValidation {
   }
 
   async runCustomValidityAsync(): Promise<boolean> {
+    if (!this.$input) {
+      return true;
+    }
+
     // Check custom validity
     const validates = (this.$input.getAttribute('data-validate') || '').split('|');
 
@@ -592,12 +601,16 @@ export class UnicornFieldValidation {
   }
 
   checkCustomDataAttributeValidity(): boolean {
-    const error = this.$input.dataset.validationFail;
+    const error = this.$input?.dataset.validationFail;
 
     return this.handleCustomResult(error);
   }
 
   checkInputOptionsValidity(): boolean {
+    if (!this.$input) {
+      return true;
+    }
+
     const isRequired = this.$input.getAttribute('required') != null;
     const optionWrappers = this.$input.querySelectorAll(this.options.inputOptionsSelector);
     let result = true;
@@ -648,16 +661,16 @@ export class UnicornFieldValidation {
    * @param valid {boolean}
    */
   updateValidClass(valid: Boolean) {
-    this.$input.classList.remove(this.invalidClass);
-    this.$input.classList.remove(this.validClass);
+    this.$input?.classList.remove(this.invalidClass);
+    this.$input?.classList.remove(this.validClass);
     this.el.classList.remove(this.invalidClass);
     this.el.classList.remove(this.validClass);
 
     if (valid) {
-      this.$input.classList.add(this.validClass);
+      this.$input?.classList.add(this.validClass);
       this.el.classList.add(this.validClass);
     } else {
-      this.$input.classList.add(this.invalidClass);
+      this.$input?.classList.add(this.invalidClass);
       this.el.classList.add(this.invalidClass);
     }
   }
@@ -705,14 +718,14 @@ export class UnicornFieldValidation {
 
   handleCustomResult(result: boolean | string | undefined, validator?: Nullable<Validator>): boolean {
     if (typeof result === 'string') {
-      this.$input.setCustomValidity(result);
+      this.$input?.setCustomValidity(result);
       result = result === '';
     } else if (result === undefined) {
       result = true;
     }
 
     if (result) {
-      this.$input.setCustomValidity('');
+      this.$input?.setCustomValidity('');
     } else if (validator) {
       this.raiseCustomErrorState(validator);
     }
@@ -724,7 +737,7 @@ export class UnicornFieldValidation {
     result = this.handleCustomResult(result, validator);
 
     // Fire invalid events
-    this.$input.checkValidity();
+    this.$input?.checkValidity();
 
     this.updateValidClass(result);
 
@@ -734,7 +747,7 @@ export class UnicornFieldValidation {
   raiseCustomErrorState(validator: Validator): void {
     let help;
 
-    if (this.$input.validationMessage === '') {
+    if (this.$input?.validationMessage === '') {
       help = validator.options?.notice;
 
       if (typeof help === 'function') {
@@ -742,15 +755,15 @@ export class UnicornFieldValidation {
       }
 
       if (help != null) {
-        this.$input.setCustomValidity(help);
+        this.$input?.setCustomValidity(help);
       }
     }
 
-    if (this.$input.validationMessage === '') {
-      this.$input.setCustomValidity(this.$lang.__('unicorn.message.validation.custom.error'));
+    if (this.$input?.validationMessage === '') {
+      this.$input?.setCustomValidity(this.$lang.__('unicorn.message.validation.custom.error'));
     }
 
-    this.$input.dispatchEvent(
+    this.$input?.dispatchEvent(
       new CustomEvent('invalid')
     );
   }
@@ -761,7 +774,7 @@ export class UnicornFieldValidation {
   }
 
   setCustomValidity(error: string) {
-    this.$input.setCustomValidity(error);
+    this.$input?.setCustomValidity(error);
   }
 
   reportValidity() {
@@ -774,12 +787,12 @@ export class UnicornFieldValidation {
     this.updateValidClass(false);
 
     /** @type ValidityState */
-    const state = this.$input.validity;
-    let message: string = this.$input.validationMessage;
+    const state = this.$input?.validity;
+    let message: string = this.$input?.validationMessage || '';
 
     for (let key in state) {
-      if (state[(key as keyof ValidityState)] && this.$input.dataset[key + 'Message']) {
-        message = this.$input.dataset[key + 'Message'] || '';
+      if (state[(key as keyof ValidityState)] && this.$input?.dataset[key + 'Message']) {
+        message = this.$input?.dataset[key + 'Message'] || '';
         break;
       }
     }
@@ -788,7 +801,7 @@ export class UnicornFieldValidation {
       let title = this.findLabel()?.textContent;
 
       if (!title) {
-        title = this.$input.name;
+        title = this.$input?.name || '';
       }
 
       this.$ui.renderMessage(
@@ -873,9 +886,9 @@ export class UnicornFieldValidation {
   }
 
   findLabel() {
-    const id = this.$input.id;
+    const id = this.$input?.id || '';
 
-    const wrapper = this.$input.closest('[data-field-wrapper]');
+    const wrapper = this.$input?.closest('[data-field-wrapper]');
     let label = null;
 
     if (wrapper) {
