@@ -1,2 +1,2 @@
-var t;document.currentScript&&(t=document.currentScript.dataset.version,System.constructor.prototype.createScript=function(e){return-1!==e.indexOf("?")?e+="&"+t:e+="?"+t,Object.assign(document.createElement("script"),{src:e})});
+document.currentScript&&(window.unicornScriptVersion=document.currentScript.dataset.version,System.constructor.prototype.createScript=function(t){const r=window.unicornScriptVersion;return-1!==t.indexOf("?")?t+="&"+r:t+="?"+r,Object.assign(document.createElement("script"),{src:t})});
 //# sourceMappingURL=system-hooks.js.map
