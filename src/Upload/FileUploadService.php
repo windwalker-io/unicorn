@@ -6,6 +6,8 @@ namespace Unicorn\Upload;
 
 use Intervention\Image\Constraint;
 use Intervention\Image\Exception\NotReadableException;
+use Intervention\Image\FileExtension;
+use Intervention\Image\Interfaces\ImageInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use Symfony\Component\Mime\MimeTypesInterface;
@@ -25,7 +27,6 @@ use Windwalker\Http\Helper\UploadedFileHelper;
 use Windwalker\Stream\Stream;
 use Windwalker\Stream\StringStream;
 use Windwalker\Utilities\Options\OptionsResolverTrait;
-
 use Windwalker\Utilities\TypeCast;
 
 use function Windwalker\chronos;
@@ -455,20 +456,16 @@ class FileUploadService implements EventAwareInterface
 
         $image = InterventionImage::read($src, $resizeConfig['driver']);
 
-        // if ($driver === static::DRIVER_IMAGICK && $resizeConfig['strip_exif']) {
-        //     $image->getCore()->stripImage();
-        // }
-
         $width = TypeCast::safeInteger($resizeConfig['width']);
         $height = TypeCast::safeInteger($resizeConfig['height']);
 
         if (!$resizeConfig['enabled']) {
             return Stream::wrap(
-                $image->encodeByExtension(
+                $this->encodeImageByExtension(
+                    $image,
                     $resizeConfig['output_format'] ?? $outputFormat,
                     TypeCast::safeInteger($resizeConfig['quality'] ?? 85)
-                )
-                    ->toFilePointer(),
+                ),
             );
         }
 
@@ -482,12 +479,29 @@ class FileUploadService implements EventAwareInterface
             $image->reduceColors(2048);
         }
 
-        $res = $image->encodeByExtension(
+        $res = $this->encodeImageByExtension(
+            $image,
             $resizeConfig['output_format'] ?? $outputFormat,
             TypeCast::safeInteger($resizeConfig['quality'] ?? 85)
         );
 
-        return Stream::wrap($res->toFilePointer());
+        return Stream::wrap($res);
+    }
+
+    protected function encodeImageByExtension(
+        ImageInterface $image,
+        $format,
+        int $quality
+    ) {
+        $extension = FileExtension::from($format);
+
+        if ($extension === FileExtension::PNG) {
+            $encoded = $image->encodeByExtension($format);
+        } else {
+            $encoded = $image->encodeByExtension($format, $quality);
+        }
+
+        return $encoded->toFilePointer();
     }
 
     /**
