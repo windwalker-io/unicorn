@@ -1,6 +1,6 @@
 {
     "include": [
-        "./src/types/index.d.ts",
+        "./src/types/index.d.ts"
     ],
     "exclude": [
         "node_modules/**/*"
@@ -10,6 +10,13 @@
         "module": "system",
         "moduleResolution": "node",
         "target": "es2020",
-        "skipLibCheck": true
+        "skipLibCheck": true,
+        "jsx": "preserve",
+        "jsxImportSource": "vue",
+        "noImplicitThis": true,
+        "strict": true,
+        "useDefineForClassFields": true,
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true
     }
 }
