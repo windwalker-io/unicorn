@@ -273,6 +273,11 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
         // Pre-count to store cache, otherwise will cause infinity loop.
         $query ??= $this->compileQuery(false);
 
+        // compileQuery may run count() priority, this line prevents run again.
+        if (array_key_exists('count', $this->cacheStorage)) {
+            return (int) $this->cacheStorage['count'];
+        }
+
         if ($this->countCallback) {
             $count = (int) ($this->countCallback)(clone $query);
         } else {
