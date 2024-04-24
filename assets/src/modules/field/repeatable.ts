@@ -1,7 +1,22 @@
+/// <reference types="../../../types/index" />
 
 import { cloneDeep } from 'lodash-es';
 
-const defaultOptions = {
+declare global {
+  var Sortable: any;
+}
+
+export interface RepeatableOptions {
+  id?: string;
+  fieldName?: string;
+  sortable?: boolean;
+  hasKey?: boolean;
+  singleArray?: boolean;
+  ensureFirstRow?: boolean;
+  max?: number | null;
+}
+
+const defaultOptions: RepeatableOptions = {
   id: '',
   fieldName: '',
   sortable: false,
@@ -11,22 +26,23 @@ const defaultOptions = {
   max: null,
 };
 
-function prepareItem(item) {
+function prepareItem(item: any) {
   if (item.uid == null) {
     item.uid = u.uid();
   }
   return item;
 }
 
+// @ts-ignore
 S.import('@main').then(async () => {
-  u.importCSS('@vue2-animate');
+  u.importCSS('@vue-animate');
 
   u.prepareAlpine(() => {
     Alpine.data('RepeatableField', ({ items, defaultValues, attrs }, options) => ({
       items,
       defaultValues,
       attrs,
-      options: u.defaultsDeep(options, defaultOptions),
+      options: u.defaultsDeep(options, defaultOptions) as RepeatableOptions,
       init() {
         if (this.options.sortable) {
           u.import('@sortablejs').then(() => {
@@ -34,7 +50,7 @@ S.import('@main').then(async () => {
             Sortable.create(this.$refs.tbody, {
               handle: '.h-handle',
               animation: 300,
-              onEnd: (event) => {
+              onEnd: (event: any) => {
                 // V3 helper to unwrap the proxy
                 const items = Alpine.raw(this.items);
 
@@ -80,23 +96,39 @@ S.import('@main').then(async () => {
         }
       },
 
-      addItem(i) {
+      addItem(i: number) {
         const item = prepareItem(this.getEmptyItem());
 
         this.items.splice(i + 1, 0, item);
       },
 
-      delItem(i) {
+      delItem(i: number) {
         const el = this.getItemElementByUID(this.items[i].uid);
+        let hasAnimate = false;
+        
+        el.addEventListener('animationstart', () => {
+          hasAnimate = true;
+        }, { once: true });
 
-        el.classList.add('fadeOut');
-        el.addEventListener('animationend', () => {
-          this.items.splice(i, 1);
+        el.classList.add('animate__fadeOut');
 
-          if (this.options.ensureFirstRow) {
-            this.makeSureDefaultItem();
+        setTimeout(() => {
+          if (!hasAnimate) {
+            this._removeItem(i);
           }
-        });
+        }, 100);
+        
+        el.addEventListener('animationend', () => {
+          this._removeItem(i);
+        }, { once: true });
+      },
+
+      _removeItem(i: number) {
+        this.items.splice(i, 1);
+
+        if (this.options.ensureFirstRow) {
+          this.makeSureDefaultItem();
+        }
       },
 
       makeSureDefaultItem() {
@@ -105,15 +137,15 @@ S.import('@main').then(async () => {
         }
       },
 
-      getItemElementByUID(uid) {
+      getItemElementByUID(uid: string) {
         return this.$root.querySelector(`[data-item="${uid}"]`);
       },
 
-      getId(i, item, field) {
+      getId(i: number, item: any, field: string) {
         return `${this.id}-${item.uid}-${field}`;
       },
 
-      getName(i, item, field) {
+      getName(i: number, item: any, field: string) {
         if (this.options.singleArray) {
           if (this.options.hasKey) {
             if (field === 'key') {

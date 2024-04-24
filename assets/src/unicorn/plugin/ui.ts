@@ -92,7 +92,10 @@ export default class UnicornUI {
       const code = el.getAttribute(directive) || '';
       el.removeAttribute(directive);
 
-      el.setAttribute('x-data', code);
+      // @see https://github.com/alpinejs/alpine/issues/359#issuecomment-973688464
+      Alpine.mutateDom(() => {
+        el.setAttribute('x-data', code);
+      });
 
       Alpine.initTree(el);
     });

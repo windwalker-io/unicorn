@@ -1,7 +1,7 @@
 import { createApp, nextTick, onMounted, reactive, ref, toRefs } from 'vue';
 import ModalTreeApp from '../../vue/components/modal-tree/modal-tree.vue';
 
-u.importCSS('@vue2-animate');
+u.importCSS('@vue-animate');
 
 const app = createApp({
   name: 'modal-tree',

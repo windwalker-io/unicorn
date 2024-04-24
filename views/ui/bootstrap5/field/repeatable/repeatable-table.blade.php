@@ -84,7 +84,7 @@ $data = AssetService::getJSObject($field->prepareJSData());
         </thead>
         <tbody x-ref="tbody">
         <template x-for="(item, i) of items" :key="item.uid" x-ref="steps_template">
-            <tr :data-item="item.uid" class="fadeIn" style="animation-duration: .3s">
+            <tr :data-item="item.uid" class="animate__animated animate__fadeIn" style="animation-duration: .3s">
                 <template x-if="options.sortable">
                     <td>
                         <div class="h-handle" style="cursor: move;">

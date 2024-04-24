@@ -163,16 +163,12 @@ export async function modalTree() {
 }
 
 export async function repeatable() {
-  watch(
-    ['src/modules/**/*.js', 'scss/**/*.scss']
-  );
-
-  return wait(
-    webpack('./src/modules/field/repeatable.js', './dist/field/', {
-      override: (options) => {
-        // options.resolve.alias['vue$'] = 'vue/dist/vue.esm-bundler.js';
-      }
-    })
+  return webpackBundle(
+    './src/modules/field/repeatable.ts',
+    './dist/field/repeatable.js',
+    (options) => {
+      //
+    }
   );
 }
 
