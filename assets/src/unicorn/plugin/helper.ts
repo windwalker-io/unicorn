@@ -11,9 +11,6 @@ export default class UnicornHelper {
     return 'helper';
   }
 
-  sprintf = sprintf;
-  vsprintf = vsprintf;
-
   static install(app: UnicornApp, options = {}) {
     const helper = app.$helper = new this(app);
 
@@ -404,5 +401,13 @@ export default class UnicornHelper {
 
   defaultsDeep(obj: any, ...args: any[]) {
     return defaultsDeep(obj, ...args);
+  }
+
+  sprintf(format: string, ...args: any[]): string {
+    return sprintf(format, ...args);
+  }
+
+  vsprintf(format: string, args: any[]): string {
+    return vsprintf(format, args);
   }
 }

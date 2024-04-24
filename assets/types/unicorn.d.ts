@@ -1,6 +1,5 @@
 import { AxiosInstance, AxiosProgressEvent, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { SpectrumOptions } from 'spectrum-vanilla/dist/types/types';
-import { sprintf, vsprintf } from 'sprintf-js';
 import { Editor, EditorManager, EditorOptions } from 'tinymce';
 
 declare class S3Uploader extends S3Uploader_base {
@@ -477,8 +476,6 @@ export declare class UnicornGridElement {
 export declare class UnicornHelper {
 	protected app: UnicornApp;
 	static get is(): string;
-	sprintf: typeof sprintf;
-	vsprintf: typeof vsprintf;
 	static install(app: UnicornApp, options?: {}): void;
 	constructor(app: UnicornApp);
 	/**
@@ -547,6 +544,8 @@ export declare class UnicornHelper {
 	 */
 	genRandomString(length: number): string;
 	defaultsDeep(obj: any, ...args: any[]): any;
+	sprintf(format: string, ...args: any[]): string;
+	vsprintf(format: string, args: any[]): string;
 }
 export declare class UnicornHttp {
 	protected app: UnicornApp;
@@ -1001,7 +1000,7 @@ export interface FormValidationOptions {
 	scrollOffset: number;
 	enabled: boolean;
 }
-export interface S3Uploader extends EventAwareInterface {
+export interface S3Uploader extends EventAwareInterface$1 {
 }
 export interface S3UploaderGlobalOptions {
 	endpoint?: string;
@@ -1055,6 +1054,13 @@ export interface UnicornPlugin {
 export type InputElements = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
 export type Nullable<T> = T | null | undefined;
 export type UnicornDirectiveHandlerHook<T extends Element = HTMLElement> = (node: T, bindings: UnicornDirectiveBinding) => void;
+interface EventAwareInterface$1 {
+	on(event: string | string[], handler: Function): this;
+	once(event: string | string[], handler: Function): this;
+	off(event: string, handler?: Function): this;
+	trigger(event: string | string[], ...args: any[]): this;
+	listeners(event: string): Function[];
+}
 
 export {
 	u as default,

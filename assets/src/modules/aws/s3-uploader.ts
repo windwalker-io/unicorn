@@ -1,6 +1,6 @@
 import type { AxiosProgressEvent, AxiosResponse } from 'axios';
 import { defaultsDeep } from 'lodash-es';
-import type { EventAwareInterface, UnicornApp, UnicornHttp, UnicornLoader } from '../../unicorn/types';
+import type { EventAwareInterface, UnicornApp, UnicornHttp, UnicornLoader } from '../../../types/unicorn';
 
 declare global {
   // @ts-ignore
