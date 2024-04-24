@@ -1,5 +1,3 @@
-// Part of earth file.
-
 .c-file-drag-input {
   position: relative;
   display: inline-block;
@@ -19,6 +17,10 @@
 
     &.hover + label {
       border-color: #333;
+    }
+
+    &.is-invalid ~ .c-file-drag-input__label {
+      border-color: var(--bs-danger);
     }
   }
 
@@ -46,6 +48,8 @@
       width: 100%;
     }
   }
+
+
 
   label::after {
     content: none !important;
