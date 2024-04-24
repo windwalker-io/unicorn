@@ -11,6 +11,9 @@ export default class UnicornHelper {
     return 'helper';
   }
 
+  sprintf = sprintf;
+  vsprintf = vsprintf;
+
   static install(app: UnicornApp, options = {}) {
     const helper = app.$helper = new this(app);
 
@@ -32,8 +35,8 @@ export default class UnicornHelper {
     app.confirm = helper.confirm.bind(helper);
     app.alert = helper.alert.bind(helper);
     app.numberFormat = helper.numberFormat;
-    app.sprintf = sprintf;
-    app.vsprintf = vsprintf;
+    app.sprintf = helper.sprintf;
+    app.vsprintf = helper.vsprintf;
     app.genRandomString = helper.genRandomString;
     app.defaultsDeep = helper.defaultsDeep;
   }

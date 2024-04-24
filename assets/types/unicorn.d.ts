@@ -1,5 +1,6 @@
 import { AxiosInstance, AxiosProgressEvent, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { SpectrumOptions } from 'spectrum-vanilla/dist/types/types';
+import { sprintf, vsprintf } from 'sprintf-js';
 import { Editor, EditorManager, EditorOptions } from 'tinymce';
 
 declare class S3Uploader extends S3Uploader_base {
@@ -476,6 +477,8 @@ export declare class UnicornGridElement {
 export declare class UnicornHelper {
 	protected app: UnicornApp;
 	static get is(): string;
+	sprintf: typeof sprintf;
+	vsprintf: typeof vsprintf;
 	static install(app: UnicornApp, options?: {}): void;
 	constructor(app: UnicornApp);
 	/**

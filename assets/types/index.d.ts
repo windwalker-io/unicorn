@@ -30,7 +30,6 @@ import type {
   UnicornValidation
 } from './unicorn';
 import { UnicornApp } from './unicorn';
-import type { sprintf, vsprintf } from 'sprintf-js';
 
 declare global {
     var u: Unicorn;
@@ -161,8 +160,8 @@ export interface Unicorn extends UnicornApp {
     confirm: typeof UnicornHelper.prototype.confirm;
     alert: typeof UnicornHelper.prototype.alert;
     numberFormat: typeof UnicornHelper.prototype.numberFormat;
-    sprintf: typeof sprintf;
-    vsprintf: typeof vsprintf;
+    sprintf: typeof UnicornHelper.prototype.sprintf;
+    vsprintf: typeof UnicornHelper.prototype.vsprintf;
     genRandomString: typeof UnicornHelper.prototype.genRandomString;
     defaultsDeep: typeof UnicornHelper.prototype.defaultsDeep;
 
