@@ -8,6 +8,7 @@ use Windwalker\Core\Form\FormRenderer;
 use Windwalker\DOM\DOMElement;
 use Windwalker\Form\Contract\InputOptionsInterface;
 use Windwalker\Form\Field\AbstractField;
+use Windwalker\Form\Field\SpacerField;
 use Windwalker\Form\Field\TextField;
 
 /**
@@ -17,6 +18,11 @@ class BootstrapFormRenderer extends FormRenderer
 {
     public static function handleFieldConfiguration(AbstractField $field): void
     {
+        if ($field instanceof SpacerField) {
+            $field->wrapperAttr('data-novalidate', true);
+            $field->attr('data-novalidate', true);
+        }
+
         if ($field instanceof InputOptionsInterface) {
             $field->setOptionWrapperHandler(
                 function (DOMElement $wrapper) {

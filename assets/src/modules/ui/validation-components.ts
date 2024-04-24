@@ -402,7 +402,6 @@ export class UnicornFieldValidation {
     }
 
     if (!input) {
-      console.error('Input not found');
       return undefined;
     }
 
