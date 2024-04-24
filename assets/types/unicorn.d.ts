@@ -120,6 +120,7 @@ declare class UnicornFieldValidation$1 {
 	setCustomValidity(error: string): void;
 	reportValidity(): void;
 	showInvalidResponse(): void;
+	getErrorElement(): Element | null;
 	createHelpElement(): HTMLElement;
 	/**
 	 * @see https://stackoverflow.com/a/17888178
