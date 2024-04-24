@@ -660,17 +660,26 @@ export class UnicornFieldValidation {
    * @param valid {boolean}
    */
   updateValidClass(valid: Boolean) {
+    const $errorElement = this.getErrorElement();
+    const $invalidTarget = $errorElement?.previousElementSibling;
+
     this.$input?.classList.remove(this.invalidClass);
     this.$input?.classList.remove(this.validClass);
     this.el.classList.remove(this.invalidClass);
     this.el.classList.remove(this.validClass);
+    $invalidTarget?.classList.remove(this.invalidClass);
+    $invalidTarget?.classList.remove(this.validClass);
 
     if (valid) {
       this.$input?.classList.add(this.validClass);
       this.el.classList.add(this.validClass);
+
+      $invalidTarget?.classList.add(this.validClass);
     } else {
       this.$input?.classList.add(this.invalidClass);
       this.el.classList.add(this.invalidClass);
+
+      $invalidTarget?.classList.add(this.invalidClass);
     }
   }
 
@@ -783,8 +792,6 @@ export class UnicornFieldValidation {
   }
 
   showInvalidResponse() {
-    this.updateValidClass(false);
-
     /** @type ValidityState */
     const state = this.$input?.validity;
     let message: string = this.$input?.validationMessage || '';
@@ -809,7 +816,7 @@ export class UnicornFieldValidation {
       );
     }
 
-    let $help = this.el.querySelector(this.errorSelector);
+    let $help = this.getErrorElement();
 
     if (!$help) {
       $help = this.createHelpElement()!;
@@ -818,6 +825,12 @@ export class UnicornFieldValidation {
     }
 
     $help.textContent = message;
+
+    this.updateValidClass(false);
+  }
+
+  getErrorElement() {
+    return this.el.querySelector(this.errorSelector);
   }
 
   createHelpElement() {
