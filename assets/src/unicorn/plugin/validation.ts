@@ -37,11 +37,11 @@ export default class UnicornValidation {
     return this.app.inject<UnicornHelper>('$helper');
   }
 
-  get(selector: string): UnicornFormValidation | null {
+  get(selector: string | Element): UnicornFormValidation | null {
     return this.$helper.getBoundedInstance<UnicornFormValidation>(selector, 'form.validation');
   }
 
-  getField(selector: string | HTMLElement): UnicornFieldValidation | null {
+  getField(selector: string | Element): UnicornFieldValidation | null {
     return this.$helper.getBoundedInstance<UnicornFieldValidation>(selector, 'field.validation');
   }
 

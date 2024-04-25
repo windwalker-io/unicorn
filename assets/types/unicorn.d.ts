@@ -918,8 +918,8 @@ export declare class UnicornValidation {
 	import(): Promise<any>;
 	get $loader(): UnicornLoader;
 	get $helper(): UnicornHelper;
-	get(selector: string): UnicornFormValidation$1 | null;
-	getField(selector: string | HTMLElement): UnicornFieldValidation$1 | null;
+	get(selector: string | Element): UnicornFormValidation$1 | null;
+	getField(selector: string | Element): UnicornFieldValidation$1 | null;
 	addGlobalValidator(name: string, validator: any, options?: Record<string, any>): Promise<any>;
 }
 export declare const EventMixin: <T extends new (...args: any[]) => any>(superclass: T) => T;
