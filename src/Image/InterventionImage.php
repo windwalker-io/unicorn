@@ -10,6 +10,9 @@ use Intervention\Image\Image;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Interfaces\DriverInterface;
 use Intervention\Image\Interfaces\ImageInterface;
+use Psr\Http\Message\StreamInterface;
+use Unicorn\Image\Decoder\PsrStreamGdDecoder;
+use Unicorn\Image\Decoder\PsrStreamImagickDecoder;
 
 class InterventionImage
 {
@@ -34,6 +37,17 @@ class InterventionImage
 
         if (static::version() === 2) {
             return $manager->make($image);
+        }
+
+        $driver = $manager->driver();
+
+        if ($image instanceof StreamInterface) {
+            return $manager->read(
+                $image,
+                $driver->id() === 'GD'
+                    ? PsrStreamGdDecoder::class
+                    : PsrStreamImagickDecoder::class
+            );
         }
 
         return $manager->read($image);

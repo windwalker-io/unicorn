@@ -490,9 +490,11 @@ class FileUploadService implements EventAwareInterface
 
     protected function encodeImageByExtension(
         ImageInterface $image,
-        $format,
+        mixed $format,
         int $quality
     ) {
+        $format ??= 'jpg';
+
         $extension = FileExtension::from($format);
 
         if ($extension === FileExtension::PNG) {
