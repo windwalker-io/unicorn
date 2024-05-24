@@ -474,8 +474,27 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
         return $this;
     }
 
+    /**
+     * Usage:
+     * ```
+     * addFilters(foo: $foo, bar: $bar);
+     * addFilters(['foo' => $foo, 'bar' => $bar]);
+     * ```
+     *
+     * @param  mixed  ...$filters
+     *
+     * @return  $this
+     */
     public function addFilters(mixed ...$filters): static
     {
+        if (array_is_list($filters)) {
+            foreach ($filters as $filter) {
+                $this->setFilters($filter, true);
+            }
+
+            return $this;
+        }
+
         $this->setFilters($filters, true);
 
         return $this;
