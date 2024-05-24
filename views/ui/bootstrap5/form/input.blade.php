@@ -28,10 +28,10 @@ use Windwalker\Edge\Component\ComponentAttributes;
 use Windwalker\Form\Field\AbstractField;
 
 /**
- * @var AbstractField $field
+ * @var AbstractField              $field
  * @var \Windwalker\DOM\DOMElement $input
- * @var array $options
- * @var ComponentAttributes $attributes
+ * @var array                      $options
+ * @var ComponentAttributes        $attributes
  */
 
 $inputElement ??= $field->getPreparedInput();
@@ -72,6 +72,14 @@ if ($append && !is_array($append)) {
 }
 
 $inputGroup = $append || $prepend;
+
+$printCustomHtml = static function (mixed $h) use ($app) {
+    if ($h instanceof \Closure) {
+        $h = $app->call($h);
+    }
+
+    return (string) $h;
+};
 ?>
 
 @if ($field instanceof \Windwalker\Form\Field\ListField && $field->isMultiple())
@@ -87,7 +95,7 @@ $inputGroup = $append || $prepend;
         <x-slot name="start">
             @if ($prepend)
                 @foreach ($prepend as $h)
-                    {!! $h !!}
+                    {!! $printCustomHtml($h) !!}
                 @endforeach
             @endif
         </x-slot>
@@ -95,7 +103,7 @@ $inputGroup = $append || $prepend;
         <x-slot name="end">
             @if ($append)
                 @foreach ($append as $h)
-                    {!! $h !!}
+                    {!! $printCustomHtml($h) !!}
                 @endforeach
             @endif
         </x-slot>

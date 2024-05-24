@@ -85,11 +85,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
     }
 
     /**
-     * createQuery
-     *
      * @return  SelectorQuery
-     *
-     * @throws \ReflectionException
      */
     public function createQuery(): SelectorQuery
     {
@@ -116,13 +112,11 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
 
     /**
      * Retrieve an external iterator
-     * @link https://php.net/manual/en/iteratoraggregate.getiterator.php
      *
      * @param  string|null  $class
      * @param  array        $args
      *
-     * @return \Traversable An instance of an object implementing <b>Iterator</b> or
-     * <b>Traversable</b>
+     * @return \Traversable
      */
     public function getIterator(?string $class = null, array $args = []): \Traversable
     {
@@ -438,8 +432,6 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
     }
 
     /**
-     * addFilter
-     *
      * @param  string  $key
      * @param  mixed   $value
      *
@@ -454,6 +446,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
 
     /**
      * @param  array  $filters
+     * @param  bool   $merge
      *
      * @return  static  Return self to support chaining.
      */
