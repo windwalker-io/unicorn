@@ -17,7 +17,6 @@ use Windwalker\Core\Pagination\PaginationFactory;
 use Windwalker\Data\Collection;
 use Windwalker\Database\DatabaseAdapter;
 use Windwalker\Event\EventAwareInterface;
-use Windwalker\Event\EventAwareTrait;
 use Windwalker\ORM\SelectorQuery;
 use Windwalker\Query\Query;
 use Windwalker\Utilities\Arr;
@@ -25,11 +24,6 @@ use Windwalker\Utilities\Cache\InstanceCacheTrait;
 use Windwalker\Utilities\Classes\FlowControlTrait;
 use Windwalker\Utilities\Options\OptionAccessTrait;
 use Windwalker\Utilities\Wrapper\RawWrapper;
-
-use Windwalker\Utilities\Wrapper\WrapperInterface;
-
-use function Windwalker\raw;
-use function Windwalker\value;
 
 /**
  * The AbstractSelector class.
@@ -479,6 +473,8 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
      * ```
      * addFilters(foo: $foo, bar: $bar);
      * addFilters(['foo' => $foo, 'bar' => $bar]);
+     * addFilters($filters);
+     * addFilters(...$filters);
      * ```
      *
      * @param  mixed  ...$filters
@@ -958,5 +954,16 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
     protected function getInnerQuery(): Query
     {
         return $this->getQuery();
+    }
+
+    public function debug(bool $pre = false, bool $format = true, bool $asString = false): string|static
+    {
+        $r = $this->compileQuery()->debug($pre, $format, $asString);
+
+        if ($asString) {
+            return $r;
+        }
+
+        return $this;
     }
 }
