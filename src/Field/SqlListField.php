@@ -33,6 +33,8 @@ class SqlListField extends ListField
 
     protected ?\Closure $groupBy = null;
 
+    protected string $indentByField = 'level';
+
     protected function prepareQuery(Query $query): void
     {
     }
@@ -80,11 +82,7 @@ class SqlListField extends ListField
         $text = $item->$textField ?? null;
         $value = $item->$valueField ?? null;
 
-        $level = !empty($item->level) ? $item->level - 1 : 0;
-
-        if ($level < 0) {
-            $level = 0;
-        }
+        $level = $this->getIndentLevel($item);
 
         return static::createOption(str_repeat('- ', $level) . $text, $value, $this->getOptionAttrs() ?? []);
     }
@@ -121,5 +119,39 @@ class SqlListField extends ListField
             'valueField',
             'optionAttrs'
         ]);
+    }
+
+    public function getIndentByField(): string
+    {
+        return $this->indentByField;
+    }
+
+    public function indentByField(string $indentByField): static
+    {
+        $this->indentByField = $indentByField;
+
+        return $this;
+    }
+
+    /**
+     * @param  object  $item
+     *
+     * @return  int
+     */
+    protected function getIndentLevel(object $item): int
+    {
+        $indentField = $this->getIndentByField();
+
+        $level = 0;
+
+        if (!empty($item->$indentField)) {
+            $level = ((int) $item->$indentField) - 1;
+        }
+
+        if ($level < 0) {
+            $level = 0;
+        }
+
+        return $level;
     }
 }
