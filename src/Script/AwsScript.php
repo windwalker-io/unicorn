@@ -106,7 +106,7 @@ class AwsScript extends AbstractScript
 
             $this->unicornScript->importMainThen(
                 <<<JS
-                u.data('@s3.uploder.{$name}', $optionString);
+                u.data('@s3.uploader.{$name}', $optionString);
                 JS
             );
         }
