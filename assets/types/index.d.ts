@@ -32,9 +32,10 @@ import type {
 import { UnicornApp } from './unicorn';
 
 declare global {
-    var u: Unicorn;
-    var Unicorn: Unicorn['constructor'];
-    var S3Uploader: typeof S3UploaderGlobal;
+  var u: Unicorn;
+  var Unicorn: Unicorn['constructor'];
+  var S3Uploader: typeof S3UploaderGlobal;
+  var UIBootstrap5 = { UIBootstrap5 };
 }
 
 export interface Unicorn extends UnicornApp {
