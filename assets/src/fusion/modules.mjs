@@ -21,6 +21,7 @@ export async function uiBootstrap5() {
     './dist/ui/ui-bootstrap5.js',
     (options) => {
       libraryConfigure(options, 'UIBootstrap5');
+      // outputDeclaration(options, '../../types/ui-bootstrap5.d.ts');
     }
   );
 }
@@ -178,6 +179,7 @@ export async function s3Uploader() {
     './dist/aws/s3-uploader.js',
     (options) => {
       libraryConfigure(options, 'S3Uploader');
+      outputDeclaration(options, '../../types/s3-uploader.d.ts');
     }
   );
 }

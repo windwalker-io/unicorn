@@ -1,6 +1,5 @@
 import type { AxiosProgressEvent, AxiosResponse } from 'axios';
-import { defaultsDeep } from 'lodash-es';
-import type { EventAwareInterface, UnicornApp, UnicornHttp, UnicornLoader } from '../../../types/unicorn';
+import type { EventAwareInterface, UnicornApp, UnicornHttp, UnicornLoader, UnicornHelper } from '../../../types/unicorn';
 
 declare global {
   // @ts-ignore
@@ -56,6 +55,11 @@ const defaultOptions = {
     'X-Amz-Signature': '',
   }
 };
+
+function defaultsDeep(obj: any, ...args: any[]): any {
+  return u.inject<UnicornHelper>('$helper')
+    .defaultsDeep(obj, ...args);
+}
 
 class S3Uploader extends Unicorn.mix(class {}).with(Unicorn.EventMixin) {
   options: S3UploaderGlobalOptions;
