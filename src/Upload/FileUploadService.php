@@ -75,8 +75,7 @@ class FileUploadService implements EventAwareInterface
                         [
                             'enabled' => true,
                             'driver' => static::DRIVER_GD,
-                            'strip_exif' => true,
-                            'optimize' => true,
+                            'strip_exif' => false,
                             'width' => null,
                             'height' => null,
                             'crop' => false,
@@ -105,7 +104,7 @@ class FileUploadService implements EventAwareInterface
             ->default('local');
 
         $resolver->define('optimize')
-            ->allowedTypes('bool')
+            ->allowedTypes('bool', 'int')
             ->default(false);
 
         $resolver->define('options')
@@ -476,7 +475,9 @@ class FileUploadService implements EventAwareInterface
         }
 
         if ($optimize && $outputFormat === 'png') {
-            $image->reduceColors(2048);
+            $colors = is_int($this->options['optimize']) ? $this->options['optimize'] : 2048;
+
+            $image->reduceColors($colors);
         }
 
         $res = $this->encodeImageByExtension(
