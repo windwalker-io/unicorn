@@ -59,7 +59,7 @@ export class LoadTab {
 
   findTabButtonByHref(href: string) {
     return u.selectAll<HTMLAnchorElement>(this.$element.querySelectorAll<HTMLAnchorElement>(TAB_ITEM_SELECTOR))
-      .filter((button) => {
+      .filter((button: HTMLAnchorElement) => {
         if (button.href === href) {
           return true;
         }

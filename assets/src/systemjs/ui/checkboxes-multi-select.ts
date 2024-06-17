@@ -13,7 +13,7 @@ export class CheckboxesMultiSelect {
   last: HTMLInputElement | false = false;
 
   static handle(selector: any, options: any = {}) {
-    return u.selectAll(selector, (ele) => {
+    return u.selectAll(selector, (ele: any) => {
       return new this(ele, options);
     });
   }
@@ -24,8 +24,8 @@ export class CheckboxesMultiSelect {
     this.boxes = this.$element.querySelectorAll(this.options.inputSelector);
     this.last = false;
 
-    u.selectAll(this.boxes, (box) => {
-      box.addEventListener('click', (e) => {
+    u.selectAll(this.boxes, (box: HTMLInputElement) => {
+      box.addEventListener('click', (e: MouseEvent) => {
         this.select(box, e);
       });
     });

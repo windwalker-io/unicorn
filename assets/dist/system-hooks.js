@@ -1,2 +1,21 @@
-document.currentScript&&(window.unicornScriptVersion=document.currentScript.dataset.version,System.constructor.prototype.createScript=function(t){const r=window.unicornScriptVersion;return-1!==t.indexOf("?")?t+="&"+r:t+="?"+r,Object.assign(document.createElement("script"),{src:t})});
+function hookSystemJS() {
+    // @ts-ignore
+    System.constructor.prototype.createScript = function (url) {
+        // @ts-ignore
+        const v = window.unicornScriptVersion;
+        if (url.indexOf('?') !== -1) {
+            url += '&' + v;
+        }
+        else {
+            url += '?' + v;
+        }
+        return Object.assign(document.createElement('script'), { src: url });
+    };
+}
+if (document.currentScript) {
+    // @ts-ignore
+    window.unicornScriptVersion = document.currentScript.dataset.version;
+    hookSystemJS();
+}
+
 //# sourceMappingURL=system-hooks.js.map

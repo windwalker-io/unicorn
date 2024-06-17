@@ -23,7 +23,7 @@ export class ButtonRadio {
   options: any = {};
 
   static handle(el: any, options = {}) {
-    return u.getBoundedInstance(el, 'button-radio', (el) => {
+    return u.getBoundedInstance(el, 'button-radio', (el: HTMLElement) => {
       return new this(el, options);
     });
   }
@@ -42,7 +42,7 @@ export class ButtonRadio {
     }
 
     this.wrapper = wrapper;
-    let inputGroup = wrapper.querySelector('.btn-group');
+    let inputGroup = wrapper.querySelector<HTMLElement>('.btn-group')!;
     const exists = inputGroup != null;
 
     if (!inputGroup) {

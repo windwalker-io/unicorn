@@ -31,7 +31,7 @@ export async function js() {
   // Compile Start
   return wait(
     ts('src/js/**/*.ts', 'dist/', {  }),
-    ts('src/systemjs/**/*.ts', 'dist/', { module: 'systemjs' })
+    ts('src/systemjs/**/*.ts', 'dist/', { tsconfig: 'tsconfig.js.json' })
   );
   // Compile end
 }
