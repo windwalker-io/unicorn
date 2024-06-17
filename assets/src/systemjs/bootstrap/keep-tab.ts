@@ -1,5 +1,13 @@
+// @ts-ignore
+const u = window.u;
+
+const TAB_ITEM_SELECTOR = '[data-toggle=tab],[data-bs-toggle=tab],[data-toggle=pill],[data-bs-toggle=pill]';
+
 export class LoadTab {
-  static TAB_ITEM_SELECTOR = '[data-toggle=tab],[data-bs-toggle=tab],[data-toggle=pill],[data-bs-toggle=pill]';
+  $element: HTMLElement;
+  tabButtons: any;
+  storageKey: string = '';
+  options: any;
 
   /**
    * Class init.
@@ -9,14 +17,14 @@ export class LoadTab {
    *
    * @constructor
    */
-  constructor(selector, options = {}) {
+  constructor(selector: any, options: any = {}) {
     let uid = selector;
 
     if (typeof selector === 'object') {
       uid = options.uid || selector.id;
     }
 
-    const $element = this.$element = u.selectOne(selector);
+    const $element = this.$element = u.selectOne<HTMLElement>(selector)!;
 
     if (!$element) {
       console.warn(`[KeepTab] Element ${selector} not found.`);
@@ -24,7 +32,7 @@ export class LoadTab {
     }
 
     this.$element = $element;
-    this.tabButtons = $element.querySelectorAll(this.constructor.TAB_ITEM_SELECTOR);
+    this.tabButtons = $element.querySelectorAll(TAB_ITEM_SELECTOR);
 
     this.storageKey = 'tab-href-' + this.hashCode(location.href + ':' + uid);
     this.options = options;
@@ -37,7 +45,7 @@ export class LoadTab {
   }
 
   bindEvents() {
-    [].forEach.call(this.tabButtons, (button) => {
+    [].forEach.call(this.tabButtons, (button: HTMLAnchorElement) => {
       button.addEventListener('click', () => {
         // Store the selected tab href in localstorage
         window.localStorage.setItem(this.storageKey, this.getButtonHref(button));
@@ -45,12 +53,12 @@ export class LoadTab {
     });
   }
 
-  getButtonHref(button) {
+  getButtonHref(button: HTMLAnchorElement) {
     return button.dataset.bsTarget || button.dataset.target || button.href
   }
 
-  findTabButtonByHref(href) {
-    return u.selectAll(this.$element.querySelectorAll(this.constructor.TAB_ITEM_SELECTOR))
+  findTabButtonByHref(href: string) {
+    return u.selectAll<HTMLAnchorElement>(this.$element.querySelectorAll<HTMLAnchorElement>(TAB_ITEM_SELECTOR))
       .filter((button) => {
         if (button.href === href) {
           return true;
@@ -70,10 +78,11 @@ export class LoadTab {
    *
    * @param {string} href
    */
-  activateTab(href) {
+  activateTab(href: string) {
     const tabTrigger = this.findTabButtonByHref(href);
 
     if (tabTrigger) {
+      // @ts-ignore
       (new bootstrap.Tab(tabTrigger)).show();
     }
   }
@@ -85,7 +94,7 @@ export class LoadTab {
    *
    * @returns {*}
    */
-  hasTab(href) {
+  hasTab(href: string) {
     return this.findTabButtonByHref(href) != null;
   }
 
@@ -97,7 +106,7 @@ export class LoadTab {
   switchTab() {
     if (localStorage.getItem(this.storageKey)) {
       // When moving from tab area to a different view
-      if (!this.hasTab(localStorage.getItem(this.storageKey))) {
+      if (!this.hasTab(localStorage.getItem(this.storageKey) || '')) {
         localStorage.removeItem(this.storageKey);
         return true;
       }
@@ -106,7 +115,7 @@ export class LoadTab {
       // u.selectOne(this.$element, '[data-toggle="tab"], [data-bs-toggle=tab]')
       // this.$element.querySelector('a[data-toggle="tab"]').parent().removeClass('active');
 
-      const tabhref = localStorage.getItem(this.storageKey);
+      const tabhref = localStorage.getItem(this.storageKey) || '';
 
       // Add active attribute for selected tab indicated by url
       this.activateTab(tabhref);
@@ -125,12 +134,8 @@ export class LoadTab {
 
   /**
    * Hash code.
-   *
-   * @param {String} text
-   *
-   * @returns {number}
    */
-  hashCode(text) {
+  hashCode(text: string): string {
     return u.md5(text);
   }
 }

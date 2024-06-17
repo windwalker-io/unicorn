@@ -14,6 +14,7 @@ import fusion, {
   series,
   module,
   wait,
+  ts,
   webpackBundle
 } from '@windwalker-io/fusion';
 import { babelBasicOptions } from '@windwalker-io/fusion/src/utilities/babel.js';
@@ -24,13 +25,13 @@ export * from './src/fusion/modules.mjs';
 
 export async function js() {
   // Watch start
-  fusion.watch(['src/js/**/*.js', 'src/systemjs/**/*.js']);
+  fusion.watch(['src/js/**/*.ts', 'src/systemjs/**/*.ts']);
   // Watch end
 
   // Compile Start
   return wait(
-    babel('src/js/**/*.js', 'dist/'),
-    babel('src/systemjs/**/*.js', 'dist/', { module: 'systemjs' })
+    ts('src/js/**/*.ts', 'dist/', {  }),
+    ts('src/systemjs/**/*.ts', 'dist/', { module: 'systemjs' })
   );
   // Compile end
 }

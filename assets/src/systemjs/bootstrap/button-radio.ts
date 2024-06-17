@@ -1,3 +1,6 @@
+// @ts-ignore
+const u = window.u;
+
 const defaultOptions = {
   selector: '.btn-group .radio',
   buttonClass: 'btn',
@@ -11,29 +14,31 @@ const defaultOptions = {
 };
 
 export class ButtonRadio {
-  wrapper = null;
-  radios = [];
-  inputs = [];
-  buttons = [];
-  colors = [];
+  wrapper: HTMLElement;
+  element: HTMLElement;
+  radios: HTMLInputElement[] = [];
+  inputs: HTMLInputElement[] = [];
+  buttons: HTMLButtonElement[] = [];
+  colors: string[] = [];
+  options: any = {};
 
-  static handle(el, options = {}) {
+  static handle(el: any, options = {}) {
     return u.getBoundedInstance(el, 'button-radio', (el) => {
       return new this(el, options);
     });
   }
 
-  constructor(selector, options) {
+  constructor(selector: any, options = {}) {
     this.element = u.selectOne(selector);
     this.options = options = u.defaultsDeep({}, options, defaultOptions);
-    let wrapper = null;
+    let wrapper: HTMLElement;
 
     // Turn radios into btn-group
 
     if (this.element.dataset.fieldInput != null) {
       wrapper = this.element;
     } else {
-      wrapper = this.element.querySelector('[data-field-input]');
+      wrapper = this.element.querySelector('[data-field-input]')!;
     }
 
     this.wrapper = wrapper;
@@ -44,7 +49,7 @@ export class ButtonRadio {
       inputGroup = u.h('div', { class: 'btn-group' })
     }
 
-    this.radios = wrapper.querySelectorAll('.radio');
+    this.radios = u.selectAll(wrapper.querySelectorAll<HTMLInputElement>('.radio'));
 
     this.radios.forEach(radio => {
       const button = this.prepareButton(radio, exists);
@@ -64,16 +69,16 @@ export class ButtonRadio {
     this.colors = [...new Set(this.colors)];
   }
 
-  prepareButton(radio, exists = false) {
+  prepareButton(radio: HTMLInputElement, exists = false) {
     const options = this.options;
 
-    const input = radio.querySelector('input');
-    const label = radio.querySelector('label');
+    const input = radio.querySelector('input')!;
+    const label = radio.querySelector('label')!;
 
-    let button = null;
+    let button: HTMLButtonElement;
 
     if (exists) {
-      button = this.wrapper.querySelector(`[data-for="${input.id}"]`);
+      button = this.wrapper.querySelector(`[data-for="${input.id}"]`)!;
       button.classList.add(...this.parseClasses(`${options.buttonClass} ${options.color['default']}`));
     } else {
       button = u.h(
@@ -94,7 +99,7 @@ export class ButtonRadio {
     radio.style.display = 'none';
 
     // Prepare color schema
-    let color = input.dataset.colorClass;
+    let color = input.dataset.colorClass || '';
 
     if (color == null) {
       switch (input.value) {
@@ -170,8 +175,8 @@ export class ButtonRadio {
     });
   }
 
-  parseClasses(...className) {
-    className = className.join(' ');
-    return className.split(' ').filter(t => t !== '');
+  parseClasses(...className: string[]) {
+    const classNameStr = className.join(' ');
+    return classNameStr.split(' ').filter(t => t !== '');
   }
 }
