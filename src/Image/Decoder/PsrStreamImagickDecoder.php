@@ -22,4 +22,14 @@ class PsrStreamImagickDecoder extends BinaryImageDecoder
 
         return parent::decode($input);
     }
+
+    protected function belongsToDriver(object $object): bool
+    {
+        $driverId = function (object $object): string|bool {
+            $id = substr($object::class, 27);
+            return strstr($id, "\\", true);
+        };
+
+        return strtolower($driverId($object)) === 'imagick';
+    }
 }
