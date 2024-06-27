@@ -526,14 +526,18 @@ export default class UnicornUI {
 
     // Locale
     if (typeof options.locale === 'string') {
-      let ls: any = options.locale.split('-').map((l) => l.toLocaleString());
+      let ls: any = options.locale.split('-').map((l) => l.toLowerCase());
 
       if (ls[0] === ls[1]) {
         ls = [ls];
       }
 
       ls = ls.join('-');
-      await this.$loader.import(`@spectrum/i18n/${ls}.js`);
+      try {
+        await this.$loader.import(`@spectrum/i18n/${ls}.js`);
+      } catch (e) {
+        console.warn(`Unable to load Spectrum locale "${ls}" (${options.locale})`);
+      }
     }
 
     if (selector) {
