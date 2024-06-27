@@ -1,7 +1,6 @@
-import fusion, { webpack, watch, wait, webpackBundle } from '@windwalker-io/fusion';
+import fusion, { wait, watch, webpack, webpackBundle } from '@windwalker-io/fusion';
 import dtsBundle from 'bundle-declarations-webpack-plugin';
 import path from 'path';
-import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 
 export async function main() {
   return webpackBundle(
@@ -21,6 +20,7 @@ export async function uiBootstrap5() {
     './dist/ui/ui-bootstrap5.js',
     (options) => {
       libraryConfigure(options, 'UIBootstrap5');
+      // outputDeclaration(options, '../../types/ui-bootstrap5.d.ts');
     }
   );
 }
@@ -36,31 +36,22 @@ export async function validation() {
 }
 
 export async function flatpickr() {
-  watch(
-    ['src/modules/**/*.js', 'scss/**/*.scss']
-  );
-
-  return wait(
-    webpack('./src/modules/ui/flatpickr-components.js', './dist/ui/', {
-      override: (options) => {
-        options.output.libraryTarget = 'umd';
-      }
-    })
+  return webpackBundle(
+    './src/modules/ui/flatpickr-components.ts',
+    './dist/ui/flatpickr-components.js',
+    (options) => {
+      libraryConfigure(options, 'UnicornValidation');
+    }
   );
 }
 
 export async function listDependent() {
-  watch(
-    ['src/modules/**/*.js', 'scss/**/*.scss']
-  );
-
-  return wait(
-    webpack('./src/modules/ui/list-dependent.js', './dist/ui/', {
-      override: (options) => {
-        options.output.library = 'ListDependent';
-        options.output.libraryTarget = 'umd';
-      }
-    })
+  return webpackBundle(
+    './src/modules/ui/list-dependent.ts',
+    './dist/ui/list-dependent.js',
+    (options) => {
+      libraryConfigure(options, 'ListDependent');
+    }
   );
 }
 
@@ -178,6 +169,7 @@ export async function s3Uploader() {
     './dist/aws/s3-uploader.js',
     (options) => {
       libraryConfigure(options, 'S3Uploader');
+      outputDeclaration(options, '../../types/s3-uploader.d.ts');
     }
   );
 }
@@ -187,10 +179,12 @@ export async function showOn() {
     ['src/modules/**/*.js', 'scss/**/*.scss']
   );
 
-  return wait(
-    webpack('./src/modules/ui/show-on.js', './dist/ui/', {
-      override: (options) => {}
-    })
+  return webpack(
+    './src/modules/ui/show-on.ts',
+    './dist/ui/show-on.js',
+    (options) => {
+      libraryConfigure(options);
+    }
   );
 }
 

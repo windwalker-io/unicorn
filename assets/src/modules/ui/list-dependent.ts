@@ -1,39 +1,33 @@
 
 import { defaultsDeep, each } from 'lodash-es';
 
-const nope = (value, ele, dep) => {
+const nope = (value: any, ele: any, dep: any) => {
 };
 
-/**
- * Class init.
- * @param {jQuery}        $element
- * @param {jQuery|string} dependent
- * @param {Object}        options
- * @constructor
- */
-export class ListDependent {
-  cancelToken = null;
-
-  static get defaultOptions() {
-    return {
-      ajax: {
-        url: null,
-        value_field: 'value',
-        data: null,
-      },
-      source: null,
-      text_field: 'title',
-      value_field: 'id',
-      first_option: null,
-      default_value: null,
-      initial_load: true,
-      empty_mark: '__EMPTY__',
-      hooks: {
-        before_request: nope,
-        after_request: nope
-      }
-    };
+const defaultOptions = {
+  ajax: {
+    url: null,
+    value_field: 'value',
+    data: null,
+  },
+  source: null,
+  text_field: 'title',
+  value_field: 'id',
+  first_option: null,
+  default_value: null,
+  initial_load: true,
+  empty_mark: '__EMPTY__',
+  hooks: {
+    before_request: nope,
+    after_request: nope
   }
+};
+
+export class ListDependent {
+  element: HTMLSelectElement;
+  dependent: HTMLSelectElement;
+  options: any;
+  cancelToken = null;
 
   static handle(el, dependent = null, options = {}) {
     return u.getBoundedInstance(el, 'list-dependent', () => {
@@ -41,7 +35,7 @@ export class ListDependent {
     });
   }
 
-  constructor(element, dependent, options) {
+  constructor(element: any, dependent: any, options: any) {
     this.element = u.selectOne(element);
     this.setOptions(options);
 
@@ -54,8 +48,8 @@ export class ListDependent {
     }
   }
 
-  setOptions(options) {
-    this.options = defaultsDeep({}, options, this.constructor.defaultOptions);
+  setOptions(options = {}) {
+    this.options = defaultsDeep({}, options, defaultOptions);
   }
 
   /**
@@ -63,7 +57,7 @@ export class ListDependent {
    */
   bindEvents() {
     this.dependent.addEventListener('change', (event) => {
-      this.changeList(event.currentTarget?.value);
+      this.changeList((event.currentTarget as HTMLSelectElement)?.value);
     });
   }
 
@@ -73,7 +67,7 @@ export class ListDependent {
    * @param {*}    value
    * @param {bool} initial
    */
-  changeList(value, initial = null) {
+  changeList(value: string, initial = false) {
     value = value || this.dependent.value;
 
     // Empty mark
@@ -94,7 +88,7 @@ export class ListDependent {
    * @param {string} value
    * @param {bool}   initial
    */
-  sourceUpdate(value, initial = null) {
+  sourceUpdate(value: string, initial = false) {
     const source = this.options.source;
 
     this.beforeHook(value, this.element, this.dependent);
@@ -117,7 +111,7 @@ export class ListDependent {
    *
    * @param {string} value
    */
-  ajaxUpdate(value) {
+  ajaxUpdate(value: string) {
     let data = {};
 
     data[this.options.ajax.value_field] = value;
@@ -165,7 +159,7 @@ export class ListDependent {
    *
    * @param {Array} items
    */
-  updateListElements(items) {
+  updateListElements(items: any[]) {
     const textField = this.options.text_field;
     const valueField = this.options.value_field;
     this.element.innerHTML = '';
@@ -204,7 +198,7 @@ export class ListDependent {
     this.element.dispatchEvent(new CustomEvent('list:updated'));
   }
 
-  appendOptionTo(item, parent) {
+  appendOptionTo(item: any, parent: any) {
     const value = item.value;
     const option = u.html('<option>' + item.text + '</option>');
     option.setAttribute('value', value);
@@ -222,8 +216,8 @@ export class ListDependent {
     parent.appendChild(option);
   }
 
-  isSelected(value) {
-    let defaultValues = '';
+  isSelected(value: string) {
+    let defaultValues = [];
 
     // Convert all types to array
     let defValue = this.element.dataset.selected ?? this.options.default_value;
@@ -245,13 +239,8 @@ export class ListDependent {
 
   /**
    * Before hook.
-   *
-   * @param {string} value
-   * @param {jQuery} element
-   * @param {jQuery} dependent
-   * @returns {*}
    */
-  beforeHook(value, element, dependent) {
+  beforeHook(value: string, element: HTMLSelectElement, dependent: HTMLSelectElement) {
     const before = this.options.hooks.before_request;
 
     return before.call(this, value, element, dependent);
@@ -259,13 +248,8 @@ export class ListDependent {
 
   /**
    * After hook.
-   *
-   * @param {string} value
-   * @param {jQuery} element
-   * @param {jQuery} dependent
-   * @returns {*}
    */
-  afterHook(value, element, dependent) {
+  afterHook(value: string, element: HTMLSelectElement, dependent: HTMLSelectElement) {
     const after = this.options.hooks.after_request;
 
     return after.call(this, value, element, dependent);

@@ -1,7 +1,7 @@
 /// <reference types="./unicorn" />
 
 export * from './unicorn';
-import * as S3UploaderGlobal from '../src/modules/aws/s3-uploader';
+import S3UploaderGlobal from './s3-uploader';
 import type { UIBootstrap5 } from '../src/modules/ui/ui-bootstrap5';
 import type {
   MixinBuilder,
