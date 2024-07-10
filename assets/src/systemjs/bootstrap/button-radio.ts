@@ -101,7 +101,7 @@ export class ButtonRadio {
     // Prepare color schema
     let color = input.dataset.colorClass || '';
 
-    if (color == null) {
+    if (!color) {
       switch (input.value) {
         case '':
           color = options.color.blue;
