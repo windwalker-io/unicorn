@@ -496,6 +496,8 @@ class FileUploadService implements EventAwareInterface
     ) {
         $format ??= 'jpg';
 
+        $format = strtolower($format);
+
         $extension = FileExtension::from($format);
 
         if ($extension === FileExtension::PNG) {
