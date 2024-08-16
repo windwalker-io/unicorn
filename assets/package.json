@@ -42,7 +42,6 @@
     "css-loader": "^6.8.1",
     "flatpickr": "^4.6.9",
     "gulp-typescript": "^5.0||^6.0",
-    "puppeteer": "^21.7.0",
     "sortablejs": "^1.13.0",
     "spectrum-vanilla": "^1.0.2",
     "systemjs": "^6.8.3",
