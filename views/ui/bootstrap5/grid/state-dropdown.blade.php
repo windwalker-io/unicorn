@@ -71,7 +71,9 @@ use Windwalker\Core\Router\SystemUri;
             @if ($batch)
                 {!! $slot ?? '' !!}
             @else
-                <i class="{{ $currentState?->getIcon() ?? 'fa fa-question-circle' }} fa-fw"></i>
+                @if ($currentState?->getIcon())
+                    <i class="{{ $currentState?->getIcon() ?? 'fa fa-question-circle' }} fa-fw"></i>
+                @endif
                 @if (!$noTitle)
                     <span class="mr-auto me-auto ms-1">{{ $currentState?->getTitle() ?? 'Unknown State' }}</span>
                 @endif
@@ -101,7 +103,9 @@ use Windwalker\Core\Router\SystemUri;
                                 @else
                                     @click="$store.{{ $store }}.updateItem('{{ $id }}', null, { batch: { '{{ $workflowCtrl->getField() }}': '{{ $state->getValue() }}' } })">
                                 @endif
-                                <i class="{{ $state->getIcon() }} fa-fw text-{{ $state->getColor() }}"></i>
+                                @if ($state->getIcon())
+                                    <i class="{{ $state->getIcon() }} fa-fw text-{{ $state->getColor() }}"></i>
+                                @endif
                                 {{ $state->getTitle() ?? $state->getValue() }}
                             </a>
                         </li>
@@ -118,7 +122,9 @@ use Windwalker\Core\Router\SystemUri;
                                     @click="$store.{{ $store }}.updateItem('{{ $id }}', null, { batch: { '{{ $workflowCtrl->getField() }}': '{{ $transition->getTo() }}' } })"
                                 @endif
                                 >
-                                <i class="{{ $transition->getIcon() }}"></i>
+                                @if ($transition->getIcon())
+                                    <i class="fa-fw {{ $transition->getIcon() }}"></i>
+                                @endif
                                 {{ $transition->getTitle() ?: $transition->getName() }}
                             </a>
                         </li>

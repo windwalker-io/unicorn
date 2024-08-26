@@ -175,11 +175,7 @@ export async function s3Uploader() {
 }
 
 export async function showOn() {
-  watch(
-    ['src/modules/**/*.js', 'scss/**/*.scss']
-  );
-
-  return webpack(
+  return webpackBundle(
     './src/modules/ui/show-on.ts',
     './dist/ui/show-on.js',
     (options) => {
