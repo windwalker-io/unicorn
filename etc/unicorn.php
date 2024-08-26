@@ -92,7 +92,6 @@ return [
                         'height' => 1920,
                         'crop' => false,
                         'quality' => 85,
-                        'optimize' => false,
                         'output_format' => null
                     ],
                     'options' => [
