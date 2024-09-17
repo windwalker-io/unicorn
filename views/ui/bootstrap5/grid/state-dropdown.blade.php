@@ -71,11 +71,15 @@ use Windwalker\Core\Router\SystemUri;
             @if ($batch)
                 {!! $slot ?? '' !!}
             @else
-                @if ($currentState?->getIcon())
-                    <i class="{{ $currentState?->getIcon() ?? 'fa fa-question-circle' }} fa-fw"></i>
-                @endif
-                @if (!$noTitle)
-                    <span class="mr-auto me-auto ms-1">{{ $currentState?->getTitle() ?? 'Unknown State' }}</span>
+                @if (isset($slot))
+                    {!! $slot !!}
+                @else
+                    @if ($currentState?->getIcon())
+                        <i class="{{ $currentState?->getIcon() ?? 'fa fa-question-circle' }} fa-fw"></i>
+                    @endif
+                    @if (!$noTitle)
+                        <span class="mr-auto me-auto ms-1">{{ $currentState?->getTitle() ?? 'Unknown State' }}</span>
+                    @endif
                 @endif
             @endif
         </button>

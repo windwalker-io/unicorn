@@ -12,7 +12,6 @@ use Unicorn\Workflow\WorkflowInterface;
 use Windwalker\Core\Edge\Attribute\EdgeComponent;
 use Windwalker\Edge\Component\AbstractComponent;
 use Windwalker\Utilities\Attributes\Prop;
-
 use Windwalker\Utilities\Cache\InstanceCacheTrait;
 
 use function Windwalker\value;
