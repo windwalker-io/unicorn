@@ -105,7 +105,7 @@ class FileDragField extends FileField
         return (bool) $this->showUploaded;
     }
 
-    public function getShoeUploadedPosition(): string
+    public function getShowUploadedPosition(): string
     {
         if ($this->isShowUploaded()) {
             if (is_bool($this->showUploaded)) {

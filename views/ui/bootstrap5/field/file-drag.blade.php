@@ -29,7 +29,7 @@ use Windwalker\Core\Router\SystemUri;
 
 $app->service(\Unicorn\Script\FormScript::class)->fileDrag();
 
-$position = $field->getShoeUploadedPosition();
+$position = $field->getShowUploadedPosition();
 
 $layout = $field->getPreviewLayout();
 $value = $field->getValue();
