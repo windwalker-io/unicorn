@@ -41,9 +41,10 @@ $value = $field->getValue();
             @if ($layout)
                 {!! $field->renderPreview() !!}
             @else
+                @php($link = $field->getCompiledDownloadLink($value))
                 <span class="c-file-drag-preview__label">@lang('unicorn.field.file.drag.preview.text')</span>
                 <a class="c-file-drag-preview__link"
-                    href="{{ $field->getCompiledDownloadLink($value) }}" target="_blank">
+                    @attr('href', $link ?: null) target="_blank">
                     {{ $field->getUploadedFilename($value) }}
                 </a>
             @endif
@@ -70,9 +71,10 @@ $value = $field->getValue();
             @if ($layout)
                 {!! $field->renderPreview() !!}
             @else
+                @php($link = $field->getCompiledDownloadLink($value))
                 <span class="c-file-drag-preview__label">@lang('unicorn.field.file.drag.preview.text')</span>
                 <a class="c-file-drag-preview__link"
-                    href="{{ $field->getCompiledDownloadLink($value) }}" target="_blank">
+                    @attr('href', $link ?: null) target="_blank">
                     {{ $field->getUploadedFilename($value) }}
                 </a>
             @endif
