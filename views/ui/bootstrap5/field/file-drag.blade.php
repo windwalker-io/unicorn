@@ -59,23 +59,23 @@ $value = $field->getValue();
             <span class="label-text d-block">
                 <span class="fa fa-upload"></span>
             </span>
-            <button type="button" class="c-file-drag-input__button btn">
+            <button type="button" class="c-file-drag-input__button btn btn-success btn-sm px-2 py-1">
                 @lang('unicorn.field.file.drag.button.text')
             </button>
         </label>
     </uni-file-drag>
 
-        @if ($position === 'bottom')
-            <div class="c-file-drag__preview c-file-drag-preview card-footer">
-                @if ($layout)
-                    {!! $field->renderPreview() !!}
-                @else
-                    <span class="c-file-drag-preview__label">@lang('unicorn.field.file.drag.preview.text')</span>
-                    <a class="c-file-drag-preview__link"
-                        href="{{ $field->getCompiledDownloadLink($value) }}" target="_blank">
-                        {{ $field->getUploadedFilename($value) }}
-                    </a>
-                @endif
-            </div>
-        @endif
+    @if ($position === 'bottom')
+        <div class="c-file-drag__preview c-file-drag-preview card-footer">
+            @if ($layout)
+                {!! $field->renderPreview() !!}
+            @else
+                <span class="c-file-drag-preview__label">@lang('unicorn.field.file.drag.preview.text')</span>
+                <a class="c-file-drag-preview__link"
+                    href="{{ $field->getCompiledDownloadLink($value) }}" target="_blank">
+                    {{ $field->getUploadedFilename($value) }}
+                </a>
+            @endif
+        </div>
+    @endif
 </div>

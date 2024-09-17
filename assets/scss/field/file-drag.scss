@@ -1,5 +1,8 @@
 .c-file-drag {
+  --bs-card-border-color: var(--bs-gray-400);
+
   overflow: hidden;
+  border: 1px solid var(--bs-card-border-color, #ddd);
 }
 
 .c-file-drag-input {
@@ -27,12 +30,7 @@
       border-color: var(--bs-danger);
     }
 
-    &:hover + label > button {
-      --bs-btn-color: var(--bs-white, #fff);
-      --bs-btn-bg: var(--bs-secondary);
-    }
-
-    &:disabled, &:read-only {
+    &:disabled {
       opacity: 0;
       cursor: no-drop;
 
@@ -80,11 +78,10 @@
   }
 
   &__button {
-    font-size: .85rem;
-    padding-left: .5rem;
-    padding-top: .15rem;
+    //font-size: .85rem;
+    //padding: .25rem .5rem;
 
-    --bs-btn-border-color: var(--bs-secondary);
-    --bs-btn-color: var(--bs-secondary);
+    //--bs-btn-border-color: var(--bs-secondary);
+    //--bs-btn-color: var(--bs-secondary);
   }
 }
