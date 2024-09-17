@@ -130,6 +130,10 @@ $noLabel ??= $options['no_label'] ?? false;
 
     <div data-input-container uni-field-validate="{{ json_encode($validate) }}"
         class="position-relative {{ $floating ? 'form-floating' : 'col-md-' . ($inputCols ?? 12) }}">
+        @if ($desc = $field->getDescription())
+            <div class="small text-muted mb-2">{!! $desc !!}</div>
+        @endif
+
         @if ($defaultSlot ?? null)
             {!! $defaultSlot(field: $field, options: $options) !!}
         @else

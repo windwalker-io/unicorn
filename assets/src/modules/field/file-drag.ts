@@ -13,7 +13,7 @@ const defaultOptions: FileDragOptions = {
   maxFiles: undefined,
   maxSize: undefined,
   placeholder: '',
-  height: 100,
+  height: 125,
 }
 
 class FileDrag extends HTMLElement {

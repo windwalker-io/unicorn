@@ -1,3 +1,7 @@
+.c-file-drag {
+  overflow: hidden;
+}
+
 .c-file-drag-input {
   position: relative;
   display: inline-block;
@@ -16,11 +20,16 @@
     cursor: pointer;
 
     &.hover + label {
-      border-color: #333;
+      background-color: #efefef;
     }
 
     &.is-invalid ~ .c-file-drag-input__label {
       border-color: var(--bs-danger);
+    }
+
+    &:hover + label > button {
+      --bs-btn-color: var(--bs-white, #fff);
+      --bs-btn-bg: var(--bs-secondary);
     }
   }
 
@@ -34,13 +43,16 @@
     padding: .375rem .75rem;
     color: #495057;
     background-color: #fff;
-    border: 1px solid #ced4da;
-    border-radius: .25rem;
+    //border: 1px solid #ced4da;
+    //border-radius: .25rem;
     height: 100%;
     text-align: center;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    transition: border-color .3s;
+    justify-content: center;
+    gap: .5rem;
+    transition: all .3s;
     cursor: pointer;
 
     > span {
@@ -49,9 +61,16 @@
     }
   }
 
-
-
   label::after {
     content: none !important;
+  }
+
+  &__button {
+    font-size: .85rem;
+    padding-left: .5rem;
+    padding-top: .15rem;
+
+    --bs-btn-border-color: var(--bs-secondary);
+    --bs-btn-color: var(--bs-secondary);
   }
 }

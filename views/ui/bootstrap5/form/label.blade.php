@@ -42,8 +42,8 @@ $label->addClass('form-label');
 $label->setAttribute('data-bs-toggle', 'tooltip');
 $label->setAttribute('data-toggle', 'tooltip');
 
-if ($desc = $field->get('description')) {
-    $label->setAttribute('title', $field->get('description'));
+if ($tooltip = $field->get('tooltip')) {
+    $label->setAttribute('title', $tooltip);
 
     $label->append(
         DOMFactory::document()->createTextNode(' '),

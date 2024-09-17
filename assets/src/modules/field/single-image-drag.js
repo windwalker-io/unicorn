@@ -374,8 +374,8 @@ class SingleImageDrag extends HTMLElement {
     this.valueInput.required = false;
 
     this.fileInput.files = dt.files;
-    this.fileInput.dispatchEvent(new CustomEvent('change'));
-    this.fileInput.dispatchEvent(new CustomEvent('input'));
+    this.fileInput.dispatchEvent(new CustomEvent('change'), { bubbles: true });
+    this.fileInput.dispatchEvent(new CustomEvent('input'), { bubbles: true });
 
     this.storeValue(null, URL.createObjectURL(file));
   }
@@ -405,9 +405,9 @@ class SingleImageDrag extends HTMLElement {
     }
 
     // Trigger change
-    this.previewImage.dispatchEvent(new CustomEvent('change'));
-    this.valueInput.dispatchEvent(new CustomEvent('change'));
-    this.valueInput.dispatchEvent(new CustomEvent('input'));
+    this.previewImage.dispatchEvent(new CustomEvent('change'), { bubbles: true });
+    this.valueInput.dispatchEvent(new CustomEvent('change'), { bubbles: true });
+    this.valueInput.dispatchEvent(new CustomEvent('input'), { bubbles: true });
   }
 }
 
