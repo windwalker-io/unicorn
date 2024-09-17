@@ -55,10 +55,10 @@ use Windwalker\Core\Router\SystemUri;
         @endif
     </div>
 @else
-    @php($attributes = $attributes->class('btn-group dropdown c-state-dropdown d-inline-block'))
+    @php($attributes = $attributes->class('dropdown c-state-dropdown d-inline-block'))
     <div {!! $attributes !!}>
         <button
-            class="btn {{ $buttonColor }} btn-{{ $size }} d-flex align-items-center {{ $textColor }} {{ $disabled ? '' : 'dropdown-toggle' }} c-state-dropdown__toggle w-100 {{ $noTitle ? 'has-tooltip' : '' }}"
+            class="btn {{ $buttonColor }} btn-{{ $size }} d-flex align-items-center {{ $textColor }} c-state-dropdown__toggle w-100 {{ $noTitle ? 'has-tooltip' : '' }}"
             type="button"
             id="{{ $buttonId }}"
             data-bs-toggle="dropdown"
