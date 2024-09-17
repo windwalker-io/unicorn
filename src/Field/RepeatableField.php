@@ -245,4 +245,9 @@ class RepeatableField extends AbstractField implements CompositeFieldInterface
 
         return $this;
     }
+
+    public function filter(mixed $value, int $formFilterOptions = 0): mixed
+    {
+        return $this->getSubForm()->filter($value, $formFilterOptions);
+    }
 }
