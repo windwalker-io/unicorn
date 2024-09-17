@@ -28,29 +28,44 @@ use Windwalker\Core\Router\SystemUri;
  * @var $pagination Pagination
  */
 
-$wrapperClass ??= 'btn-group';
-$itemClass ??= 'btn btn-outline-secondary disabled';
-?>
-<div class="l-pagination-stats ms-0 ms-md-auto">
-    <div class="l-pagination-stats__wrapper {{ $wrapperClass }}">
-        {!! $start ?? '' !!}
+$attributes->props('pagination');
 
-        <div class="l-pagination-stats__item {{ $itemClass }}">
+$itemClass ??= 'page-item';
+$linkClass ??= 'page-link';
+
+$attributes['style'] = $attributes['style'] ?: '--bs-pagination-color: var(--bs-secondary); --bs-pagination-bg: var(--bs-light);';
+$attributes = $attributes->class('l-pagination-stats  pagination');
+
+$forceStyle = '--bs-pagination-hover-color: var(--bs-pagination-color);';
+
+$attributes['style'] .= $forceStyle;
+?>
+<div {!! $attributes !!}>
+    {!! $start ?? '' !!}
+
+    <div class="l-pagination-stats__item {{ $itemClass }}">
+        <div class="{{ $linkClass }}">
             第 <strong>{{ $pagination->getCurrent() }}</strong> 頁
         </div>
+    </div>
 
-        <div class="l-pagination-stats__item {{ $itemClass }}">
+    <div class="l-pagination-stats__item {{ $itemClass }}">
+        <div class="{{ $linkClass }}">
             每頁 <strong>{{ $pagination->getLimit() }}</strong> 筆
         </div>
+    </div>
 
-        <div class="l-pagination-stats__item {{ $itemClass }}">
+    <div class="l-pagination-stats__item {{ $itemClass }}">
+        <div class="{{ $linkClass }}">
             共 <strong>{{ $pagination->getPages() }}</strong> 頁
         </div>
+    </div>
 
-        <div class="l-pagination-stats__item {{ $itemClass }}">
+    <div class="l-pagination-stats__item {{ $itemClass }}">
+        <div class="{{ $linkClass }}">
             總數 <strong>{{ $pagination->getTotal() }}</strong>
         </div>
-
-        {!! $end ?? '' !!}
     </div>
+
+    {!! $end ?? '' !!}
 </div>
