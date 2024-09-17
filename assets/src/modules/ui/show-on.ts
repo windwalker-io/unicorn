@@ -51,7 +51,9 @@ class ShowOn {
     const matched = this.isValueMatched(target, value);
 
     if (matched) {
-      u.$ui.fadeIn(this.el, duration, this.initialDisplay);
+      setTimeout(() => {
+        u.$ui.fadeIn(this.el, duration, this.initialDisplay);
+      }, duration + 30);
     } else {
       u.$ui.fadeOut(this.el, duration);
     }
