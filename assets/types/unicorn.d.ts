@@ -621,7 +621,7 @@ export declare class UnicornHttp {
 	 * @returns {Promise<AxiosResponse>}
 	 */
 	options<T = any, D = any>(url: string, options?: Partial<AxiosRequestConfig>): Promise<AxiosResponse<T, D>>;
-	isCancel(cancel: any): boolean;
+	isCancel(cancel: any): cancel is import("axios").Cancel;
 	/**
 	 * Send request.
 	 */
