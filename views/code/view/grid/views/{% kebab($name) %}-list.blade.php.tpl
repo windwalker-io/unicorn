@@ -145,7 +145,11 @@ $workflow = $app->service(BasicStateWorkflow::class);
             </table>
 
             <div>
-                <x-pagination :pagination="$pagination"></x-pagination>
+                <x-pagination :pagination="$pagination">
+                    <x-slot name="end">
+                        <x-pagination-stats :pagination="$pagination"></x-pagination-stats>
+                    </x-slot>
+                </x-pagination>
             </div>
         </div>
 

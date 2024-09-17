@@ -13,7 +13,6 @@ use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\RouteUri;
 use Windwalker\Core\State\AppState;
 use Windwalker\Event\EventAwareInterface;
-use Windwalker\Session\Session;
 
 use function Windwalker\value;
 
@@ -34,14 +33,17 @@ class GridController implements EventAwareInterface
         $this->lang = $this->lang->extract('unicorn.message.batch.');
     }
 
-    public function filter(Navigator $nav, ?ListRepositoryInterface $repository = null, ?AppState $state = null): RouteUri
-    {
+    public function filter(
+        Navigator $nav,
+        ?ListRepositoryInterface $repository = null,
+        ?AppState $state = null
+    ): RouteUri {
         if ($repository) {
             $state = $repository->getState();
         }
 
-        $state->rememberFromRequest('filter');
-        $state->rememberFromRequest('search');
+        $state->rememberMergeRequest('filter');
+        $state->rememberMergeRequest('search');
         $state->rememberFromRequest('limit');
         $state->rememberFromRequest('list_ordering');
         $state->forget('page');
