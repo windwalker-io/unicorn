@@ -27,25 +27,30 @@ use Windwalker\Core\Router\SystemUri;
 /**
  * @var $pagination Pagination
  */
+
+$wrapperClass ??= 'btn-group';
+$itemClass ??= 'btn btn-outline-secondary disabled';
 ?>
 <div class="l-pagination-stats ms-0 ms-md-auto">
-    <div class="pagination">
-        <div class="page-item disabled">
-            <div class="page-link">
-                總數 <strong>{{ $pagination->getTotal() }}</strong>
-            </div>
+    <div class="l-pagination-stats__wrapper {{ $wrapperClass }}">
+        {!! $start ?? '' !!}
+
+        <div class="l-pagination-stats__item {{ $itemClass }}">
+            第 <strong>{{ $pagination->getCurrent() }}</strong> 頁
         </div>
 
-        <div class="page-item disabled">
-            <div class="page-link">
-                每頁 <strong>{{ $pagination->getLimit() }}</strong> 筆
-            </div>
+        <div class="l-pagination-stats__item {{ $itemClass }}">
+            每頁 <strong>{{ $pagination->getLimit() }}</strong> 筆
         </div>
 
-        <div class="page-item disabled">
-            <div class="page-link">
-                共 <strong>{{ $pagination->getPages() }}</strong> 頁
-            </div>
+        <div class="l-pagination-stats__item {{ $itemClass }}">
+            共 <strong>{{ $pagination->getPages() }}</strong> 頁
         </div>
+
+        <div class="l-pagination-stats__item {{ $itemClass }}">
+            總數 <strong>{{ $pagination->getTotal() }}</strong>
+        </div>
+
+        {!! $end ?? '' !!}
     </div>
 </div>
