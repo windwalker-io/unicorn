@@ -48,7 +48,7 @@ class {% pascal($name) %}EditView implements ViewModelInterface
     {
         $id = $app->input('id');
 
-        /** @var {% pascal($name) %} $item */
+        /** @var ?{% pascal($name) %} $item */
         $item = $this->repository->getItem($id);
 
         // Bind item for injection

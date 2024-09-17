@@ -40,6 +40,7 @@ class {% pascal($name) %}ItemView implements ViewModelInterface
     {
         $id = $app->input('id');
 
+        /** @var {% pascal($name) %} $item */
         $item = $this->repository->mustGetItem($id);
 
         $view[$item::class] = $item;
