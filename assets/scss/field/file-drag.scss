@@ -3,6 +3,10 @@
 
   overflow: hidden;
   border: 1px solid var(--bs-card-border-color, #ddd);
+
+  label {
+    border: none;
+  }
 }
 
 .c-file-drag-input {
@@ -55,8 +59,8 @@
     padding: .375rem .75rem;
     color: #495057;
     background-color: #fff;
-    //border: 1px solid #ced4da;
-    //border-radius: .25rem;
+    border: 1px solid var(--bs-gray-400);
+    border-radius: .25rem;
     height: 100%;
     text-align: center;
     display: flex;

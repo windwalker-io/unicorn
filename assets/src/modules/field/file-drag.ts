@@ -21,6 +21,7 @@ class FileDrag extends HTMLElement {
 
   element: HTMLInputElement;
   overlayLabel: HTMLLabelElement;
+  button: HTMLButtonElement;
   options: FileDragOptions;
 
   get inputSelector() {
@@ -33,7 +34,9 @@ class FileDrag extends HTMLElement {
 
   connectedCallback(): void {
     this.element = this.querySelector(this.inputSelector);
-    this.overlayLabel = this.querySelector('[data-overlay-label]');
+
+    this.prepareElements();
+
     const options = JSON.parse(this.getAttribute('options') || '{}') || {};
 
     if (this.element.readOnly) {
@@ -70,6 +73,51 @@ class FileDrag extends HTMLElement {
     this.element.addEventListener('input', (e) => {
       this.onChange(e);
     });
+  }
+
+  prepareElements() {
+    if (this.children.length === 0) {
+      this.createElementsLayout();
+    }
+
+    this.overlayLabel = this.querySelector('[data-overlay-label]');
+
+    let button = this.overlayLabel.querySelector('button');
+
+    // B/C for new file drag style
+    if (!button) {
+      button = document.createElement('button');
+      button.type = 'button';
+      button.setAttribute('class', 'c-file-drag-input__button btn btn-success btn-sm px-2 py-1');
+      button.innerText = u.__('unicorn.field.file.drag.button.text');
+      this.overlayLabel.appendChild(button);
+    }
+
+    this.button = button;
+  }
+
+  createElementsLayout() {
+    this.id ||= 'c-file-drag-' + u.uid();
+    const inputId = this.id + '__input';
+    const btnText = u.__('unicorn.field.file.drag.button.text');
+
+    const input = u.html(`<input id="${inputId}" type="file" name="file" />`);
+    const label = u.html(`<label class="px-3 c-file-drag-input__label"
+        data-overlay-label
+        for="${inputId}">
+        <span class="label-text d-block">
+            <span class="fa fa-upload"></span>
+        </span>
+        <button type="button" class="c-file-drag-input__button btn btn-success btn-sm px-2 py-1">
+            ${btnText}
+        </button>
+    </label>`);
+
+    this.element = input as HTMLInputElement;
+    this.overlayLabel = label as HTMLLabelElement;
+
+    this.appendChild(input);
+    this.appendChild(label);
   }
 
   onChange(evt?: Event) {
