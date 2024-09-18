@@ -98,10 +98,11 @@ class FileDrag extends HTMLElement {
 
   createElementsLayout() {
     this.id ||= 'c-file-drag-' + u.uid();
+    const name = this.getAttribute('name') || 'file';
     const inputId = this.id + '__input';
     const btnText = u.__('unicorn.field.file.drag.button.text');
 
-    const input = u.html(`<input id="${inputId}" type="file" name="file" />`);
+    const input = u.html(`<input id="${inputId}" type="file" name="${name}" />`);
     const label = u.html(`<label class="px-3 c-file-drag-input__label"
         data-overlay-label
         for="${inputId}">
