@@ -43,7 +43,14 @@ class UnicornScript extends AbstractScript
         if ($this->available()) {
             $version = $this->asset->getVersion();
 
-            $this->js('@systemjs', [], ['onload' => 'window.S = System']);
+            $this->js('@systemjs');
+            $this->asset->addLink(
+                'scripts',
+                '@system-onload',
+                [
+                    'body' => 'window.S = System'
+                ]
+            );
             $this->js('@unicorn/system-hooks.js', [], ['data-version' => $version]);
         }
 
