@@ -115,7 +115,7 @@ class TinymceEditorField extends AbstractEditorField
                 'preview', 'anchor', 'pagebreak', 'searchreplace', 'wordcount',
                 'visualblocks', 'visualchars', 'code', 'fullscreen', 'insertdatetime',
                 'media', 'nonbreaking', 'save', 'table', 'directionality',
-                'emoticons', 'template', 'textpattern',
+                'emoticons', 'template',
             ];
 
             $defaultOptions['toolbar'] = 'undo redo ' .
