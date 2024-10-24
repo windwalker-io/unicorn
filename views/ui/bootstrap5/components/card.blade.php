@@ -62,9 +62,14 @@ $titleTag ??= 'h4';
                     @if (is_callable($title))
                         {!! $title(titleClass: $titleClass ?? '') !!}
                     @else
-                        <{{ $titleTag }} class="card-title mb-4 {{ $titleClass ?? '' }}">
-                            {!! $title ?? '' !!}
-                        </{{ $titleTag }}>
+                        <div class="card-title mb-4 d-flex align-items-center justify-content-between">
+                            <{{ $titleTag }} class="{{ $titleClass ?? '' }}">
+                                {!! $title ?? '' !!}
+                            </{{ $titleTag }}>
+                            <div>
+                                {!! $titleEnd ?? '' !!}
+                            </div>
+                        </div>
                     @endif
                 @endif
 
