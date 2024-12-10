@@ -14,7 +14,7 @@ use Windwalker\ORM\NestedSetMapper;
  */
 class NestedSaveAction extends SaveAction
 {
-    public function save(object|array $data, array|string $condFields = null, int $options = 0): object
+    public function save(object|array $data, array|string|null $condFields = null, int $options = 0): object
     {
         $source = $data;
 

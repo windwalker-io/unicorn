@@ -17,7 +17,7 @@ trait ListRepositoryTrait
     #[Inject]
     protected ?PaginationFactory $paginationFactory = null;
 
-    public function createSelector(SelectorQuery &$query = null): ListSelector
+    public function createSelector(?SelectorQuery &$query = null): ListSelector
     {
         $selector = $this->createSelectorObject();
 

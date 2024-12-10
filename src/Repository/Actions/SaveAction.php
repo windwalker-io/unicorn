@@ -86,7 +86,7 @@ class SaveAction extends AbstractDatabaseAction
      */
     public function save(
         array|object $data,
-        array|string $condFields = null,
+        array|string|null $condFields = null,
         int $options = EntityMapper::UPDATE_NULLS
     ): object {
         $source = $data;

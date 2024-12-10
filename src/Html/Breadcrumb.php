@@ -32,16 +32,16 @@ class Breadcrumb
     /**
      * addPath
      *
-     * @param  string  $title
+     * @param  string                    $title
      * @param  string|UriInterface|null  $link
-     * @param  bool  $active
-     * @param  array  $attrs
+     * @param  bool                      $active
+     * @param  array                     $attrs
      *
      * @return  static
      */
     public function push(
         string $title,
-        string|UriInterface $link = null,
+        string|UriInterface|null $link = null,
         bool $active = false,
         array $attrs = []
     ): static {

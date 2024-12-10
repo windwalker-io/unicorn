@@ -55,7 +55,7 @@ class GridController implements EventAwareInterface
         AppContext $app,
         ManageRepositoryInterface $repository,
         mixed $ids = null,
-        string $task = null,
+        ?string $task = null,
         mixed $data = null
     ): mixed {
         if ($task ??= $app->input('task')) {
@@ -74,7 +74,7 @@ class GridController implements EventAwareInterface
         Navigator $nav,
         ManageRepositoryInterface $repository,
         mixed $ids = null,
-        string $task = null,
+        ?string $task = null,
         mixed $data = null,
     ): RouteUri {
         $ids = (array) ($ids ?? $app->input('id'));
@@ -129,7 +129,7 @@ class GridController implements EventAwareInterface
         Navigator $nav,
         ManageRepositoryInterface $repository,
         mixed $ids = null,
-        int $delta = null,
+        ?int $delta = null,
     ): RouteUri {
         $ids = (array) ($ids ?? $app->input('id'));
         $delta = (int) ($delta ?? $app->input('delta'));
@@ -147,7 +147,7 @@ class GridController implements EventAwareInterface
         AppContext $app,
         Navigator $nav,
         ManageRepositoryInterface $repository,
-        array $orders = null
+        ?array $orders = null
     ): RouteUri {
         $orders ??= (array) $app->input('ordering');
 
