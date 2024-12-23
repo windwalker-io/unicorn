@@ -37,13 +37,20 @@ if ($attributes) {
 }
 ?>
 
-<nav aria-label="breadcrumb" {!! $attributes !!}>
+<nav aria-label="breadcrumb" {!! $attributes !!}
+    itemscope itemtype="https://schema.org/BreadcrumbList">
     <ol class="breadcrumb mb-0">
         @foreach ($items as $i => $path)
             <li class="breadcrumb-item {{ $path['active'] ? 'active' : '' }} {{ $itemClass ?? '' }}"
-                aria-current="page">
-                <a @attr('href', $path['link'] ?: null) >
-                    {{ $path['title'] }}
+                @attr('aria-current', $path['active'] ? 'page' : null)
+                itemprop="itemListElement"
+                itemscope
+                itemtype="https://schema.org/ListItem"
+            >
+                <a @attr('href', $path['link'] ?: null)
+                    itemprop="item">
+                    <span itemprop="name">{{ $path['title'] }}</span>
+                    <meta itemprop="position" content="{{ $i + 1 }}" />
                 </a>
             </li>
         @endforeach
