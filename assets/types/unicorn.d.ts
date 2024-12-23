@@ -1,4 +1,4 @@
-import { AxiosInstance, AxiosProgressEvent, AxiosRequestConfig, AxiosResponse } from 'axios';
+import { AxiosError, AxiosInstance, AxiosProgressEvent, AxiosRequestConfig, AxiosResponse, AxiosStatic } from 'axios';
 import { SpectrumOptions } from 'spectrum-vanilla/dist/types/types';
 import { Editor, EditorManager, EditorOptions } from 'tinymce';
 
@@ -552,7 +552,7 @@ export declare class UnicornHelper {
 }
 export declare class UnicornHttp {
 	protected app: UnicornApp;
-	globalAxios?: Promise<AxiosInstance>;
+	globalAxios?: Promise<AxiosStatic>;
 	axios?: AxiosInstance;
 	config: Record<string, any>;
 	data: Record<string, any>;
@@ -561,7 +561,7 @@ export declare class UnicornHttp {
 	constructor(app: UnicornApp);
 	get getSelf(): this;
 	importAxios(): Promise<any>;
-	getGlobalAxios(): Promise<AxiosInstance>;
+	getGlobalAxios(): Promise<AxiosStatic>;
 	createHttp(): Promise<AxiosInstance>;
 	getHttp(): Promise<AxiosInstance>;
 	prepareAxios(axios: AxiosInstance): AxiosInstance;
@@ -638,6 +638,7 @@ export declare class UnicornHttp {
 	 * @returns {Promise<this>}
 	 */
 	customMethod(useHeader?: boolean): Promise<this>;
+	errorClass(): Promise<typeof AxiosError>;
 }
 export declare class UnicornLang {
 	protected app: UnicornApp;

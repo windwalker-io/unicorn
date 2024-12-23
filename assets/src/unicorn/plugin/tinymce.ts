@@ -2,7 +2,6 @@ import UnicornApp from '../app';
 import UnicornHttp from './http';
 import UnicornStack from './stack';
 import type UnicornUI from './ui';
-import { AxiosError } from 'axios';
 import { defaultsDeep } from 'lodash-es';
 import type { Editor, EditorManager, EditorOptions } from 'tinymce';
 
@@ -208,6 +207,8 @@ export class TinymceEditor {
 
       return res.data.data.url;
     } catch (err) {
+      const AxiosError = await this.app.inject<UnicornHttp>('$http').errorClass();
+
       if (err instanceof AxiosError) {
         const message = err?.response?.data?.message || err.message;
         console.error(err?.response?.data?.message || err.message, err);

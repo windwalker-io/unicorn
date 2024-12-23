@@ -1,6 +1,7 @@
 import { AxiosProgressEvent, AxiosResponse } from 'axios';
 
 declare class UnicornApp extends UnicornApp_base {
+	static [x: string]: any;
 	plugins: {};
 	waits: Promise<any>[];
 	options: Record<string, any>;
@@ -23,6 +24,7 @@ declare class UnicornApp extends UnicornApp_base {
 declare const S3Uploader_base: any;
 declare const UnicornApp_base: any;
 export declare class S3Uploader extends S3Uploader_base {
+	static [x: string]: any;
 	protected name: string;
 	options: S3UploaderGlobalOptions;
 	constructor(name: string, options?: Partial<S3UploaderGlobalOptions>);

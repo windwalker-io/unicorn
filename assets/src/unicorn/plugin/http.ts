@@ -14,7 +14,7 @@ declare module 'axios' {
 }
 
 export default class UnicornHttp {
-  globalAxios?: Promise<AxiosInstance>;
+  globalAxios?: Promise<AxiosStatic>;
   // CanceledError?: CanceledError;
   axios?: AxiosInstance;
   config: Record<string, any> = {
@@ -42,7 +42,7 @@ export default class UnicornHttp {
     return this.app.import('@axios');
   }
 
-  async getGlobalAxios(): Promise<AxiosInstance> {
+  async getGlobalAxios(): Promise<AxiosStatic> {
     if (!this.globalAxios) {
       this.globalAxios = this.importAxios();
     }
@@ -322,5 +322,11 @@ export default class UnicornHttp {
 
       return config;
     }).then(() => clone);
+  }
+
+  async errorClass() {
+    const axios = await this.globalAxios!;
+
+    return axios.AxiosError;
   }
 }
