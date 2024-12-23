@@ -48,6 +48,7 @@ use Windwalker\DI\BootableDeferredProviderInterface;
 use Windwalker\DI\BootableProviderInterface;
 use Windwalker\DI\Container;
 use Windwalker\DI\ServiceProviderInterface;
+use Windwalker\Form\Field\AbstractField;
 
 /**
  * The UnicornPackage class.
@@ -74,6 +75,13 @@ class UnicornPackage extends AbstractPackage implements
      */
     public function boot(Container $container): void
     {
+        AbstractField::macro(
+            'showon',
+            function (array $values) {
+                /** @var AbstractField $this */
+                return $this->set('showon', $values);
+            }
+        );
     }
 
     /**
