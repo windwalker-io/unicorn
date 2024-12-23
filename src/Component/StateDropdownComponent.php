@@ -73,7 +73,7 @@ class StateDropdownComponent extends AbstractComponent
     public ?string $field = null;
 
     #[Prop]
-    public ?string $onclick = null;
+    public \Closure|string|null $onclick = null;
 
     public function data(): array
     {
@@ -126,6 +126,13 @@ class StateDropdownComponent extends AbstractComponent
 
         $buttonId ??= trim('c-state-dropdown-' . implode('-', $fieldName) . '-' . $this->id, '-');
 
+        // Onclick
+        $onclick = $this->onclick;
+
+        if (is_string($onclick)) {
+            $onclick = static fn () => $onclick;
+        }
+
         return array_merge(
             parent::data(),
             compact(
@@ -135,7 +142,8 @@ class StateDropdownComponent extends AbstractComponent
                 'textColor',
                 'buttonId',
                 'currentState',
-                'disabled'
+                'disabled',
+                'onclick',
             )
         );
     }
