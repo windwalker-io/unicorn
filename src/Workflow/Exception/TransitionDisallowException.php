@@ -6,6 +6,7 @@ namespace Unicorn\Workflow\Exception;
 
 use Throwable;
 use Unicorn\Workflow\AbstractWorkflow;
+use Unicorn\Workflow\WorkflowInterface;
 use Windwalker\Core\Form\Exception\ValidateFailException;
 
 /**
@@ -16,7 +17,7 @@ class TransitionDisallowException extends ValidateFailException
     public function __construct(
         protected string $form,
         protected string $to,
-        protected AbstractWorkflow $workflow,
+        protected WorkflowInterface $workflow,
         array|string|null $messages = null,
         int $code = 0,
         ?Throwable $previous = null
@@ -65,19 +66,19 @@ class TransitionDisallowException extends ValidateFailException
     }
 
     /**
-     * @return AbstractWorkflow
+     * @return WorkflowInterface
      */
-    public function getWorkflow(): AbstractWorkflow
+    public function getWorkflow(): WorkflowInterface
     {
         return $this->workflow;
     }
 
     /**
-     * @param  AbstractWorkflow  $workflow
+     * @param  WorkflowInterface  $workflow
      *
      * @return  static  Return self to support chaining.
      */
-    public function setWorkflow(AbstractWorkflow $workflow): static
+    public function setWorkflow(WorkflowInterface $workflow): static
     {
         $this->workflow = $workflow;
 
