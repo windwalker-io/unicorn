@@ -51,6 +51,7 @@ class TinymceEditorField extends AbstractEditorField
      * @var  array
      */
     public static array $defaultOptions = [
+        'license_key' => 'gpl',
         'height' => 450,
         'convert_urls' => true,
         'fontsize_formats' => '12px 13px 14px 15px 16px 18px 20px 24px 28px 32px',
@@ -115,7 +116,7 @@ class TinymceEditorField extends AbstractEditorField
                 'preview', 'anchor', 'pagebreak', 'searchreplace', 'wordcount',
                 'visualblocks', 'visualchars', 'code', 'fullscreen', 'insertdatetime',
                 'media', 'nonbreaking', 'save', 'table', 'directionality',
-                'emoticons', 'template',
+                'emoticons'
             ];
 
             $defaultOptions['toolbar'] = 'undo redo ' .
@@ -150,9 +151,6 @@ class TinymceEditorField extends AbstractEditorField
             ['title' => 'BS Striped Bordered', 'value' => 'table table-striped table-bordered'],
             ['title' => 'None', 'value' => ''],
         ];
-
-        // Templates
-        // $defaultOptions['templates'] = [];
 
         $options = Arr::mergeRecursive($defaultOptions, static::$defaultOptions, $options);
 
