@@ -4,10 +4,7 @@ declare(strict_types=1);
 
 namespace Unicorn\Storage;
 
-use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\UriInterface;
-
-use Windwalker\Uri\UriHelper;
 
 use function Windwalker\uid;
 
@@ -67,7 +64,12 @@ class PutResult extends Result implements \Stringable
         return $this;
     }
 
-    public function __toString()
+    public function getUriString(string|bool $suffix = false): string
+    {
+        return (string) $this->getUri($suffix);
+    }
+
+    public function __toString(): string
     {
         return (string) $this->getUri();
     }
