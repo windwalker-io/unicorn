@@ -10,6 +10,7 @@ use Intervention\Image\FileExtension;
 use Intervention\Image\Interfaces\ImageInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
+use Spatie\ImageOptimizer\OptimizerChainFactory;
 use Symfony\Component\Mime\MimeTypesInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Unicorn\Flysystem\Base64DataUri;
@@ -20,11 +21,14 @@ use Unicorn\Storage\StorageManager;
 use Unicorn\Upload\Event\FileUploadedEvent;
 use Unicorn\Upload\Exception\FileUploadException;
 use Windwalker\Core\Event\CoreEventAwareTrait;
+use Windwalker\Core\Manager\Logger;
 use Windwalker\Event\EventAwareInterface;
 use Windwalker\Filesystem\Filesystem;
 use Windwalker\Filesystem\Path;
+use Windwalker\Filesystem\TempFileObject;
 use Windwalker\Http\Helper\UploadedFileHelper;
 use Windwalker\Stream\Stream;
+use Windwalker\Stream\StreamHelper;
 use Windwalker\Stream\StringStream;
 use Windwalker\Utilities\Options\OptionsResolverTrait;
 use Windwalker\Utilities\TypeCast;
@@ -33,6 +37,8 @@ use function Windwalker\chronos;
 use function Windwalker\uid;
 
 use const Windwalker\Stream\READ_ONLY_FROM_BEGIN;
+use const Windwalker\Stream\READ_WRITE_FROM_BEGIN;
+use const Windwalker\Stream\READ_WRITE_RESET;
 
 /**
  * The FileUploadService class.
@@ -104,7 +110,7 @@ class FileUploadService implements EventAwareInterface
             ->default('local');
 
         $resolver->define('optimize')
-            ->allowedTypes('bool', 'int')
+            ->allowedTypes('bool', 'int', 'array')
             ->default(false);
 
         $resolver->define('options')
@@ -388,62 +394,57 @@ class FileUploadService implements EventAwareInterface
      * @param  array            $resizeConfig
      *
      * @return  StreamInterface
-     *
-     * @deprecated  This method is not work currently
+     * @throws \Exception
      */
     public function optimizeImage(StreamInterface $src, string $dest, array $resizeConfig): StreamInterface
     {
-        $optimize = $resizeConfig['strip_exif'] || $this->options['optimize'];
+        $optimize = $resizeConfig['strip_exif'] ?: $this->options['optimize'];
 
-        if (!$optimize) {
+        if ($optimize === false) {
             return $src;
         }
 
-        // $filename = Path::getFilename($dest);
-        // $ext = Path::getExtension($dest);
+        if (!class_exists(OptimizerChainFactory::class)) {
+            throw new \DomainException('Please install `spatie/image-optimizer` first.');
+        }
 
-        // Todo: Test pngauant at Linux
-        // if ($ext === 'png') {
-        // $tmp = WINDWALKER_TEMP . '/images/' . $filename;
-        // Filesystem::mkdir(dirname($tmp));
-        // $tmpFile = new TempFileObject($tmp);
-        // $tmpFile->touch();
-        // StreamHelper::copyTo($src, $tmpFile->getStream());
-        // // $tmpFile->deleteWhenShutdown();
-        //
-        // $pngquant = WINDWALKER_TEMP . '/pngquant';
-        // $quality = $resizeConfig['quality'];
-        // $input = fopen('php://memory', READ_WRITE_FROM_BEGIN);
-        // $newImage = new Stream();
-        //
-        // $c = sprintf(
-        //     '%s  %s',
-        //     $pngquant,
-        //     $tmpFile->getPathname()
-        // );
-        // $o = shell_exec($c);
-        //
-        // show($o);
+        $options = [];
 
-        // while (!$src->eof()) {
-        //     $buffer = $src->read(8192);
-        //     fwrite($input, $buffer);
-        //
-        //     $out = $process->getIncrementalOutput();
-        //     $newImage->write($out);
-        //
-        //     show($out);
-        // }
-        //
-        // $newImage->rewind();
-        //
-        // show((string) $newImage);
-        //     exit(' @Checkpoint');
-        //
-        //     return $newImage;
-        // }
+        if (is_array($optimize)) {
+            $options = $optimize;
+        }
 
-        return $src;
+        $optimizer = OptimizerChainFactory::create($options);
+        $logger = Logger::getChannel('image-optimizer');
+
+        if ($logger) {
+            $optimizer->useLogger($logger);
+        }
+
+        $tmpDir = WINDWALKER_TEMP . '/images/';
+        Filesystem::mkdir($tmpDir);
+
+        $ext = Path::getExtension($dest);
+        $filename = uid();
+        $tmp = $tmpDir . $filename . '.' . $ext;
+        $tmpFile = new TempFileObject($tmp);
+        $tmpFile->deleteWhenDestruct(true);
+        $tmpFile->touch();
+
+        StreamHelper::copy($src, $tmpFile->getStream());
+
+        $tmp = $tmpDir . $filename . '.new.' . $ext;
+        $newFile = new TempFileObject($tmp);
+        $newFile->deleteWhenDestruct(true);
+        $newFile->touch();
+
+        $optimizer->optimize($tmpFile->getPathname(), $newFile->getPathname());
+
+        $newImage = new Stream('php://memory', READ_WRITE_RESET);
+        StreamHelper::copy($newFile->getStream(), $newImage);
+        $newImage->rewind();
+
+        return $newImage;
     }
 
     protected function resizeByIntervension3(
@@ -451,7 +452,7 @@ class FileUploadService implements EventAwareInterface
         array $resizeConfig,
         ?string $outputFormat
     ): StreamInterface {
-        $optimize = $resizeConfig['strip_exif'] || $this->options['optimize'];
+        // $optimize = $resizeConfig['strip_exif'] || $this->options['optimize'];
 
         $image = InterventionImage::read($src, $resizeConfig['driver']);
 
@@ -474,11 +475,11 @@ class FileUploadService implements EventAwareInterface
             $image->scaleDown($width, $height);
         }
 
-        if ($optimize && $outputFormat === 'png') {
-            $colors = is_int($this->options['optimize']) ? $this->options['optimize'] : 2048;
-
-            $image->reduceColors($colors);
-        }
+        // if ($optimize && $outputFormat === 'png') {
+        //     $colors = is_int($this->options['optimize']) ? $this->options['optimize'] : 2048;
+        //
+        //     $image->reduceColors($colors);
+        // }
 
         $res = $this->encodeImageByExtension(
             $image,
