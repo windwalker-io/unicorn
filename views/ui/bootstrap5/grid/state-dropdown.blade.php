@@ -84,6 +84,9 @@ use Windwalker\Core\Router\SystemUri;
             @endif
         </button>
         <ul class="dropdown-menu" aria-labelledby="{{ $buttonId }}">
+            @if (isset($menuStart))
+                {!! $menuStart(currentState: $currentState) !!}
+            @endif
             @php($k = 1)
             @foreach ($workflows as $name => $workflow)
                 <?php
@@ -142,6 +145,10 @@ use Windwalker\Core\Router\SystemUri;
                 @endif
                 @php($k++)
             @endforeach
+
+            @if (isset($menuEnd))
+                {!! $menuEnd(currentState: $currentState) !!}
+            @endif
         </ul>
     </div>
 @endif
