@@ -4,7 +4,7 @@ import type { default as SpectrumGlobal } from 'spectrum-vanilla';
 import type { SpectrumOptions } from 'spectrum-vanilla/dist/types/types';
 import type Tinymce from 'tinymce';
 import type { default as TomSelectGlobal } from 'tom-select';
-import type { TomInput } from 'tom-select/dist/types/types';
+import type { TomInput } from 'tom-select/dist/esm/types/core.d.ts';
 import type { S3Uploader } from '../../modules/aws/s3-uploader';
 import UnicornApp from '../app';
 import type { Nullable } from '../types';
@@ -580,7 +580,9 @@ export default class UnicornUI {
     });
 
     const form = this.$helper.selectOne<HTMLFormElement>(formSelector);
-    form?.addEventListener(event, (e) => {
+    form?.addEventListener(event, (e: SubmitEvent) => {
+      console.log(e.submitter);
+
       setTimeout(() => {
         if (!form.checkValidity()) {
           return;
@@ -625,8 +627,10 @@ export default class UnicornUI {
     });
   }
 
-  async checkboxesMultiSelect(selector?: Nullable<string | HTMLElement>,
-                              options: Record<string, any> = {}): Promise<any> {
+  async checkboxesMultiSelect(
+    selector?: Nullable<string | HTMLElement>,
+    options: Record<string, any> = {}
+  ): Promise<any> {
     const m = await this.$loader.import('@unicorn/ui/checkboxes-multi-select.js');
 
     if (selector) {
