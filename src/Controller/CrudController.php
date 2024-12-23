@@ -162,9 +162,10 @@ class CrudController implements EventAwareInterface
         $mapper = $repository->getEntityMapper();
         $key    = $mapper->getMainKey() ?? 'id';
 
-        $mapper->getORM()->addEventDealer($this);
+        $action = $repository->createDeleteAction();
+        $action->addEventDealer($this);
 
-        $repository->getDb()->transaction(fn() => $repository->delete([$key => $ids]));
+        $repository->getDb()->transaction(fn() => $action->delete([$key => $ids]));
 
         if (!$this->isMuted()) {
             $app->addMessage(

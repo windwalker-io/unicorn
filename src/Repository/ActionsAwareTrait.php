@@ -14,13 +14,10 @@ use Unicorn\Repository\Event\BeforeBatchEvent;
 use Unicorn\Repository\Event\BeforeBatchItemEvent;
 use Windwalker\Attributes\AttributesAccessor;
 use Windwalker\DI\Attributes\Inject;
-
 use Windwalker\ORM\Event\AfterCopyEvent;
 use Windwalker\ORM\Event\AfterSaveEvent;
 use Windwalker\ORM\Event\BeforeCopyEvent;
 use Windwalker\ORM\Event\BeforeSaveEvent;
-
-use function Windwalker\arr;
 
 /**
  * Trait ActionsAwareTrait

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Unicorn\Repository;
 
+use Unicorn\Repository\Actions\DeleteAction;
 use Unicorn\Repository\Actions\SaveAction;
 
 /**
@@ -27,6 +28,8 @@ interface CrudRepositoryInterface extends
      * @psalm-return T
      */
     public function getItem(array $conditions = [], ?string $className = null): ?object;
+
+    public function createDeleteAction(string $actionClass = DeleteAction::class): DeleteAction;
 
     public function delete(array $conditions = []): void;
 }
