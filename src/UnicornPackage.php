@@ -82,6 +82,14 @@ class UnicornPackage extends AbstractPackage implements
                 return $this->set('showon', $values);
             }
         );
+
+        AbstractField::macro(
+            'tooltip',
+            function (string $title) {
+                /** @var AbstractField $this */
+                return $this->set('tooltip', $title);
+            }
+        );
     }
 
     /**

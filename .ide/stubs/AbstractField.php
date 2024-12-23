@@ -10,4 +10,9 @@ class AbstractField
     {
         return $this;
     }
+
+    public function tooltip(string $title): static
+    {
+        return $this;
+    }
 }
