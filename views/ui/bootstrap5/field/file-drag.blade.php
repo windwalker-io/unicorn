@@ -22,9 +22,13 @@ use Windwalker\Core\DateTime\ChronosService;
 use Windwalker\Core\Language\LangService;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\SystemUri;
+use Windwalker\DOM\DOMElement;
+
+use function Windwalker\DOM\h;
 
 /**
- * @var \Unicorn\Field\FileDragField $field
+ * @var $field \Unicorn\Field\FileDragField
+ * @var $input DOMElement
  */
 
 $app->service(\Unicorn\Script\FormScript::class)->fileDrag();
@@ -33,11 +37,21 @@ $position = $field->getShowUploadedPosition();
 
 $layout = $field->getPreviewLayout();
 $value = $field->getValue();
+
+$placeholderInput = h('input');
+$placeholderInput['id'] = $field->getId('__placeholder');
+$placeholderInput['name'] = $input['name'];
+$placeholderInput['type'] = 'text';
+$placeholderInput['style'] = 'height: 0; opacity: 0; position: absolute; top: 0;';
+$placeholderInput['value'] = $value;
+$placeholderInput['readonly'] = $field->isReadonly();
+$placeholderInput['disabled'] = $field->isDisabled();
+$placeholderInput['data-role'] = 'placeholder';
 ?>
 
-<div class="c-file-drag card">
+<div class="c-file-drag card" uni-file-drag-field>
     @if ($position === 'top' && $value)
-        <div class="c-file-drag__preview c-file-drag-preview card-header">
+        <div class="c-file-drag__preview c-file-drag-preview card-header  d-flex gap-2">
             @if ($layout)
                 {!! $field->renderPreview() !!}
             @else
@@ -47,6 +61,12 @@ $value = $field->getValue();
                     @attr('href', $link ?: null) target="_blank">
                     {{ $field->getUploadedFilename($value) }}
                 </a>
+                <a href="javascript:void(0)" class="ms-auto d-inline-block px-2 c-file-drag-preview__delete"
+                    title="@lang('unicorn.field.file.drag.delete')"
+                    data-bs-toggle="tooltip"
+                >
+                    <i class="fa fa-trash"></i>
+                </a>
             @endif
         </div>
     @endif
@@ -54,6 +74,7 @@ $value = $field->getValue();
     <uni-file-drag class="custom-file c-file-drag-input" style="visibility: hidden;"
         options="{{ json_encode($options) }}">
         {!! $input !!}
+        {!! $placeholderInput !!}
         <label class="px-3 c-file-drag-input__label"
             data-overlay-label
             for="{{ $field->getId() }}">
@@ -67,7 +88,7 @@ $value = $field->getValue();
     </uni-file-drag>
 
     @if ($position === 'bottom' && $value)
-        <div class="c-file-drag__preview c-file-drag-preview card-footer">
+        <div class="c-file-drag__preview c-file-drag-preview card-footer d-flex gap-2">
             @if ($layout)
                 {!! $field->renderPreview() !!}
             @else
@@ -76,6 +97,12 @@ $value = $field->getValue();
                 <a class="c-file-drag-preview__link"
                     @attr('href', $link ?: null) target="_blank">
                     {{ $field->getUploadedFilename($value) }}
+                </a>
+                <a href="javascript:void(0)" class="ms-auto d-inline-block px-2 c-file-drag-preview__delete"
+                    title="@lang('unicorn.field.file.drag.delete')"
+                    data-bs-toggle="tooltip"
+                >
+                    <i class="fa fa-trash"></i>
                 </a>
             @endif
         </div>

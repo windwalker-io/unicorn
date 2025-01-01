@@ -248,6 +248,43 @@ class FileDrag extends HTMLElement {
 
 u.defineCustomElement(FileDrag.is, FileDrag);
 
+u.directive('file-drag-field', {
+  mounted(el) {
+    const input = el.querySelector<HTMLInputElement>('input[type=file]')!;
+    const placeholderInput = el.querySelector<HTMLInputElement>('[data-role=placeholder]')!;
+
+    const preview = el.querySelector('.c-file-drag-preview');
+
+    if (preview) {
+      const previewLink = preview.querySelector<HTMLAnchorElement>('.c-file-drag-preview__link')!;
+      const delButton = preview.querySelector<HTMLAnchorElement>('.c-file-drag-preview__delete')!;
+      let linkTitle = previewLink.textContent;
+      let inputValue = placeholderInput.value;
+      let required = input.required;
+
+      if (placeholderInput.value) {
+        input.required = false;
+      }
+
+      delButton.addEventListener('click', () => {
+        if (delButton.classList.contains('active')) {
+          // Restore
+          previewLink.textContent = linkTitle;
+          placeholderInput.value = inputValue;
+          delButton.classList.remove('active');
+          input.required = false;
+        } else {
+          // Delete
+          previewLink.textContent = '';
+          placeholderInput.value = '';
+          delButton.classList.add('active');
+          input.required = required;
+        }
+      });
+    }
+  }
+})
+
 declare global {
   interface Window {
     swal: any;

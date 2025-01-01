@@ -89,3 +89,13 @@
     //--bs-btn-color: var(--bs-secondary);
   }
 }
+
+.c-file-drag-preview {
+  .c-file-drag-preview__delete {
+    --bs-link-color-rgb: var(--bs-dark-rgb);
+
+    &.active {
+      --bs-link-color-rgb: var(--bs-primary-rgb);
+    }
+  }
+}
