@@ -36,7 +36,7 @@ $value = $field->getValue();
 ?>
 
 <div class="c-file-drag card">
-    @if ($position === 'top')
+    @if ($position === 'top' && $value)
         <div class="c-file-drag__preview c-file-drag-preview card-header">
             @if ($layout)
                 {!! $field->renderPreview() !!}
@@ -66,7 +66,7 @@ $value = $field->getValue();
         </label>
     </uni-file-drag>
 
-    @if ($position === 'bottom')
+    @if ($position === 'bottom' && $value)
         <div class="c-file-drag__preview c-file-drag-preview card-footer">
             @if ($layout)
                 {!! $field->renderPreview() !!}
