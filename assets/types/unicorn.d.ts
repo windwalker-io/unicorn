@@ -3,7 +3,6 @@ import { SpectrumOptions } from 'spectrum-vanilla/dist/types/types';
 import { Editor, EditorManager, EditorOptions } from 'tinymce';
 
 declare class S3Uploader extends S3Uploader_base {
-	static [x: string]: any;
 	protected name: string;
 	options: S3UploaderGlobalOptions;
 	constructor(name: string, options?: Partial<S3UploaderGlobalOptions>);
@@ -216,7 +215,6 @@ export declare class UnicornAnimate {
 	getCurrentStyle(element: Element, name: keyof CSSStyleDeclaration): any;
 }
 export declare class UnicornApp extends UnicornApp_base {
-	static [x: string]: any;
 	plugins: {};
 	waits: Promise<any>[];
 	options: Record<string, any>;
