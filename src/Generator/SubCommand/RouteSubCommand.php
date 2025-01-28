@@ -56,7 +56,7 @@ class RouteSubCommand extends \Windwalker\Core\Generator\SubCommand\RouteSubComm
                 $this->getDestPath($io),
                 [
                     'name' => StrNormalize::toKebabCase($name),
-                    'ns' => StrNormalize::toClassNamespace(
+                    'ns' => static::toClassNamespace(
                         $this->getNamespace($io) . '/' . StrNormalize::toPascalCase($name)
                     ),
                 ],
@@ -64,5 +64,26 @@ class RouteSubCommand extends \Windwalker\Core\Generator\SubCommand\RouteSubComm
             );
 
         return 0;
+    }
+
+    /**
+     * @param  string  $class
+     *
+     * @return  string
+     *
+     * @deprecated  Use StrNormalize if updated.
+     */
+    public static function toClassNamespace(string $class): string
+    {
+        $class = trim($class, '\\');
+
+        $segments = preg_split('#/|\\\\#', $class);
+        $segments = array_filter($segments);
+        $segments = array_map(
+            StrNormalize::toPascalCase(...),
+            $segments
+        );
+
+        return implode('\\', $segments);
     }
 }
