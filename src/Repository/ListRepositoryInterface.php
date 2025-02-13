@@ -19,5 +19,5 @@ use Windwalker\ORM\SelectorQuery;
  */
 interface ListRepositoryInterface extends StateControlRepositoryInterface
 {
-    public function createSelector(SelectorQuery &$query = null): ListSelector;
+    public function createSelector(?SelectorQuery &$query = null): ListSelector;
 }

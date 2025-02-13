@@ -24,7 +24,7 @@ class TransitionDisallowException extends ValidateFailException
         protected string $form,
         protected string $to,
         protected AbstractWorkflow $workflow,
-        array|string $messages = null,
+        array|string|null $messages = null,
         int $code = 0,
         ?Throwable $previous = null
     ) {

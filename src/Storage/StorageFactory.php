@@ -98,7 +98,7 @@ class StorageFactory
 
         $s3->getHandlerList()->appendInit(
             function (callable $handler) use ($s3, $options) {
-                return function (CommandInterface $command, RequestInterface $request = null) use ($s3, $handler, $options) {
+                return function (CommandInterface $command, ?RequestInterface $request = null) use ($s3, $handler, $options) {
                     $args = $options['args'] ?? [];
 
                     if (!isset($command['Bucket'])) {
