@@ -49,7 +49,7 @@ $options['modalTarget'] = '#' . $field->getId('__modal');
     <div id="{{ $field->getId('-container') }}">
         <div class="d-flex">
             <div class="c-sid-default__left-col d-flex align-items-start">
-                <img class="c-sid-default__preview img-responsive img-fluid"
+                <img class="c-sid-default__preview img-fluid"
                     {{-- TextField has escaped value, so we don't need to escape again --}}
                     data-sid="preview"
                     src="{{ $image }}"
