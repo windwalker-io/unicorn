@@ -139,7 +139,7 @@ class BuildFormCommand implements CommandInterface, InteractInterface, Completio
         $class = StrNormalize::toClassNamespace(Str::ensureRight($ns, '\\') . $class);
 
         $db = $this->databaseManager->get($io->getOption('connection'));
-        $tbm = $db->getTable($table);
+        $tbm = $db->getTableManager($table);
 
         $ref = new \ReflectionClass($class);
 
