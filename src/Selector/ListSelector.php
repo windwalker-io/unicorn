@@ -66,6 +66,8 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
 
     protected ?string $defaultItemClass = null;
 
+    protected ?int $paginate = null;
+
     protected ?\Closure $countCallback = null;
 
     protected ?FilterHelper $filterHelper = null;
@@ -115,14 +117,16 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
      *
      * @param  string|null  $class
      * @param  array        $args
+     * @param  int|null     $paginate
      *
      * @return \Traversable
      */
-    public function getIterator(?string $class = null, array $args = []): \Traversable
+    public function getIterator(?string $class = null, array $args = [], ?int $paginate = null): \Traversable
     {
         return $this->compileQuery()->getIterator(
             $class ?? $this->getDefaultItemClass(),
-            $args
+            $args,
+            $paginate ?? $this->getPaginate()
         );
     }
 
@@ -154,6 +158,8 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
         }
 
         if ($autoSelection) {
+            $query->loadColumnsFromDb($this->isLoadColumnsFromDb());
+
             if (!$this->isDisableSelectGroup()) {
                 $query->groupByJoins('.');
             } else {
@@ -897,6 +903,18 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
         return $this->searchText;
     }
 
+    public function loadColumnsFromDb(bool $loadColumnsFromDb = true): static
+    {
+        $this->setOption('load_columns_from_db', $loadColumnsFromDb);
+
+        return $this;
+    }
+
+    public function isLoadColumnsFromDb(): bool
+    {
+        return (bool) $this->getOption('load_columns_from_db');
+    }
+
     /**
      * @return bool
      */
@@ -910,14 +928,14 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
      *
      * @return  static  Return self to support chaining.
      */
-    public function disableSelectGroup(bool $disableSelectGroup): static
+    public function disableSelectGroup(bool $disableSelectGroup = true): static
     {
         $this->setOption('disable_select_group', $disableSelectGroup);
 
         return $this;
     }
 
-    public function disablePageFix(bool $value): static
+    public function disablePageFix(bool $value = true): static
     {
         $this->setOption('page_fix', !$value);
 
@@ -956,6 +974,18 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
         if ($asString) {
             return $r;
         }
+
+        return $this;
+    }
+
+    public function getPaginate(): ?int
+    {
+        return $this->paginate;
+    }
+
+    public function paginate(?int $paginate): static
+    {
+        $this->paginate = $paginate;
 
         return $this;
     }
