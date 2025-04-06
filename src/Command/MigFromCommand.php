@@ -283,10 +283,20 @@ class MigFromCommand implements CommandInterface
             $dest->write($newCode);
         }
 
-        $runMig = $io->getOption('mig') ?: $io->ask(new ConfirmationQuestion('Do you want to run migration? [Y/n] '));
+        $runMig = $io->getOption('mig') ?: $io->ask(new ConfirmationQuestion('Do you want to run migration reset? [Y/n] '));
+
+        if ($runMig) {
+            $io->style()->warning(
+                'Please make sure you comment all the code using empty entities. ' .
+                'For example, if there is an empty `App\\Entity\\User`, then the creating of first User ' .
+                'in UserInit.php will cause error, please comment it.'
+            );
+            $runMig = $io->askConfirmation('Yes I Checked, press [ENTER] to continue, enter [n] to cancel: ', true);
+        }
+
         if ($runMig) {
             $process = $this->app->runProcess(
-                'php windwalker mig:go -f --no-backup',
+                'php windwalker mig:reset -f --no-backup',
                 null,
                 $io->getOutput()
             );
@@ -301,10 +311,18 @@ class MigFromCommand implements CommandInterface
                 );
 
             if ($build) {
+                $genEnums = $io->askConfirmation('If there has comments starts with <info>"enum:"</info>, do you want to auto generate non-exists Enums? [Y/n] ', true);
+
                 foreach ($entities as $entity) {
-                    $io->writeln('>> php windwalker build:entity "' . $entity . '"');
+                    $cmd = sprintf(
+                        'php windwalker build:entity "%s" %s',
+                        $entity,
+                        $genEnums ? '--auto-gen-enums' : ''
+                    );
+
+                    $io->writeln('>> ' . $cmd);
                     $process = $this->app->runProcess(
-                        'php windwalker build:entity "' . $entity . '"',
+                        $cmd,
                         null,
                         $io->getOutput()
                     );
