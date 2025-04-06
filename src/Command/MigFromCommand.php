@@ -380,13 +380,9 @@ PHP;
         $description = trim($row['Description'] ?? '');
         $note = trim($row['Note'] ?? '');
 
-        if (strtolower($key) === 'primary (ai)') {
-            $type = 'primary';
-        }
+        $method = $this->getTypeMethod($key, $type);
 
-        $type = $this->typeMap($type);
-
-        $col = "\$schema->$type('$name')";
+        $col = "\$schema->$method('$name')";
 
         if ($length) {
             if (!is_numeric($length)) {
@@ -396,7 +392,7 @@ PHP;
             $col .= "->length($length)";
         }
 
-        if ($type === 'json' || strtolower(trim($null)) === 'allow') {
+        if ($method === 'json' || strtolower(trim($null)) === 'allow') {
             $col .= "->nullable(true)";
         }
 
@@ -447,5 +443,40 @@ PHP;
         [$name] = explode('_', $tableName, 2);
 
         return StrInflector::toSingular(strtolower($name));
+    }
+
+    /**
+     * @param  string  $key
+     * @param  string  $type
+     *
+     * @return  string
+     */
+    public function getTypeMethod(string $key, string $type): string
+    {
+        $type = $this->typeMap($type);
+
+        $method = $type;
+
+        if (strtolower($key) === 'primary (ai)') {
+            if ($type === 'integer') {
+                $method = 'primary';
+            } elseif ($type === 'bigint') {
+                $method = 'primaryBigint';
+            } elseif ($type === 'uuid') {
+                $method = 'primaryUuidChar';
+            } elseif ($type === 'uuidbin') {
+                $method = 'primaryUuidBinary';
+            } else {
+                $method = 'primary';
+            }
+        } else {
+            if ($type === 'uuid') {
+                $method = 'uuidChar';
+            } elseif ($type === 'uuidbin') {
+                $method = 'uuidBinary';
+            }
+        }
+
+        return $method;
     }
 }
