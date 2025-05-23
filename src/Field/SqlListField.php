@@ -8,7 +8,7 @@ use Windwalker\Core\Manager\DatabaseManager;
 use Windwalker\Data\Collection;
 use Windwalker\Database\DatabaseAdapter;
 use Windwalker\DI\Attributes\Inject;
-use Windwalker\DOM\DOMElement;
+use Windwalker\DOM\HTMLElement;
 use Windwalker\Form\Field\ListField;
 use Windwalker\ORM\SelectorQuery;
 use Windwalker\Query\Query;
@@ -74,7 +74,7 @@ class SqlListField extends ListField
         return $options;
     }
 
-    public function createItemOption(object $item): DOMElement
+    public function createItemOption(object $item): HTMLElement
     {
         $textField = $this->getTextField() ?? $this->textField;
         $valueField = $this->getValueField() ?? $this->valueField;

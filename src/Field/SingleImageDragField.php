@@ -7,7 +7,7 @@ namespace Unicorn\Field;
 use Lyrasoft\Luna\Helper\LunaHelper;
 use Unicorn\Script\FormScript;
 use Windwalker\DI\Attributes\Inject;
-use Windwalker\DOM\DOMElement;
+use Windwalker\DOM\HTMLElement;
 use Windwalker\Form\Field\TextareaField;
 use Windwalker\Form\Field\TextField;
 
@@ -54,7 +54,7 @@ class SingleImageDragField extends TextField
         return '@theme::field.single-image-drag.sid-default';
     }
 
-    public function buildFieldElement(DOMElement $input, array $options = []): string|DOMElement
+    public function buildFieldElement(HTMLElement $input, array $options = []): string|HTMLElement
     {
         $this->formScript->singleImageDrag();
 

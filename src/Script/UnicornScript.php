@@ -13,7 +13,7 @@ use Windwalker\Core\Language\LangService;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Security\CsrfService;
 use Windwalker\DI\Exception\DefinitionException;
-use Windwalker\DOM\DOMElement;
+use Windwalker\DOM\HTMLElement;
 use Windwalker\Utilities\Str;
 
 /**
@@ -248,7 +248,7 @@ class UnicornScript extends AbstractScript
 
     public function disableTransitionBeforeLoad(
         string $className = 'h-no-transition',
-        DOMElement|HtmlFrame|null $body = null
+        HTMLElement|HtmlFrame|null $body = null
     ): void {
         if ($this->available($className)) {
             $css = <<<CSS

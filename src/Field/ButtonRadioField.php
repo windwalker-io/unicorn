@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Unicorn\Field;
 
-use Windwalker\DOM\DOMElement;
+use Windwalker\DOM\HTMLElement;
 use Windwalker\Form\Field\RadioField;
 
 /**
@@ -19,7 +19,7 @@ class ButtonRadioField extends RadioField
         return '@theme::field.button-radio';
     }
 
-    public function buildFieldElement(DOMElement $input, array $options = []): string|DOMElement
+    public function buildFieldElement(HTMLElement $input, array $options = []): string|HTMLElement
     {
         return $this->renderLayout(
             $this->getLayout(),

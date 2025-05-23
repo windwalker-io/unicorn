@@ -6,7 +6,7 @@ namespace Unicorn\Field;
 
 use Lyrasoft\Luna\Tree\Node;
 use Unicorn\Field\LayoutFieldTrait;
-use Windwalker\DOM\DOMElement;
+use Windwalker\DOM\HTMLElement;
 use Windwalker\Form\Field\AbstractField;
 use Windwalker\Utilities\Arr;
 use Windwalker\Utilities\Assert\TypeAssert;
@@ -60,7 +60,7 @@ class CascadeSelectField extends AbstractField
         return '@theme::field.cascade-select';
     }
 
-    public function buildFieldElement(DOMElement $input, array $options = []): string|DOMElement
+    public function buildFieldElement(HTMLElement $input, array $options = []): string|HTMLElement
     {
         $value = $this->getValue();
 
@@ -90,7 +90,7 @@ class CascadeSelectField extends AbstractField
         );
     }
 
-    public function prepareInput(DOMElement $input): DOMElement
+    public function prepareInput(HTMLElement $input): HTMLElement
     {
         $input['type']      = 'text';
         $input['value']     = $this->escape($this->getValue());

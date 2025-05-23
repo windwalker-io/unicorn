@@ -29,7 +29,7 @@ use Windwalker\Utilities\Str;
 
 /**
  * @var AbstractField $field
- * @var \Windwalker\DOM\DOMElement $wrapper
+ * @var \Windwalker\DOM\HTMLElement $wrapper
  * @var \Windwalker\Edge\Component\ComponentAttributes $attributes
  */
 

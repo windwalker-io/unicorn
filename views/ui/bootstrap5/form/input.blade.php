@@ -29,7 +29,7 @@ use Windwalker\Form\Field\AbstractField;
 
 /**
  * @var AbstractField              $field
- * @var \Windwalker\DOM\DOMElement $input
+ * @var \Windwalker\DOM\HTMLElement $input
  * @var array                      $options
  * @var ComponentAttributes        $attributes
  */
@@ -43,7 +43,7 @@ if ($attributes ?? null) {
     $attributes = $attributes->exceptProps(['field', 'options']);
 }
 
-if ($inputElement instanceof \Windwalker\DOM\DOMElement) {
+if ($inputElement instanceof \Windwalker\DOM\HTMLElement) {
     if ($attributes ?? null) {
         $attributes = $attributes->exceptProps(['field', 'options']);
 

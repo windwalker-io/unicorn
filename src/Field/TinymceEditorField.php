@@ -9,7 +9,7 @@ use Windwalker\Core\Asset\AssetService;
 use Windwalker\Core\Language\TranslatorTrait;
 use Windwalker\Core\Router\SystemUri;
 use Windwalker\DI\Attributes\Inject;
-use Windwalker\DOM\DOMElement;
+use Windwalker\DOM\HTMLElement;
 use Windwalker\Language\LanguageNormalizer;
 use Windwalker\Uri\UriNormalizer;
 use Windwalker\Utilities\Arr;
@@ -85,7 +85,7 @@ class TinymceEditorField extends AbstractEditorField
         static::$defaultOptions = $defaultOptions;
     }
 
-    public function buildFieldElement(DOMElement $input, array $options = []): string|DOMElement
+    public function buildFieldElement(HTMLElement $input, array $options = []): string|HTMLElement
     {
         $this->prepareEditorScript();
 

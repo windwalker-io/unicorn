@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Unicorn\Field;
 
-use Windwalker\DOM\DOMElement;
+use Windwalker\DOM\HTMLElement;
 use Windwalker\Form\Field\AbstractHtml5Field;
 
 /**
@@ -21,7 +21,7 @@ class ColorPickerField extends AbstractHtml5Field
         return '@theme::field.color-picker';
     }
 
-    public function buildFieldElement(DOMElement $input, array $options = []): string|DOMElement
+    public function buildFieldElement(HTMLElement $input, array $options = []): string|HTMLElement
     {
         return $this->renderLayout(
             $this->getLayout(),

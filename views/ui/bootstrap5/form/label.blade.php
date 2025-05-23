@@ -31,7 +31,7 @@ use function Windwalker\DOM\h;
 
 /**
  * @var AbstractField $field
- * @var \Windwalker\DOM\DOMElement $label
+ * @var \Windwalker\DOM\HTMLElement $label
  * @var FormRenderer $renderer
  */
 
@@ -53,7 +53,7 @@ if ($tooltip = $field->get('tooltip')) {
 
 $labelElement = $field->buildLabel($label, $options);
 
-if ($labelElement instanceof \Windwalker\DOM\DOMElement) {
+if ($labelElement instanceof \Windwalker\DOM\HTMLElement) {
     if ($attributes ?? null) {
         $attributes = $attributes->exceptProps(
             [

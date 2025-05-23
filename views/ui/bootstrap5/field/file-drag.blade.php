@@ -22,13 +22,13 @@ use Windwalker\Core\DateTime\ChronosService;
 use Windwalker\Core\Language\LangService;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\SystemUri;
-use Windwalker\DOM\DOMElement;
+use Windwalker\DOM\HTMLElement;
 
 use function Windwalker\DOM\h;
 
 /**
  * @var $field \Unicorn\Field\FileDragField
- * @var $input DOMElement
+ * @var $input HTMLElement
  */
 
 $app->service(\Unicorn\Script\FormScript::class)->fileDrag();

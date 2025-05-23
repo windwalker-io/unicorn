@@ -7,7 +7,7 @@ namespace Unicorn\Field;
 use Lyrasoft\Luna\Entity\Category;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\DI\Attributes\Inject;
-use Windwalker\DOM\DOMElement;
+use Windwalker\DOM\HTMLElement;
 use Windwalker\ORM\NestedSetMapper;
 use Windwalker\Query\Query;
 
@@ -23,7 +23,7 @@ class CategoryCascadeSelectField extends CascadeSelectField
 
     protected string $categoryType;
 
-    public function buildFieldElement(DOMElement $input, array $options = []): string|DOMElement
+    public function buildFieldElement(HTMLElement $input, array $options = []): string|HTMLElement
     {
         if (!$this->getAjaxUrl()) {
             $this->ajaxUrl($this->nav->to('category_ajax_list')->var('type', $this->getCategoryType()));

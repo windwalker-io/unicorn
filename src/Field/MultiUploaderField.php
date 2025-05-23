@@ -7,7 +7,7 @@ namespace Unicorn\Field;
 use Unicorn\Script\FormScript;
 use Windwalker\Core\Form\FormFactory;
 use Windwalker\DI\Attributes\Inject;
-use Windwalker\DOM\DOMElement;
+use Windwalker\DOM\HTMLElement;
 use Windwalker\Form\Field\AbstractField;
 use Windwalker\Form\Form;
 use Windwalker\Utilities\Str;
@@ -63,16 +63,16 @@ class MultiUploaderField extends AbstractField
     /**
      * prepareRenderInput
      *
-     * @param  DOMElement  $input
+     * @param  HTMLElement  $input
      *
-     * @return  DOMElement
+     * @return  HTMLElement
      */
-    public function prepareInput(DOMElement $input): DOMElement
+    public function prepareInput(HTMLElement $input): HTMLElement
     {
         return $input;
     }
 
-    public function buildFieldElement(DOMElement $input, array $options = []): string|DOMElement
+    public function buildFieldElement(HTMLElement $input, array $options = []): string|HTMLElement
     {
         $subForm = $this->prepareSubForm();
         $subForm->appendNamespace('/' . $this->getNamespaceName(true));

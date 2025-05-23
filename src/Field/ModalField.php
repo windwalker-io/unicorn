@@ -11,7 +11,7 @@ use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\RouteUri;
 use Windwalker\Database\DatabaseAdapter;
 use Windwalker\DI\Attributes\Inject;
-use Windwalker\DOM\DOMElement;
+use Windwalker\DOM\HTMLElement;
 use Windwalker\Form\Field\AbstractField;
 use Windwalker\Query\Query;
 use Windwalker\Uri\Uri;
@@ -90,7 +90,7 @@ class ModalField extends AbstractField
     #[Inject]
     protected UnicornScript $unicornScript;
 
-    public function prepareInput(DOMElement $input): DOMElement
+    public function prepareInput(HTMLElement $input): HTMLElement
     {
         $input['type']      = 'text';
         $input['style']     = 'display: none;';
@@ -103,7 +103,7 @@ class ModalField extends AbstractField
         return $input;
     }
 
-    public function buildFieldElement(DOMElement $input, array $options = []): string|DOMElement
+    public function buildFieldElement(HTMLElement $input, array $options = []): string|HTMLElement
     {
         $multiple = (bool) $this->isMultiple();
         $title    = '';
@@ -124,7 +124,7 @@ class ModalField extends AbstractField
             //     $options = [];
             //
             //     foreach ($items as $item) {
-            //         $options[] = DOMElement::create(
+            //         $options[] = HTMLElement::create(
             //             'option',
             //             $item['title'],
             //             [

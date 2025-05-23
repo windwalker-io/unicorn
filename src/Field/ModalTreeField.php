@@ -9,7 +9,7 @@ use Unicorn\Field\LayoutFieldTrait;
 use Unicorn\Script\UnicornScript;
 use Windwalker\Core\Language\TranslatorTrait;
 use Windwalker\DI\Attributes\Inject;
-use Windwalker\DOM\DOMElement;
+use Windwalker\DOM\HTMLElement;
 use Windwalker\Form\Field\AbstractField;
 use Windwalker\Query\Query;
 use Windwalker\Utilities\Cache\InstanceCacheTrait;
@@ -50,7 +50,7 @@ class ModalTreeField extends AbstractField
     #[Inject]
     protected UnicornScript $unicornScript;
 
-    public function prepareInput(DOMElement $input): DOMElement
+    public function prepareInput(HTMLElement $input): HTMLElement
     {
         return $input;
     }
@@ -60,7 +60,7 @@ class ModalTreeField extends AbstractField
         return '@theme::field.modal-tree';
     }
 
-    public function buildFieldElement(DOMElement $input, array $options = []): string|DOMElement
+    public function buildFieldElement(HTMLElement $input, array $options = []): string|HTMLElement
     {
         $key = 'field.modal-tree:' . $this->getId();
 

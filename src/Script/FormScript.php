@@ -7,9 +7,7 @@ namespace Unicorn\Script;
 use Psr\Http\Message\UriInterface;
 use Windwalker\Core\Asset\AbstractScript;
 use Windwalker\Core\Language\TranslatorTrait;
-use Windwalker\DOM\DOMElement;
 use Windwalker\Form\Field\AbstractField;
-use Windwalker\Language\LanguageNormalizer;
 
 /**
  * The FormScript class.

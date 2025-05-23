@@ -7,7 +7,7 @@ namespace Unicorn\Workflow;
 use MyCLabs\Enum\Enum;
 use Unicorn\Html\State\StateButton;
 use Windwalker\Core\Event\CoreEventAwareTrait;
-use Windwalker\DOM\DOMElement;
+use Windwalker\DOM\HTMLElement;
 use Windwalker\Event\EventAwareInterface;
 use Windwalker\ORM\Event\WatchEvent;
 use Windwalker\Utilities\Contract\LanguageInterface;
@@ -597,7 +597,7 @@ class WorkflowController implements EventAwareInterface
         foreach ($this->getStates() as $state) {
             $attrs['value'] = $state->getValue();
 
-            $options[] = DOMElement::create(
+            $options[] = HTMLElement::create(
                 'option',
                 $attrs,
                 $state->getTitle() ?? $state->getValue(),

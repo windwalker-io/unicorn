@@ -6,7 +6,7 @@ namespace Unicorn\Workflow;
 
 use Unicorn\Html\State\StateButton;
 use Windwalker\Core\Language\TranslatorTrait;
-use Windwalker\DOM\DOMElement;
+use Windwalker\DOM\HTMLElement;
 
 /**
  * The Workflow class.
@@ -85,7 +85,7 @@ abstract class AbstractWorkflow implements WorkflowInterface
         foreach ($this->getStates() as $state) {
             $attrs['value'] = $state->getValue();
 
-            $options[] = DOMElement::create(
+            $options[] = HTMLElement::create(
                 'option',
                 $attrs,
                 $state->getTitle() ?? $state->getValue(),

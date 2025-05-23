@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Unicorn\Field;
 
-use DOMElement;
+use HTMLElement;
 use Unicorn\Workflow\AbstractWorkflow;
 use Windwalker\Form\Field\ListField;
 
@@ -18,7 +18,7 @@ class StateListField extends ListField
     /**
      * prepareOptions
      *
-     * @return  array<DOMElement|mixed>
+     * @return  array<HTMLElement|mixed>
      */
     protected function prepareOptions(): array
     {
