@@ -688,11 +688,16 @@ class FileUploadService implements EventAwareInterface
         $result = $storage->putStream($stream, $dest, $options);
 
         $event = $this->emit(
-            FileUploadedEvent::class,
-            compact('file', 'result', 'dest', 'stream', 'options')
+            new FileUploadedEvent(
+                file: $file,
+                result: $result,
+                stream: $stream,
+                dest: $dest,
+                options: $options
+            )
         );
 
-        return $event->getResult();
+        return $event->result;
     }
 
     /**

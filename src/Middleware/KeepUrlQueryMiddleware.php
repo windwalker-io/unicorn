@@ -103,7 +103,7 @@ class KeepUrlQueryMiddleware implements MiddlewareInterface
                 $key,
                 $value
             ) {
-                $route = $event->getRoute();
+                $route = $event->route;
 
                 if (is_callable($routeEnabled) && !$routeEnabled($event, $this->options, $request)) {
                     return;
@@ -121,7 +121,7 @@ class KeepUrlQueryMiddleware implements MiddlewareInterface
 
                 foreach ((array) $route->getExtraValue('middlewares') as $item) {
                     if ($this->isSame($item)) {
-                        $query = $event->getQuery();
+                        $query = $event->query;
 
                         if ($value && empty($query[$key])) {
                             $query[$key]    = $value;

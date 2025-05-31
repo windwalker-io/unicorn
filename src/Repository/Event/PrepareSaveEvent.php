@@ -4,24 +4,29 @@ declare(strict_types=1);
 
 namespace Unicorn\Repository\Event;
 
-use Windwalker\Event\AbstractEvent;
+use Windwalker\Event\BaseEvent;
+use Windwalker\Utilities\Accessible\AccessorBCTrait;
 
 /**
  * The PrepareSaveEvent class.
  */
 #[\Attribute]
-class PrepareSaveEvent extends AbstractEvent
+class PrepareSaveEvent extends BaseEvent
 {
-    protected array $data = [];
-    
-    protected array|object $source = [];
-    
-    protected array|string|null $condFields = null;
+    use AccessorBCTrait;
 
-    protected int $options = 0;
+    public function __construct(
+        public array $data = [],
+        public array|object $source = [],
+        public array|string|null $condFields = null,
+        public int $options = 0
+    ) {
+    }
 
     /**
      * @return array|object
+     *
+     * @deprecated  Use property instead.
      */
     public function &getSource(): object|array
     {
@@ -29,74 +34,12 @@ class PrepareSaveEvent extends AbstractEvent
     }
 
     /**
-     * @param  array|object  $source
-     *
-     * @return  static  Return self to support chaining.
-     */
-    public function setSource(object|array $source): static
-    {
-        $this->source = $source;
-
-        return $this;
-    }
-
-    /**
-     * @return array|string|null
-     */
-    public function getCondFields(): array|string|null
-    {
-        return $this->condFields;
-    }
-
-    /**
-     * @param  array|string|null  $condFields
-     *
-     * @return  static  Return self to support chaining.
-     */
-    public function setCondFields(array|string|null $condFields): static
-    {
-        $this->condFields = $condFields;
-
-        return $this;
-    }
-
-    /**
-     * @return int
-     */
-    public function getOptions(): int
-    {
-        return $this->options;
-    }
-
-    /**
-     * @param  int  $options
-     *
-     * @return  static  Return self to support chaining.
-     */
-    public function setOptions(int $options): static
-    {
-        $this->options = $options;
-
-        return $this;
-    }
-
-    /**
      * @return array
+     *
+     * @deprecated  Use property instead.
      */
     public function &getData(): array
     {
         return $this->data;
-    }
-
-    /**
-     * @param  array  $data
-     *
-     * @return  static  Return self to support chaining.
-     */
-    public function setData(array $data): static
-    {
-        $this->data = $data;
-
-        return $this;
     }
 }

@@ -98,15 +98,14 @@ class SaveAction extends AbstractDatabaseAction
         }
 
         $event = $this->emit(
-            PrepareSaveEvent::class,
-            compact('data', 'source', 'condFields', 'options')
+            new PrepareSaveEvent(data: $data, source: $source, condFields: $condFields, options: $options)
         );
 
         return $this->getEntityMapper()
             ->saveOne(
-                $event->getData(),
-                $event->getCondFields(),
-                $event->getOptions()
+                $event->data,
+                $event->condFields,
+                $event->options
             );
     }
 
@@ -174,7 +173,7 @@ class SaveAction extends AbstractDatabaseAction
     public function beforeCreate(callable $listener): static
     {
         return $this->on(BeforeSaveEvent::class, function (BeforeSaveEvent $event) use ($listener) {
-            if ($event->getType() === BeforeSaveEvent::TYPE_CREATE) {
+            if ($event->isCreate) {
                 $listener($event);
             }
         });
@@ -183,7 +182,7 @@ class SaveAction extends AbstractDatabaseAction
     public function afterCreate(callable $listener): static
     {
         return $this->on(AfterSaveEvent::class, function (AfterSaveEvent $event) use ($listener) {
-            if ($event->getType() === AfterSaveEvent::TYPE_CREATE) {
+            if ($event->isCreate) {
                 $listener($event);
             }
         });
@@ -192,7 +191,7 @@ class SaveAction extends AbstractDatabaseAction
     public function beforeUpdate(callable $listener): static
     {
         return $this->on(BeforeSaveEvent::class, function (BeforeSaveEvent $event) use ($listener) {
-            if ($event->getType() === BeforeSaveEvent::TYPE_UPDATE) {
+            if ($event->isUpdate) {
                 $listener($event);
             }
         });
@@ -201,7 +200,7 @@ class SaveAction extends AbstractDatabaseAction
     public function afterUpdate(callable $listener): static
     {
         return $this->on(AfterSaveEvent::class, function (AfterSaveEvent $event) use ($listener) {
-            if ($event->getType() === AfterSaveEvent::TYPE_UPDATE) {
+            if ($event->isUpdate) {
                 $listener($event);
             }
         });

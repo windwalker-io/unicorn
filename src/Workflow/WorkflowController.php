@@ -197,7 +197,7 @@ class WorkflowController implements EventAwareInterface
 
             $to = TypeCast::toString($to);
 
-            $froms = array_filter($froms, static fn (string $state) => $state !== $to);
+            $froms = array_filter($froms, static fn(string $state) => $state !== $to);
 
             $transition = new Transition($transition, $froms, $to, $enabled);
         }
@@ -233,12 +233,13 @@ class WorkflowController implements EventAwareInterface
         }
 
         return $this->emit(
-            (new TransitionEvent())
+            new TransitionEvent(
+                watchEvent: $event,
+                froms: $transition->getFroms(),
+                to: $transition->getTo(),
+                transition: $transition
+            )
                 ->setName('before_transition__' . $transition->getName())
-                ->setFroms($transition->getFroms())
-                ->setTo($transition->getTo())
-                ->setTransition($transition)
-                ->setWatchEvent($event)
         );
     }
 
@@ -256,34 +257,37 @@ class WorkflowController implements EventAwareInterface
         }
 
         return $this->emit(
-            (new TransitionEvent())
+            new TransitionEvent(
+                watchEvent: $event,
+                froms: $transition->getFroms(),
+                to: $transition->getTo(),
+                transition: $transition
+            )
                 ->setName('after_transition__' . $transition->getName())
-                ->setFroms($transition->getFroms())
-                ->setTo($transition->getTo())
-                ->setTransition($transition)
-                ->setWatchEvent($event)
         );
     }
 
     public function triggerBeforeChanged(string $from, string $to, WatchEvent $event): object
     {
         return $this->emit(
-            (new TransitionEvent())
+            new TransitionEvent(
+                watchEvent: $event,
+                froms: $from,
+                to: $to,
+            )
                 ->setName($this->toEventName('before', $from, $to))
-                ->setFroms($from)
-                ->setTo($to)
-                ->setWatchEvent($event)
         );
     }
 
     public function triggerAfterChanged(string $from, string $to, WatchEvent $event): object
     {
         return $this->emit(
-            (new TransitionEvent())
+            new TransitionEvent(
+                watchEvent: $event,
+                froms: $from,
+                to: $to,
+            )
                 ->setName($this->toEventName('after', $from, $to))
-                ->setFroms($from)
-                ->setTo($to)
-                ->setWatchEvent($event)
         );
     }
 

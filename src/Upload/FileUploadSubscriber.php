@@ -24,7 +24,7 @@ class FileUploadSubscriber
     #[ListenTo(FileUploadedEvent::class)]
     public function fileUploaded(FileUploadedEvent $event): void
     {
-        $result = $event->getResult();
+        $result = $event->result;
 
         $uri = (string) $result->getUri();
 

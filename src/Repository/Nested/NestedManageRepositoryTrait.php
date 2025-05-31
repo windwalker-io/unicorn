@@ -38,17 +38,17 @@ trait NestedManageRepositoryTrait
     }
 
     #[AfterBatchEvent]
-    public function afterBatchForNested(AfterBatchEvent $event)
+    public function afterBatchForNested(AfterBatchEvent $event): void
     {
-        $data = $event->getData();
+        $data = $event->data;
 
         if ($data['parent_id'] ?? null) {
             /** @var NestedSetMapper $mapper */
-            $mapper = $event->getORM()->mapper($this->getEntityClass());
+            $mapper = $event->orm->mapper($this->getEntityClass());
 
             $mapper->rebuild();
 
-            foreach ($event->getIds() as $id) {
+            foreach ($event->ids as $id) {
                 $mapper->rebuildPath($id);
             }
         }

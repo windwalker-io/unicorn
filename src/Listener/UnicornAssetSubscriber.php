@@ -33,7 +33,7 @@ class UnicornAssetSubscriber
     #[ListenTo(AssetBeforeRender::class)]
     public function beforeRender(AssetBeforeRender $event): void
     {
-        if ($event->getType() === AssetBeforeRender::TYPE_JS) {
+        if ($event->type === AssetBeforeRender::TYPE_JS) {
             $this->handleJS($event);
         }
     }
@@ -52,9 +52,9 @@ class UnicornAssetSubscriber
         // Todo: Auto push route
 
         $script = $this->app->service(UnicornScript::class);
-        $asset = $event->getAssetService();
-        $scripts = &$event->getLinks();
-        $internalScripts = $asset->getInternalScripts();
+        // $asset = $event->assetService;
+        // $internalScripts = $asset->getInternalScripts();
+        $scripts = &$event->links;
 
         if (WINDWALKER_DEBUG) {
             $script->data('windwalker.debug', true);
@@ -65,7 +65,7 @@ class UnicornAssetSubscriber
 
             array_unshift(
                 $scripts,
-                (new AssetLink())
+                new AssetLink()
                     ->setOption('body', "document.__unicorn = $store;")
             );
         }

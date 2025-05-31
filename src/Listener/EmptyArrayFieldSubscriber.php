@@ -28,13 +28,13 @@ class EmptyArrayFieldSubscriber
     public function requestGetValue(RequestGetValueEvent $event): void
     {
         if (
-            $event->getType() !== RequestGetValueEvent::TYPE_BODY
-            && $event->getType() !== RequestGetValueEvent::TYPE_QUERY
+            $event->type !== RequestGetValueEvent::TYPE_BODY
+            && $event->type !== RequestGetValueEvent::TYPE_QUERY
         ) {
             return;
         }
 
-        $values = &$event->getValues();
+        $values = &$event->values;
 
         $values = Arr::mapRecursive(
             $values,

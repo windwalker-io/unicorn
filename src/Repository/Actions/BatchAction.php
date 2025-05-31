@@ -9,7 +9,6 @@ use Unicorn\Repository\Event\AfterBatchItemEvent;
 use Unicorn\Repository\Event\BeforeBatchEvent;
 use Unicorn\Repository\Event\BeforeBatchItemEvent;
 use Windwalker\Core\Form\Exception\ValidateFailException;
-use Windwalker\Core\Language\TranslatorTrait;
 use Windwalker\Utilities\Symbol;
 
 /**
@@ -24,10 +23,10 @@ class BatchAction extends AbstractDatabaseAction
     /**
      * update
      *
-     * @param  array       $ids
-     * @param  array       $data
+     * @param  array  $ids
+     * @param  array  $data
      * @param  mixed|null  $form
-     * @param  array       $args
+     * @param  array  $args
      *
      * @return  array<object>
      */
@@ -44,18 +43,17 @@ class BatchAction extends AbstractDatabaseAction
         $items = [];
 
         $event = $this->emit(
-            BeforeBatchEvent::class,
-            [
-                'ids' => $ids,
-                'data' => $data,
-                'task' => 'update',
-                'action' => $this,
-                'orm' => $mapper->getORM()
-            ]
+            new BeforeBatchEvent(
+                orm: $mapper->getORM(),
+                action: $this,
+                ids: $ids,
+                task: 'update',
+                data: $data
+            )
         );
 
-        $ids = $event->getIds();
-        $data = $event->getData();
+        $ids = $event->ids;
+        $data = $event->data;
 
         foreach ($ids as $id) {
             $item = $data;
@@ -69,45 +67,42 @@ class BatchAction extends AbstractDatabaseAction
             $item[$key] = $id;
 
             $event = $this->emit(
-                BeforeBatchItemEvent::class,
-                [
-                    'id' => $id,
-                    'data' => $item,
-                    'task' => 'update',
-                    'action' => $this,
-                    'orm' => $mapper->getORM()
-                ]
+                new BeforeBatchItemEvent(
+                    orm: $mapper->getORM(),
+                    action: $this,
+                    id: $id,
+                    task: 'update',
+                    data: $item
+                )
             );
 
-            $mapper->updateOne($oldData = $event->getData());
+            $mapper->updateOne($event->data);
 
             $event = $this->emit(
-                AfterBatchItemEvent::class,
-                [
-                    'id' => $id,
-                    'data' => $item,
-                    'task' => 'update',
-                    'action' => $this,
-                    'orm' => $mapper->getORM()
-                ]
+                new BeforeBatchEvent(
+                    orm: $mapper->getORM(),
+                    action: $this,
+                    ids: $ids,
+                    task: 'update',
+                    data: $event->data
+                )
             );
 
-            $items[] = $event->getData();
+            $items[] = $event->data;
         }
 
         $event = $this->emit(
-            AfterBatchEvent::class,
-            [
-                'ids' => $ids,
-                'data' => $data,
-                'task' => 'update',
-                'action' => $this,
-                'orm' => $mapper->getORM(),
-                'items' => $items
-            ]
+            new AfterBatchEvent(
+                orm: $mapper->getORM(),
+                action: $this,
+                ids: $ids,
+                task: 'update',
+                data: $data,
+                items: $items
+            )
         );
 
-        return $event->getItems();
+        return $event->items;
     }
 
     public function copy(array $ids, array $data, mixed $form = null, array $args = []): array
@@ -123,18 +118,17 @@ class BatchAction extends AbstractDatabaseAction
         $items = [];
 
         $event = $this->emit(
-            BeforeBatchEvent::class,
-            [
-                'ids' => $ids,
-                'data' => $data,
-                'task' => 'copy',
-                'action' => $this,
-                'orm' => $mapper->getORM()
-            ]
+            new BeforeBatchEvent(
+                orm: $mapper->getORM(),
+                action: $this,
+                ids: $ids,
+                task: 'copy',
+                data: $data
+            )
         );
 
-        $ids = $event->getIds();
-        $data = $event->getData();
+        $ids = $event->ids;
+        $data = $event->data;
 
         foreach ($ids as $id) {
             if ($data === []) {
@@ -144,48 +138,45 @@ class BatchAction extends AbstractDatabaseAction
             }
 
             $event = $this->emit(
-                BeforeBatchItemEvent::class,
-                [
-                    'id' => $id,
-                    'data' => $data,
-                    'task' => 'copy',
-                    'action' => $this,
-                    'orm' => $mapper->getORM()
-                ]
+                new BeforeBatchItemEvent(
+                    orm: $mapper->getORM(),
+                    action: $this,
+                    id: $id,
+                    task: 'copy',
+                    data: $data
+                )
             );
 
             $result = $mapper->copy(
-                [$key => $event->getId()],
-                fn(array $item) => array_merge($item, $event->getData())
+                [$key => $event->id],
+                fn(array $item) => array_merge($item, $event->data)
             );
 
             $event = $this->emit(
-                AfterBatchItemEvent::class,
-                [
-                    'id' => $id,
-                    'data' => $result,
-                    'task' => 'copy',
-                    'action' => $this,
-                    'orm' => $mapper->getORM()
-                ]
+                new AfterBatchItemEvent(
+                    orm: $mapper->getORM(),
+                    action: $this,
+                    id: $id,
+                    task: 'copy',
+                    data: $result
+                )
             );
 
-            $items[] = $event->getData();
+            $items[] = $event->data;
         }
 
         $event = $this->emit(
-            AfterBatchEvent::class,
-            [
-                'ids' => $ids,
-                'data' => $data,
-                'task' => 'update',
-                'action' => $this,
-                'orm' => $mapper->getORM(),
-                'items' => $items
-            ]
+            new AfterBatchEvent(
+                orm: $mapper->getORM(),
+                action: $this,
+                ids: $ids,
+                task: 'copy',
+                data: $event->data,
+                items: $items
+            )
         );
 
-        return $event->getItems();
+        return $event->items;
     }
 
     public function cleanData(array $data): array
