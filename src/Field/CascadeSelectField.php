@@ -60,7 +60,7 @@ class CascadeSelectField extends AbstractField
         return '@theme::field.cascade-select';
     }
 
-    public function buildFieldElement(HTMLElement $input, array $options = []): string|HTMLElement
+    public function compileFieldElement(HTMLElement $input, array $options = []): string|HTMLElement
     {
         $value = $this->getValue();
 

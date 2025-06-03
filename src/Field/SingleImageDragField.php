@@ -54,7 +54,7 @@ class SingleImageDragField extends TextField
         return '@theme::field.single-image-drag.sid-default';
     }
 
-    public function buildFieldElement(HTMLElement $input, array $options = []): string|HTMLElement
+    public function compileFieldElement(HTMLElement $input, array $options = []): string|HTMLElement
     {
         $this->formScript->singleImageDrag();
 

@@ -34,7 +34,7 @@ use Windwalker\Form\Field\AbstractField;
  * @var ComponentAttributes        $attributes
  */
 
-$inputElement ??= $field->getPreparedInput();
+$inputElement ??= $field->compileInput();
 $options = array_merge($field->getStates(), $options ?? []);
 
 $floating = $field->get('floating') ?? $attributes['floating'] ?? null;
@@ -57,8 +57,9 @@ if ($inputElement instanceof \Windwalker\DOM\HTMLElement) {
 if ($floating) {
     $inputElement['placeholder'] ??= $field->getLabelName();
 }
+$inputElement->addClass('weqrewr');
 
-$fieldElement = $field->buildFieldElement($inputElement, $options);
+$fieldElement = $field->compileFieldElement($inputElement, $options);
 
 // Append / Prepend
 $prepend = $field->get('prepend');

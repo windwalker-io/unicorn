@@ -60,7 +60,7 @@ class ModalTreeField extends AbstractField
         return '@theme::field.modal-tree';
     }
 
-    public function buildFieldElement(HTMLElement $input, array $options = []): string|HTMLElement
+    public function compileFieldElement(HTMLElement $input, array $options = []): string|HTMLElement
     {
         $key = 'field.modal-tree:' . $this->getId();
 

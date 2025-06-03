@@ -23,13 +23,13 @@ class CategoryCascadeSelectField extends CascadeSelectField
 
     protected string $categoryType;
 
-    public function buildFieldElement(HTMLElement $input, array $options = []): string|HTMLElement
+    public function compileFieldElement(HTMLElement $input, array $options = []): string|HTMLElement
     {
         if (!$this->getAjaxUrl()) {
             $this->ajaxUrl($this->nav->to('category_ajax_list')->var('type', $this->getCategoryType()));
         }
 
-        return parent::buildFieldElement($input, $options);
+        return parent::compileFieldElement($input, $options);
     }
 
     /**

@@ -16,13 +16,13 @@ class SaveAction extends AbstractDatabaseAction
 {
     use FormAwareActionTrait;
 
-    public const FILTER_KEEP_FULL_DATA = 1 << 0;
+    public const int FILTER_KEEP_FULL_DATA = 1 << 0;
 
-    public const IGNORE_FILTER = 1 << 1;
+    public const int IGNORE_FILTER = 1 << 1;
 
-    public const IGNORE_VALIDATE = 1 << 2;
+    public const int IGNORE_VALIDATE = 1 << 2;
 
-    public const IGNORE_FORM_PREPARE = 1 << 3;
+    public const int IGNORE_FORM_PREPARE = 1 << 3;
 
     /**
      * processDataAndSave

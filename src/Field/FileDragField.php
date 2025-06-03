@@ -41,7 +41,7 @@ class FileDragField extends FileField
         return '@theme::field.file-drag';
     }
 
-    public function buildFieldElement(HTMLElement $input, array $options = []): string|HTMLElement
+    public function compileFieldElement(HTMLElement $input, array $options = []): string|HTMLElement
     {
         // Fix accept
         if (trim((string) $this->getAccept())) {

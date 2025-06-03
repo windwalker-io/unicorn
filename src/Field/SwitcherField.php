@@ -54,12 +54,12 @@ class SwitcherField extends CheckboxField
         return $input;
     }
 
-    public function buildFieldElement(HTMLElement $input, array $options = []): string|HTMLElement
+    public function compileFieldElement(HTMLElement $input, array $options = []): string|HTMLElement
     {
         return $this->renderLayout(
             $this->getLayout(),
             [
-                'input' => parent::buildFieldElement($input, $options),
+                'input' => parent::compileFieldElement($input, $options),
                 'field' => $this
             ]
         );

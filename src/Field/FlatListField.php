@@ -37,7 +37,7 @@ class FlatListField extends SqlListField
         return $this->getTreeBuilder()(Collection::from($items), $this);
     }
 
-    public function buildFieldElement(HTMLElement $input, array $options = []): string|HTMLElement
+    public function compileFieldElement(HTMLElement $input, array $options = []): string|HTMLElement
     {
         $tree = $this->getTree();
 

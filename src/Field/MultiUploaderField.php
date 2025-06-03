@@ -72,7 +72,7 @@ class MultiUploaderField extends AbstractField
         return $input;
     }
 
-    public function buildFieldElement(HTMLElement $input, array $options = []): string|HTMLElement
+    public function compileFieldElement(HTMLElement $input, array $options = []): string|HTMLElement
     {
         $subForm = $this->prepareSubForm();
         $subForm->appendNamespace('/' . $this->getNamespaceName(true));

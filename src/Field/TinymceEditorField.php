@@ -85,11 +85,11 @@ class TinymceEditorField extends AbstractEditorField
         static::$defaultOptions = $defaultOptions;
     }
 
-    public function buildFieldElement(HTMLElement $input, array $options = []): string|HTMLElement
+    public function compileFieldElement(HTMLElement $input, array $options = []): string|HTMLElement
     {
         $this->prepareEditorScript();
 
-        return parent::buildFieldElement($input, $options);
+        return parent::compileFieldElement($input, $options);
     }
 
     /**

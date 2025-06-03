@@ -133,7 +133,7 @@ class RepeatableField extends AbstractField implements CompositeFieldInterface
         ];
     }
 
-    public function buildFieldElement(HTMLElement $input, array $options = []): string|HTMLElement
+    public function compileFieldElement(HTMLElement $input, array $options = []): string|HTMLElement
     {
         return $this->renderLayout(
             $this->getLayout(),

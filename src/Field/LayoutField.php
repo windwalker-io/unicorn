@@ -29,12 +29,12 @@ class LayoutField extends AbstractField
         return DOMFactory::element('div', '');
     }
 
-    public function buildFieldElement(HTMLElement $input, array $options = []): string|HTMLElement
+    public function compileFieldElement(HTMLElement $input, array $options = []): string|HTMLElement
     {
         return $this->renderLayout(
             $this->getLayout(),
             [
-                'input' => parent::buildFieldElement($input, $options),
+                'input' => parent::compileFieldElement($input, $options),
                 'field' => $this,
                 'options' => $options,
             ]

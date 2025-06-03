@@ -103,7 +103,7 @@ class ModalField extends AbstractField
         return $input;
     }
 
-    public function buildFieldElement(HTMLElement $input, array $options = []): string|HTMLElement
+    public function compileFieldElement(HTMLElement $input, array $options = []): string|HTMLElement
     {
         $multiple = (bool) $this->isMultiple();
         $title    = '';

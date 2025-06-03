@@ -81,7 +81,7 @@ class InlineField extends AbstractField implements CompositeFieldInterface
         return $r;
     }
 
-    public function buildFieldElement(HTMLElement $input, array $options = []): string|HTMLElement
+    public function compileFieldElement(HTMLElement $input, array $options = []): string|HTMLElement
     {
         return $this->renderLayout(
             $this->getLayout(),

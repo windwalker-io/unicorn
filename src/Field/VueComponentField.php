@@ -41,7 +41,7 @@ class VueComponentField extends AbstractField
         return $input;
     }
 
-    public function buildFieldElement(HTMLElement $input, array $options = []): string|HTMLElement
+    public function compileFieldElement(HTMLElement $input, array $options = []): string|HTMLElement
     {
         $this->formScript->vueComponentField(
             '#' . $this->getId('-wrapper') . ' [data-vue-app]',
