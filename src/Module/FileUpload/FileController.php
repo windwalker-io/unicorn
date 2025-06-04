@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Unicorn\Module\FileUpload;
 
 use Unicorn\Flysystem\Base64DataUri;
-use Unicorn\Upload\FileUploadManager;
+use Unicorn\Upload\FileUploadService;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Attributes\Controller;
 use Windwalker\Core\Http\AppRequest;
@@ -17,13 +17,13 @@ use Windwalker\Http\Helper\UploadedFileHelper;
 #[Controller]
 class FileController
 {
-    public function upload(FileUploadManager $fileUploadManager, AppRequest $request, AppContext $app): array
+    public function upload(AppRequest $request, AppContext $app): array
     {
         [$dir, $path, $resize, $profile] = $request->input('dir', 'path', 'resize', 'profile')
             ->values()
             ->dump();
 
-        $uploadService = $fileUploadManager->get($profile);
+        $uploadService = $app->retrieve(FileUploadService::class, tag: $profile);
 
         if (!$uploadService) {
             throw new \DomainException('Unable to find profile: ' . get_debug_type($profile), 400);

@@ -6,11 +6,14 @@ namespace Unicorn\Upload;
 
 use Windwalker\Core\Manager\AbstractManager;
 use Windwalker\DI\Attributes\Isolation;
+use Windwalker\DI\Exception\DefinitionResolveException;
 
 /**
  * The FileUploadManager class.
  *
  * @method FileUploadService get(?string $name = null, ...$args)
+ *
+ * @deprecated  Use container tags instead.
  */
 #[Isolation]
 class FileUploadManager extends AbstractManager
@@ -21,12 +24,12 @@ class FileUploadManager extends AbstractManager
     }
 
     /**
-     * create
-     *
      * @param  string|null  $name
      * @param  mixed        ...$args
      *
      * @return  FileUploadService
+     * @throws \ReflectionException
+     * @throws DefinitionResolveException
      */
     public function create(?string $name = null, ...$args): object
     {
@@ -37,6 +40,12 @@ class FileUploadManager extends AbstractManager
         }
 
         $options = $this->config->getDeep('profiles.' . $name);
+
+        if (!$options) {
+            throw new \InvalidArgumentException(
+                sprintf('FileUploadService profile "%s" not found.', $name)
+            );
+        }
 
         return $this->container->newInstance(
             FileUploadService::class,

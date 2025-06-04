@@ -7,8 +7,10 @@ namespace Unicorn\Script;
 use Aws\S3\PostObjectV4;
 use Unicorn\Aws\S3Service;
 use Unicorn\Storage\Adapter\S3Storage;
+use Unicorn\Storage\StorageInterface;
 use Unicorn\Storage\StorageManager;
 use Windwalker\Core\Asset\AbstractScript;
+use Windwalker\DI\Container;
 
 /**
  * The AwsScript class.
@@ -20,7 +22,7 @@ class AwsScript extends AbstractScript
      */
     public function __construct(
         protected UnicornScript $unicornScript,
-        protected StorageManager $storageManager
+        protected Container $container
     ) {
     }
 
@@ -53,7 +55,7 @@ class AwsScript extends AbstractScript
                 $s3 = $options['s3Service'];
             } else {
                 $profile = $options['profile'] ?? 's3';
-                $storage = $this->storageManager->get($profile);
+                $storage = $this->container->get(StorageInterface::class, tag: $profile);
 
                 if (!$storage instanceof S3Storage) {
                     throw new \DomainException("Storage profile \"{$profile}\" must be S3Storage.");

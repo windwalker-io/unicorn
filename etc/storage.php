@@ -8,7 +8,7 @@ use Unicorn\Flysystem\FlysystemFactory;
 use Unicorn\Provider\StorageProvider;
 use Unicorn\Storage\Adapter\S3Storage;
 use Unicorn\Storage\StorageFactory;
-use Unicorn\Storage\StorageManager;
+use Unicorn\Storage\StorageInterface;
 use Unicorn\Upload\FileUploadService;
 use Unicorn\Upload\FileUploadSubscriber;
 use Windwalker\DI\Container;
@@ -27,15 +27,13 @@ return [
 
         'bindings' => [
             S3Client::class => function (Container $container) {
-                $manager = $container->get(StorageManager::class);
                 /** @var S3Storage $storage */
-                $storage = $manager->get('s3');
+                $storage = $container->get(StorageInterface::class, tag: 's3');
                 return $storage->getS3Service()->getClient();
             },
             S3Service::class => function (Container $container) {
-                $manager = $container->get(StorageManager::class);
                 /** @var S3Storage $storage */
-                $storage = $manager->get('s3');
+                $storage = $container->get(StorageInterface::class, tag: 's3');
                 return $storage->getS3Service();
             }
         ],

@@ -22,6 +22,7 @@ use Unicorn\Upload\Event\FileUploadedEvent;
 use Unicorn\Upload\Exception\FileUploadException;
 use Windwalker\Core\Event\CoreEventAwareTrait;
 use Windwalker\Core\Manager\Logger;
+use Windwalker\DI\Container;
 use Windwalker\Event\EventAwareInterface;
 use Windwalker\Filesystem\Filesystem;
 use Windwalker\Filesystem\Path;
@@ -59,7 +60,7 @@ class FileUploadService implements EventAwareInterface
      */
     public function __construct(
         array $options,
-        protected StorageManager $storageManager,
+        protected Container $container,
         protected ?MimeTypesInterface $mimeTypes = null
     ) {
         $this->resolveOptions(
@@ -130,7 +131,7 @@ class FileUploadService implements EventAwareInterface
 
     public function getStorage(): StorageInterface
     {
-        return $this->storageManager->get($this->options['storage']);
+        return $this->container->get(StorageInterface::class, tag: $this->options['storage']);
     }
 
     public function handleBase64(string $file, ?string $dest = null, array $options = []): PutResult
