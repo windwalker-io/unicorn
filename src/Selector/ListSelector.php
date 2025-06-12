@@ -986,4 +986,9 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
 
         return $this;
     }
+
+    public function __clone(): void
+    {
+        $this->query = clone $this->query;
+    }
 }
