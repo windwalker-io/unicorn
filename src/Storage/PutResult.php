@@ -20,7 +20,7 @@ class PutResult extends Result implements \Stringable
         public UriInterface $uri,
         \Closure $responseCallback,
         mixed $rawResult = null,
-        public $fileSize = 0,
+        public int $fileSize = 0,
     ) {
         parent::__construct($responseCallback, $rawResult);
     }

@@ -124,15 +124,14 @@ class S3Storage implements StorageInterface
     {
         $result = $this->s3->getFileInfo($path, $options);
 
-        $getResult = new GetResult(
-            fn () => $this->createResponseFromResult($result),
-            $result
+        return new GetResult(
+            responseCallback: fn () => $this->createResponseFromResult($result),
+            path: $path,
+            uri: $this->getUri($path),
+            fileSize: $result->get('ContentLength'),
+            lastModified: $result->get('LastModified'),
+            rawResult: $result
         );
-        $getResult->uri = $this->getUri($path);
-        $getResult->path = $path;
-        $getResult->lastModified = $result->get('LastModified');
-        $getResult->fileSize = $result->get('ContentLength');
-        return $getResult;
     }
 
     public function read(string $path, array $options = []): string
@@ -155,15 +154,14 @@ class S3Storage implements StorageInterface
         }
 
         foreach ($this->s3->listObjects($path, $options) as $k => $listObject) {
-            $result = new GetResult(
-                fn() => $this->get($listObject['Key'])->response,
-                $listObject
+            yield $k => new GetResult(
+                responseCallback: fn() => $this->get($listObject['Key'])->response,
+                path: $listObject['Key'],
+                uri: $listObject['Uri'],
+                fileSize: (int) $listObject['Size'],
+                lastModified: $listObject['LastModified'],
+                rawResult: $listObject
             );
-            $result->uri = $listObject['Uri'];
-            $result->path = $listObject['Key'];
-            $result->lastModified = $listObject['LastModified'];
-            $result->fileSize = (int) $listObject['Size'];
-            yield $k => $result;
         }
     }
 
