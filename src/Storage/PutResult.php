@@ -17,10 +17,12 @@ class PutResult extends Result implements \Stringable
      * PutResult constructor.
      */
     public function __construct(
-        protected UriInterface $uri,
-        protected \Closure $responseCallback,
-        protected mixed $rawResult = null
+        public UriInterface $uri,
+        \Closure $responseCallback,
+        mixed $rawResult = null,
+        public $fileSize = 0,
     ) {
+        parent::__construct($responseCallback, $rawResult);
     }
 
     /**
@@ -50,18 +52,6 @@ class PutResult extends Result implements \Stringable
         }
 
         return $uri;
-    }
-
-    /**
-     * @param  UriInterface  $uri
-     *
-     * @return  static  Return self to support chaining.
-     */
-    public function setUri(UriInterface $uri): static
-    {
-        $this->uri = $uri;
-
-        return $this;
     }
 
     public function getUriString(string|bool $suffix = false): string

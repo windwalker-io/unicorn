@@ -75,7 +75,7 @@ class LocalStorage implements StorageInterface
         return new PutResult(
             $this->getUri($path),
             fn () => new Response($file->getStream()),
-            $file
+            (int) $file->getSize()
         );
     }
 
@@ -89,7 +89,8 @@ class LocalStorage implements StorageInterface
         return new PutResult(
             $this->getUri($path),
             fn () => new Response($file->getStream()),
-            $file
+            $file,
+            (int) $file->getSize()
         );
     }
 
@@ -147,14 +148,15 @@ class LocalStorage implements StorageInterface
     {
         $file = Filesystem::get($this->getPath($path));
 
-        return (new GetResult(
+        $result = new GetResult(
             fn () => new Response($file->getStream()),
             $file
-        ))
-            ->setUri($this->getUri($path))
-            ->setPath($path)
-            ->setLastModified($file->getMTime())
-            ->setFileSize($file->getSize());
+        );
+        $result->uri = $this->getUri($path);
+        $result->path = $path;
+        $result->lastModified = $file->getMTime();
+        $result->fileSize = $file->getSize();
+        return $result;
     }
 
     public function read(string $path, array $options = []): string
@@ -170,14 +172,15 @@ class LocalStorage implements StorageInterface
     public function listContents(string $path, bool $recursive = false): iterable
     {
         foreach (Filesystem::files($this->getPath($path), $recursive) as $k => $file) {
-            yield $k => (new GetResult(
+            $result = new GetResult(
                 fn () => new Response($file->getStream()),
                 $file
-            ))
-                ->setUri($this->getUri($path))
-                ->setPath($path)
-                ->setLastModified($file->getMTime())
-                ->setFileSize($file->getSize());
+            );
+            $result->uri = $this->getUri($path);
+            $result->path = $path;
+            $result->lastModified = $file->getMTime();
+            $result->fileSize = $file->getSize();
+            yield $k => $result;
         }
     }
 

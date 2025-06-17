@@ -34,8 +34,8 @@ class S3Storage implements StorageInterface
 
     public function put(string $data, string $path, array $options = []): PutResult
     {
-        $options['ContentType'] = $options['mime_type'] ?? $this->guessMimeType($path);
-        $options['ContentLength'] = strlen($data);
+        $mime = $options['ContentType'] = $options['mime_type'] ?? $this->guessMimeType($path);
+        $size = $options['ContentLength'] = strlen($data);
 
         $result = $this->s3->uploadFileData(
             $data,
@@ -43,13 +43,13 @@ class S3Storage implements StorageInterface
             $options
         );
 
-        return $this->createPutResult($result);
+        return $this->createPutResult($result, (int) $size);
     }
 
     public function putFile(string $src, string $path, array $options = []): PutResult
     {
-        $options['ContentType'] = $options['mime_type'] ?? $this->guessMimeType($src);
-        $options['ContentLength'] = filesize($src);
+        $mime = $options['ContentType'] = $options['mime_type'] ?? $this->guessMimeType($src);
+        $size = $options['ContentLength'] = filesize($src);
 
         $result = $this->s3->uploadFile(
             $src,
@@ -57,16 +57,19 @@ class S3Storage implements StorageInterface
             $options
         );
 
-        return $this->createPutResult($result);
+        return $this->createPutResult($result, (int) $size);
     }
 
-    public function createPutResult(AwsResult $result): PutResult
+    public function createPutResult(AwsResult $result, int $size): PutResult
     {
-        return new PutResult(
+        $result = new PutResult(
             new Uri($result->get('ObjectURL')),
             fn () => $this->createResponseFromResult($result),
-            $result
+            $result,
+            $size
         );
+
+        return $result;
     }
 
     private function createResponseFromResult(AwsResult $result): ResponseInterface
@@ -82,14 +85,15 @@ class S3Storage implements StorageInterface
 
     public function putStream(mixed $src, string $path, array $options = []): PutResult
     {
-        $options['ContentType'] = $options['mime_type'] ?? $this->guessMimeType($path);
+        $mime = $options['ContentType'] = $options['mime_type'] ?? $this->guessMimeType($path);
+        $size = 0;
 
         if ($src instanceof StreamInterface) {
-            $options['ContentLength'] = $src->getSize();
+            $size = $options['ContentLength'] = $src->getSize();
         } elseif (is_resource($src)) {
             $stats = fstat($src);
 
-            $options['ContentLength'] = $stats['size'] ?? null;
+            $size = $options['ContentLength'] = $stats['size'] ?? null;
         }
 
         $result = $this->s3->uploadFileData(
@@ -98,7 +102,7 @@ class S3Storage implements StorageInterface
             $options
         );
 
-        return $this->createPutResult($result);
+        return $this->createPutResult($result, (int) $size);
     }
 
     public function delete(string $path, array $options = []): Result
@@ -120,14 +124,15 @@ class S3Storage implements StorageInterface
     {
         $result = $this->s3->getFileInfo($path, $options);
 
-        return (new GetResult(
+        $getResult = new GetResult(
             fn () => $this->createResponseFromResult($result),
             $result
-        ))
-            ->setUri($this->getUri($path))
-            ->setPath($path)
-            ->setLastModified($result->get('LastModified'))
-            ->setFileSize($result->get('ContentLength'));
+        );
+        $getResult->uri = $this->getUri($path);
+        $getResult->path = $path;
+        $getResult->lastModified = $result->get('LastModified');
+        $getResult->fileSize = $result->get('ContentLength');
+        return $getResult;
     }
 
     public function read(string $path, array $options = []): string
@@ -150,14 +155,15 @@ class S3Storage implements StorageInterface
         }
 
         foreach ($this->s3->listObjects($path, $options) as $k => $listObject) {
-            yield $k => (new GetResult(
-                fn() => $this->get($listObject['Key'])->getResponse(),
+            $result = new GetResult(
+                fn() => $this->get($listObject['Key'])->response,
                 $listObject
-            ))
-                ->setUri($listObject['Uri'])
-                ->setPath($listObject['Key'])
-                ->setLastModified($listObject['LastModified'])
-                ->setFileSize((int) $listObject['Size']);
+            );
+            $result->uri = $listObject['Uri'];
+            $result->path = $listObject['Key'];
+            $result->lastModified = $listObject['LastModified'];
+            $result->fileSize = (int) $listObject['Size'];
+            yield $k => $result;
         }
     }
 

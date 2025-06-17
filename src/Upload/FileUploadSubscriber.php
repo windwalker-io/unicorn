@@ -34,6 +34,6 @@ class FileUploadSubscriber
             $uri = ltrim(Str::removeLeft($uri, $root), '/');
         }
 
-        $result->setUri(new Uri($uri));
+        $result->uri = new Uri($uri);
     }
 }
