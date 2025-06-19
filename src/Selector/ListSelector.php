@@ -21,7 +21,7 @@ use Windwalker\ORM\SelectorQuery;
 use Windwalker\Query\Query;
 use Windwalker\Utilities\Arr;
 use Windwalker\Utilities\Cache\InstanceCacheTrait;
-use Windwalker\Utilities\Classes\FlowControlTrait;
+use Windwalker\Utilities\Classes\ChainingTrait;
 use Windwalker\Utilities\Options\OptionAccessTrait;
 use Windwalker\Utilities\Wrapper\RawWrapper;
 
@@ -33,7 +33,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
     use OptionAccessTrait;
     use CoreEventAwareTrait;
     use InstanceCacheTrait;
-    use FlowControlTrait;
+    use ChainingTrait;
     use QueryProxyTrait;
 
     public static int $globalDefaultLimit = 0;
