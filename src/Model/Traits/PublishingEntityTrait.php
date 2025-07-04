@@ -11,8 +11,11 @@ use Windwalker\ORM\Attributes\Column;
 trait PublishingEntityTrait
 {
     #[Column('state')]
+    #[Cast('int')]
     #[Cast(PublishingState::class)]
-    protected PublishingState $state;
+    public PublishingState $state {
+        set(int|PublishingState $value) => $this->state = PublishingState::wrap($value);
+    }
 
     public function isTrashed(): bool
     {
