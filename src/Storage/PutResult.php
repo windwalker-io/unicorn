@@ -18,6 +18,7 @@ class PutResult extends Result implements \Stringable
      */
     public function __construct(
         public UriInterface $uri,
+        public ?string $path = null,
         \Closure $responseCallback,
         mixed $rawResult = null,
         public int $fileSize = 0,

@@ -43,7 +43,7 @@ class S3Storage implements StorageInterface
             $options
         );
 
-        return $this->createPutResult($result, (int) $size);
+        return $this->createPutResult($result, (int) $size, $path);
     }
 
     public function putFile(string $src, string $path, array $options = []): PutResult
@@ -57,16 +57,17 @@ class S3Storage implements StorageInterface
             $options
         );
 
-        return $this->createPutResult($result, (int) $size);
+        return $this->createPutResult($result, (int) $size, $path);
     }
 
-    public function createPutResult(AwsResult $result, int $size): PutResult
+    public function createPutResult(AwsResult $result, int $size, string $path): PutResult
     {
         $result = new PutResult(
-            new Uri($result->get('ObjectURL')),
-            fn () => $this->createResponseFromResult($result),
-            $result,
-            $size
+            uri: new Uri($result->get('ObjectURL')),
+            path: $path,
+            responseCallback: fn () => $this->createResponseFromResult($result),
+            rawResult: $result,
+            fileSize: $size
         );
 
         return $result;
@@ -102,7 +103,7 @@ class S3Storage implements StorageInterface
             $options
         );
 
-        return $this->createPutResult($result, (int) $size);
+        return $this->createPutResult($result, (int) $size, $path);
     }
 
     public function delete(string $path, array $options = []): Result
