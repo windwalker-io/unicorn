@@ -39,10 +39,6 @@ class FileDrag extends HTMLElement {
 
     const options = JSON.parse(this.getAttribute('options') || '{}') || {};
 
-    if (this.element.readOnly) {
-      this.element.disabled = true;
-    }
-
     this.options = u.defaultsDeep({}, options, defaultOptions);
     
     this.bindEvent();
