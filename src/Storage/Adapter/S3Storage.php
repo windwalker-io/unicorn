@@ -62,15 +62,13 @@ class S3Storage implements StorageInterface
 
     public function createPutResult(AwsResult $result, int $size, string $path): PutResult
     {
-        $result = new PutResult(
+        return new PutResult(
             uri: new Uri($result->get('ObjectURL')),
-            path: $path,
             responseCallback: fn () => $this->createResponseFromResult($result),
+            path: $path,
             rawResult: $result,
             fileSize: $size
         );
-
-        return $result;
     }
 
     private function createResponseFromResult(AwsResult $result): ResponseInterface

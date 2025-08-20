@@ -58,8 +58,8 @@ class LocalStorage implements StorageInterface
 
         return new PutResult(
             uri: $this->getUri($path),
-            path: $path,
             responseCallback: fn() => new Response($file->getStream()),
+            path: $path,
             rawResult: $file,
             fileSize: (int) $file->getSize(),
         );
@@ -74,8 +74,8 @@ class LocalStorage implements StorageInterface
 
         return new PutResult(
             uri: $this->getUri($path),
-            path: $path,
             responseCallback: fn() => new Response($file->getStream()),
+            path: $path,
             rawResult: $file,
             fileSize: (int) $file->getSize()
         );
@@ -90,8 +90,8 @@ class LocalStorage implements StorageInterface
 
         return new PutResult(
             uri: $this->getUri($path),
-            path: $path,
             responseCallback: fn() => new Response($file->getStream()),
+            path: $path,
             rawResult: $file,
             fileSize: (int) $file->getSize()
         );
