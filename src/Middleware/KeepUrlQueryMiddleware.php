@@ -29,18 +29,19 @@ class KeepUrlQueryMiddleware implements MiddlewareInterface
     use OptionsResolverTrait;
     use DICreateTrait;
 
-    /**
-     * KeepUrlQueryMiddleware constructor.
-     *
-     * @param  AppContext  $app
-     * @param  AppRequest  $request
-     * @param  Navigator   $navigator
-     * @param  array       $options
-     */
     public function __construct(
         protected AppContext $app,
         protected AppRequest $request,
         protected Navigator $navigator,
+        protected string $key = '',
+        protected string $uid = '',
+        protected mixed $default = '',
+        protected \Closure|bool|null $routeEnabled = true,
+        protected \Closure|null $afterHook = null,
+        protected \Closure|null $viewHook = null,
+        /**
+         * @deprecated  Use constructor arguments instead.
+         */
         array $options = [],
     ) {
         $this->resolveOptions($options, [$this, 'configureOptions']);
@@ -49,28 +50,30 @@ class KeepUrlQueryMiddleware implements MiddlewareInterface
     protected function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->define('route_enabled')
-            ->default(true)
+            ->default($this->routeEnabled)
             ->allowedTypes('bool', 'null', 'callable');
 
         $resolver->define('after_hook')
             ->allowedTypes('null', 'callable')
-            ->default(null);
+            ->default($this->afterHook);
 
         $resolver->define('view_hook')
             ->allowedTypes('null', 'callable')
-            ->default(null);
+            ->default($this->viewHook);
 
         $resolver->define('key')
             ->allowedTypes('string')
+            ->default($this->key)
             ->required();
 
         // If provides a uid, then we'll use uid to match same middlewares.
         $resolver->define('uid')
             ->allowedTypes('string')
+            ->default($this->uid)
             ->default('');
 
         $resolver->define('default')
-            ->default('');
+            ->default($this->default);
     }
 
     /**

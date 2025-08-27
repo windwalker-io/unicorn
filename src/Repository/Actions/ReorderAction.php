@@ -128,7 +128,7 @@ class ReorderAction extends AbstractDatabaseAction
         return true;
     }
 
-    public function getMaxOrdering(Collection|array $item, ?string $orderField = null): ?string
+    public function getMaxOrdering(Collection|array $item, ?string $orderField = null): string|int|null
     {
         $orderField ??= $this->getOrderField();
 
