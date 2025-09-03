@@ -8,7 +8,6 @@ use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Asset\AbstractScript;
 use Windwalker\Core\Security\CspNonceService;
 use Windwalker\Core\Html\HtmlFrame;
-use Windwalker\Core\Http\Browser;
 use Windwalker\Core\Language\LangService;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Security\CsrfService;
@@ -32,7 +31,6 @@ class UnicornScript extends AbstractScript
      */
     public function __construct(
         protected AppContext $app,
-        protected Browser $browser,
         protected LangService $langService,
         protected Navigator $nav
     ) {
