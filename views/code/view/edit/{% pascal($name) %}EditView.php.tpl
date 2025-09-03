@@ -12,10 +12,10 @@ use Unicorn\View\ORMAwareViewModelTrait;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Attributes\ViewMetadata;
 use Windwalker\Core\Attributes\ViewModel;
+use Windwalker\Core\Attributes\ViewPrepare;
 use Windwalker\Core\Html\HtmlFrame;
 use Windwalker\Core\Language\TranslatorTrait;
 use Windwalker\Core\View\View;
-use Windwalker\Core\View\ViewModelInterface;
 use Windwalker\DI\Attributes\Autowire;
 
 /**
@@ -25,7 +25,7 @@ use Windwalker\DI\Attributes\Autowire;
     layout: '{% kebab($name) %}-edit',
     js: '{% kebab($name) %}-edit.js'
 )]
-class {% pascal($name) %}EditView implements ViewModelInterface
+class {% pascal($name) %}EditView
 {
     use TranslatorTrait;
     use ORMAwareViewModelTrait;
@@ -36,14 +36,7 @@ class {% pascal($name) %}EditView implements ViewModelInterface
     ) {
     }
 
-    /**
-     * Prepare
-     *
-     * @param  AppContext  $app
-     * @param  View        $view
-     *
-     * @return  mixed
-     */
+    #[ViewPrepare]
     public function prepare(AppContext $app, View $view): mixed
     {
         $id = $app->input('id');

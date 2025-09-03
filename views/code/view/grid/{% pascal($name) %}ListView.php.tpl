@@ -12,12 +12,12 @@ use Unicorn\View\ORMAwareViewModelTrait;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Attributes\ViewMetadata;
 use Windwalker\Core\Attributes\ViewModel;
+use Windwalker\Core\Attributes\ViewPrepare;
 use Windwalker\Core\Html\HtmlFrame;
 use Windwalker\Core\Language\TranslatorTrait;
 use Windwalker\Core\View\Contract\FilterAwareViewModelInterface;
 use Windwalker\Core\View\Traits\FilterAwareViewModelTrait;
 use Windwalker\Core\View\View;
-use Windwalker\Core\View\ViewModelInterface;
 use Windwalker\DI\Attributes\Autowire;
 
 /**
@@ -30,7 +30,7 @@ use Windwalker\DI\Attributes\Autowire;
     ],
     js: '{% kebab($name) %}-list.js'
 )]
-class {% pascal($name) %}ListView implements ViewModelInterface, FilterAwareViewModelInterface
+class {% pascal($name) %}ListView implements, FilterAwareViewModelInterface
 {
     use TranslatorTrait;
     use FilterAwareViewModelTrait;
@@ -43,14 +43,7 @@ class {% pascal($name) %}ListView implements ViewModelInterface, FilterAwareView
     ) {
     }
 
-    /**
-     * Prepare view data.
-     *
-     * @param  AppContext  $app   The request app context.
-     * @param  View        $view  The view object.
-     *
-     * @return  array
-     */
+    #[ViewPrepare]
     public function prepare(AppContext $app, View $view): array
     {
         $state = $this->repository->getState();

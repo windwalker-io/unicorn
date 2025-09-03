@@ -17,10 +17,7 @@ use Windwalker\Session\Session;
  * @deprecated  Use container tags instead.
  */
 #[Isolation]
-class StorageManager extends AbstractManager
+class StorageManager extends StorageFactory
 {
-    public function getConfigPrefix(): string
-    {
-        return 'storage';
-    }
+    //
 }

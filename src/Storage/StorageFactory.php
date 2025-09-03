@@ -22,12 +22,11 @@ use Unicorn\Storage\Adapter\S3Storage;
 use Windwalker\Core\Application\AppClient;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Application\ApplicationInterface;
-use Windwalker\Core\Application\PathResolver;
-use Windwalker\Core\Application\WebApplicationInterface;
 use Windwalker\Core\Console\ConsoleApplication;
+use Windwalker\Core\DI\ServiceFactoryInterface;
+use Windwalker\Core\DI\ServiceFactoryTrait;
+use Windwalker\DI\Attributes\Isolation;
 use Windwalker\DI\Container;
-use Windwalker\Filesystem\Path;
-use Windwalker\Uri\Uri;
 use Windwalker\Uri\UriNormalizer;
 
 use function Windwalker\tid;
@@ -35,8 +34,16 @@ use function Windwalker\tid;
 /**
  * The StorageFactory class.
  */
-class StorageFactory
+#[Isolation]
+class StorageFactory implements ServiceFactoryInterface
 {
+    use ServiceFactoryTrait;
+
+    public function getConfigPrefix(): string
+    {
+        return 'storage';
+    }
+
     /**
      * StorageFactory constructor.
      */
@@ -92,7 +99,14 @@ class StorageFactory
 
         $s3->getHandlerList()->appendInit(
             function (callable $handler) use ($s3, $options) {
-                return function (CommandInterface $command, ?RequestInterface $request = null) use ($s3, $handler, $options) {
+                return function (
+                    CommandInterface $command,
+                    ?RequestInterface $request = null
+                ) use (
+                    $s3,
+                    $handler,
+                    $options
+                ) {
                     $args = $options['args'] ?? [];
 
                     if (!isset($command['Bucket'])) {
@@ -110,7 +124,7 @@ class StorageFactory
                     }
 
                     $command['Prefix'] = ltrim(
-                        UriNormalizer::cleanPath($subfolder . '/' . $command['Prefix'],),
+                        UriNormalizer::cleanPath($subfolder . '/' . $command['Prefix']),
                         '/'
                     );
 
@@ -137,7 +151,7 @@ class StorageFactory
                                             [
                                                 'credentials' => $s3->getCredentials()->wait(),
                                                 'region' => $s3->getRegion(),
-                                                'version' => 'latest'
+                                                'version' => 'latest',
                                             ]
                                         );
 
@@ -151,7 +165,7 @@ class StorageFactory
                                                             'Items' => ['/' . $fullKey],
                                                             'Quantity' => 1,
                                                         ],
-                                                    ]
+                                                    ],
                                                 ]
                                             );
                                         } catch (CloudFrontException $e) {
@@ -164,7 +178,6 @@ class StorageFactory
                                             if ($app->isDebug()) {
                                                 $app->addMessage($e->getMessage(), 'warning');
                                             }
-
                                             // No actions
                                         }
                                     }

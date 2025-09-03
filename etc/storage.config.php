@@ -30,13 +30,13 @@ static fn() => [
     ],
 
     'bindings' => [
-        S3Client::class => function (Container $container) {
+        S3Client::class => static function (Container $container) {
             /** @var S3Storage $storage */
             $storage = $container->get(StorageInterface::class, tag: 's3');
 
             return $storage->getS3Service()->getClient();
         },
-        S3Service::class => function (Container $container) {
+        S3Service::class => static function (Container $container) {
             /** @var S3Storage $storage */
             $storage = $container->get(StorageInterface::class, tag: 's3');
 
@@ -52,13 +52,13 @@ static fn() => [
 
     'factories' => [
         'instances' => [
-            'local' => fn(StorageFactory $factory) => $factory->localStorage(
+            'local' => static fn(StorageFactory $factory) => $factory->localStorage(
                 [
                     'path' => env('STORAGE_LOCAL_PATH') ?? 'www/assets/upload',
                     'uri_base' => env('STORAGE_LOCAL_URI_BASE') ?? 'assets/upload',
                 ]
             ),
-            's3' => fn(StorageFactory $factory) => $factory->s3Storage(
+            's3' => static fn(StorageFactory $factory) => $factory->s3Storage(
                 [
                     'access_key' => env('AWS_ACCESS_KEY'),
                     'secret' => env('AWS_SECRET'),
@@ -68,7 +68,7 @@ static fn() => [
                     'region' => env('AWS_S3_REGION'),
                 ]
             ),
-            'flys3' => fn(StorageFactory $factory) => $factory->flysystem(
+            'flys3' => static fn(StorageFactory $factory) => $factory->flysystem(
                 fn(FlysystemFactory $factory) => $factory->s3v3Adapter(
                     [
                         'access_key' => env('AWS_ACCESS_KEY'),
