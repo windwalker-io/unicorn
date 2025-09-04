@@ -44,13 +44,6 @@ class StorageFactory implements ServiceFactoryInterface
         return 'storage';
     }
 
-    /**
-     * StorageFactory constructor.
-     */
-    public function __construct(protected Container $container)
-    {
-    }
-
     public function localStorage(array $options = []): LocalStorage
     {
         return new LocalStorage(
