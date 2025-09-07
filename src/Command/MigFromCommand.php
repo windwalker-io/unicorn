@@ -22,11 +22,8 @@ use Windwalker\Core\Generator\Builder\CallbackAstBuilder;
 use Windwalker\Core\Migration\Exception\MigrationExistsException;
 use Windwalker\Core\Migration\MigrationService;
 use Windwalker\Data\Collection;
-use Windwalker\Filesystem\FileObject;
-use Windwalker\Utilities\Str;
 use Windwalker\Utilities\StrInflector;
 use Windwalker\Utilities\StrNormalize;
-
 use Windwalker\Utilities\Utf8String;
 
 use function Windwalker\collect;
@@ -130,7 +127,7 @@ class MigFromCommand implements CommandInterface
                 $files = $this->migrationService->copyMigrationFile(
                     WINDWALKER_MIGRATIONS,
                     $groupName . 'Init',
-                    __DIR__ . '/../../../core/resources/templates/migration/*',
+                    __DIR__ . '/../../../core/resources/templates/migration/create/*',
                 );
 
                 $dest = $files->getResults()[0];
@@ -147,7 +144,18 @@ class MigFromCommand implements CommandInterface
             $usesList = [];
             $factory = new BuilderFactory();
 
-            $leaveNode = function (Node $node) use ($io, $tables, &$i, &$uses, $factory, &$entities, &$usesList, &$existsTables) {
+            $leaveNode = function (
+                Node $node
+            ) use (
+                $io,
+                $tables,
+                &$i,
+                &$uses,
+                $factory,
+                &$entities,
+                &$usesList,
+                &$existsTables
+            ) {
                 if ($node instanceof Node\Stmt\Use_) {
                     $use = (string) $node->uses[0]->name;
                     $use = Collection::explode('\\', $use)->pop();
@@ -198,6 +206,7 @@ class MigFromCommand implements CommandInterface
 
                         if (array_key_exists($tableName, $tables)) {
                             $existsTables[] = $tableName;
+
                             return new Node\Stmt\Expression(
                                 new Node\Scalar\String_('@create-' . $tableName)
                             );
@@ -270,11 +279,11 @@ class MigFromCommand implements CommandInterface
                 $newCode = str_replace(
                     [
                         "'@create-{$tableName}';",
-                        "'@drop-{$tableName}';"
+                        "'@drop-{$tableName}';",
                     ],
                     [
                         $this->buildCreateTable($className, $cols, $keys),
-                        $this->buildDropTable($className)
+                        $this->buildDropTable($className),
                     ],
                     $newCode
                 );
@@ -283,20 +292,22 @@ class MigFromCommand implements CommandInterface
             $dest->write($newCode);
         }
 
-        $runMig = $io->getOption('mig') ?: $io->ask(new ConfirmationQuestion('Do you want to run migration reset? [Y/n] '));
+        $runMig = $io->getOption('mig')
+            || $io->ask(new ConfirmationQuestion('Do you want to run migration reset? [Y/n] '));
 
-        if ($runMig) {
-            $io->style()->warning(
-                'Please make sure you comment all the code using empty entities. ' .
-                'For example, if there is an empty `App\\Entity\\User`, then the creating of first User ' .
-                'in UserInit.php will cause error, please comment it.'
-            );
-            $runMig = $io->askConfirmation('Yes I Checked, press [ENTER] to continue, enter [n] to cancel: ', true);
-        }
+        // Todo: Remove after make sure migration ignore-errors works well.
+        // if ($runMig) {
+        //     $io->style()->warning(
+        //         'Please make sure you comment all the code using empty entities. ' .
+        //         'For example, if there is an empty `App\\Entity\\User`, then the creating of first User ' .
+        //         'in UserInit.php will cause error, please comment it.'
+        //     );
+        //     $runMig = $io->askConfirmation('Yes I Checked, press [ENTER] to continue, enter [n] to cancel: ', true);
+        // }
 
         if ($runMig) {
             $process = $this->app->runProcess(
-                'php windwalker mig:reset -f --no-backup',
+                'php windwalker mig:reset -f --no-backup -e',
                 null,
                 $io->getOutput()
             );
@@ -311,7 +322,10 @@ class MigFromCommand implements CommandInterface
                 );
 
             if ($build) {
-                $genEnums = $io->askConfirmation('If there has comments starts with <info>"enum:"</info>, do you want to auto generate non-exists Enums? [Y/n] ', true);
+                $genEnums = $io->askConfirmation(
+                    'If there has comments starts with <info>"enum:"</info>, do you want to auto generate non-exists Enums? [Y/n] ',
+                    true
+                );
 
                 foreach ($entities as $entity) {
                     $cmd = sprintf(
@@ -345,7 +359,7 @@ class MigFromCommand implements CommandInterface
 
             foreach ($keys['index'] as $idxName => $idxCols) {
                 $idxCols = collect($idxCols)
-                    ->map(fn ($v) => "'$v'");
+                    ->map(fn($v) => "'$v'");
 
                 $idxCols = \Windwalker\count($idxCols) === 1 ? $idxCols[0] : '[' . $idxCols->implode(', ') . ']';
 
@@ -358,14 +372,14 @@ class MigFromCommand implements CommandInterface
 
             foreach ($keys['unique'] as $idxName => $idxCols) {
                 $idxCols = collect($idxCols)
-                    ->map(fn ($v) => "'$v'");
+                    ->map(fn($v) => "'$v'");
 
                 $idxCols = \Windwalker\count($idxCols) === 1 ? $idxCols[0] : '[' . $idxCols->implode(', ') . ']';
 
                 $declare .= "\n" . str_repeat(' ', 16) . "\$schema->addUniqueKey($idxCols);";
             }
         }
-        
+
         $code = <<<PHP
 \$mig->createTable(
             {$className}::class,
