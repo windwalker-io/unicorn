@@ -58,17 +58,13 @@ class SlugHelper
         int $defaultLimit = 16
     ): string {
         if ($utf8) {
-            $alias = $alias ?: mb_substr($default, 0, $defaultLimit);
+            $alias = static::limitWords($default, $defaultLimit, true);
 
             return OutputFilter::stringURLUnicodeSlug($alias);
         }
 
         if ($alias === '' && (string) $default !== '') {
-            $words = static::breakWords($default);
-
-            $words = array_slice($words, 0, $defaultLimit);
-
-            $alias = implode(' ', $words);
+            $alias = static::limitWords($default, $defaultLimit);
         }
 
         if (class_exists(Pinyin::class)) {
@@ -93,7 +89,7 @@ class SlugHelper
     {
         // @see https://stackoverflow.com/a/43882448
         preg_match_all(
-            '/\p{Hangul}|\p{Hiragana}|\p{Han}|\p{Katakana}|(\p{Latin}+)|(\p{Cyrillic}+)|\d+/u',
+            '/(?:\p{Hangul}|\p{Hiragana}|\p{Han}|\p{Katakana}|\p{Latin}+\x20?|\p{Cyrillic}+|\d+|\x20+)/u',
             str($text)->collapseWhitespaces()->__toString(),
             $matches
         );
@@ -113,5 +109,27 @@ class SlugHelper
     public static function getDefaultSlug(): string
     {
         return OutputFilter::stringURLSafe(Chronos::now('Y-m-d-H-i-s'));
+    }
+
+    public static function limitWords(?string $default, int $defaultLimit): string
+    {
+        $words = static::breakWords($default);
+
+        $i = 0;
+        $keep = [];
+
+        foreach ($words as $word) {
+            if ($word !== ' ') {
+                $i++;
+            }
+
+            $keep[] = $word;
+
+            if ($i >= $defaultLimit) {
+                break;
+            }
+        }
+
+        return implode('', $keep);
     }
 }
