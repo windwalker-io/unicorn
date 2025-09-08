@@ -55,21 +55,28 @@ class SlugHelper
         string $alias,
         bool $utf8 = false,
         ?string $default = null,
-        int $defaultLimit = 16
+        int $defaultLimit = 12
     ): string {
-        if ($utf8) {
-            $alias = static::limitWords($default, $defaultLimit, true);
-
-            return OutputFilter::stringURLUnicodeSlug($alias);
-        }
-
         if ($alias === '' && (string) $default !== '') {
             $alias = static::limitWords($default, $defaultLimit);
         }
 
+        if ($utf8) {
+            return OutputFilter::stringURLUnicodeSlug($alias);
+        }
+
         if (class_exists(Pinyin::class)) {
-            $alias = (string) Pinyin::slug($alias, ['split' => 'phrase']);
-        } elseif (function_exists('transliterator_transliterate')) {
+            $alias = (string) Pinyin::pinyin(
+                $alias,
+                [
+                    'split' => 'phrase',
+                    'tone' => 'none',
+                    'charset' => 'ascii'
+                ]
+            );
+        }
+
+        if (function_exists('transliterator_transliterate')) {
             $alias = transliterator_transliterate('Any-Latin; Latin-ASCII; Lower()', $alias);
         }
 
@@ -111,9 +118,9 @@ class SlugHelper
         return OutputFilter::stringURLSafe(Chronos::now('Y-m-d-H-i-s'));
     }
 
-    public static function limitWords(?string $default, int $defaultLimit): string
+    public static function limitWords(string $text, int $defaultLimit): string
     {
-        $words = static::breakWords($default);
+        $words = static::breakWords($text);
 
         $i = 0;
         $keep = [];
