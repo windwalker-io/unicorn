@@ -123,14 +123,10 @@ class KeepUrlQueryMiddleware implements MiddlewareInterface
                 }
 
                 foreach ((array) $route->getExtraValue('middlewares') as $item) {
-                    if ($this->isSame($item)) {
-                        $query = $event->query;
+                    if ($this->isSame($item) && $value) {
+                        $event->options->addAllowQuery($key);
 
-                        if ($value && empty($query[$key])) {
-                            $query[$key]    = $value;
-
-                            $event->setQuery($query);
-                        }
+                        $event->query[$key] ??= $value;
                     }
                 }
             }
