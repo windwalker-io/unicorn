@@ -10,7 +10,6 @@ use Windwalker\Data\Collection;
 use Windwalker\DOM\HTMLElement;
 use Windwalker\Utilities\Arr;
 
-use function Lyrasoft\ShopGo\Field\str_contains;
 use function Windwalker\DOM\h;
 use function Windwalker\value_compare;
 
