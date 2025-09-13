@@ -393,9 +393,15 @@ export default class UnicornUI {
       { duration, easing: 'ease-out' }
     );
 
+    this.app.data(ele, 'animation.sliding.up', true);
+
     const r = await animation.finished;
 
-    ele.style.display = 'none';
+    if (!this.app.data(ele, 'animation.sliding.down')) {
+      ele.style.display = 'none';
+    }
+
+    this.app.removeData(ele, 'animation.sliding.up');
 
     return r;
   }
@@ -408,6 +414,8 @@ export default class UnicornUI {
     if (!ele) {
       return Promise.resolve();
     }
+
+    this.app.data(ele, 'animation.sliding.down', true);
 
     ele.style.display = display;
 
@@ -430,7 +438,12 @@ export default class UnicornUI {
 
     animation.addEventListener('finish', () => {
       ele.style.height = '';
-      ele.style.overflow = 'visible';
+
+      if (!this.app.data(ele, 'animation.sliding.up')) {
+        ele.style.overflow = 'visible';
+      }
+
+      this.app.removeData(ele, 'animation.sliding.down');
     });
 
     return animation.finished;
