@@ -6,10 +6,10 @@ namespace Unicorn\Script;
 
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Asset\AbstractScript;
-use Windwalker\Core\Security\CspNonceService;
 use Windwalker\Core\Html\HtmlFrame;
 use Windwalker\Core\Language\LangService;
 use Windwalker\Core\Router\Navigator;
+use Windwalker\Core\Security\CspNonceService;
 use Windwalker\Core\Security\CsrfService;
 use Windwalker\DI\Exception\DefinitionException;
 use Windwalker\DOM\HTMLElement;
@@ -20,6 +20,8 @@ use Windwalker\Utilities\Str;
  */
 class UnicornScript extends AbstractScript
 {
+    public bool $next = false;
+
     protected array $data = [];
 
     public array $initialise = [];
@@ -36,6 +38,13 @@ class UnicornScript extends AbstractScript
     ) {
     }
 
+    public function useNext(bool $bool = true): static
+    {
+        $this->next = $bool;
+
+        return $this;
+    }
+
     public function systemJS(): static
     {
         if ($this->available()) {
@@ -46,7 +55,7 @@ class UnicornScript extends AbstractScript
                 'scripts',
                 '@system-onload',
                 [
-                    'body' => 'window.S = System'
+                    'body' => 'window.S = System',
                 ]
             );
             $this->js('@unicorn/system-hooks.js', [], ['data-version' => $version]);
@@ -69,6 +78,24 @@ class UnicornScript extends AbstractScript
         }
 
         $this->systemJS();
+        $this->main();
+
+        return $this;
+    }
+
+    public function initNext(?string $mainJS = null): static
+    {
+        $this->useNext();
+
+        if ($mainJS) {
+            $this->asset->importMap(
+                '@main',
+                $this->asset->appendVersion(
+                    $this->asset->handleUri($mainJS)
+                )
+            );
+        }
+
         $this->main();
 
         return $this;
@@ -102,6 +129,12 @@ class UnicornScript extends AbstractScript
 
     public function importScript(string $uri, bool $afterMain = false): static
     {
+        if ($this->next) {
+            $this->asset->importModule($uri);
+
+            return $this;
+        }
+
         if ($afterMain) {
             $this->importMainThen("u.import('$uri');");
         } else {
@@ -113,6 +146,12 @@ class UnicornScript extends AbstractScript
 
     public function importThen(string $uri, string $code, bool $afterMain = false): static
     {
+        if ($this->next) {
+            $this->asset->importModule($uri, $code);
+
+            return $this;
+        }
+
         $importer = $afterMain ? 'u' : 'System';
 
         $js = <<<JS
