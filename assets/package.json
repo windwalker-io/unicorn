@@ -102,6 +102,7 @@
     "vendors": [
       "@fortawesome/fontawesome-free",
       "@windwalker-io/unicorn",
+      "@windwalker-io/unicorn-next",
       "@webcomponents/webcomponentsjs",
       "@ryangjchandler/spruce",
       "@asika32764/vue-animate",
