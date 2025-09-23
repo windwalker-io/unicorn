@@ -27,6 +27,10 @@ static fn() => [
         UnicornPackage::class,
     ],
 
+    'modules' => [
+        'next' => true
+    ],
+
     'file_upload' => [
         'default' => 'default',
 

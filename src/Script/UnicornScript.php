@@ -20,7 +20,9 @@ use Windwalker\Utilities\Str;
  */
 class UnicornScript extends AbstractScript
 {
-    public bool $next = false;
+    // public bool $next {
+    //     get => $this->app->config('unicorn.modules.next') ?? false;
+    // }
 
     protected array $data = [];
 
@@ -36,13 +38,6 @@ class UnicornScript extends AbstractScript
         protected LangService $langService,
         protected Navigator $nav
     ) {
-    }
-
-    public function useNext(bool $bool = true): static
-    {
-        $this->next = $bool;
-
-        return $this;
     }
 
     public function systemJS(): static
@@ -73,29 +68,43 @@ class UnicornScript extends AbstractScript
      */
     public function init(?string $mainJS = null): static
     {
+        if ($this->next) {
+            if ($mainJS) {
+                $this->asset->importMap(
+                    '@main',
+                    $this->asset->appendVersion(
+                        $this->asset->handleUri($mainJS)
+                    )
+                );
+            }
+
+            $this->asset->importMap(
+                '@windwalker-io/unicorn',
+                $this->asset->appendVersion(
+                    $this->asset->handleUri('vendor/@windwalker-io/unicorn-next/dist/unicorn.js')
+                )
+            );
+
+            $this->asset->importMap(
+                '@windwalker-io/unicorn/',
+                $this->asset->handleUri('vendor/@windwalker-io/unicorn-next/dist/')
+            );
+
+            $this->asset->importMap(
+                '@unicorn/',
+                $this->asset->handleUri('vendor/@windwalker-io/unicorn-next/dist/')
+            );
+
+            $this->main();
+
+            return $this;
+        }
+
         if ($mainJS) {
             $this->asset->importMap('@main', $mainJS);
         }
 
         $this->systemJS();
-        $this->main();
-
-        return $this;
-    }
-
-    public function initNext(?string $mainJS = null): static
-    {
-        $this->useNext();
-
-        if ($mainJS) {
-            $this->asset->importMap(
-                '@main',
-                $this->asset->appendVersion(
-                    $this->asset->handleUri($mainJS)
-                )
-            );
-        }
-
         $this->main();
 
         return $this;
