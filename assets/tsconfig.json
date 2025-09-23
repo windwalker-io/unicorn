@@ -1,23 +1,27 @@
 {
-    "extends": [
-        "@vue/tsconfig/tsconfig.dom.json"
-    ],
-    "include": [
-        "./src/types/**/*.ts",
-        "./src/unicorn/types/*.d.ts"
-    ],
-    "exclude": [
-        "node_modules/**/*"
-    ],
-    "types": ["reflect-metadata"],
-    "compilerOptions": {
-        "allowJs": true,
-        "emitDecoratorMetadata": true,
-        "experimentalDecorators": true,
-        "skipLibCheck": true,
-//        "declaration": true,
-        "paths": {
-//            "@/*": ["./src/*"],
-        }
+  "extends": [
+    //        "@vue/tsconfig/tsconfig.dom.json"
+  ],
+  "include": [
+    "./src/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules/**/*"
+  ],
+  "types": [
+    "reflect-metadata"
+  ],
+  "compilerOptions": {
+    "target": "esnext",
+    "moduleResolution": "bundler",
+    "esModuleInterop": false,
+    "allowJs": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "skipLibCheck": true,
+    //        "declaration": true,
+    "paths": {
+      "@/*": ["./src/*"],
     }
+  }
 }

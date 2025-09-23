@@ -1,0 +1,11 @@
+import { default as UnicornApp } from '../../../../../../../../src/unicorn/app';
+import { Constructor } from '../../../../../../../../src/unicorn/types';
+export * from '../../../../../../../../src/unicorn/data';
+export * from '../../../../../../../../src/unicorn/modules';
+export * from '../../../../../../../../src/unicorn/plugin';
+export declare function createUnicorn(name?: string): UnicornApp;
+export declare function createUnicornWithPlugins(name?: string): UnicornApp;
+export declare function setUnicornApp(inc: UnicornApp, name?: string): void;
+export declare function useUnicornApp(name?: string): UnicornApp;
+export declare function useInject<T>(name: Constructor<T> | string): T;
+export declare function useInject<T, D>(name: Constructor<T> | string, def?: D): T | D;

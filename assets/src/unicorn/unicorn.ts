@@ -1,76 +1,43 @@
+import UnicornApp from '@/unicorn/app';
+import { UnicornUI } from '@/unicorn/plugin/ui';
+import { polyfill } from '@/unicorn/polyfill';
+import { Constructor, Dictionary } from '@/unicorn/types';
 
-export * from './events';
-export * from './mixwith';
+export * from '@/unicorn/data';
+// export * from '@/unicorn/events';
 
-import './polyfill';
-// import type { Unicorn } from '../index';
+// Helpers
+export * from '@/unicorn/modules';
+export * from '@/unicorn/plugin';
 
-import UnicornApp from './app';
-import UnicornAnimate from './plugin/animate';
-import UnicornCrypto from './plugin/crypto';
-import UnicornDirective from './plugin/directive';
-import UnicornForm from './plugin/form';
-import UnicornLang from './plugin/lang';
-import UnicornValidation from './plugin/validation';
-import UnicornRouter from './plugin/router';
-import UnicornUI from './plugin/ui';
-import UnicornGrid from './plugin/grid';
-import UnicornTinymce from './plugin/tinymce';
-import UnicornLoader from './plugin/loader';
-import UnicornHelper from './plugin/helper';
-import UnicornHttp from './plugin/http';
-import UnicornUri from './plugin/uri';
-import UnicornStack from './plugin/stack';
-import UnicornQueue from './plugin/queue';
-import UnicornAlpine2 from './plugin/alpine2';
+let apps: Dictionary<UnicornApp> = {};
 
-export type * from './types/exports';
+export function createUnicorn(name: string = 'default'): UnicornApp {
+  polyfill();
 
-export function createApp(options = {}) {
-  return new UnicornApp(options);
+  return apps[name] ??= new UnicornApp();
 }
 
-export function noConflict() {
-  const uni = window.u;
+export function createUnicornWithPlugins(name: string = 'default'): UnicornApp {
+  const app = createUnicorn(name);
 
-  // @ts-ignore
-  delete window.u;
+  app.use(UnicornUI);
 
-  return uni;
+  // app.use(UnicornDom);
+
+  return app;
 }
 
-const u = createApp();
-
-// @ts-ignore
-window.u = u;
-
-u.use(UnicornLoader);
-u.use(UnicornHelper);
-u.use(UnicornUri);
-u.use(UnicornCrypto);
-u.use(UnicornLang);
-u.use(UnicornRouter);
-u.use(UnicornHttp);
-u.use(UnicornDirective);
-u.use(UnicornAnimate);
-u.use(UnicornUI);
-u.use(UnicornAlpine2);
-u.use(UnicornForm);
-u.use(UnicornGrid);
-u.use(UnicornValidation);
-u.use(UnicornTinymce);
-u.use(UnicornStack);
-u.use(UnicornQueue);
-
-u.selectOne('[uni-cloak]')?.removeAttribute('uni-cloak');
-
-declare global {
-  interface Window {
-    System?: any;
-    u?: UnicornApp;
-  }
-
-  var S: any;
+export function setUnicornApp(inc: UnicornApp, name: string = 'default') {
+  apps[name] = inc;
 }
 
-export default u;
+export function useUnicornApp(name: string = 'default'): UnicornApp {
+  return apps[name] ??= createUnicorn(name);
+}
+
+export function useInject<T>(name: Constructor<T> | string): T;
+export function useInject<T, D>(name: Constructor<T> | string, def?: D): T | D;
+export function useInject<T, D>(name: Constructor<T> | string, def?: D): T | D {
+  return useUnicornApp().inject(name, def);
+}

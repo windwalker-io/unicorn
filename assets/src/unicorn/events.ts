@@ -1,119 +1,75 @@
-import { Mixin } from './mixwith';
+import { Mixin } from 'ts-mixer';
 
-declare global {
-  interface Function {
-    once?: boolean;
+export abstract class EventMixin implements EventAwareInterface {
+  _listeners: Record<string, EventHandler[]> = {};
+
+  on(event: string | string[], handler: EventHandler): this {
+    if (Array.isArray(event)) {
+      for (const e of event) {
+        this.on(e, handler);
+      }
+      return this;
+    }
+
+    this._listeners[event] ??= [];
+
+    this._listeners[event].push(handler);
+
+    return this;
+  }
+
+  once(event: string | string[], handler: EventHandler): this {
+    handler.once = true;
+    return this.on(event, handler);
+  }
+
+  off(event: string, handler?: EventHandler): this {
+    if (handler) {
+      this._listeners[event] = this.listeners(event).filter((listener) => listener !== handler);
+      return this;
+    }
+
+    delete this._listeners[event];
+
+    return this;
+  }
+
+  trigger(event: string | string[], ...args: any[]): this {
+    if (Array.isArray(event)) {
+      for (const e of event) {
+        this.trigger(e);
+      }
+      return this;
+    }
+
+    for (const listener of this.listeners(event)) {
+      listener(...args);
+    }
+
+    // Remove once
+    this._listeners[event] = this.listeners(event).filter((listener) => listener?.once !== true);
+
+    return this;
+  }
+
+  listeners(event: string): EventHandler[] {
+    return this._listeners[event] === undefined ? [] : this._listeners[event];
   }
 }
 
-export const EventMixin = Mixin(function (superclass) {
-  return class extends superclass {
-    /**
-     * @type {{ [event: string]: function[] }}
-     * @private
-     */
-    _listeners: Record<string, Function[]> = {};
-
-    /**
-     * @param {string|Array<string>} event
-     * @param {function} handler
-     * @returns {this}
-     */
-    on(event: string | string[], handler: Function): this {
-      if (Array.isArray(event)) {
-        event.forEach(e => this.on(e, handler));
-        return this;
-      }
-
-      if (this._listeners[event] === undefined) {
-        this._listeners[event] = [];
-      }
-
-      this._listeners[event].push(handler);
-
-      return this;
-    }
-
-    /**
-     * @param {string|Array<string>} event
-     * @param {function} handler
-     * @returns {this}
-     */
-    once(event: string | string[], handler: Function): this {
-      if (Array.isArray(event)) {
-        event.forEach(e => this.once(e, handler));
-        return this;
-      }
-
-      handler.once = true;
-      // handler._once = true;
-
-      return this.on(event, handler);
-    }
-
-    /**
-     * @param {string} event
-     * @param {?function} handler
-     * @returns {this}
-     */
-    off(event: string, handler: Function | undefined = undefined): this {
-      if (handler != null) {
-        this._listeners[event] = this.listeners(event).filter((listener) => listener !== handler);
-        return this;
-      }
-
-      delete this._listeners[event];
-
-      return this;
-    }
-
-    /**
-     * @param {string|string[]} event
-     * @param {any[]} args
-     * @returns {this}
-     */
-    trigger(event: string | string[], ...args: any[]): this {
-      if (Array.isArray(event)) {
-        event.forEach(e => this.trigger(e));
-        return this;
-      }
-
-      this.listeners(event).forEach(listener => {
-        listener(...args);
-      });
-
-      // Remove once
-      this._listeners[event] = this.listeners(event).filter((listener) => listener?.once !== true);
-
-      return this;
-    }
-
-    /**
-     * @param {string} event
-     * @returns {Function[]}
-     */
-    listeners(event: string): Function[] {
-      // if (typeof event !== 'string') {
-      //   throw new Error(`get listeners event name should only use string.`);
-      // }
-
-      return this._listeners[event] === undefined ? [] : this._listeners[event];
-    }
-  };
-});
-
-export class EventBus extends EventMixin(class {
-}) {
+export class EventBus extends Mixin(EventMixin) {
 }
 
+export type EventHandler = ((...event: any[]) => void) & { once?: boolean };
+
 export interface EventAwareInterface {
-  on(event: string | string[], handler: Function): this;
+  on(event: string | string[], handler: EventHandler): this;
 
-  once(event: string | string[], handler: Function): this;
+  once(event: string | string[], handler: EventHandler): this;
 
-  off(event: string, handler?: Function): this;
+  off(event: string, handler?: EventHandler): this;
 
   trigger(event: string | string[], ...args: any[]): this;
 
-  listeners(event: string): Function[];
+  listeners(event: string): EventHandler[];
 }

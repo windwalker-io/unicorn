@@ -1,35 +1,32 @@
 
-import { type EventAwareInterface, EventMixin } from './events';
-import { mix } from './mixwith';
-import { defaultsDeep } from 'lodash-es';
-import type { UnicornPlugin } from './types/base';
-import { getData, defData, setData, removeData } from './utilities';
+import { EventAwareInterface, EventMixin } from '@/unicorn/events';
+import { forceArray } from '@/unicorn/modules';
+import { Constructor, UnicornPlugin } from '@/unicorn/types';
+import { Mixin } from 'ts-mixer';
 
-const defaultOptions: Record<string, any> = {};
-
-interface UnicornApp extends EventAwareInterface {
-  //
-}
-
-class UnicornApp extends mix(class {}).with(EventMixin) {
-  plugins = {};
+export default class UnicornApp extends Mixin(EventMixin) implements EventAwareInterface {
+  registry = new Map();
+  plugins = new Map();
   // _listeners = {};
   waits: Promise<any>[] = [];
   options: Record<string, any>;
+  defaultOptions: Record<string, any> = {};
 
   constructor(options = {}) {
     super();
-    this.options = defaultsDeep({}, options, defaultOptions);
+    this.options = Object.assign({}, this.defaultOptions, options);
 
     // Wait dom ready
-    this.wait((resolve: Function) => {
-      document.addEventListener('DOMContentLoaded', () => resolve());
-    });
+    if (typeof document !== 'undefined') {
+      this.wait((resolve: Function) => {
+        document.addEventListener('DOMContentLoaded', () => resolve());
+      });
 
-    // Ready
-    document.addEventListener('DOMContentLoaded', () => {
-      this.completed().then(() => this.trigger('loaded'));
-    });
+      // Ready
+      document.addEventListener('DOMContentLoaded', () => {
+        this.completed().then(() => this.trigger('loaded'));
+      });
+    }
   }
 
   use(plugin: UnicornPlugin, options: Record<string, any> = {}) {
@@ -46,15 +43,9 @@ class UnicornApp extends mix(class {}).with(EventMixin) {
 
     this.trigger('plugin.installed', plugin);
 
+    this.plugins.set(plugin, plugin);
+
     return this;
-  }
-
-  inject<T>(plugin: string): T {
-    if (typeof this[plugin] === undefined) {
-      throw new Error(`Plugin: ${plugin} not found.`);
-    }
-
-    return this[plugin] as T;
   }
 
   detach(plugin: any) {
@@ -67,10 +58,24 @@ class UnicornApp extends mix(class {}).with(EventMixin) {
     return this;
   }
 
-  tap<T>(value: T, callback: Function): T {
-    callback(value);
+  inject<T>(plugin: Constructor<T> | string): T;
+  inject<T>(plugin: Constructor<T> | string, def: any): T | typeof def;
+  inject<T>(plugin: Constructor<T> | string, def?: any): any {
+    if (!typeof this.registry.has(plugin)) {
+      if (def !== undefined) {
+        return def;
+      }
 
-    return value;
+      throw new Error(`Injectable: ${(plugin as any).name} not found.`);
+    }
+
+    return this.registry.get(plugin);
+  }
+
+  provide(id: string, value: any) {
+    this.registry.set(id, value);
+
+    return this;
   }
 
   // trigger(event, ...args) {
@@ -80,59 +85,6 @@ class UnicornApp extends mix(class {}).with(EventMixin) {
   //     }
   //   });
   // }
-
-  data(name: string, data: any): any;
-  data(name: string): any;
-  data(ele: Element, name: string): any;
-  data(ele: Element, name: string, data?: any): any;
-  data(ele: Element | string, name: any = undefined, value: any = undefined) {
-    if (!(ele instanceof HTMLElement)) {
-      value = name;
-      name = ele;
-      ele = document as any as Element;
-    }
-
-    this.trigger('unicorn.data', name, value);
-
-    if (name === undefined) {
-      return getData(ele);
-    }
-
-    if (value === undefined) {
-      const res = getData(ele, name);
-
-      this.trigger('unicorn.data.get', name, res);
-
-      return res;
-    }
-
-    setData(ele, name, value);
-
-    this.trigger('unicorn.data.set', name, value);
-
-    return this;
-  }
-
-  removeData(name: string): any;
-  removeData(ele: Element, name: string): any;
-  removeData(ele: Element|string, name: any = undefined) {
-    if (!(ele instanceof HTMLElement)) {
-      name = ele;
-      ele = document as any as Element;
-    }
-
-    removeData(ele, name);
-
-    return this;
-  }
-
-  uri(type: string) {
-    return this.data('unicorn.uri')[type];
-  }
-
-  asset(type: string) {
-    return this.uri('asset')[type];
-  }
 
   wait(callback: Function): Promise<any> {
     const p = new Promise((resolve, reject) => {
@@ -155,6 +107,47 @@ class UnicornApp extends mix(class {}).with(EventMixin) {
 
     return promise;
   }
-}
 
-export default UnicornApp;
+  doImport(src: string) {
+    // @ts-ignore
+    return import(src);
+  }
+
+  import(...src: any[]): Promise<any|any[]> {
+    if (src.length === 1) {
+      return this.doImport(src[0]);
+    }
+
+    const promises: Promise<any>[] = [];
+
+    src.forEach((link) => {
+      promises.push(
+        link instanceof Promise ? link : this.doImport(link)
+      );
+    });
+
+    return Promise.all(promises);
+  }
+
+  async importSeries(...src: any): Promise<any|any[]> {
+    const modules: any[] = [];
+
+    for (const source of src) {
+      const m = await this.import(...forceArray(source));
+
+      modules.push(m);
+    }
+
+    return modules;
+  }
+
+  async importCSS(...src: any): Promise<any|any[]> {
+    let modules: any = await this.import(...src);
+
+    modules = forceArray(modules);
+
+    const styles: CSSStyleSheet[] = (modules as any[]).map(module => module.default);
+
+    document.adoptedStyleSheets = [...document.adoptedStyleSheets, ...styles];
+  }
+}

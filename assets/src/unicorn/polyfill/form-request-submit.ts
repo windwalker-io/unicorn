@@ -1,6 +1,6 @@
 // @ts-nocheck
 // @see https://github.com/javan/form-request-submit-polyfill
-(function (prototype) {
+export function formRequestSubmit(prototype) {
   if (typeof prototype.requestSubmit == 'function') {
     return;
   }
@@ -28,4 +28,4 @@
   function raise(errorConstructor, message, name) {
     throw new errorConstructor('Failed to execute \'requestSubmit\' on \'HTMLFormElement\': ' + message + '.', name);
   }
-})(HTMLFormElement.prototype);
+}
