@@ -1,5 +1,5 @@
-import { p as l, i as h } from "../chunks/unicorn-Dap6NpVD.js";
-class d {
+import { p as selectAll, i as selectOne } from "../chunks/unicorn-Bnc3cU-N.js";
+class CheckboxesMultiSelect {
   defaultOptions = {
     duration: 100,
     inputSelector: "input[type=checkbox][data-role=grid-checkbox]"
@@ -7,31 +7,37 @@ class d {
   $element;
   options;
   boxes;
-  last = !1;
-  static handle(t, s = {}) {
-    return l(t, (e) => new this(e, s));
+  last = false;
+  static handle(selector, options = {}) {
+    return selectAll(selector, (ele) => new this(ele, options));
   }
-  constructor(t, s = {}) {
-    this.$element = h(t), this.options = Object.assign({}, this.defaultOptions, s), this.boxes = Array.from(this.$element.querySelectorAll(this.options.inputSelector)), this.last = !1, l(this.boxes, (e) => {
-      e.addEventListener("click", (i) => {
-        this.select(e, i);
+  constructor(selector, options = {}) {
+    this.$element = selectOne(selector);
+    this.options = Object.assign({}, this.defaultOptions, options);
+    this.boxes = Array.from(this.$element.querySelectorAll(this.options.inputSelector));
+    this.last = false;
+    selectAll(this.boxes, (box) => {
+      box.addEventListener("click", (e) => {
+        this.select(box, e);
       });
     });
   }
-  select(t, s) {
+  select(box, event) {
     if (!this.last) {
-      this.last = t;
+      this.last = box;
       return;
     }
-    if (s.shiftKey) {
-      const e = [].indexOf.call(this.boxes, t), i = [].indexOf.call(this.boxes, this.last), c = [].slice.call(this.boxes, Math.min(e, i), Math.max(e, i) + 1);
-      [].forEach.call(c, (a, n) => {
-        a.checked = this.last.checked;
+    if (event.shiftKey) {
+      const start = [].indexOf.call(this.boxes, box);
+      const end = [].indexOf.call(this.boxes, this.last);
+      const chs = [].slice.call(this.boxes, Math.min(start, end), Math.max(start, end) + 1);
+      [].forEach.call(chs, (ele, i) => {
+        ele.checked = this.last.checked;
       });
     }
-    this.last = t;
+    this.last = box;
   }
 }
 export {
-  d as CheckboxesMultiSelect
+  CheckboxesMultiSelect
 };

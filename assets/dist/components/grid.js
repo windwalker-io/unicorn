@@ -1,175 +1,276 @@
-import { l as o, s as h, a as c, h as l, _ as n, b as a, c as u, e as d } from "../chunks/unicorn-Dap6NpVD.js";
-class p {
-  constructor(e, t, r, i = {}) {
-    if (this.element = t, this.form = r, this.element = t, this.options = { ...i }, !this.form)
+import { l as loadAlpine, s as slideDown, a as slideUp, h, _ as __, b as simpleConfirm, c as deleteConfirm, e as simpleAlert } from "../chunks/unicorn-Bnc3cU-N.js";
+class UnicornGridElement {
+  constructor(selector, element, form, options = {}) {
+    this.element = element;
+    this.form = form;
+    this.element = element;
+    this.options = { ...options };
+    if (!this.form) {
       throw new Error("UnicornGrid is depends on UnicornForm");
+    }
     this.bindEvents();
   }
   options;
   ordering = "";
   state = {};
   bindEvents() {
-    const e = this.element.querySelectorAll("input[data-role=grid-checkbox]");
-    for (const t of e)
-      t.addEventListener("click", () => {
-        t.dispatchEvent(new CustomEvent("change"));
-      }), t.addEventListener("change", () => {
-        const r = new CustomEvent("unicorn:checked", {
+    const inputs = this.element.querySelectorAll("input[data-role=grid-checkbox]");
+    for (const ch of inputs) {
+      ch.addEventListener("click", () => {
+        ch.dispatchEvent(new CustomEvent("change"));
+      });
+      ch.addEventListener("change", () => {
+        const event = new CustomEvent("unicorn:checked", {
           detail: { grid: this }
         });
-        this.form.element?.dispatchEvent(r);
+        this.form.element?.dispatchEvent(event);
       });
+    }
   }
-  initComponent(e = "grid", t = {}) {
-    return this.ordering = this.element?.dataset?.ordering || "", this.ordering && !this.ordering.toLowerCase().endsWith(" asc") && !this.ordering.toLowerCase().endsWith(" desc") && (this.ordering += " ASC"), o(() => {
-      Alpine.store(e, this.useState(t));
+  initComponent(store = "grid", custom = {}) {
+    this.ordering = this.element?.dataset?.ordering || "";
+    if (this.ordering) {
+      if (!this.ordering.toLowerCase().endsWith(" asc") && !this.ordering.toLowerCase().endsWith(" desc")) {
+        this.ordering += " ASC";
+      }
+    }
+    return loadAlpine(() => {
+      Alpine.store(store, this.useState(custom));
     });
   }
-  useState(e = {}) {
-    const t = {
-      form: this.form.useState(e)
+  useState(custom = {}) {
+    const state = {
+      form: this.form.useState(custom)
     };
-    return Object.getOwnPropertyNames(Object.getPrototypeOf(this)).map((r) => typeof this[r] == "function" ? t[r] = this[r].bind(this) : r), Object.assign(
-      t,
-      e
+    Object.getOwnPropertyNames(Object.getPrototypeOf(this)).map((item) => {
+      const prop = this[item];
+      if (typeof prop === "function") {
+        return state[item] = this[item].bind(this);
+      }
+      return item;
+    });
+    return Object.assign(
+      state,
+      custom
     );
   }
   getElement() {
     return this.element;
   }
-  sendFilter(e, t) {
-    e && e.preventDefault(), this.form.submit(null, null, t);
+  sendFilter($event, method) {
+    if ($event) {
+      $event.preventDefault();
+    }
+    this.form.submit(null, null, method);
   }
-  clearFilters(e, t) {
-    e.querySelectorAll("input, textarea, select").forEach((r) => {
-      r.value = "";
-    }), this.form.submit(null, null, t);
+  clearFilters(element, method) {
+    element.querySelectorAll("input, textarea, select").forEach((ele) => {
+      ele.value = "";
+    });
+    this.form.submit(null, null, method);
   }
-  async toggleFilters(e, t) {
-    e ? await h(t) : await c(t);
+  async toggleFilters(open, filterForm) {
+    if (open) {
+      await slideDown(filterForm);
+    } else {
+      await slideUp(filterForm);
+    }
   }
-  sort(e) {
-    const t = this.getDirection(e), r = e.dataset.field;
-    let i = e.dataset.asc, s = e.dataset.desc;
-    return r && (i = r + " ASC", s = r + " DESC"), t === "ASC" ? this.sortBy(s) : this.sortBy(i);
+  sort($el) {
+    const dir = this.getDirection($el);
+    const field = $el.dataset.field;
+    let asc = $el.dataset.asc;
+    let desc = $el.dataset.desc;
+    if (field) {
+      asc = field + " ASC";
+      desc = field + " DESC";
+    }
+    if (dir === "ASC") {
+      return this.sortBy(desc);
+    }
+    return this.sortBy(asc);
   }
   /**
    * Sort two items.
    */
-  sortBy(e) {
-    if (!e)
-      return !1;
-    let t = this.element.querySelector("input[name=list_ordering]");
-    return t || (t = l("input", { name: "list_ordering", type: "hidden", value: "" }), this.element.appendChild(t)), t.value = e, this.form.put();
+  sortBy(ordering) {
+    if (!ordering) {
+      return false;
+    }
+    let orderingInput = this.element.querySelector("input[name=list_ordering]");
+    if (!orderingInput) {
+      orderingInput = h("input", { name: "list_ordering", type: "hidden", value: "" });
+      this.element.appendChild(orderingInput);
+    }
+    orderingInput.value = ordering;
+    return this.form.put();
   }
-  isSortActive(e) {
-    return this.getDirection(e) != null;
+  isSortActive($el) {
+    return this.getDirection($el) != null;
   }
-  getDirection(e) {
-    const t = e.dataset.field;
-    let r = e.dataset.asc, i = e.dataset.desc;
-    return t && (r = t + " ASC", i = t + " DESC"), this.orderingEquals(r, this.ordering) ? "ASC" : this.orderingEquals(i, this.ordering) ? "DESC" : null;
+  getDirection($el) {
+    const field = $el.dataset.field;
+    let asc = $el.dataset.asc;
+    let desc = $el.dataset.desc;
+    if (field) {
+      asc = field + " ASC";
+      desc = field + " DESC";
+    }
+    if (this.orderingEquals(asc, this.ordering)) {
+      return "ASC";
+    } else if (this.orderingEquals(desc, this.ordering)) {
+      return "DESC";
+    }
+    return null;
   }
-  orderingEquals(e, t) {
-    return e = e || "", t = t || "", e = e.replace(/\s+/g, " ").trim().toLowerCase(), t = t.replace(/\s+/g, " ").trim().toLowerCase(), e === t;
+  orderingEquals(a, b) {
+    a = a || "";
+    b = b || "";
+    a = a.replace(/\s+/g, " ").trim().toLowerCase();
+    b = b.replace(/\s+/g, " ").trim().toLowerCase();
+    return a === b;
   }
   /**
    * Check a row's checkbox.
    */
-  checkRow(e, t = !0) {
-    const r = this.getCheckboxByRow(e);
-    if (!r)
-      throw new Error("Checkbox of row: " + e + " not found.");
-    r.checked = t, r.dispatchEvent(new Event("input")), r.dispatchEvent(new Event("change"));
+  checkRow(row, value = true) {
+    const ch = this.getCheckboxByRow(row);
+    if (!ch) {
+      throw new Error("Checkbox of row: " + row + " not found.");
+    }
+    ch.checked = value;
+    ch.dispatchEvent(new Event("input"));
+    ch.dispatchEvent(new Event("change"));
   }
-  getCheckboxByRow(e) {
+  getCheckboxByRow(row) {
     return this.form.element?.querySelector(
-      `input[data-role=grid-checkbox][data-row-number="${e}"]`
+      `input[data-role=grid-checkbox][data-row-number="${row}"]`
     );
   }
   /**
    * Update a row.
    */
-  updateRow(e, t, r) {
-    const i = this.getCheckboxByRow(e);
-    return i ? this.updateItem(i.value, t, r) : !1;
+  updateRow(row, url, data) {
+    const ch = this.getCheckboxByRow(row);
+    if (!ch) {
+      return false;
+    }
+    return this.updateItem(ch.value, url, data);
   }
   /**
    * Update an item by id.
    */
-  updateItem(e, t, r) {
-    return this.toggleAll(!1), this.disableAllCheckboxes(), this.form.injectInput("id[]", e), this.form.patch(t, r);
+  updateItem(id, url, data) {
+    this.toggleAll(false);
+    this.disableAllCheckboxes();
+    this.form.injectInput("id[]", id);
+    return this.form.patch(url, data);
   }
   /**
    * Update a item with batch task.
    */
-  updateItemByTask(e, t, r, i) {
-    return i = i || {}, i.task = e, this.updateItem(t, r, i);
+  updateItemByTask(task, id, url, data) {
+    data = data || {};
+    data.task = task;
+    return this.updateItem(id, url, data);
   }
   /**
    * Update a row with batch task.
    */
-  updateRowByTask(e, t, r, i) {
-    const s = this.getCheckboxByRow(t);
-    return s ? this.updateItemByTask(e, s.value, r, i) : !1;
+  updateRowByTask(task, row, url, data) {
+    const ch = this.getCheckboxByRow(row);
+    if (!ch) {
+      return false;
+    }
+    return this.updateItemByTask(task, ch.value, url, data);
   }
   /**
    * Batch update items.
    */
-  updateListByTask(e, t, r) {
-    return r = r || {}, r.task = e, this.form.patch(t, r);
+  updateListByTask(task, url, data) {
+    data = data || {};
+    data.task = task;
+    return this.form.patch(url, data);
   }
   /**
    * Copy a row.
    */
-  copyItem(e, t, r) {
-    return this.toggleAll(!1), this.disableAllCheckboxes(), this.form.injectInput("id[]", e), this.form.post(t, r);
+  copyItem(id, url, data) {
+    this.toggleAll(false);
+    this.disableAllCheckboxes();
+    this.form.injectInput("id[]", id);
+    return this.form.post(url, data);
   }
   /**
    * Copy a row.
    */
-  copyRow(e, t, r) {
-    const i = this.getCheckboxByRow(e);
-    return i ? this.copyItem(i.value, t, r) : !1;
+  copyRow(row, url, data) {
+    const ch = this.getCheckboxByRow(row);
+    if (!ch) {
+      return false;
+    }
+    return this.copyItem(ch.value, url, data);
   }
   /**
    * Delete checked items.
    */
-  deleteList(e, t, r) {
-    return this.validateChecked() ? (e = e ?? n("unicorn.message.delete.confirm"), e !== !1 ? a(e).then((i) => {
-      i && this.form.delete(t, r);
-    }) : this.form.delete(t, r), !0) : !1;
+  deleteList(message, url, data) {
+    if (!this.validateChecked()) {
+      return false;
+    }
+    message = message == null ? __("unicorn.message.delete.confirm") : message;
+    if (message !== false) {
+      simpleConfirm(message).then((isConfirm) => {
+        if (isConfirm) {
+          this.form.delete(url, data);
+        }
+      });
+    } else {
+      this.form.delete(url, data);
+    }
+    return true;
   }
   /**
    * Delete an item by row.
    */
-  async deleteRow(e, t, r, i) {
-    const s = this.getCheckboxByRow(e);
-    return s ? this.deleteItem(s.value, t, r, i) : !1;
+  async deleteRow(row, msg, url, data) {
+    const ch = this.getCheckboxByRow(row);
+    if (!ch) {
+      return false;
+    }
+    return this.deleteItem(ch.value, msg, url, data);
   }
   /**
    * Delete an item.
    */
-  async deleteItem(e, t, r, i) {
-    t = t || n("unicorn.message.delete.confirm");
-    const s = await u(t);
-    return s && (i = i || {}, i.id = e, this.form.delete(r, i)), s;
+  async deleteItem(id, msg, url, data) {
+    msg = msg || __("unicorn.message.delete.confirm");
+    const isConfirm = await deleteConfirm(msg);
+    if (isConfirm) {
+      data = data || {};
+      data.id = id;
+      this.form.delete(url, data);
+    }
+    return isConfirm;
   }
   /**
    * Toggle all checkboxes.
    */
-  toggleAll(e) {
-    return Array.from(
+  toggleAll(value) {
+    Array.from(
       this.element.querySelectorAll("input[data-role=grid-checkbox][type=checkbox]")
-    ).forEach((t) => {
-      t.checked = e, t.dispatchEvent(new CustomEvent("input")), t.dispatchEvent(new CustomEvent("change"));
-    }), this;
+    ).forEach((input) => {
+      input.checked = value;
+      input.dispatchEvent(new CustomEvent("input"));
+      input.dispatchEvent(new CustomEvent("change"));
+    });
+    return this;
   }
   disableAllCheckboxes() {
     Array.from(
       this.element.querySelectorAll("input[data-role=grid-checkbox][type=checkbox]")
-    ).forEach((e) => {
-      e.disabled = !0;
+    ).forEach((input) => {
+      input.disabled = true;
     });
   }
   /**
@@ -187,13 +288,27 @@ class p {
     );
   }
   getCheckedValues() {
-    return this.getChecked().map((e) => e.value);
+    return this.getChecked().map((input) => input.value);
   }
   /**
    * Validate there has one or more checked boxes.
    */
-  validateChecked(e, t, r) {
-    return r = r || n("unicorn.message.grid.checked"), this.hasChecked() ? (t && t(this), this) : (r !== "" && d(r), e && (e.stopPropagation(), e.preventDefault()), this);
+  validateChecked(event, callback, msg) {
+    msg = msg || __("unicorn.message.grid.checked");
+    if (!this.hasChecked()) {
+      if (msg !== "") {
+        simpleAlert(msg);
+      }
+      if (event) {
+        event.stopPropagation();
+        event.preventDefault();
+      }
+      return this;
+    }
+    if (callback) {
+      callback(this);
+    }
+    return this;
   }
   hasChecked() {
     return this.countChecked() > 0;
@@ -201,25 +316,27 @@ class p {
   /**
    * Reorder all.
    */
-  reorderAll(e, t) {
-    return this.updateListByTask("reorder", e, t);
+  reorderAll(url, data) {
+    return this.updateListByTask("reorder", url, data);
   }
   /**
    * Reorder items.
    */
-  moveItem(e, t, r, i) {
-    return i = i || {}, i.delta = t, this.updateItemByTask("move", e, r, i);
+  moveItem(id, delta, url, data) {
+    data = data || {};
+    data.delta = delta;
+    return this.updateItemByTask("move", id, url, data);
   }
-  moveUp(e, t, r) {
-    return this.moveItem(e, -1, t, r);
+  moveUp(id, url, data) {
+    return this.moveItem(id, -1, url, data);
   }
-  moveDown(e, t, r) {
-    return this.moveItem(e, 1, t, r);
+  moveDown(id, url, data) {
+    return this.moveItem(id, 1, url, data);
   }
-  getId(e = "") {
-    return this.form.element?.id + e;
+  getId(suffix = "") {
+    return this.form.element?.id + suffix;
   }
 }
 export {
-  p as UnicornGridElement
+  UnicornGridElement
 };

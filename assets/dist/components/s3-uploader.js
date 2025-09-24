@@ -1,15 +1,15 @@
-import { M as f, E as g, d as h, m as c, j as y } from "../chunks/unicorn-Dap6NpVD.js";
-const u = {};
-function D(s, e = {}) {
-  return u[s] ??= m(s, e);
+import { M as Mixin, E as EventMixin, d as data, m as mergeDeep, j as useHttpClient } from "../chunks/unicorn-Bnc3cU-N.js";
+const instances = {};
+function get(name, options = {}) {
+  return instances[name] ??= create(name, options);
 }
-function m(s, e = {}) {
-  return new w(s, e);
+function create(name, options = {}) {
+  return new S3Uploader(name, options);
 }
-function b(s) {
-  delete u[s];
+function destroy(name) {
+  delete instances[name];
 }
-const C = {
+const defaultOptions = {
   endpoint: "",
   subfolder: "",
   viewerHost: "",
@@ -25,51 +25,79 @@ const C = {
     "X-Amz-Signature": ""
   }
 };
-class w extends (/* @__PURE__ */ f(g)) {
-  constructor(e, o = {}) {
-    super(), this.name = e;
-    const t = h("@s3.uploader." + e) || {};
-    this.options = c({}, C, t, o);
+class S3Uploader extends (/* @__PURE__ */ Mixin(EventMixin)) {
+  constructor(name, options = {}) {
+    super();
+    this.name = name;
+    const awsOptions = data("@s3.uploader." + name) || {};
+    this.options = mergeDeep({}, defaultOptions, awsOptions, options);
   }
   options;
   http;
   async getHttpClient() {
-    return this.http ??= await y();
+    return this.http ??= await useHttpClient();
   }
   /**
    * Do upload.
    */
-  async upload(e, o, t = {}) {
-    const d = await this.getHttpClient(), i = new FormData(), l = c({}, this.options.formInputs, t.formInputs || {});
-    typeof e == "string" && (e = new Blob([e], { type: t["Content-Type"] || "text/plain" })), (e instanceof Blob || e instanceof File) && (t["Content-Type"] = t["Content-Type"] || e.type), t.filename && (t["Content-Disposition"] = "attachment; filename*=UTF-8''" + encodeURIComponent(t.filename)), t.key = a(this.options.subfolder || "") + "/" + a(o), t.key = a(t.key), t["Content-Type"] = t["Content-Type"] || void 0, t["Content-Disposition"] = t["Content-Disposition"] || void 0;
-    for (let n in l)
-      i.set(n, l[n]);
-    for (let n of Object.keys(this.options.starts_with))
-      t[n] && i.set(n, t[n]);
-    i.append("file", e), this.trigger("start", i);
+  async upload(file, path, options = {}) {
+    const httpClient = await this.getHttpClient();
+    const fileData = new FormData();
+    const inputs = mergeDeep({}, this.options.formInputs, options.formInputs || {});
+    if (typeof file === "string") {
+      file = new Blob([file], { type: options["Content-Type"] || "text/plain" });
+    }
+    if (file instanceof Blob || file instanceof File) {
+      options["Content-Type"] = options["Content-Type"] || file.type;
+    }
+    if (options["filename"]) {
+      options["Content-Disposition"] = "attachment; filename*=UTF-8''" + encodeURIComponent(options["filename"]);
+    }
+    options["key"] = trimSlashes(this.options.subfolder || "") + "/" + trimSlashes(path);
+    options["key"] = trimSlashes(options["key"]);
+    options["Content-Type"] = options["Content-Type"] || void 0;
+    options["Content-Disposition"] = options["Content-Disposition"] || void 0;
+    for (let key in inputs) {
+      fileData.set(key, inputs[key]);
+    }
+    for (let key of Object.keys(this.options.starts_with)) {
+      if (options[key]) {
+        fileData.set(key, options[key]);
+      }
+    }
+    fileData.append("file", file);
+    this.trigger("start", fileData);
     try {
-      let n = await d.post(
+      let res = await httpClient.post(
         this.options.endpoint || "",
-        i,
+        fileData,
         {
-          onUploadProgress: (r) => {
-            t.onUploadProgress && t.onUploadProgress(r), this.trigger("upload-progress", r), r.total != null && this.trigger("progress", r.loaded / r.total, r);
+          onUploadProgress: (e) => {
+            if (options.onUploadProgress) {
+              options.onUploadProgress(e);
+            }
+            this.trigger("upload-progress", e);
+            if (e.total != null) {
+              this.trigger("progress", e.loaded / e.total, e);
+            }
           }
         }
       );
-      const p = this.options.viewerHost + "/" + a(o);
-      return this.trigger("success", p, n), n.url = p, n;
+      const url = this.options.viewerHost + "/" + trimSlashes(path);
+      this.trigger("success", url, res);
+      res.url = url;
+      return res;
     } finally {
       this.trigger("end");
     }
   }
 }
-function a(s) {
-  return s.replace(/^\/+|\/+$/g, "");
+function trimSlashes(str) {
+  return str.replace(/^\/+|\/+$/g, "");
 }
 export {
-  w as S3Uploader,
-  m as create,
-  b as destroy,
-  D as get
+  S3Uploader,
+  create,
+  destroy,
+  get
 };

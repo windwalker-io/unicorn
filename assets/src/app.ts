@@ -1,10 +1,13 @@
 
 import { EventAwareInterface, EventMixin } from '@/events';
-import { forceArray } from '@/modules';
 import { Constructor, UnicornPlugin } from '@/types';
 import { Mixin } from 'ts-mixer';
 
-export default class UnicornApp extends Mixin(EventMixin) implements EventAwareInterface {
+type InjectionKey<T = any> = string | symbol | Constructor<T>;
+
+export interface UnicornApp extends EventAwareInterface {}
+
+export class UnicornApp extends Mixin(EventMixin) implements EventAwareInterface {
   registry = new Map();
   plugins = new Map();
   // _listeners = {};
@@ -59,20 +62,20 @@ export default class UnicornApp extends Mixin(EventMixin) implements EventAwareI
   }
 
   inject<T>(plugin: Constructor<T> | string): T;
-  inject<T>(plugin: Constructor<T> | string, def: any): T | typeof def;
-  inject<T>(plugin: Constructor<T> | string, def?: any): any {
-    if (!typeof this.registry.has(plugin)) {
+  inject<T>(plugin: Constructor<T> | string, def: T): T;
+  inject<T>(id: InjectionKey<T>, def?: T): T | undefined {
+    if (!typeof this.registry.has(id)) {
       if (def !== undefined) {
         return def;
       }
 
-      throw new Error(`Injectable: ${(plugin as any).name} not found.`);
+      throw new Error(`Injectable: ${(id as any).name} not found.`);
     }
 
-    return this.registry.get(plugin);
+    return this.registry.get(id);
   }
 
-  provide(id: string | Constructor<any>, value: any) {
+  provide<T>(id: InjectionKey<T>, value: T) {
     this.registry.set(id, value);
 
     return this;

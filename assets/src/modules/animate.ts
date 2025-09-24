@@ -1,9 +1,11 @@
+import { selectOne } from '@/modules';
+
 export function animateTo(
   element: HTMLElement,
   styles: Partial<Record<keyof CSSStyleDeclaration, any>>,
   options: number | KeyframeAnimationOptions = {}
 ): Animation {
-  element = this.app.selectOne(element);
+  element = selectOne(element);
 
   const currentStyles = window.getComputedStyle(element);
   const transitions: Record<string, any[]> = {};

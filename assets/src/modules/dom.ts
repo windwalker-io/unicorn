@@ -1,15 +1,10 @@
-import UnicornApp from '@/app';
-import { data } from '@/data';
-import { UnicornPlugin } from '@/types';
 import { defData } from '@/utilities';
-
-const domReady = null;
 
 /**
  * @see https://stackoverflow.com/a/9899701
  */
-export function domready(callback: ((value: any) => void) | undefined = undefined): Promise<void> {
-  let promise: Promise<void> = domReady || new Promise<void>((resolve) => {
+export function domready(callback?: ((value: any) => any)): Promise<void> {
+  let promise = new Promise<void>((resolve) => {
     // see if DOM is already available
     if (document.readyState === 'complete' || document.readyState === 'interactive') {
       // call on next available tick

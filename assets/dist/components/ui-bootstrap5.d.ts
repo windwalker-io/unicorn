@@ -10,5 +10,6 @@ export declare class UIBootstrap5 implements UIThemeInterface {
     keepTab(selector?: string | HTMLElement, config?: Record<string, any>): Promise<LoadTab>;
     buttonRadio(): Promise<typeof import('@/bootstrap/button-radio')>;
     buttonRadio(selector: string | HTMLElement, config?: Record<string, any>): Promise<ButtonRadio>;
+    tooltip(selector?: NodeListOf<Element> | Element | string, config?: Record<string, any>): any;
     getMajorVersion(module: any): number;
 }

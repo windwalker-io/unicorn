@@ -1,42 +1,59 @@
-import { l as P, m as f, w as v, o as m, x as g } from "../chunks/unicorn-Dap6NpVD.js";
-import { g as d } from "../chunks/_commonjsHelpers-C6fGbg64.js";
-var r = {}, h;
-function C() {
-  if (h) return r;
-  h = 1, Object.defineProperty(r, "__esModule", { value: !0 });
-  class e {
+import { l as loadAlpine, m as mergeDeep, w as uid, o as module, x as useLoadedHttpClient } from "../chunks/unicorn-Bnc3cU-N.js";
+import { g as getDefaultExportFromCjs } from "../chunks/_commonjsHelpers-CUmg6egw.js";
+var alpineComponent = {};
+var hasRequiredAlpineComponent;
+function requireAlpineComponent() {
+  if (hasRequiredAlpineComponent) return alpineComponent;
+  hasRequiredAlpineComponent = 1;
+  Object.defineProperty(alpineComponent, "__esModule", { value: true });
+  class AlpineComponent2 {
   }
-  return r.default = e, r;
+  alpineComponent.default = AlpineComponent2;
+  return alpineComponent;
 }
-var S = /* @__PURE__ */ C();
-const j = /* @__PURE__ */ d(S);
-var u = {}, p;
-function x() {
-  if (p) return u;
-  p = 1, Object.defineProperty(u, "__esModule", { value: !0 });
-  function e(t) {
-    return function(...s) {
-      let i = new t(...s);
-      const l = t.prototype;
-      let n = {};
-      return Object.getOwnPropertyNames(l).forEach(function(o) {
-        if (o === "constructor")
+var alpineComponentExports = /* @__PURE__ */ requireAlpineComponent();
+const AlpineComponent = /* @__PURE__ */ getDefaultExportFromCjs(alpineComponentExports);
+var component = {};
+var hasRequiredComponent;
+function requireComponent() {
+  if (hasRequiredComponent) return component;
+  hasRequiredComponent = 1;
+  Object.defineProperty(component, "__esModule", { value: true });
+  function Component2(component2) {
+    return function(...args) {
+      let instance = new component2(...args);
+      const proto = component2.prototype;
+      let data = {};
+      Object.getOwnPropertyNames(proto).forEach(function(key) {
+        if (key === "constructor") {
           return;
-        const a = Object.getOwnPropertyDescriptor(l, o);
-        a.value !== void 0 ? typeof a.value == "function" && (n[o] = a.value) : (a.get || a.set) && Object.defineProperty(n, o, { get: a.get, set: a.set });
-      }), Object.assign(n, i);
+        }
+        const descriptor = Object.getOwnPropertyDescriptor(proto, key);
+        if (descriptor.value !== void 0) {
+          if (typeof descriptor.value === "function") {
+            data[key] = descriptor.value;
+          }
+        } else if (descriptor.get || descriptor.set) {
+          Object.defineProperty(data, key, { get: descriptor.get, set: descriptor.set });
+        }
+      });
+      return Object.assign(data, instance);
     };
   }
-  return u.default = e, u;
+  component.default = Component2;
+  return component;
 }
-var F = /* @__PURE__ */ x();
-const b = /* @__PURE__ */ d(F);
-var w = Object.getOwnPropertyDescriptor, E = (e, t, s, i) => {
-  for (var l = i > 1 ? void 0 : i ? w(t, s) : t, n = e.length - 1, o; n >= 0; n--)
-    (o = e[n]) && (l = o(l) || l);
-  return l;
+var componentExports = /* @__PURE__ */ requireComponent();
+const Component = /* @__PURE__ */ getDefaultExportFromCjs(componentExports);
+var __getOwnPropDesc = /* @__PURE__ */ (() => Object.getOwnPropertyDescriptor)();
+var __decorateClass = (decorators, target, key, kind) => {
+  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc(target, key) : target;
+  for (var i = decorators.length - 1, decorator; i >= 0; i--)
+    if (decorator = decorators[i])
+      result = decorator(result) || result;
+  return result;
 };
-const I = {
+const defaultOptions = {
   id: "",
   selected: "",
   path: [],
@@ -49,8 +66,8 @@ const I = {
   labels: [],
   labelWidth: "col-md-3",
   fieldWidth: "col",
-  readonly: !1,
-  disabled: !1,
+  readonly: false,
+  disabled: false,
   valueField: "id",
   textField: "title",
   horizontal: null,
@@ -63,116 +80,169 @@ const I = {
   onValueInit: () => {
   }
 };
-let c = class extends j {
+let FieldCascadeSelect = class extends AlpineComponent {
   options;
   el;
-  canModify = !1;
+  canModify = false;
   lists = [];
   ajaxUrl = "";
   values = [];
-  constructor(e = {}) {
-    super(), this.options = f({}, I, e), this.options.id = this.options.id || "cascade-select-" + v();
+  constructor(options = {}) {
+    super();
+    this.options = mergeDeep({}, defaultOptions, options);
+    this.options.id = this.options.id || "cascade-select-" + uid();
   }
   init() {
-    this.canModify = !this.options.readonly && !this.options.disabled, this.ajaxUrl = this.options.ajaxUrl, this.values = this.options.path.slice().map(String);
-    let e = this.options.path.slice();
-    e.length === 0 ? e = [null] : e.unshift(null);
-    let t = Promise.resolve(), s = null;
-    e.forEach((i, l) => {
-      t = t.then(() => this.loadItems(i, l).then((n) => {
-        n.length > 0 && this.lists.push(n);
-      })), s = i;
-    }), this.el = this.$el, m(this.$el, "cascade.select", () => this), this.valueInit(this.$el, s, e);
+    this.canModify = !this.options.readonly && !this.options.disabled;
+    this.ajaxUrl = this.options.ajaxUrl;
+    this.values = this.options.path.slice().map(String);
+    let values = this.options.path.slice();
+    if (values.length === 0) {
+      values = [null];
+    } else {
+      values.unshift(null);
+    }
+    let promise = Promise.resolve();
+    let lastValue = null;
+    values.forEach((v, i) => {
+      promise = promise.then(() => {
+        return this.loadItems(v, i).then((list) => {
+          if (list.length > 0) {
+            this.lists.push(list);
+          }
+        });
+      });
+      lastValue = v;
+    });
+    this.el = this.$el;
+    module(this.$el, "cascade.select", () => this);
+    this.valueInit(this.$el, lastValue, values);
   }
-  getLabel(e) {
-    return this.options.labels[e] || `Level ${e + 1}`;
+  getLabel(i) {
+    return this.options.labels[i] || `Level ${i + 1}`;
   }
-  getId(e) {
-    return `${this.options.id}__level-${e}`;
+  getId(i) {
+    return `${this.options.id}__level-${i}`;
   }
-  getListValue(e) {
-    return this.values[e] || "";
+  getListValue(i) {
+    return this.values[i] || "";
   }
-  isSelected(e, t) {
-    return String(this.getListValue(e)) === String(t[this.options.valueField]);
+  isSelected(i, item) {
+    return String(this.getListValue(i)) === String(item[this.options.valueField]);
   }
   getFinalValue() {
-    const e = this.values.slice();
-    if (e.length === 0)
+    const values = this.values.slice();
+    if (values.length === 0) {
       return this.options.defaultValue;
-    const t = e.filter((s) => s != null).filter((s) => s !== "").pop();
-    return t ?? this.options.defaultValue;
+    }
+    const v = values.filter((v2) => v2 != null).filter((v2) => v2 !== "").pop();
+    if (v == void 0) {
+      return this.options.defaultValue;
+    }
+    return v;
   }
   getLevel() {
     return this.values.length;
   }
-  async onChange(e, t) {
-    const s = t.target;
-    this.values[e] = s.value, this.options.onChange(t), t.stopPropagation();
-    const i = new CustomEvent("change", {
+  async onChange(i, event) {
+    const el = event.target;
+    this.values[i] = el.value;
+    this.options.onChange(event);
+    event.stopPropagation();
+    const changeEvent = new CustomEvent("change", {
       detail: {
-        el: s,
+        el,
         component: this,
-        value: s.value,
+        value: el.value,
         path: this.values
       }
     });
-    if (this.el?.dispatchEvent(i), s.value === "") {
-      this.lists.splice(e + 1), this.values.splice(e + 1);
+    this.el?.dispatchEvent(changeEvent);
+    if (el.value === "") {
+      this.lists.splice(i + 1);
+      this.values.splice(i + 1);
       return;
     }
-    let l = await this.loadItems(s.value, e);
-    this.lists.splice(e + 1), this.values.splice(e + 1), l.length > 0 && this.lists.push(l);
+    let list = await this.loadItems(el.value, i);
+    this.lists.splice(i + 1);
+    this.values.splice(i + 1);
+    if (list.length > 0) {
+      this.lists.push(list);
+    }
   }
-  async loadItems(e, t) {
-    return this.ajaxUrl ? await (await (await g()).get(
-      this.ajaxUrl,
-      {
-        params: {
-          [this.options.ajaxValueField]: e,
-          self: this.options.ignoreSelf || null
+  async loadItems(parentId, i) {
+    if (this.ajaxUrl) {
+      const http = await useLoadedHttpClient();
+      let res = await http.get(
+        this.ajaxUrl,
+        {
+          params: {
+            [this.options.ajaxValueField]: parentId,
+            self: this.options.ignoreSelf || null
+          }
         }
-      }
-    )).data.data : e ? Promise.resolve(
-      this.handleSourceItems(
-        this.findFromList(this.lists[t - 1] || [], e)?.children || []
-      )
-    ) : Promise.resolve(this.handleSourceItems(this.options.source));
+      );
+      return await res.data.data;
+    }
+    if (parentId) {
+      return Promise.resolve(
+        this.handleSourceItems(
+          this.findFromList(this.lists[i - 1] || [], parentId)?.children || []
+        )
+      );
+    }
+    return Promise.resolve(this.handleSourceItems(this.options.source));
   }
-  valueInit(e, t, s) {
-    const i = new CustomEvent("value.init", {
+  valueInit($select, value, path) {
+    const event = new CustomEvent("value.init", {
       detail: {
-        el: e,
+        el: $select,
         component: this,
-        value: t,
-        path: s
+        value,
+        path
       }
     });
-    this.options.onSelectInit(i), this.$el.dispatchEvent(i);
+    this.options.onSelectInit(event);
+    this.$el.dispatchEvent(event);
   }
-  selectInit(e) {
-    const t = new CustomEvent("select.init", {
+  selectInit($select) {
+    const event = new CustomEvent("select.init", {
       detail: {
-        el: e,
+        el: $select,
         component: this
       }
     });
-    this.options.onSelectInit(t), this.$el.dispatchEvent(t);
+    this.options.onSelectInit(event);
+    this.$el.dispatchEvent(event);
   }
-  handleSourceItems(e) {
-    return e.map((t) => ({
-      [this.options.valueField]: t.value[this.options.valueField],
-      [this.options.textField]: t.value[this.options.textField],
-      children: t.children
-    })).filter((t) => this.options.ignoreSelf ? t[this.options.valueField] != this.options.ignoreSelf : t);
+  handleSourceItems(items) {
+    return items.map((item) => {
+      return {
+        [this.options.valueField]: item.value[this.options.valueField],
+        [this.options.textField]: item.value[this.options.textField],
+        children: item.children
+      };
+    }).filter((item) => {
+      if (this.options.ignoreSelf) {
+        return item[this.options.valueField] != this.options.ignoreSelf;
+      }
+      return item;
+    });
   }
-  findFromList(e, t) {
-    return e.filter((i) => i[this.options.valueField] == t).shift();
+  findFromList(items, value) {
+    const found = items.filter((item) => item[this.options.valueField] == value);
+    return found.shift();
   }
-  getPlaceholder(e) {
-    return this.options.placeholders[e] ? this.options.placeholders[e] : this.options.placeholder;
+  getPlaceholder(i) {
+    if (this.options.placeholders[i]) {
+      return this.options.placeholders[i];
+    }
+    return this.options.placeholder;
   }
 };
-c = /* @__PURE__ */ E([
-  b
-], c);
+FieldCascadeSelect = /* @__PURE__ */ __decorateClass([
+  Component
+], FieldCascadeSelect);
+/* @__PURE__ */ loadAlpine(() => {
+  Alpine.data("CascadeSelect", FieldCascadeSelect);
+});

@@ -1,7 +1,7 @@
 /**
  * @see https://stackoverflow.com/a/9899701
  */
-export declare function domready(callback?: ((value: any) => void) | undefined): Promise<void>;
+export declare function domready(callback?: ((value: any) => any)): Promise<void>;
 export declare function selectOne<K extends keyof HTMLElementTagNameMap>(ele: K): HTMLElementTagNameMap[K] | null;
 export declare function selectOne<E extends Element = Element>(ele: string): E | null;
 export declare function selectOne<E extends Element = Element>(ele: E): E;

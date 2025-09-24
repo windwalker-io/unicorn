@@ -55,7 +55,7 @@ export default defineConfig(({ mode }) => {
       },
       outDir: 'dist',
       emptyOutDir: true,
-      minify: true,
+      minify: false,
     },
     plugins: [
       treeShakeable(),

@@ -1,5 +1,5 @@
-import { f as r, m as d } from "../chunks/unicorn-Dap6NpVD.js";
-class n extends HTMLElement {
+import { f as useUniDirective, m as mergeDeep } from "../chunks/unicorn-Bnc3cU-N.js";
+class IFrameModal extends HTMLElement {
   static is = "uni-iframe-modal";
   options;
   modalElement;
@@ -22,65 +22,99 @@ class n extends HTMLElement {
     return this.getAttribute("selector") || "[data-iframe-modal]";
   }
   async getBootstrapModal() {
-    const { Modal: i } = await import("bootstrap");
-    return this.modal ??= i.getOrCreateInstance(this.modalElement);
+    const { Modal } = await import("bootstrap");
+    return this.modal ??= Modal.getOrCreateInstance(this.modalElement);
   }
   connectedCallback() {
-    this.options = JSON.parse(this.getAttribute("options") || "{}"), this.innerHTML.trim() || (this.innerHTML = this.template()), this.modalElement = this.querySelector(this.selector), this.iframe = this.modalElement.querySelector("iframe"), this.iframe.modalLink = () => this, this.bindEvents(), this.getBootstrapModal();
+    this.options = JSON.parse(this.getAttribute("options") || "{}");
+    if (!this.innerHTML.trim()) {
+      this.innerHTML = this.template();
+    }
+    this.modalElement = this.querySelector(this.selector);
+    this.iframe = this.modalElement.querySelector("iframe");
+    this.iframe.modalLink = () => {
+      return this;
+    };
+    this.bindEvents();
+    this.getBootstrapModal();
   }
   bindEvents() {
     this.modalElement.addEventListener("hidden.bs.modal", () => {
       this.iframe.src = "";
     });
   }
-  async open(i, e = {}) {
-    if (e = d(
+  async open(href, options = {}) {
+    options = mergeDeep(
       {
         height: null,
-        resize: !1,
+        resize: false,
         size: "modal-lg"
       },
       this.options,
-      e
-    ), e.resize) {
-      const s = () => {
-        this.resize(this.iframe), this.iframe.removeEventListener("load", s);
+      options
+    );
+    if (options.resize) {
+      const onload = () => {
+        this.resize(this.iframe);
+        this.iframe.removeEventListener("load", onload);
       };
-      this.iframe.addEventListener("load", s);
-    } else
-      this.iframe.style.height = e.height || "500px";
-    if (e.size != null) {
-      const s = this.modalElement.querySelector(".modal-dialog");
-      s.classList.remove("modal-lg", "modal-xl", "modal-sm", "modal-xs"), s.classList.add(e.size);
+      this.iframe.addEventListener("load", onload);
+    } else {
+      this.iframe.style.height = options.height || "500px";
     }
-    this.iframe.src = i, (await this.getBootstrapModal()).show();
+    if (options.size != null) {
+      const dialog = this.modalElement.querySelector(".modal-dialog");
+      dialog.classList.remove("modal-lg", "modal-xl", "modal-sm", "modal-xs");
+      dialog.classList.add(options.size);
+    }
+    this.iframe.src = href;
+    const modal = await this.getBootstrapModal();
+    modal.show();
   }
   async close() {
-    this.iframe.src = "", (await this.getBootstrapModal()).hide();
+    this.iframe.src = "";
+    const modal = await this.getBootstrapModal();
+    modal.hide();
   }
-  resize(i) {
+  resize(iframe) {
     setTimeout(() => {
-      let e = i.contentWindow.document.documentElement.scrollHeight;
-      e += 30, e < 500 && (e = 500), i.style.height = e + "px";
+      let height = iframe.contentWindow.document.documentElement.scrollHeight;
+      height += 30;
+      if (height < 500) {
+        height = 500;
+      }
+      iframe.style.height = height + "px";
     }, 30);
   }
   getModalId() {
     return this.options?.id || this.id + "__modal";
   }
 }
-const m = /* @__PURE__ */ r("modal-link", {
-  mounted(t, i) {
-    let e = {};
-    e.height = t.dataset.height, e.resize = t.dataset.resize === "1" || t.dataset.resize === "true", e.size = t.dataset.size;
-    const o = i.value;
-    t.style.pointerEvents = null, t.addEventListener("click", (s) => {
-      s.preventDefault(), s.stopPropagation();
-      const a = document.querySelector(o);
-      a && ("src" in t ? a.open(t.src, e) : "href" in t && a.open(t.href, e));
+/* @__PURE__ */ customElements.define(/* @__PURE__ */ (() => IFrameModal.is)(), IFrameModal);
+const ready = /* @__PURE__ */ useUniDirective("modal-link", {
+  mounted(el, binding) {
+    let options = {};
+    options.height = el.dataset.height;
+    options.resize = el.dataset.resize === "1" || el.dataset.resize === "true";
+    options.size = el.dataset.size;
+    const target = binding.value;
+    el.style.pointerEvents = null;
+    el.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const im = document.querySelector(target);
+      if (!im) {
+        return;
+      }
+      if ("src" in el) {
+        im.open(el.src, options);
+      } else if ("href" in el) {
+        im.open(el.href, options);
+      }
     });
   }
 });
 export {
-  n as IFrameModal,
-  m as ready
+  IFrameModal,
+  ready
 };

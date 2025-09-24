@@ -1,116 +1,163 @@
-import { d as p, l as f } from "../chunks/unicorn-Dap6NpVD.js";
-function d(o, e) {
-  return m.get()[o](e);
+import { d as data, l as loadAlpine } from "../chunks/unicorn-Bnc3cU-N.js";
+function useSystemUri(type, path) {
+  const uri2 = UnicornSystemUri.get();
+  {
+    return uri2[type](path);
+  }
 }
-function u(o) {
-  return p("unicorn.uri")[o];
+function uri(type) {
+  return data("unicorn.uri")[type];
 }
-class m extends URL {
+class UnicornSystemUri extends URL {
   static instance;
   static get() {
-    return this.instance ??= new this(u("full"));
+    return this.instance ??= new this(uri("full"));
   }
-  path(e = "") {
-    return u("path") + e;
+  path(path = "") {
+    return uri("path") + path;
   }
-  root(e = "") {
-    return u("root") + e;
+  root(path = "") {
+    return uri("root") + path;
   }
   current() {
-    return u("current") || "";
+    return uri("current") || "";
   }
   full() {
-    return u("full") || "";
+    return uri("full") || "";
   }
   route() {
-    return u("route") || "";
+    return uri("route") || "";
   }
   script() {
-    return u("script") || "";
+    return uri("script") || "";
   }
   routeWithQuery() {
-    const e = this.route(), t = this.searchParams.toString();
-    return t ? `${e}?${t}` : e;
+    const route = this.route();
+    const query = this.searchParams.toString();
+    return query ? `${route}?${query}` : route;
   }
   routeAndQuery() {
-    const e = this.route(), t = this.searchParams.toString();
-    return [e, t];
+    const route = this.route();
+    const query = this.searchParams.toString();
+    return [route, query];
   }
 }
-class a {
+class UnicornFormElement {
   element;
   options;
-  constructor(e, t, r = {}) {
-    if (!t) {
-      t = document.createElement("form"), typeof e == "string" && e.startsWith("#") && (t.setAttribute("id", e.substring(1)), t.setAttribute("name", e.substring(1))), t.setAttribute("method", "post"), t.setAttribute("enctype", "multipart/form-data"), t.setAttribute("novalidate", "true"), t.setAttribute("action", d("full")), t.setAttribute("style", "display: none;");
-      const i = document.createElement("input");
-      i.setAttribute("type", "hidden"), i.setAttribute("name", p("csrf-token")), i.setAttribute("value", "1"), t.appendChild(i), document.body.appendChild(t);
+  constructor(selector, element, options = {}) {
+    if (!element) {
+      element = document.createElement("form");
+      if (typeof selector === "string" && selector.startsWith("#")) {
+        element.setAttribute("id", selector.substring(1));
+        element.setAttribute("name", selector.substring(1));
+      }
+      element.setAttribute("method", "post");
+      element.setAttribute("enctype", "multipart/form-data");
+      element.setAttribute("novalidate", "true");
+      element.setAttribute("action", useSystemUri("full"));
+      element.setAttribute("style", "display: none;");
+      const csrf = document.createElement("input");
+      csrf.setAttribute("type", "hidden");
+      csrf.setAttribute("name", data("csrf-token"));
+      csrf.setAttribute("value", "1");
+      element.appendChild(csrf);
+      document.body.appendChild(element);
     }
-    this.element = t, this.options = { ...r };
+    this.element = element;
+    this.options = { ...options };
   }
-  initComponent(e = "form", t = {}) {
-    return f(() => {
-      Alpine.store(e, this.useState(t));
+  initComponent(store = "form", custom = {}) {
+    return loadAlpine(() => {
+      Alpine.store(store, this.useState(custom));
     });
   }
-  useState(e = {}) {
-    const t = {};
-    return Object.getOwnPropertyNames(Object.getPrototypeOf(this)).map((r) => t[r] = this[r].bind(this)), Object.assign(
-      t,
-      e
+  useState(custom = {}) {
+    const state = {};
+    Object.getOwnPropertyNames(Object.getPrototypeOf(this)).map((item) => {
+      return state[item] = this[item].bind(this);
+    });
+    return Object.assign(
+      state,
+      custom
     );
   }
   getElement() {
     return this.element;
   }
-  submit(e, t, r, i) {
-    const s = this.element;
-    if (i) {
-      let n = s.querySelector('input[name="_method"]');
-      n ? n.value = i : (n = document.createElement("input"), n.setAttribute("name", "_method"), n.setAttribute("type", "hidden"), n.value = i, s.appendChild(n));
-    }
-    if (t) {
-      const n = a.flattenObject(t);
-      for (const c in n) {
-        const l = n[c], h = a.buildFieldName(c);
-        this.injectInput(h, l);
+  submit(url, data2, method, customMethod) {
+    const form = this.element;
+    if (customMethod) {
+      let methodInput = form.querySelector('input[name="_method"]');
+      if (!methodInput) {
+        methodInput = document.createElement("input");
+        methodInput.setAttribute("name", "_method");
+        methodInput.setAttribute("type", "hidden");
+        methodInput.value = customMethod;
+        form.appendChild(methodInput);
+      } else {
+        methodInput.value = customMethod;
       }
     }
-    return e && s.setAttribute("action", e), r && s.setAttribute("method", r), s.requestSubmit(), !0;
+    if (data2) {
+      const flatted = UnicornFormElement.flattenObject(data2);
+      for (const key in flatted) {
+        const value = flatted[key];
+        const fieldName = UnicornFormElement.buildFieldName(key);
+        this.injectInput(fieldName, value);
+      }
+    }
+    if (url) {
+      form.setAttribute("action", url);
+    }
+    if (method) {
+      form.setAttribute("method", method);
+    }
+    form.requestSubmit();
+    return true;
   }
-  injectInput(e, t) {
-    let r = this.element.querySelector(`input[name="${e}"]`);
-    return r || (r = document.createElement("input"), r.setAttribute("name", e), r.setAttribute("type", "hidden"), r.setAttribute("data-role", "temp-input"), this.element.appendChild(r)), r.value = t, r;
+  injectInput(name, value) {
+    let input = this.element.querySelector(`input[name="${name}"]`);
+    if (!input) {
+      input = document.createElement("input");
+      input.setAttribute("name", name);
+      input.setAttribute("type", "hidden");
+      input.setAttribute("data-role", "temp-input");
+      this.element.appendChild(input);
+    }
+    input.value = value;
+    return input;
   }
   /**
    * Make a GET request.
    */
-  get(e, t, r) {
-    return this.submit(e, t, "GET", r);
+  get(url, data2, customMethod) {
+    return this.submit(url, data2, "GET", customMethod);
   }
   /**
    * Post form.
    */
-  post(e, t, r) {
-    return r = r || "POST", this.submit(e, t, "POST", r);
+  post(url, data2, customMethod) {
+    customMethod = customMethod || "POST";
+    return this.submit(url, data2, "POST", customMethod);
   }
   /**
    * Make a PUT request.
    */
-  put(e, t) {
-    return this.post(e, t, "PUT");
+  put(url, data2) {
+    return this.post(url, data2, "PUT");
   }
   /**
    * Make a PATCH request.
    */
-  patch(e, t) {
-    return this.post(e, t, "PATCH");
+  patch(url, data2) {
+    return this.post(url, data2, "PATCH");
   }
   /**
    * Make a DELETE request.
    */
-  delete(e, t) {
-    return this.post(e, t, "DELETE");
+  delete(url, data2) {
+    return this.post(url, data2, "DELETE");
   }
   /**
    * @see https://stackoverflow.com/a/53739792
@@ -118,23 +165,32 @@ class a {
    * @param {Object} ob
    * @returns {Object}
    */
-  static flattenObject(e) {
-    const t = {};
-    for (let r in e)
-      if (e.hasOwnProperty(r))
-        if (typeof e[r] == "object" && e[r] != null) {
-          const i = this.flattenObject(e[r]);
-          for (let s in i)
-            i.hasOwnProperty(s) && (t[r + "/" + s] = i[s]);
-        } else
-          t[r] = e[r];
-    return t;
+  static flattenObject(ob) {
+    const toReturn = {};
+    for (let i in ob) {
+      if (!ob.hasOwnProperty(i)) {
+        continue;
+      }
+      if (typeof ob[i] === "object" && ob[i] != null) {
+        const flatObject = this.flattenObject(ob[i]);
+        for (let x in flatObject) {
+          if (!flatObject.hasOwnProperty(x)) {
+            continue;
+          }
+          toReturn[i + "/" + x] = flatObject[x];
+        }
+      } else {
+        toReturn[i] = ob[i];
+      }
+    }
+    return toReturn;
   }
-  static buildFieldName(e) {
-    const t = e.split("/");
-    return t.shift() + t.map((i) => `[${i}]`).join("");
+  static buildFieldName(field) {
+    const names = field.split("/");
+    const first = names.shift();
+    return first + names.map((name) => `[${name}]`).join("");
   }
 }
 export {
-  a as UnicornFormElement
+  UnicornFormElement
 };

@@ -1,90 +1,151 @@
-import { f as A, g as c, i as O, m as x, p as M, t as I, v as L, k as R } from "../chunks/unicorn-Dap6NpVD.js";
-const $ = 2147483647, f = 36, E = 1, V = 26, N = 38, q = 700, P = 72, D = 128, T = "-", W = /[^\0-\x7F]/, z = /[\x2E\u3002\uFF0E\uFF61]/g, U = {
-  overflow: "Overflow: input needs wider integers to process",
+import { f as useUniDirective, g as getBoundedInstance, i as selectOne, m as mergeDeep, p as selectAll, t as trans, v as useUITheme, k as html } from "../chunks/unicorn-Bnc3cU-N.js";
+const maxInt = 2147483647;
+const base = 36;
+const tMin = 1;
+const tMax = 26;
+const skew = 38;
+const damp = 700;
+const initialBias = 72;
+const initialN = 128;
+const delimiter = "-";
+const regexNonASCII = /[^\0-\x7F]/;
+const regexSeparators = /[\x2E\u3002\uFF0E\uFF61]/g;
+const errors = {
+  "overflow": "Overflow: input needs wider integers to process",
   "not-basic": "Illegal input >= 0x80 (not a basic code point)",
   "invalid-input": "Invalid input"
-}, C = f - E, h = Math.floor, y = String.fromCharCode;
-function S(s) {
-  throw new RangeError(U[s]);
+};
+const baseMinusTMin = base - tMin;
+const floor = /* @__PURE__ */ (() => Math.floor)();
+const stringFromCharCode = /* @__PURE__ */ (() => String.fromCharCode)();
+function error(type) {
+  throw new RangeError(errors[type]);
 }
-function j(s, t) {
-  const e = [];
-  let i = s.length;
-  for (; i--; )
-    e[i] = t(s[i]);
-  return e;
-}
-function B(s, t) {
-  const e = s.split("@");
-  let i = "";
-  e.length > 1 && (i = e[0] + "@", s = e[1]), s = s.replace(z, ".");
-  const n = s.split("."), r = j(n, t).join(".");
-  return i + r;
-}
-function H(s) {
-  const t = [];
-  let e = 0;
-  const i = s.length;
-  for (; e < i; ) {
-    const n = s.charCodeAt(e++);
-    if (n >= 55296 && n <= 56319 && e < i) {
-      const r = s.charCodeAt(e++);
-      (r & 64512) == 56320 ? t.push(((n & 1023) << 10) + (r & 1023) + 65536) : (t.push(n), e--);
-    } else
-      t.push(n);
+function map(array, callback) {
+  const result = [];
+  let length = array.length;
+  while (length--) {
+    result[length] = callback(array[length]);
   }
-  return t;
+  return result;
 }
-const w = function(s, t) {
-  return s + 22 + 75 * (s < 26) - ((t != 0) << 5);
-}, J = function(s, t, e) {
-  let i = 0;
-  for (s = e ? h(s / q) : s >> 1, s += h(s / t); s > C * V >> 1; i += f)
-    s = h(s / C);
-  return h(i + (C + 1) * s / (s + N));
-}, Z = function(s) {
-  const t = [];
-  s = H(s);
-  const e = s.length;
-  let i = D, n = 0, r = P;
-  for (const l of s)
-    l < 128 && t.push(y(l));
-  const a = t.length;
-  let o = a;
-  for (a && t.push(T); o < e; ) {
-    let l = $;
-    for (const d of s)
-      d >= i && d < l && (l = d);
-    const p = o + 1;
-    l - i > h(($ - n) / p) && S("overflow"), n += (l - i) * p, i = l;
-    for (const d of s)
-      if (d < i && ++n > $ && S("overflow"), d === i) {
-        let m = n;
-        for (let v = f; ; v += f) {
-          const g = v <= r ? E : v >= r + V ? V : v - r;
-          if (m < g)
-            break;
-          const b = m - g, F = f - g;
-          t.push(
-            y(w(g + b % F, 0))
-          ), m = h(b / F);
-        }
-        t.push(y(w(m, 0))), r = J(n, p, o === a), n = 0, ++o;
+function mapDomain(domain, callback) {
+  const parts = domain.split("@");
+  let result = "";
+  if (parts.length > 1) {
+    result = parts[0] + "@";
+    domain = parts[1];
+  }
+  domain = domain.replace(regexSeparators, ".");
+  const labels = domain.split(".");
+  const encoded = map(labels, callback).join(".");
+  return result + encoded;
+}
+function ucs2decode(string) {
+  const output = [];
+  let counter = 0;
+  const length = string.length;
+  while (counter < length) {
+    const value = string.charCodeAt(counter++);
+    if (value >= 55296 && value <= 56319 && counter < length) {
+      const extra = string.charCodeAt(counter++);
+      if ((extra & 64512) == 56320) {
+        output.push(((value & 1023) << 10) + (extra & 1023) + 65536);
+      } else {
+        output.push(value);
+        counter--;
       }
-    ++n, ++i;
+    } else {
+      output.push(value);
+    }
   }
-  return t.join("");
-}, _ = function(s) {
-  return B(s, function(t) {
-    return W.test(t) ? "xn--" + Z(t) : t;
+  return output;
+}
+const digitToBasic = function(digit, flag) {
+  return digit + 22 + 75 * (digit < 26) - ((flag != 0) << 5);
+};
+const adapt = function(delta, numPoints, firstTime) {
+  let k = 0;
+  delta = firstTime ? floor(delta / damp) : delta >> 1;
+  delta += floor(delta / numPoints);
+  for (; delta > baseMinusTMin * tMax >> 1; k += base) {
+    delta = floor(delta / baseMinusTMin);
+  }
+  return floor(k + (baseMinusTMin + 1) * delta / (delta + skew));
+};
+const encode = function(input) {
+  const output = [];
+  input = ucs2decode(input);
+  const inputLength = input.length;
+  let n = initialN;
+  let delta = 0;
+  let bias = initialBias;
+  for (const currentValue of input) {
+    if (currentValue < 128) {
+      output.push(stringFromCharCode(currentValue));
+    }
+  }
+  const basicLength = output.length;
+  let handledCPCount = basicLength;
+  if (basicLength) {
+    output.push(delimiter);
+  }
+  while (handledCPCount < inputLength) {
+    let m = maxInt;
+    for (const currentValue of input) {
+      if (currentValue >= n && currentValue < m) {
+        m = currentValue;
+      }
+    }
+    const handledCPCountPlusOne = handledCPCount + 1;
+    if (m - n > floor((maxInt - delta) / handledCPCountPlusOne)) {
+      error("overflow");
+    }
+    delta += (m - n) * handledCPCountPlusOne;
+    n = m;
+    for (const currentValue of input) {
+      if (currentValue < n && ++delta > maxInt) {
+        error("overflow");
+      }
+      if (currentValue === n) {
+        let q = delta;
+        for (let k = base; ; k += base) {
+          const t = k <= bias ? tMin : k >= bias + tMax ? tMax : k - bias;
+          if (q < t) {
+            break;
+          }
+          const qMinusT = q - t;
+          const baseMinusT = base - t;
+          output.push(
+            stringFromCharCode(digitToBasic(t + qMinusT % baseMinusT, 0))
+          );
+          q = floor(qMinusT / baseMinusT);
+        }
+        output.push(stringFromCharCode(digitToBasic(q, 0)));
+        bias = adapt(delta, handledCPCountPlusOne, handledCPCount === basicLength);
+        delta = 0;
+        ++handledCPCount;
+      }
+    }
+    ++delta;
+    ++n;
+  }
+  return output.join("");
+};
+const toASCII = function(input) {
+  return mapDomain(input, function(string) {
+    return regexNonASCII.test(string) ? "xn--" + encode(string) : string;
   });
-}, u = {}, G = {
-  scroll: !1,
+};
+const validatorHandlers = {};
+const defaultOptions = {
+  scroll: false,
   scrollOffset: -100,
-  enabled: !0,
+  enabled: true,
   fieldSelector: null,
   validatedClass: null
-}, X = {
+};
+const defaultFieldOptions = {
   formSelector: "[uni-form-validate]",
   errorSelector: "[data-field-error]",
   selector: "input[data-field-input], select[data-field-input], textarea[data-field-input]",
@@ -92,22 +153,25 @@ const w = function(s, t) {
   invalidClass: "is-invalid",
   events: ["change"],
   errorMessageClass: "invalid-tooltip",
-  inputOptions: !1,
+  inputOptions: false,
   inputOptionsWrapperSelector: "div[data-field-input]",
   inputOptionsSelector: "[data-input-option]"
 };
-class k {
+class UnicornFormValidation {
   presetFields = [];
   static globalValidators = {};
   validators = {};
   options;
   $form;
   static is = "uni-form-validate";
-  constructor(t, e = {}) {
-    this.$form = O(t), this.options = this.mergeOptions(e), this.registerDefaultValidators(), this.init();
+  constructor(el, options = {}) {
+    this.$form = selectOne(el);
+    this.options = this.mergeOptions(options);
+    this.registerDefaultValidators();
+    this.init();
   }
-  mergeOptions(t) {
-    return this.options = x({}, G, t);
+  mergeOptions(options) {
+    return this.options = mergeDeep({}, defaultOptions, options);
   }
   get scrollEnabled() {
     return this.options.scroll;
@@ -122,106 +186,171 @@ class k {
     return this.options.validatedClass || "was-validated";
   }
   init() {
-    this.$form.tagName === "FORM" && (this.$form.setAttribute("novalidate", "true"), this.$form.addEventListener("submit", (t) => this.options.enabled && !this.validateAll() ? (t.stopImmediatePropagation(), t.stopPropagation(), t.preventDefault(), this.$form.dispatchEvent(new CustomEvent("invalid")), !1) : !0, !1)), this.prepareFields(this.findDOMFields()), this.prepareFields(this.presetFields);
+    if (this.$form.tagName === "FORM") {
+      this.$form.setAttribute("novalidate", "true");
+      this.$form.addEventListener("submit", (event) => {
+        if (this.options.enabled && !this.validateAll()) {
+          event.stopImmediatePropagation();
+          event.stopPropagation();
+          event.preventDefault();
+          this.$form.dispatchEvent(new CustomEvent("invalid"));
+          return false;
+        }
+        return true;
+      }, false);
+    }
+    this.prepareFields(this.findDOMFields());
+    this.prepareFields(this.presetFields);
   }
   findDOMFields() {
-    return M(this.$form.querySelectorAll(this.fieldSelector));
+    return selectAll(this.$form.querySelectorAll(this.fieldSelector));
   }
-  prepareFields(t) {
-    return t.forEach((e) => {
-      this.prepareFieldWrapper(e);
-    }), Promise.resolve();
+  prepareFields(inputs) {
+    inputs.forEach((input) => {
+      this.prepareFieldWrapper(input);
+    });
+    return Promise.resolve();
   }
-  prepareFieldWrapper(t) {
-    if (["INPUT", "SELECT", "TEXTAREA"].indexOf(t.tagName) !== -1) {
-      let e = t.closest("[uni-field-validate]");
-      return e || (e = t.closest("[data-input-container]") || t.parentElement, e?.setAttribute("uni-field-validate", "{}")), e;
+  prepareFieldWrapper(input) {
+    if (["INPUT", "SELECT", "TEXTAREA"].indexOf(input.tagName) !== -1) {
+      let wrapper = input.closest("[uni-field-validate]");
+      if (!wrapper) {
+        wrapper = input.closest("[data-input-container]") || input.parentElement;
+        wrapper?.setAttribute("uni-field-validate", "{}");
+      }
+      return wrapper;
     }
-    return t;
+    return input;
   }
-  findFields(t = !0) {
-    let e = this.findDOMFields();
-    return t && e.push(...this.presetFields), e.map((i) => this.prepareFieldWrapper(i)).filter((i) => i != null);
-  }
-  getFieldComponent(t) {
-    let e = c(t, "field.validation");
-    if (!e) {
-      const i = t.closest("[uni-field-validate]");
-      i && (e = c(i, "field.validation"));
+  findFields(containsPresets = true) {
+    let inputs = this.findDOMFields();
+    if (containsPresets) {
+      inputs.push(...this.presetFields);
     }
-    return e;
+    return inputs.map((input) => this.prepareFieldWrapper(input)).filter((input) => input != null);
   }
-  validateAll(t) {
-    this.markFormAsUnvalidated(), t = t || this.findFields();
-    let e = null;
-    for (const i of t) {
-      const n = this.getFieldComponent(i);
-      if (!n)
+  getFieldComponent(input) {
+    let v = getBoundedInstance(input, "field.validation");
+    if (!v) {
+      const wrapper = input.closest("[uni-field-validate]");
+      if (wrapper) {
+        v = getBoundedInstance(wrapper, "field.validation");
+      }
+    }
+    return v;
+  }
+  validateAll(fields) {
+    this.markFormAsUnvalidated();
+    fields = fields || this.findFields();
+    let firstFail = null;
+    for (const field of fields) {
+      const fv = this.getFieldComponent(field);
+      if (!fv) {
         continue;
-      !n.checkValidity() && !e && (e = i);
+      }
+      const result = fv.checkValidity();
+      if (!result && !firstFail) {
+        firstFail = field;
+      }
     }
-    return this.markFormAsValidated(), e && this.scrollEnabled && this.scrollTo(e), e === null;
+    this.markFormAsValidated();
+    if (firstFail && this.scrollEnabled) {
+      this.scrollTo(firstFail);
+    }
+    return firstFail === null;
   }
-  async validateAllAsync(t) {
-    this.markFormAsUnvalidated(), t = t || this.findFields();
-    let e = null;
-    const i = [];
-    for (const n of t) {
-      const r = this.getFieldComponent(n);
-      r && i.push(
-        r.checkValidityAsync().then((a) => (!a && !e && (e = n), a))
+  async validateAllAsync(fields) {
+    this.markFormAsUnvalidated();
+    fields = fields || this.findFields();
+    let firstFail = null;
+    const promises = [];
+    for (const field of fields) {
+      const fv = this.getFieldComponent(field);
+      if (!fv) {
+        continue;
+      }
+      promises.push(
+        fv.checkValidityAsync().then((result) => {
+          if (!result && !firstFail) {
+            firstFail = field;
+          }
+          return result;
+        })
       );
     }
-    return await Promise.all(i), this.markFormAsValidated(), e && this.scrollEnabled && this.scrollTo(e), e === null;
+    await Promise.all(promises);
+    this.markFormAsValidated();
+    if (firstFail && this.scrollEnabled) {
+      this.scrollTo(firstFail);
+    }
+    return firstFail === null;
   }
-  scrollTo(t) {
-    const e = this.scrollOffset, n = t.getBoundingClientRect().top + window.scrollY + e;
+  scrollTo(element) {
+    const offset = this.scrollOffset;
+    const elementPosition = element.getBoundingClientRect().top;
+    const offsetPosition = elementPosition + window.scrollY + offset;
     window.scrollTo({
-      top: n,
+      top: offsetPosition,
       behavior: "smooth"
     });
   }
   markFormAsValidated() {
-    this.$form && this.$form.classList.add(this.validatedClass);
+    if (!this.$form) {
+      return;
+    }
+    this.$form.classList.add(this.validatedClass);
   }
   markFormAsUnvalidated() {
-    this.$form && this.$form.classList.remove(this.validatedClass);
+    if (!this.$form) {
+      return;
+    }
+    this.$form.classList.remove(this.validatedClass);
   }
-  addField(t) {
-    return this.presetFields.push(t), this.prepareFieldWrapper(t), this;
+  addField(field) {
+    this.presetFields.push(field);
+    this.prepareFieldWrapper(field);
+    return this;
   }
   registerDefaultValidators() {
-    for (let t in u)
-      this.addValidator(t, u[t]);
+    for (let name in validatorHandlers) {
+      this.addValidator(name, validatorHandlers[name]);
+    }
   }
   /**
    * Add validator handler.
    */
-  addValidator(t, e, i = {}) {
-    return i = i || {}, this.validators[t] = {
-      handler: e,
-      options: i
-    }, this;
+  addValidator(name, handler, options = {}) {
+    options = options || {};
+    this.validators[name] = {
+      handler,
+      options
+    };
+    return this;
   }
   /**
    * Add validator handler.
    */
-  static addGlobalValidator(t, e, i = {}) {
-    return i = i || {}, this.globalValidators[t] = {
-      handler: e,
-      options: i
-    }, this;
+  static addGlobalValidator(name, handler, options = {}) {
+    options = options || {};
+    this.globalValidators[name] = {
+      handler,
+      options
+    };
+    return this;
   }
 }
-class Y {
-  constructor(t, e = {}) {
-    this.el = t, this.options = this.mergeOptions(e), this.$input = this.selectInput(), this.init();
+class UnicornFieldValidation {
+  constructor(el, options = {}) {
+    this.el = el;
+    this.options = this.mergeOptions(options);
+    this.$input = this.selectInput();
+    this.init();
   }
   $input;
   options;
   static is = "uni-field-validate";
-  mergeOptions(t) {
-    return this.options = x({}, X, t);
+  mergeOptions(options) {
+    return this.options = mergeDeep({}, defaultFieldOptions, options);
   }
   get $form() {
     return this.getForm();
@@ -242,7 +371,7 @@ class Y {
     return !!(this.el.offsetWidth || this.el.offsetHeight || this.el.getClientRects().length);
   }
   get isInputOptions() {
-    return !!this.options.inputOptions;
+    return Boolean(this.options.inputOptions);
   }
   get validationMessage() {
     return this.$input?.validationMessage || "";
@@ -251,287 +380,468 @@ class Y {
     return this.$input?.validity;
   }
   selectInput() {
-    let t = this.selector;
-    this.options.inputOptions && (t += ", " + this.options.inputOptionsWrapperSelector);
-    let e = this.el.querySelector(t);
-    if (e || (e = this.el.querySelector("input, select, textarea")), !!e)
-      return this.$input = e;
+    let selector = this.selector;
+    if (this.options.inputOptions) {
+      selector += ", " + this.options.inputOptionsWrapperSelector;
+    }
+    let input = this.el.querySelector(selector);
+    if (!input) {
+      input = this.el.querySelector("input, select, textarea");
+    }
+    if (!input) {
+      return void 0;
+    }
+    return this.$input = input;
   }
   init() {
-    if (this.selectInput(), this.bindEvents(), this.prepareWrapper(), this.isInputOptions) {
-      const t = this.$input;
-      t.validationMessage = "", t.setCustomValidity = (e) => {
-        t.validationMessage = String(e);
-      }, t.checkValidity = () => this.checkInputOptionsValidity();
+    this.selectInput();
+    this.bindEvents();
+    this.prepareWrapper();
+    if (this.isInputOptions) {
+      const $input = this.$input;
+      $input.validationMessage = "";
+      $input.setCustomValidity = (msg) => {
+        $input.validationMessage = String(msg);
+      };
+      $input.checkValidity = () => {
+        return this.checkInputOptionsValidity();
+      };
     }
   }
   bindEvents() {
-    if (!this.$input)
+    if (!this.$input) {
       return;
+    }
     this.$input.addEventListener("invalid", (e) => {
       this.showInvalidResponse();
-    }), this.options.events.forEach((e) => {
-      this.$input?.addEventListener(e, () => {
+    });
+    const events = this.options.events;
+    events.forEach((eventName) => {
+      this.$input?.addEventListener(eventName, () => {
         this.checkValidity();
       });
     });
   }
   prepareWrapper() {
-    this.el.querySelector(this.errorSelector)?.classList?.contains("invalid-tooltip") && window.getComputedStyle(this.el).position === "static" && (this.el.style.position = "relative");
+    if (this.el.querySelector(this.errorSelector)?.classList?.contains("invalid-tooltip")) {
+      if (window.getComputedStyle(this.el).position === "static") {
+        this.el.style.position = "relative";
+      }
+    }
   }
   checkValidity() {
-    if (!this.$input || this.$input.hasAttribute("readonly") || this.$input.hasAttribute("[data-novalidate]") || this.$input.closest("[data-novalidate]"))
-      return !0;
+    if (!this.$input) {
+      return true;
+    }
+    if (this.$input.hasAttribute("readonly")) {
+      return true;
+    }
+    if (this.$input.hasAttribute("[data-novalidate]")) {
+      return true;
+    }
+    if (this.$input.closest("[data-novalidate]")) {
+      return true;
+    }
     this.$input.setCustomValidity("");
-    let t = this.$input.checkValidity();
-    return t && this.$form && (t = this.runCustomValidity()), this.updateValidClass(t), t;
+    let valid = this.$input.checkValidity();
+    if (valid && this.$form) {
+      valid = this.runCustomValidity();
+    }
+    this.updateValidClass(valid);
+    return valid;
   }
   runCustomValidity() {
-    if (!this.$input)
-      return !0;
-    const t = (this.$input.getAttribute("data-validate") || "").split("|");
-    let e = !0;
-    if (this.$input.value !== "" && t.length) {
-      if (!this.checkCustomDataAttributeValidity())
-        return !1;
-      for (const i of t) {
-        const [n, r] = this.getValidator(i) || [null, {}];
-        if (!n)
+    if (!this.$input) {
+      return true;
+    }
+    const validates = (this.$input.getAttribute("data-validate") || "").split("|");
+    let result = true;
+    if (this.$input.value !== "" && validates.length) {
+      if (!this.checkCustomDataAttributeValidity()) {
+        return false;
+      }
+      for (const validatorName of validates) {
+        const [validator, options] = this.getValidator(validatorName) || [null, {}];
+        if (!validator) {
           continue;
-        Object.assign(r, n.options);
-        let a = n.handler(this.$input.value, this.$input, r, this);
-        if (a instanceof Promise || typeof a == "object" && a.then) {
-          a.then((o) => {
-            this.handleAsyncCustomResult(o, n);
+        }
+        Object.assign(options, validator.options);
+        let r = validator.handler(this.$input.value, this.$input, options, this);
+        if (r instanceof Promise || typeof r === "object" && r.then) {
+          r.then((result2) => {
+            this.handleAsyncCustomResult(result2, validator);
           });
           continue;
         }
-        if (!this.handleCustomResult(a, n)) {
-          e = !1;
+        if (!this.handleCustomResult(r, validator)) {
+          result = false;
           break;
         }
       }
     }
-    return e;
+    return result;
   }
   async checkValidityAsync() {
-    if (!this.$input || this.$input.hasAttribute("readonly"))
-      return !0;
+    if (!this.$input) {
+      return true;
+    }
+    if (this.$input.hasAttribute("readonly")) {
+      return true;
+    }
     this.$input.setCustomValidity("");
-    let t = this.$input.checkValidity();
-    return t && this.$form && (t = await this.runCustomValidityAsync()), this.updateValidClass(t), t;
+    let valid = this.$input.checkValidity();
+    if (valid && this.$form) {
+      valid = await this.runCustomValidityAsync();
+    }
+    this.updateValidClass(valid);
+    return valid;
   }
   async runCustomValidityAsync() {
-    if (!this.$input)
-      return !0;
-    const t = (this.$input.getAttribute("data-validate") || "").split("|"), e = [], i = [];
-    if (this.$input.value !== "" && t.length) {
-      if (!this.checkCustomDataAttributeValidity())
-        return !1;
-      for (const n of t) {
-        let [r, a] = this.getValidator(n) || [null, {}];
-        r && (a = Object.assign({}, a, r.options || {}), i.push(
-          Promise.resolve(r.handler(this.$input.value, this.$input, a, this)).then((o) => (e.push(this.handleAsyncCustomResult(o, r)), o))
-        ));
+    if (!this.$input) {
+      return true;
+    }
+    const validates = (this.$input.getAttribute("data-validate") || "").split("|");
+    const results = [];
+    const promises = [];
+    if (this.$input.value !== "" && validates.length) {
+      if (!this.checkCustomDataAttributeValidity()) {
+        return false;
+      }
+      for (const validatorName of validates) {
+        let [validator, options] = this.getValidator(validatorName) || [null, {}];
+        if (!validator) {
+          continue;
+        }
+        options = Object.assign({}, options, validator.options || {});
+        promises.push(
+          Promise.resolve(validator.handler(this.$input.value, this.$input, options, this)).then((r) => {
+            results.push(this.handleAsyncCustomResult(r, validator));
+            return r;
+          })
+        );
       }
     }
-    await Promise.all(i);
-    for (const n of e)
-      if (n === !1)
-        return !1;
-    return !0;
+    await Promise.all(promises);
+    for (const result of results) {
+      if (result === false) {
+        return false;
+      }
+    }
+    return true;
   }
   checkCustomDataAttributeValidity() {
-    const t = this.$input?.dataset.validationFail;
-    return this.handleCustomResult(t);
+    const error2 = this.$input?.dataset.validationFail;
+    return this.handleCustomResult(error2);
   }
   checkInputOptionsValidity() {
-    if (!this.$input)
-      return !0;
-    const t = this.$input.getAttribute("required") != null, e = this.$input.querySelectorAll(this.options.inputOptionsSelector);
-    let i = !0;
-    if (t)
-      for (const r of e) {
-        const a = r.querySelector("input");
-        if (i = !1, a?.checked) {
-          i = !0;
+    if (!this.$input) {
+      return true;
+    }
+    const isRequired = this.$input.getAttribute("required") != null;
+    const optionWrappers = this.$input.querySelectorAll(this.options.inputOptionsSelector);
+    let result = true;
+    if (isRequired) {
+      for (const optionWrapper of optionWrappers) {
+        const input = optionWrapper.querySelector("input");
+        result = false;
+        if (input?.checked) {
+          result = true;
           break;
         }
       }
+    }
     const n = document.createElement("input");
-    n.required = t, i && (n.value = "placeholder"), n.checkValidity(), this.$input.validationMessage = n.validationMessage, this.$input.validity = n.validity;
-    for (const r of e)
-      r.querySelector("input")?.setCustomValidity(n.validationMessage);
-    return i || this.$input.dispatchEvent(
-      new CustomEvent("invalid")
-    ), i;
+    n.required = isRequired;
+    if (result) {
+      n.value = "placeholder";
+    }
+    n.checkValidity();
+    this.$input.validationMessage = n.validationMessage;
+    this.$input.validity = n.validity;
+    for (const optionWrapper of optionWrappers) {
+      const input = optionWrapper.querySelector("input");
+      input?.setCustomValidity(n.validationMessage);
+    }
+    if (!result) {
+      this.$input.dispatchEvent(
+        new CustomEvent("invalid")
+      );
+    }
+    return result;
   }
   /**
    * @param valid {boolean}
    */
-  updateValidClass(t) {
-    const i = this.getErrorElement()?.previousElementSibling;
-    this.$input?.classList.remove(this.invalidClass), this.$input?.classList.remove(this.validClass), this.el.classList.remove(this.invalidClass), this.el.classList.remove(this.validClass), i?.classList.remove(this.invalidClass), i?.classList.remove(this.validClass), t ? (this.$input?.classList.add(this.validClass), this.el.classList.add(this.validClass), i?.classList.add(this.validClass)) : (this.$input?.classList.add(this.invalidClass), this.el.classList.add(this.invalidClass), i?.classList.add(this.invalidClass));
-  }
-  getFormValidation(t) {
-    return c(t || this.getForm(), "form.validation");
-  }
-  getValidator(t) {
-    const e = t.match(/(?<type>[\w\-_]+)(\((?<params>.*)\))*/);
-    if (!e)
-      return null;
-    const i = e.groups?.type || "", n = e.groups?.params || "", a = this.getFormValidation(this.$form)?.validators[i] || k.globalValidators[i];
-    if (!a)
-      return null;
-    const o = n.matchAll(/(?<key>\w+)(\s?[=:]\s?(?<value>\w+))?/g), l = {};
-    for (const p of o) {
-      const d = p?.groups;
-      d && (l[d.key] = K(d.value));
+  updateValidClass(valid) {
+    const $errorElement = this.getErrorElement();
+    const $invalidTarget = $errorElement?.previousElementSibling;
+    this.$input?.classList.remove(this.invalidClass);
+    this.$input?.classList.remove(this.validClass);
+    this.el.classList.remove(this.invalidClass);
+    this.el.classList.remove(this.validClass);
+    $invalidTarget?.classList.remove(this.invalidClass);
+    $invalidTarget?.classList.remove(this.validClass);
+    if (valid) {
+      this.$input?.classList.add(this.validClass);
+      this.el.classList.add(this.validClass);
+      $invalidTarget?.classList.add(this.validClass);
+    } else {
+      this.$input?.classList.add(this.invalidClass);
+      this.el.classList.add(this.invalidClass);
+      $invalidTarget?.classList.add(this.invalidClass);
     }
-    return [a, l];
   }
-  handleCustomResult(t, e) {
-    return typeof t == "string" ? (this.$input?.setCustomValidity(t), t = t === "") : t === void 0 && (t = !0), t ? this.$input?.setCustomValidity("") : e && this.raiseCustomErrorState(e), t;
+  getFormValidation(element) {
+    return getBoundedInstance(element || this.getForm(), "form.validation");
   }
-  handleAsyncCustomResult(t, e) {
-    return t = this.handleCustomResult(t, e), this.$input?.checkValidity(), this.updateValidClass(t), t;
+  getValidator(name) {
+    const matches = name.match(/(?<type>[\w\-_]+)(\((?<params>.*)\))*/);
+    if (!matches) {
+      return null;
+    }
+    const validatorName = matches.groups?.type || "";
+    const params = matches.groups?.params || "";
+    const fv = this.getFormValidation(this.$form);
+    const validator = fv?.validators[validatorName] || UnicornFormValidation.globalValidators[validatorName];
+    if (!validator) {
+      return null;
+    }
+    const paramMatches = params.matchAll(/(?<key>\w+)(\s?[=:]\s?(?<value>\w+))?/g);
+    const options = {};
+    for (const paramMatch of paramMatches) {
+      const match = paramMatch?.groups;
+      if (!match) {
+        continue;
+      }
+      options[match.key] = handleParamValue(match.value);
+    }
+    return [validator, options];
   }
-  raiseCustomErrorState(t) {
-    let e;
-    this.$input?.validationMessage === "" && (e = t.options?.notice, typeof e == "function" && (e = e(this.$input, this)), e != null && this.$input?.setCustomValidity(e)), this.$input?.validationMessage === "" && this.$input?.setCustomValidity(I("unicorn.message.validation.custom.error")), this.$input?.dispatchEvent(
+  handleCustomResult(result, validator) {
+    if (typeof result === "string") {
+      this.$input?.setCustomValidity(result);
+      result = result === "";
+    } else if (result === void 0) {
+      result = true;
+    }
+    if (result) {
+      this.$input?.setCustomValidity("");
+    } else if (validator) {
+      this.raiseCustomErrorState(validator);
+    }
+    return result;
+  }
+  handleAsyncCustomResult(result, validator) {
+    result = this.handleCustomResult(result, validator);
+    this.$input?.checkValidity();
+    this.updateValidClass(result);
+    return result;
+  }
+  raiseCustomErrorState(validator) {
+    let help;
+    if (this.$input?.validationMessage === "") {
+      help = validator.options?.notice;
+      if (typeof help === "function") {
+        help = help(this.$input, this);
+      }
+      if (help != null) {
+        this.$input?.setCustomValidity(help);
+      }
+    }
+    if (this.$input?.validationMessage === "") {
+      this.$input?.setCustomValidity(trans("unicorn.message.validation.custom.error"));
+    }
+    this.$input?.dispatchEvent(
       new CustomEvent("invalid")
     );
   }
-  setAsInvalidAndReport(t) {
-    this.setCustomValidity(t), this.showInvalidResponse();
+  setAsInvalidAndReport(error2) {
+    this.setCustomValidity(error2);
+    this.showInvalidResponse();
   }
-  setCustomValidity(t) {
-    this.$input?.setCustomValidity(t);
+  setCustomValidity(error2) {
+    this.$input?.setCustomValidity(error2);
   }
   reportValidity() {
-    this.validationMessage !== "" && this.showInvalidResponse();
+    if (this.validationMessage !== "") {
+      this.showInvalidResponse();
+    }
   }
   showInvalidResponse() {
-    const t = this.$input?.validity;
-    let e = this.$input?.validationMessage || "";
-    for (let n in t)
-      if (t[n] && this.$input?.dataset[n + "Message"]) {
-        e = this.$input?.dataset[n + "Message"] || "";
+    const state = this.$input?.validity;
+    let message = this.$input?.validationMessage || "";
+    for (let key in state) {
+      if (state[key] && this.$input?.dataset[key + "Message"]) {
+        message = this.$input?.dataset[key + "Message"] || "";
         break;
       }
+    }
     if (!this.isVisible) {
-      let n = this.findLabel()?.textContent;
-      n || (n = this.$input?.name || ""), L().renderMessage(
-        `Field: ${n} - ${e}`,
+      let title = this.findLabel()?.textContent;
+      if (!title) {
+        title = this.$input?.name || "";
+      }
+      useUITheme().renderMessage(
+        `Field: ${title} - ${message}`,
         "warning"
       );
     }
-    let i = this.getErrorElement();
-    i || (i = this.createHelpElement(), this.el.appendChild(i), this.prepareWrapper()), i.textContent = e, this.updateValidClass(!1);
+    let $help = this.getErrorElement();
+    if (!$help) {
+      $help = this.createHelpElement();
+      this.el.appendChild($help);
+      this.prepareWrapper();
+    }
+    $help.textContent = message;
+    this.updateValidClass(false);
   }
   getErrorElement() {
     return this.el.querySelector(this.errorSelector);
   }
   createHelpElement() {
-    const t = this.options.errorMessageClass, e = this.parseSelector(this.errorSelector || ""), i = R(`<div class="${t}"></div>`);
-    return i.classList.add(...e.classes), e.attrs.forEach((n) => {
-      i.setAttribute(n[0], n[1] || "");
-    }), e.ids.forEach((n) => {
-      i.id = n;
-    }), i;
+    const className = this.options.errorMessageClass;
+    const parsed = this.parseSelector(this.errorSelector || "");
+    const $help = html(`<div class="${className}"></div>`);
+    $help.classList.add(...parsed.classes);
+    parsed.attrs.forEach((attr) => {
+      $help.setAttribute(attr[0], attr[1] || "");
+    });
+    parsed.ids.forEach((id) => {
+      $help.id = id;
+    });
+    return $help;
   }
   /**
    * @see https://stackoverflow.com/a/17888178
    */
-  parseSelector(t) {
-    const e = { tags: [], classes: [], ids: [], attrs: [] };
-    for (const i of t.split(/(?=\.)|(?=#)|(?=\[)/))
-      switch (i[0]) {
+  parseSelector(subselector) {
+    const obj = { tags: [], classes: [], ids: [], attrs: [] };
+    for (const token of subselector.split(/(?=\.)|(?=#)|(?=\[)/)) {
+      switch (token[0]) {
         case "#":
-          e.ids.push(i.slice(1));
+          obj.ids.push(token.slice(1));
           break;
         case ".":
-          e.classes.push(i.slice(1));
+          obj.classes.push(token.slice(1));
           break;
         case "[":
-          e.attrs.push(i.slice(1, -1).split("="));
+          obj.attrs.push(token.slice(1, -1).split("="));
           break;
         default:
-          e.tags.push(i);
+          obj.tags.push(token);
           break;
       }
-    return e;
+    }
+    return obj;
   }
   setAsValidAndClearResponse() {
-    this.setCustomValidity(""), this.updateValidClass(!0), this.clearInvalidResponse();
+    this.setCustomValidity("");
+    this.updateValidClass(true);
+    this.clearInvalidResponse();
   }
   clearInvalidResponse() {
-    const t = this.el.querySelector(this.errorSelector);
-    t.textContent = "";
+    const $help = this.el.querySelector(this.errorSelector);
+    $help.textContent = "";
   }
   getForm() {
     return this.el.closest(this.options.formSelector || "[uni-form-validate]");
   }
   findLabel() {
-    const t = this.$input?.id || "", e = this.$input?.closest("[data-field-wrapper]");
-    let i = null;
-    return e && (i = e.querySelector("[data-field-label]")), i || (i = document.querySelector(`label[for="${t}"]`)), i;
+    const id = this.$input?.id || "";
+    const wrapper = this.$input?.closest("[data-field-wrapper]");
+    let label = null;
+    if (wrapper) {
+      label = wrapper.querySelector("[data-field-label]");
+    }
+    if (!label) {
+      label = document.querySelector(`label[for="${id}"]`);
+    }
+    return label;
   }
 }
-u.username = function(s, t) {
-  return !new RegExp(`[<|>|"|'|%|;|(|)|&]`, "i").test(s);
+validatorHandlers.username = function(value, element) {
+  const regex = new RegExp(`[<|>|"|'|%|;|(|)|&]`, "i");
+  return !regex.test(value);
 };
-u.numeric = function(s, t) {
-  return /^(\d|-)?(\d|,)*\.?\d*$/.test(s);
+validatorHandlers.numeric = function(value, element) {
+  const regex = /^(\d|-)?(\d|,)*\.?\d*$/;
+  return regex.test(value);
 };
-u.email = function(s, t) {
-  return s = _(s), /^[a-zA-Z0-9.!#$%&â€™*+\/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(s);
+validatorHandlers.email = function(value, element) {
+  value = toASCII(value);
+  const regex = /^[a-zA-Z0-9.!#$%&â€™*+\/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+  return regex.test(value);
 };
-u.url = function(s, t) {
-  return /^(?:(?:https?|ftp):\/\/)(?:\S+(?::\S*)?@)?(?:(?!10(?:\.\d{1,3}){3})(?!127(?:\.\d{1,3}){3})(?!169\.254(?:\.\d{1,3}){2})(?!192\.168(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:\/[^\s]*)?$/i.test(s);
+validatorHandlers.url = function(value, element) {
+  const regex = /^(?:(?:https?|ftp):\/\/)(?:\S+(?::\S*)?@)?(?:(?!10(?:\.\d{1,3}){3})(?!127(?:\.\d{1,3}){3})(?!169\.254(?:\.\d{1,3}){2})(?!192\.168(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:\/[^\s]*)?$/i;
+  return regex.test(value);
 };
-u.alnum = function(s, t) {
-  return /^[a-zA-Z0-9]*$/.test(s);
+validatorHandlers.alnum = function(value, element) {
+  const regex = /^[a-zA-Z0-9]*$/;
+  return regex.test(value);
 };
-u.color = function(s, t) {
-  return /^#(?:[0-9a-f]{3}){1,2}$/.test(s);
+validatorHandlers.color = function(value, element) {
+  const regex = /^#(?:[0-9a-f]{3}){1,2}$/;
+  return regex.test(value);
 };
-u.creditcard = function(s, t) {
-  return /^(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14}|6011[0-9]{12}|622((12[6-9]|1[3-9][0-9])|([2-8][0-9][0-9])|(9(([0-1][0-9])|(2[0-5]))))[0-9]{10}|64[4-9][0-9]{13}|65[0-9]{14}|3(?:0[0-5]|[68][0-9])[0-9]{11}|3[47][0-9]{13})*$/.test(s);
+validatorHandlers.creditcard = function(value, element) {
+  const regex = /^(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14}|6011[0-9]{12}|622((12[6-9]|1[3-9][0-9])|([2-8][0-9][0-9])|(9(([0-1][0-9])|(2[0-5]))))[0-9]{10}|64[4-9][0-9]{13}|65[0-9]{14}|3(?:0[0-5]|[68][0-9])[0-9]{11}|3[47][0-9]{13})*$/;
+  return regex.test(value);
 };
-u.ip = function(s, t) {
-  return /^((?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))*$/.test(s);
+validatorHandlers.ip = function(value, element) {
+  const regex = /^((?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))*$/;
+  return regex.test(value);
 };
-u["password-confirm"] = function(s, t) {
-  const e = t.dataset.confirmTarget;
-  if (!e)
+validatorHandlers["password-confirm"] = function(value, element) {
+  const selector = element.dataset.confirmTarget;
+  if (!selector) {
     throw new Error('Validator: "password-confirm" must add "data-confirm-target" attribute.');
-  return document.querySelector(e)?.value === s;
+  }
+  const target = document.querySelector(selector);
+  return target?.value === value;
 };
-const tt = /* @__PURE__ */ Promise.all([
-  /* @__PURE__ */ A("form-validate", {
-    mounted(s, t) {
-      c(s, "form.validation", (e) => new k(e, JSON.parse(t.value || "{}")));
+const ready = /* @__PURE__ */ Promise.all([
+  /* @__PURE__ */ useUniDirective("form-validate", {
+    mounted(el, binding) {
+      getBoundedInstance(el, "form.validation", (ele) => {
+        return new UnicornFormValidation(ele, JSON.parse(binding.value || "{}"));
+      });
     },
-    updated(s, t) {
-      c(s, "form.validation").mergeOptions(JSON.parse(t.value || "{}"));
+    updated(el, binding) {
+      const instance = getBoundedInstance(el, "form.validation");
+      instance.mergeOptions(JSON.parse(binding.value || "{}"));
     }
   }),
-  /* @__PURE__ */ A("field-validate", {
-    mounted(s, t) {
-      c(s, "field.validation", (e) => new Y(e, JSON.parse(t.value || "{}")));
+  /* @__PURE__ */ useUniDirective("field-validate", {
+    mounted(el, binding) {
+      getBoundedInstance(el, "field.validation", (ele) => {
+        return new UnicornFieldValidation(ele, JSON.parse(binding.value || "{}"));
+      });
     },
-    updated(s, t) {
-      c(s, "field.validation").mergeOptions(JSON.parse(t.value || "{}") || {});
+    updated(el, binding) {
+      const instance = getBoundedInstance(el, "field.validation");
+      instance.mergeOptions(JSON.parse(binding.value || "{}") || {});
     }
   })
 ]);
-function K(s) {
-  return isNaN(Number(s)) ? s === "null" ? null : s === "true" || s === "false" ? !0 : s : Number(s);
+function handleParamValue(value) {
+  if (!isNaN(Number(value))) {
+    return Number(value);
+  }
+  if (value === "null") {
+    return null;
+  }
+  if (value === "true") {
+    return true;
+  }
+  if (value === "false") {
+    return true;
+  }
+  return value;
 }
 export {
-  Y as UnicornFieldValidation,
-  k as UnicornFormValidation,
-  tt as ready,
-  u as validators
+  UnicornFieldValidation,
+  UnicornFormValidation,
+  ready,
+  validatorHandlers as validators
 };

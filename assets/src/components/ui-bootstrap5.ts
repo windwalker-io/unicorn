@@ -1,7 +1,8 @@
 import type { ButtonRadio } from '@/bootstrap/button-radio';
 import type { LoadTab } from '@/bootstrap/keep-tab';
-import { html, selectOne } from '@/modules';
+import { html, module, selectAll, selectOne } from '@/modules';
 import type { UIThemeInterface } from '@/types';
+import { Tooltip } from 'bootstrap';
 
 export class UIBootstrap5 implements UIThemeInterface {
   static instance: UIBootstrap5 | null = null;
@@ -63,6 +64,14 @@ export class UIBootstrap5 implements UIThemeInterface {
     }
 
     return m;
+  }
+
+  tooltip(selector: NodeListOf<Element> | Element | string = '[data-bs-toggle="tooltip"]', config: Record<string, any> = {}) {
+    return module(
+      selector,
+      'bs.tooltip',
+      (ele) => Tooltip.getOrCreateInstance(ele, config)
+    );
   }
 
   getMajorVersion(module: any) {
