@@ -4,7 +4,7 @@ export default defineConfig(({ mode }) => {
   return {
     resolve: {
       alias: {
-        '@': '/src',
+        '@': 'src',
       }
     },
     build: {

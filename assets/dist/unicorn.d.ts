@@ -1,2 +1,11 @@
-export * from './unicorn/unicorn'
-export {}
+import { default as UnicornApp } from './app';
+import { Constructor } from './types';
+export * from './data';
+export * from './modules';
+export * from './composable';
+export declare function createUnicorn(): UnicornApp;
+export declare function createUnicornWithPlugins(): UnicornApp;
+export declare function setUnicornApp(inc: UnicornApp): void;
+export declare function useUnicornApp(): UnicornApp;
+export declare function useInject<T>(name: Constructor<T> | string): T;
+export declare function useInject<T, D>(name: Constructor<T> | string, def?: D): T | D;
