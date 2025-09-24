@@ -1,9 +1,11 @@
-import { resolve } from 'node:path';
+import { resolve, basename } from 'node:path';
 import treeShakeable from 'rollup-plugin-tree-shakeable';
 import { defineConfig } from 'vite';
 import dtsPlugin from 'vite-plugin-dts';
 
 export default defineConfig(({ mode }) => {
+  const src = resolve('./src').replace(/\\/g, '/');
+
   return {
     resolve: {
       alias: {
@@ -24,7 +26,17 @@ export default defineConfig(({ mode }) => {
         output: {
           format: 'es',
           entryFileNames: 'unicorn.js',
-          chunkFileNames: 'chunks/[name]-[hash].js',
+          chunkFileNames(chunkInfo) {
+            if (chunkInfo.facadeModuleId && chunkInfo.facadeModuleId.includes('/components/')) {
+              const relPath = chunkInfo.facadeModuleId.replace(src + '/', '');
+              const dir = relPath.split('/').slice(0, -1).join('/');
+              const filename = basename(relPath, '.ts');
+
+              return `${dir}/${filename}.js`;
+            }
+
+            return 'chunks/[name]-[hash].js';
+          },
           // assetFileNames: 'assets/[name][extname]',
           // preserveModules: true,       // 保留模組結構
           // preserveModulesRoot: 'src/unicorn',
@@ -43,7 +55,7 @@ export default defineConfig(({ mode }) => {
       },
       outDir: 'dist',
       emptyOutDir: true,
-      minify: false,
+      minify: true,
     },
     plugins: [
       treeShakeable(),

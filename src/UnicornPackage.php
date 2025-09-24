@@ -155,13 +155,16 @@ class UnicornPackage extends AbstractPackage implements
             );
         }
 
+        $isNext = $container->getParam('unicorn.modules.next') ?? false;
+        $unicornPackage = $isNext ? '@windwalker-io/unicorn-next' : '@windwalker-io/unicorn';
+
         $container->mergeParameters(
             'asset.import_map.imports',
             [
                 '@systemjs'     => 'vendor/systemjs/dist/system.js',
-                '@unicorn/'     => 'vendor/@windwalker-io/unicorn/dist/',
-                '@unicorn'      => 'vendor/@windwalker-io/unicorn/dist/unicorn.js',
-                '@main'         => 'vendor/@windwalker-io/unicorn/dist/unicorn.js',
+                '@unicorn/'     => "vendor/$unicornPackage/dist/",
+                '@unicorn'      => "vendor/$unicornPackage/dist/unicorn.js",
+                '@main'         => "vendor/$unicornPackage/dist/unicorn.js",
                 '@jquery'       => 'vendor/jquery/dist/jquery.min.js',
                 '@alpinejs'     => 'vendor/alpinejs/dist/cdn.js',
                 '@spruce'       => 'vendor/@ryangjchandler/spruce/dist/spruce.umd.js',
