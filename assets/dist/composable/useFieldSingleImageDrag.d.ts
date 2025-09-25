@@ -1,1 +1,1 @@
-export declare function useFieldSingleImageDrag(): Promise<typeof import('@/components/field-single-image-drag')>;
+export declare function useFieldSingleImageDrag(): Promise<typeof import('../components/field-single-image-drag')>;

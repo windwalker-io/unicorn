@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "Unicorn framework js library",
   "type": "module",
-  "types": "dist/unicorn.d.ts",
+  "typs": "dist/unicorn.d.ts",
   "main": "dist/unicorn.js",
   "scripts": {
     "dev": "vite build --watch --mode development",

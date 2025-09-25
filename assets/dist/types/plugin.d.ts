@@ -1,5 +1,5 @@
-import { default as UnicornApp } from '../app';
+import { UnicornApp } from '../app';
 export interface UnicornPlugin {
-    install?(app: UnicornApp, options?: any): void;
-    uninstall?(app: UnicornApp, options?: any): void;
+    install?(app: UnicornApp, options?: Record<string, any>): void;
+    uninstall?(app: UnicornApp): void;
 }

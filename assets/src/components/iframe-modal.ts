@@ -1,5 +1,5 @@
-import { useUniDirective } from '@/composable';
-import { mergeDeep } from '@/utilities';
+import { useUniDirective } from '../composable';
+import { mergeDeep } from '../utilities';
 
 interface IFrameModalOptions {
   id?: string;

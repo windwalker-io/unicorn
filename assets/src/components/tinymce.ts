@@ -1,7 +1,7 @@
-import { useHttpClient, useStack } from '@/composable';
-import { useImport } from '@/modules/loader';
-import { Dictionary, MaybePromise } from '@/types';
-import { mergeDeep } from '@/utilities';
+import { useHttpClient, useStack } from '../composable';
+import { useImport } from '../modules/loader';
+import { Dictionary, MaybePromise } from '../types';
+import { mergeDeep } from '../utilities';
 import type { Editor, EditorOptions, TinyMCE } from 'tinymce';
 
 const instances: Dictionary<TinymceController> = {};

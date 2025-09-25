@@ -1,4 +1,4 @@
-import { Dictionary } from '@/types';
+import { Dictionary } from '../types';
 import { TaskQueue, queue } from '@lyrasoft/ts-toolkit/generic';
 
 const queues: Dictionary<TaskQueue> = {};

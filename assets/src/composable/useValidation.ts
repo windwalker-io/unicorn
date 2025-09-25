@@ -1,10 +1,10 @@
-import type { UnicornFieldValidation, UnicornFormValidation, ValidationHandler } from '@/components/validation';
-import { getBoundedInstance } from '@/modules';
+import type { UnicornFieldValidation, UnicornFormValidation, ValidationHandler } from '../components/validation';
+import { getBoundedInstance } from '../modules';
 
-export async function useFormValidation(): Promise<typeof import('@/components/validation')>;
+export async function useFormValidation(): Promise<typeof import('../components/validation')>;
 export async function useFormValidation(selector: string | Element): Promise<UnicornFormValidation>;
 export async function useFormValidation(selector?: string | Element): Promise<any> {
-  const module = await import('@/components/validation');
+  const module = await import('../components/validation');
 
   await module.ready;
 

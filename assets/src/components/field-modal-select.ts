@@ -1,6 +1,6 @@
-import type { IFrameModal } from '@/components/iframe-modal';
-import { data } from '@/data';
-import { __, highlight, html, selectOne, slideUp, useImport } from '@/modules';
+import type { IFrameModal } from '../components/iframe-modal';
+import { data } from '../data';
+import { __, highlight, html, selectOne, slideUp, useImport } from '../modules';
 import { template } from 'lodash-es';
 import Sortable from 'sortablejs';
 

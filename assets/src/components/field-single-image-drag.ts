@@ -1,7 +1,7 @@
 
-import { useHttpClient } from '@/composable';
-import { __, injectCssToDocument, selectAll, simpleAlert } from '@/modules';
-import { mergeDeep } from '@/utilities';
+import { useHttpClient } from '../composable';
+import { __, injectCssToDocument, selectAll, simpleAlert } from '../modules';
+import { mergeDeep } from '../utilities';
 import css from '../../scss/field/single-image-drag.scss?inline';
 import { Modal } from 'bootstrap';
 import Cropper from 'cropperjs';

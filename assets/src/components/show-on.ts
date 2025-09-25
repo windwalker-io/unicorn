@@ -1,6 +1,6 @@
 
-import { useUniDirective } from '@/composable';
-import { fadeIn, fadeOut, selectAll, selectOne, module } from '@/modules';
+import { useUniDirective } from '../composable';
+import { fadeIn, fadeOut, selectAll, selectOne, module } from '../modules';
 import { difference } from 'lodash-es';
 
 type HTMLInputTypes = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;

@@ -1,4 +1,4 @@
-import { selectAll } from '@/modules';
+import { selectAll } from '../modules';
 
 export function removeCloak() {
   if (globalThis.document == null) {

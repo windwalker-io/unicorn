@@ -1,7 +1,7 @@
 
-import { useHttpClient, useUniDirective } from '@/composable';
-import { getBoundedInstance, html, selectOne } from '@/modules';
-import { mergeDeep } from '@/utilities';
+import { useHttpClient, useUniDirective } from '../composable';
+import { getBoundedInstance, html, selectOne } from '../modules';
+import { mergeDeep } from '../utilities';
 
 const nope = () => {};
 

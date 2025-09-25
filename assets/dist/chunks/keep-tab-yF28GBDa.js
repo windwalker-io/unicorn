@@ -1,5 +1,5 @@
-import { i as selectOne, C as sleep, p as selectAll } from "./unicorn-Bnc3cU-N.js";
 import { Tab } from "bootstrap";
+import { i as selectOne, C as sleep, p as selectAll } from "./unicorn-DvsCW02c.js";
 const TAB_ITEM_SELECTOR = "[data-toggle=tab],[data-bs-toggle=tab],[data-toggle=pill],[data-bs-toggle=pill]";
 class LoadTab {
   $element;

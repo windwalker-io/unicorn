@@ -1,7 +1,7 @@
 import css from '../../scss/field/file-drag.scss?inline';
-import { useUniDirective } from '@/composable';
-import { __, html, injectCssToDocument, simpleAlert, uid } from '@/modules';
-import { mergeDeep } from '@/utilities';
+import { useUniDirective } from '../composable';
+import { __, html, injectCssToDocument, simpleAlert, uid } from '../modules';
+import { mergeDeep } from '../utilities';
 
 injectCssToDocument(document, css);
 

@@ -1,7 +1,7 @@
 
-import { useLoadedHttpClient } from '@/composable';
-import { loadAlpine, module, uid } from '@/modules';
-import { mergeDeep } from '@/utilities';
+import { useLoadedHttpClient } from '../composable';
+import { loadAlpine, module, uid } from '../modules';
+import { mergeDeep } from '../utilities';
 import AlpineComponent from '@rubenbimmel/alpine-class-component/dist/alpineComponent';
 import Component from '@rubenbimmel/alpine-class-component/dist/decorators/component';
 

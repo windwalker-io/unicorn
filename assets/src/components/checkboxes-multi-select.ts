@@ -1,4 +1,4 @@
-import { selectAll, selectOne } from '@/modules';
+import { selectAll, selectOne } from '../modules';
 
 export class CheckboxesMultiSelect {
   defaultOptions = {

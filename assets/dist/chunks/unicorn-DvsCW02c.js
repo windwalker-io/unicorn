@@ -333,6 +333,148 @@ function prepareData(element) {
   element.__unicorn = element.__unicorn || {};
   return element;
 }
+function domready(callback) {
+  let promise = new Promise((resolve) => {
+    if (document.readyState === "complete" || document.readyState === "interactive") {
+      setTimeout(resolve, 0);
+    } else {
+      document.addEventListener("DOMContentLoaded", () => resolve());
+    }
+  });
+  if (callback) {
+    promise = promise.then(callback);
+  }
+  return promise;
+}
+function selectOne(ele) {
+  let r;
+  if (typeof ele === "string") {
+    r = document.querySelector(ele);
+  } else {
+    r = ele;
+  }
+  if (!r) {
+    return r;
+  }
+  return r;
+}
+function selectAll(ele, callback = void 0) {
+  if (typeof ele === "string") {
+    ele = document.querySelectorAll(ele);
+  }
+  const resultSet = [].slice.call(ele);
+  if (callback) {
+    return resultSet.map((el) => callback(el) || el);
+  }
+  return resultSet;
+}
+function getBoundedInstance(selector, name, callback = () => null) {
+  const element = typeof selector === "string" ? document.querySelector(selector) : selector;
+  if (!element) {
+    return null;
+  }
+  return defData(element, name, callback);
+}
+function getBoundedInstanceList(selector, name, callback = () => null) {
+  const items = typeof selector === "string" ? document.querySelectorAll(selector) : selector;
+  return Array.from(items).map((ele) => getBoundedInstance(ele, name, callback));
+}
+function module(ele, name, callback = () => null) {
+  if (typeof ele === "string") {
+    return getBoundedInstanceList(ele, name, callback);
+  }
+  if (ele instanceof HTMLElement) {
+    return getBoundedInstance(ele, name, callback);
+  }
+  return getBoundedInstanceList(ele, name, callback);
+}
+function h(element, attrs = {}, content = void 0) {
+  const ele = document.createElement(element);
+  for (let i in attrs) {
+    const v = attrs[i];
+    ele.setAttribute(i, v);
+  }
+  if (content !== null) {
+    ele.innerHTML = content;
+  }
+  return ele;
+}
+function html(html2) {
+  const div = document.createElement("div");
+  div.innerHTML = html2;
+  return div.children[0];
+}
+function delegate(wrapper, selector, eventName, callback) {
+  if (typeof selector === "undefined" || selector === "") {
+    throw new Error("The provided selector is empty.");
+  }
+  if (typeof callback === "undefined" || typeof callback !== "function") {
+    throw new Error("Please specify an callback.");
+  }
+  const delegationSelectorsMap = {};
+  const wrapperElement = selectOne(wrapper);
+  wrapperElement?.addEventListener(eventName, function(event) {
+    let element = event.target;
+    let forceBreak = false;
+    while (element && element !== wrapperElement) {
+      for (const selector2 in delegationSelectorsMap) {
+        if (element.matches(selector2)) {
+          event.stopPropagation = function() {
+            forceBreak = true;
+          };
+          Object.defineProperty(
+            event,
+            "currentTarget",
+            {
+              get() {
+                return element;
+              }
+            }
+          );
+          const callbackList = delegationSelectorsMap[selector2];
+          callbackList.forEach(function(callback2) {
+            callback2(event);
+          });
+        }
+      }
+      if (forceBreak) {
+        break;
+      }
+      element = element.parentElement;
+    }
+  });
+  if (!delegationSelectorsMap[selector]) {
+    delegationSelectorsMap[selector] = [callback];
+  } else {
+    delegationSelectorsMap[selector].push(callback);
+  }
+  return function unsubscribe() {
+    if (!delegationSelectorsMap[selector]) {
+      return;
+    }
+    if (delegationSelectorsMap[selector].length >= 2) {
+      delegationSelectorsMap[selector] = delegationSelectorsMap[selector].filter((cb) => cb !== callback);
+    } else {
+      delete delegationSelectorsMap[selector];
+    }
+  };
+}
+function injectCssToDocument(doc, ...css) {
+  if (!(doc instanceof Document)) {
+    css.push(doc);
+    doc = document;
+  }
+  const styles = css.map((css2) => {
+    if (typeof css2 === "string") {
+      const style = new CSSStyleSheet();
+      style.replaceSync(css2);
+      return style;
+    }
+    return css2;
+  });
+  doc.adoptedStyleSheets = [...doc.adoptedStyleSheets, ...styles];
+  return styles;
+}
 function animateTo(element, styles, options = {}) {
   element = selectOne(element);
   const currentStyles = window.getComputedStyle(element);
@@ -598,148 +740,6 @@ function base64UrlDecode(string) {
 let globalSerial = 1;
 function serial() {
   return globalSerial++;
-}
-function domready(callback) {
-  let promise = new Promise((resolve) => {
-    if (document.readyState === "complete" || document.readyState === "interactive") {
-      setTimeout(resolve, 0);
-    } else {
-      document.addEventListener("DOMContentLoaded", () => resolve());
-    }
-  });
-  if (callback) {
-    promise = promise.then(callback);
-  }
-  return promise;
-}
-function selectOne(ele) {
-  let r;
-  if (typeof ele === "string") {
-    r = document.querySelector(ele);
-  } else {
-    r = ele;
-  }
-  if (!r) {
-    return r;
-  }
-  return r;
-}
-function selectAll(ele, callback = void 0) {
-  if (typeof ele === "string") {
-    ele = document.querySelectorAll(ele);
-  }
-  const resultSet = [].slice.call(ele);
-  if (callback) {
-    return resultSet.map((el) => callback(el) || el);
-  }
-  return resultSet;
-}
-function getBoundedInstance(selector, name, callback = () => null) {
-  const element = typeof selector === "string" ? document.querySelector(selector) : selector;
-  if (!element) {
-    return null;
-  }
-  return defData(element, name, callback);
-}
-function getBoundedInstanceList(selector, name, callback = () => null) {
-  const items = typeof selector === "string" ? document.querySelectorAll(selector) : selector;
-  return Array.from(items).map((ele) => getBoundedInstance(ele, name, callback));
-}
-function module(ele, name, callback = () => null) {
-  if (typeof ele === "string") {
-    return getBoundedInstanceList(ele, name, callback);
-  }
-  if (ele instanceof HTMLElement) {
-    return getBoundedInstance(ele, name, callback);
-  }
-  return getBoundedInstanceList(ele, name, callback);
-}
-function h(element, attrs = {}, content = void 0) {
-  const ele = document.createElement(element);
-  for (let i in attrs) {
-    const v = attrs[i];
-    ele.setAttribute(i, v);
-  }
-  if (content !== null) {
-    ele.innerHTML = content;
-  }
-  return ele;
-}
-function html(html2) {
-  const div = document.createElement("div");
-  div.innerHTML = html2;
-  return div.children[0];
-}
-function delegate(wrapper, selector, eventName, callback) {
-  if (typeof selector === "undefined" || selector === "") {
-    throw new Error("The provided selector is empty.");
-  }
-  if (typeof callback === "undefined" || typeof callback !== "function") {
-    throw new Error("Please specify an callback.");
-  }
-  const delegationSelectorsMap = {};
-  const wrapperElement = selectOne(wrapper);
-  wrapperElement?.addEventListener(eventName, function(event) {
-    let element = event.target;
-    let forceBreak = false;
-    while (element && element !== wrapperElement) {
-      for (const selector2 in delegationSelectorsMap) {
-        if (element.matches(selector2)) {
-          event.stopPropagation = function() {
-            forceBreak = true;
-          };
-          Object.defineProperty(
-            event,
-            "currentTarget",
-            {
-              get() {
-                return element;
-              }
-            }
-          );
-          const callbackList = delegationSelectorsMap[selector2];
-          callbackList.forEach(function(callback2) {
-            callback2(event);
-          });
-        }
-      }
-      if (forceBreak) {
-        break;
-      }
-      element = element.parentElement;
-    }
-  });
-  if (!delegationSelectorsMap[selector]) {
-    delegationSelectorsMap[selector] = [callback];
-  } else {
-    delegationSelectorsMap[selector].push(callback);
-  }
-  return function unsubscribe() {
-    if (!delegationSelectorsMap[selector]) {
-      return;
-    }
-    if (delegationSelectorsMap[selector].length >= 2) {
-      delegationSelectorsMap[selector] = delegationSelectorsMap[selector].filter((cb) => cb !== callback);
-    } else {
-      delete delegationSelectorsMap[selector];
-    }
-  };
-}
-function injectCssToDocument(doc, ...css) {
-  if (!(doc instanceof Document)) {
-    css.push(doc);
-    doc = document;
-  }
-  const styles = css.map((css2) => {
-    if (typeof css2 === "string") {
-      const style = new CSSStyleSheet();
-      style.replaceSync(css2);
-      return style;
-    }
-    return css2;
-  });
-  doc.adoptedStyleSheets = [...doc.adoptedStyleSheets, ...styles];
-  return styles;
 }
 function data(ele, name = void 0, value = void 0) {
   if (!(ele instanceof HTMLElement)) {
@@ -1109,12 +1109,205 @@ async function useCssImport(...src) {
   const styles = modules.map((module2) => module2.default);
   return injectCssToDocument(...styles);
 }
+const queues = {};
+function useQueue(name = "default", maxRunning = 1) {
+  return queues[name] ??= createQueue(maxRunning);
+}
+function createQueue(maxRunning = 1) {
+  return queue(maxRunning);
+}
 const stacks = {};
 function useStack(name = "default", store = []) {
   return stacks[name] ??= createStack(store);
 }
 function createStack(store = []) {
   return stack(store);
+}
+async function useForm(ele, options = {}) {
+  const { UnicornFormElement } = await import("./form-BC40Tfje.js");
+  if (ele == null) {
+    return new UnicornFormElement(void 0, void 0, options);
+  }
+  const selector = typeof ele === "string" ? ele : void 0;
+  const el = selectOne(ele);
+  if (!el) {
+    throw new Error(`Form element of: ${selector} not found.`);
+  }
+  return module(
+    el,
+    "unicorn.form",
+    () => new UnicornFormElement(selector, el, options)
+  );
+}
+async function useGrid(ele, options = {}) {
+  const { UnicornGridElement } = await import("./grid-gADNyu9h.js");
+  const selector = typeof ele === "string" ? ele : "";
+  const element = selectOne(ele);
+  if (!element) {
+    throw new Error("Element is empty");
+  }
+  const form = await useForm(selector || element);
+  return module(
+    element,
+    "grid.plugin",
+    () => new UnicornGridElement(selector, element, form, options)
+  );
+}
+async function useHttpClient(config) {
+  const { UnicornHttpClient } = await import("./http-client-Dj5A2tcD.js");
+  if (config && "interceptors" in config) {
+    const axios = config;
+    const http = new UnicornHttpClient();
+    http.axios = axios;
+    return http;
+  }
+  return new UnicornHttpClient(config);
+}
+async function useLoadedHttpClient(config) {
+  const http = await useHttpClient(config);
+  await http.getAxiosInstance();
+  return http;
+}
+let instances = {};
+async function useWebDirective(name = "unicorn", options = {}) {
+  return instances[name] ??= await createWebDirective(Object.assign({}, options, { prefix: "uni-" }));
+}
+async function useUniDirective(name, handler, wdInstance = "unicorn") {
+  const wd = typeof wdInstance === "string" ? await useWebDirective(wdInstance) : wdInstance;
+  wd.register(name, handler);
+}
+async function createWebDirective(options = {}) {
+  const WebDirective = (await import("./web-directive.es-DnVr9lB3.js")).default;
+  const wd = new WebDirective(options);
+  wd.listen();
+  return wd;
+}
+async function useListDependent(element, dependent, options = {}) {
+  const module2 = await import("./list-dependent-CMXMX3t-.js");
+  await module2.ready;
+  if (element) {
+    const { ListDependent } = module2;
+    return ListDependent.handle(element, dependent, options);
+  }
+  return module2;
+}
+function useFieldFlatpickr() {
+  return import("./field-flatpickr-BprC88A4.js");
+}
+async function useTomSelect(selector, options = {}, theme = "bootstrap5") {
+  const modules = await useImport(
+    "@vendor/tom-select/dist/js/tom-select.complete.min.js",
+    useCssImport(`@vendor/tom-select/dist/css/tom-select.${theme}.min.css`)
+  );
+  if (selector) {
+    module(
+      selector,
+      "tom.select",
+      (ele) => {
+        options = mergeDeep({
+          allowEmptyOption: true,
+          maxOptions: null,
+          plugins: {
+            caret_position: {},
+            clear_button: {}
+          }
+        }, options);
+        if (ele.multiple) {
+          options.plugins.remove_button = {};
+        } else {
+          options.plugins.dropdown_input = {};
+        }
+        class UnicornTomSelect extends TomSelect {
+          syncOptionsWithoutKeepSelected() {
+            const oldValue = ele.value;
+            this.clear();
+            this.clearOptions();
+            this.sync();
+            if (ele.value !== oldValue) {
+              this.setValue(
+                ele.querySelector(`option[value="${oldValue}"]`)?.value ?? ele.querySelector("option")?.value ?? "",
+                true
+              );
+            }
+          }
+        }
+        const t = new UnicornTomSelect(ele, options);
+        ele.addEventListener("list:updated", () => {
+          t.syncOptionsWithoutKeepSelected();
+        });
+        return t;
+      }
+    );
+  }
+  return modules;
+}
+async function useIframeModal() {
+  const module2 = await import("./iframe-modal-C66d_Bsf.js");
+  await module2.ready;
+  return module2;
+}
+async function useS3Uploader(name, options = {}) {
+  const module2 = await import("./s3-uploader-DHmW9PdM.js");
+  if (!name) {
+    return module2;
+  }
+  const { get } = module2;
+  return get(name, options);
+}
+async function useShowOn() {
+  const module2 = await import("./show-on-BzeNGC-C.js");
+  await module2.ready;
+  return module2;
+}
+async function useUIBootstrap5(install = false) {
+  const { UIBootstrap5 } = await import("./ui-bootstrap5-5YYbNO10.js");
+  const theme = UIBootstrap5.get();
+  if (install) {
+    useUITheme(theme);
+  }
+  return theme;
+}
+async function useFormValidation(selector) {
+  const module2 = await import("./validation-30rSvt10.js");
+  await module2.ready;
+  if (!selector) {
+    return module2;
+  }
+  return useFormValidationSync(selector);
+}
+function useFormValidationSync(selector) {
+  return getBoundedInstance(selector, "form.validation");
+}
+function useFieldValidationSync(selector) {
+  return getBoundedInstance(selector, "field.validation");
+}
+async function addGlobalValidator(name, validator, options = {}) {
+  const { UnicornFormValidation } = await useFormValidation();
+  UnicornFormValidation.addGlobalValidator(name, validator, options);
+}
+function useFieldCascadeSelect() {
+  return import("./field-cascade-select-B1iJ5Gh-.js");
+}
+async function useFieldFileDrag() {
+  const module2 = await import("./field-file-drag-BYnetys0.js");
+  await module2.ready;
+  return module2;
+}
+function useFieldModalSelect() {
+  return import("./field-modal-select-DVnq4u13.js");
+}
+async function useCheckboxesMultiSelect(selector, options = {}) {
+  const m = await import("./checkboxes-multi-select-CUSMh1xs.js");
+  if (selector) {
+    m.CheckboxesMultiSelect.handle(selector, options);
+  }
+  return m;
+}
+function useFieldRepeatable() {
+  return import("./field-repeatable-FztDON0-.js");
+}
+function useFieldSingleImageDrag() {
+  return import("./field-single-image-drag-DzD-bd2W.js");
 }
 let ui;
 AlertAdapter.alert = (title, text = "", type = "info") => {
@@ -1241,8 +1434,12 @@ async function slideUp(target, duration = 300) {
     { height: 0, paddingTop: 0, paddingBottom: 0 },
     { duration, easing: "ease-out" }
   );
+  data(ele, "animation.sliding.up", true);
   const r = await animation.finished;
-  ele.style.display = "none";
+  if (!data(ele, "animation.sliding.down")) {
+    ele.style.display = "none";
+  }
+  removeData(ele, "animation.sliding.up");
   return r;
 }
 function slideDown(target, duration = 300, display = "block") {
@@ -1250,6 +1447,7 @@ function slideDown(target, duration = 300, display = "block") {
   if (!ele) {
     return Promise.resolve();
   }
+  data(ele, "animation.sliding.down", true);
   ele.style.display = display;
   let maxHeight = 0;
   for (const child of Array.from(ele.children)) {
@@ -1267,7 +1465,10 @@ function slideDown(target, duration = 300, display = "block") {
   );
   animation.addEventListener("finish", () => {
     ele.style.height = "";
-    ele.style.overflow = "visible";
+    if (!data(ele, "animation.sliding.up")) {
+      ele.style.overflow = "visible";
+    }
+    removeData(ele, "animation.sliding.down");
   });
   return animation.finished;
 }
@@ -1418,199 +1619,6 @@ function removeCloak() {
   }
   selectAll("[uni-cloak]", (el) => el.removeAttribute("uni-cloak"));
 }
-const queues = {};
-function useQueue(name = "default", maxRunning = 1) {
-  return queues[name] ??= createQueue(maxRunning);
-}
-function createQueue(maxRunning = 1) {
-  return queue(maxRunning);
-}
-async function useForm(ele, options = {}) {
-  const { UnicornFormElement } = await import("../components/form.js");
-  if (ele == null) {
-    return new UnicornFormElement(void 0, void 0, options);
-  }
-  const selector = typeof ele === "string" ? ele : void 0;
-  const el = selectOne(ele);
-  if (!el) {
-    throw new Error(`Form element of: ${selector} not found.`);
-  }
-  return module(
-    el,
-    "unicorn.form",
-    () => new UnicornFormElement(selector, el, options)
-  );
-}
-async function useGrid(ele, options = {}) {
-  const { UnicornGridElement } = await import("../components/grid.js");
-  const selector = typeof ele === "string" ? ele : "";
-  const element = selectOne(ele);
-  if (!element) {
-    throw new Error("Element is empty");
-  }
-  const form = await useForm(selector || element);
-  return module(
-    element,
-    "grid.plugin",
-    () => new UnicornGridElement(selector, element, form, options)
-  );
-}
-async function useHttpClient(config) {
-  const { UnicornHttpClient } = await import("../components/http-client.js");
-  if (config && "interceptors" in config) {
-    const axios = config;
-    const http = new UnicornHttpClient();
-    http.axios = axios;
-    return http;
-  }
-  return new UnicornHttpClient(config);
-}
-async function useLoadedHttpClient(config) {
-  const http = await useHttpClient(config);
-  await http.getAxiosInstance();
-  return http;
-}
-let instances = {};
-async function useWebDirective(name = "unicorn", options = {}) {
-  return instances[name] ??= await createWebDirective(Object.assign({}, options, { prefix: "uni-" }));
-}
-async function useUniDirective(name, handler, wdInstance = "unicorn") {
-  const wd = typeof wdInstance === "string" ? await useWebDirective(wdInstance) : wdInstance;
-  wd.register(name, handler);
-}
-async function createWebDirective(options = {}) {
-  const WebDirective = (await import("./web-directive.es-DnVr9lB3.js")).default;
-  const wd = new WebDirective(options);
-  wd.listen();
-  return wd;
-}
-async function useListDependent(element, dependent, options = {}) {
-  const module2 = await import("../components/list-dependent.js");
-  await module2.ready;
-  if (element) {
-    const { ListDependent } = module2;
-    return ListDependent.handle(element, dependent, options);
-  }
-  return module2;
-}
-function useFieldFlatpickr() {
-  return import("../components/field-flatpickr.js");
-}
-async function useTomSelect(selector, options = {}, theme = "bootstrap5") {
-  const modules = await useImport(
-    "@vendor/tom-select/dist/js/tom-select.complete.min.js",
-    useCssImport(`@vendor/tom-select/dist/css/tom-select.${theme}.min.css`)
-  );
-  if (selector) {
-    module(
-      selector,
-      "tom.select",
-      (ele) => {
-        options = mergeDeep({
-          allowEmptyOption: true,
-          maxOptions: null,
-          plugins: {
-            caret_position: {},
-            clear_button: {}
-          }
-        }, options);
-        if (ele.multiple) {
-          options.plugins.remove_button = {};
-        } else {
-          options.plugins.dropdown_input = {};
-        }
-        class UnicornTomSelect extends TomSelect {
-          syncOptionsWithoutKeepSelected() {
-            const oldValue = ele.value;
-            this.clear();
-            this.clearOptions();
-            this.sync();
-            if (ele.value !== oldValue) {
-              this.setValue(
-                ele.querySelector(`option[value="${oldValue}"]`)?.value ?? ele.querySelector("option")?.value ?? "",
-                true
-              );
-            }
-          }
-        }
-        const t = new UnicornTomSelect(ele, options);
-        ele.addEventListener("list:updated", () => {
-          t.syncOptionsWithoutKeepSelected();
-        });
-        return t;
-      }
-    );
-  }
-  return modules;
-}
-async function useIframeModal() {
-  const module2 = await import("../components/iframe-modal.js");
-  await module2.ready;
-  return module2;
-}
-async function useS3Uploader(name, options = {}) {
-  const module2 = await import("../components/s3-uploader.js");
-  if (!name) {
-    return module2;
-  }
-  const { get } = module2;
-  return get(name, options);
-}
-async function useShowOn() {
-  const module2 = await import("../components/show-on.js");
-  await module2.ready;
-  return module2;
-}
-async function useUIBootstrap5(install = false) {
-  const { UIBootstrap5 } = await import("../components/ui-bootstrap5.js");
-  const theme = UIBootstrap5.get();
-  if (install) {
-    useUITheme(theme);
-  }
-  return theme;
-}
-async function useFormValidation(selector) {
-  const module2 = await import("../components/validation.js");
-  await module2.ready;
-  if (!selector) {
-    return module2;
-  }
-  return useFormValidationSync(selector);
-}
-function useFormValidationSync(selector) {
-  return getBoundedInstance(selector, "form.validation");
-}
-function useFieldValidationSync(selector) {
-  return getBoundedInstance(selector, "field.validation");
-}
-async function addGlobalValidator(name, validator, options = {}) {
-  const { UnicornFormValidation } = await useFormValidation();
-  UnicornFormValidation.addGlobalValidator(name, validator, options);
-}
-function useFieldCascadeSelect() {
-  return import("../components/field-cascade-select.js");
-}
-async function useFieldFileDrag() {
-  const module2 = await import("../components/field-file-drag.js");
-  await module2.ready;
-  return module2;
-}
-function useFieldModalSelect() {
-  return import("../components/field-modal-select.js");
-}
-async function useCheckboxesMultiSelect(selector, options = {}) {
-  const m = await import("../components/checkboxes-multi-select.js");
-  if (selector) {
-    m.CheckboxesMultiSelect.handle(selector, options);
-  }
-  return m;
-}
-function useFieldRepeatable() {
-  return import("../components/field-repeatable.js");
-}
-function useFieldSingleImageDrag() {
-  return import("../components/field-single-image-drag.js");
-}
 function useUnicornFormFields(app2) {
   app2 ??= useUnicorn();
   app2.use(UnicornFormFields);
@@ -1623,9 +1631,9 @@ class UnicornFormFields {
   modalSelect = useFieldModalSelect;
   cascadeSelect = useFieldCascadeSelect;
   sid = useFieldSingleImageDrag;
-  install(app2, options) {
+  static install(app2) {
     app2.$fields = this;
-    app2.inject(UnicornFormFields, this);
+    app2.provide(UnicornFormFields, this);
   }
 }
 let app;
@@ -1644,8 +1652,8 @@ function useUnicorn(instance) {
   }
   return app ??= createUnicorn();
 }
-function useInject(name, def) {
-  return useUnicorn().inject(name, def);
+function useInject(id, def) {
+  return useUnicorn().inject(id, def);
 }
 export {
   useLang as $,

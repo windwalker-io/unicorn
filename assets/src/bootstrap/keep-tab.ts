@@ -1,4 +1,4 @@
-import { selectAll, selectOne, sleep } from '@/modules';
+import { selectAll, selectOne, sleep } from '../modules';
 import { Tab } from 'bootstrap';
 
 const TAB_ITEM_SELECTOR = '[data-toggle=tab],[data-bs-toggle=tab],[data-toggle=pill],[data-bs-toggle=pill]';

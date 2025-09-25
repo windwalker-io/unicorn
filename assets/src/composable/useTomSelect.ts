@@ -1,6 +1,6 @@
-import { module, useCssImport, useImport } from '@/modules';
-import type { Nullable } from '@/types';
-import { mergeDeep } from '@/utilities';
+import { module, useCssImport, useImport } from '../modules';
+import type { Nullable } from '../types';
+import { mergeDeep } from '../utilities';
 
 /**
  * @see https://tom-select.js.org/

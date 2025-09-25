@@ -1,9 +1,9 @@
 
-import { EventAwareInterface, EventMixin } from '@/events';
-import { Constructor, UnicornPlugin } from '@/types';
+import { EventAwareInterface, EventMixin } from './events';
+import { Constructor, UnicornPlugin } from './types';
 import { Mixin } from 'ts-mixer';
 
-type InjectionKey<T = any> = string | symbol | Constructor<T>;
+export type InjectionKey<T = any> = string | symbol | Constructor<T>;
 
 export interface UnicornApp extends EventAwareInterface {}
 
@@ -61,8 +61,8 @@ export class UnicornApp extends Mixin(EventMixin) implements EventAwareInterface
     return this;
   }
 
-  inject<T>(plugin: Constructor<T> | string): T;
-  inject<T>(plugin: Constructor<T> | string, def: T): T;
+  inject<T>(id: InjectionKey<T>): T;
+  inject<T>(id: InjectionKey<T>, def: T): T;
   inject<T>(id: InjectionKey<T>, def?: T): T | undefined {
     if (!typeof this.registry.has(id)) {
       if (def !== undefined) {
@@ -75,7 +75,7 @@ export class UnicornApp extends Mixin(EventMixin) implements EventAwareInterface
     return this.registry.get(id);
   }
 
-  provide<T>(id: InjectionKey<T>, value: T) {
+  provide<T>(id: InjectionKey<T>, value: any) {
     this.registry.set(id, value);
 
     return this;

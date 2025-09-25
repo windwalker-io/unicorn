@@ -1,4 +1,4 @@
-import { UnicornFormElement } from './form';
+import { UnicornFormElement } from '../components/form';
 import { Nullable } from '../types';
 export declare class UnicornGridElement {
     element: HTMLElement;

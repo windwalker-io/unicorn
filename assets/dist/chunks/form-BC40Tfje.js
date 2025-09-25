@@ -1,4 +1,4 @@
-import { d as data, l as loadAlpine } from "../chunks/unicorn-Bnc3cU-N.js";
+import { d as data, l as loadAlpine } from "./unicorn-DvsCW02c.js";
 function useSystemUri(type, path) {
   const uri2 = UnicornSystemUri.get();
   {

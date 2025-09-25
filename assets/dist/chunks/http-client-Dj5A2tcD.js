@@ -1,4 +1,4 @@
-import { d as data, u as useImport } from "../chunks/unicorn-Bnc3cU-N.js";
+import { d as data, u as useImport } from "./unicorn-DvsCW02c.js";
 function route(route2, query) {
   const source = route2;
   const extract = extractRoute(source);

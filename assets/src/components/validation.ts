@@ -1,7 +1,7 @@
-import { useUniDirective } from '@/composable';
-import { getBoundedInstance, html, selectAll, selectOne, trans, useUITheme } from '@/modules';
-import { Nullable } from '@/types';
-import { mergeDeep } from '@/utilities';
+import { useUniDirective } from '../composable';
+import { getBoundedInstance, html, selectAll, selectOne, trans, useUITheme } from '../modules';
+import { Nullable } from '../types';
+import { mergeDeep } from '../utilities';
 import * as punycode from 'punycode';
 
 export declare type ValidationHandler = (value: any, input: HTMLElement, options?: Record<string, any>, fv?: UnicornFieldValidation) => any;

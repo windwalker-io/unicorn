@@ -1,4 +1,4 @@
-import { data } from '@/data';
+import { data } from '../data';
 import { sleep } from '@lyrasoft/ts-toolkit/generic';
 
 export { sleep };

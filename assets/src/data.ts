@@ -1,4 +1,4 @@
-import { getData, setData, removeData as rmdata } from '@/utilities';
+import { getData, setData, removeData as rmdata } from './utilities';
 
 export function data(name: string, data: any): any;
 export function data(name: string): any;

@@ -1,6 +1,6 @@
-import { mergeDeep } from '@/utilities';
+import { mergeDeep } from '../utilities';
 import { cloneDeep } from 'lodash-es';
-import { initAlpine, prepareAlpine, uid } from '@/modules';
+import { initAlpine, prepareAlpine, uid } from '../modules';
 import '@asika32764/vue-animate';
 import Sortable from 'sortablejs';
 

@@ -1,7 +1,7 @@
-import { data } from '@/data';
-import { loadAlpine } from '@/modules/ui';
-import { useSystemUri } from '@/modules/uri';
-import type { Nullable } from '@/types';
+import { data } from '../data';
+import { loadAlpine } from '../modules/ui';
+import { useSystemUri } from '../modules/uri';
+import type { Nullable } from '../types';
 
 export class UnicornFormElement {
   element: HTMLFormElement | undefined;

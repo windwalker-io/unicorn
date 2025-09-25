@@ -1,4 +1,4 @@
-import { data } from '@/data';
+import { data } from '../data';
 
 type UriTypes = 'full' | 'path' | 'root' | 'current' | 'route' | 'script';
 type AssetTypes = 'root' | 'path';

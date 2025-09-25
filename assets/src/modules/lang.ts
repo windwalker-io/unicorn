@@ -1,6 +1,6 @@
-import { data } from '@/data';
-import { isDebug } from '@/modules/helper';
-import { Dictionary } from '@/types';
+import { data } from '../data';
+import { isDebug } from '../modules/helper';
+import { Dictionary } from '../types';
 import { vsprintf } from 'sprintf-js';
 
 let lang: UnicornLang;

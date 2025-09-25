@@ -1,4 +1,4 @@
-import { defData } from '@/utilities';
+import { defData } from '../utilities';
 
 /**
  * @see https://stackoverflow.com/a/9899701

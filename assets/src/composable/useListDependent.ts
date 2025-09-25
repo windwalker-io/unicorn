@@ -1,7 +1,7 @@
-import type { ListDependent, ListDependentOptions } from '@/components/list-dependent';
-import { Nullable } from '@/types';
+import type { ListDependent, ListDependentOptions } from '../components/list-dependent';
+import { Nullable } from '../types';
 
-export async function useListDependent(): Promise<typeof import('@/components/list-dependent')>;
+export async function useListDependent(): Promise<typeof import('../components/list-dependent')>;
 export async function useListDependent(
   element: string | HTMLElement,
   dependent?: Nullable<string | HTMLElement>,
@@ -12,7 +12,7 @@ export async function useListDependent(
   dependent?: Nullable<string | HTMLElement>,
   options: Partial<ListDependentOptions> = {}
 ): Promise<any> {
-  const module = await import('@/components/list-dependent');
+  const module = await import('../components/list-dependent');
 
   await module.ready;
 

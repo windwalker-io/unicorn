@@ -1,6 +1,6 @@
-import { data } from '@/data';
-import { getBoundedInstance, h, selectAll, selectOne } from '@/modules';
-import { mergeDeep } from '@/utilities';
+import { data } from '../data';
+import { getBoundedInstance, h, selectAll, selectOne } from '../modules';
+import { mergeDeep } from '../utilities';
 
 const defaultOptions = {
   selector: '.btn-group .radio',

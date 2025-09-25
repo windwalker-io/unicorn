@@ -1,5 +1,4 @@
-import { UnicornApp } from './app';
-import { Constructor } from './types';
+import { InjectionKey, UnicornApp } from './app';
 export * from './data';
 export * from './events';
 export * from './modules';
@@ -8,5 +7,5 @@ export * from './plugin';
 export declare function createUnicorn(): UnicornApp;
 export declare function createUnicornWithPlugins(): UnicornApp;
 export declare function useUnicorn(instance?: UnicornApp): UnicornApp;
-export declare function useInject<T>(name: Constructor<T> | string): T;
-export declare function useInject<T, D>(name: Constructor<T> | string, def?: D): T | D;
+export declare function useInject<T>(id: InjectionKey<T>): T;
+export declare function useInject<T>(id: InjectionKey<T>, def: T): T;

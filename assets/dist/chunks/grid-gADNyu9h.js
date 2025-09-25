@@ -1,9 +1,8 @@
-import { l as loadAlpine, s as slideDown, a as slideUp, h, _ as __, b as simpleConfirm, c as deleteConfirm, e as simpleAlert } from "../chunks/unicorn-Bnc3cU-N.js";
+import { l as loadAlpine, s as slideDown, a as slideUp, h, _ as __, b as simpleConfirm, c as deleteConfirm, e as simpleAlert } from "./unicorn-DvsCW02c.js";
 class UnicornGridElement {
   constructor(selector, element, form, options = {}) {
     this.element = element;
     this.form = form;
-    this.element = element;
     this.options = { ...options };
     if (!this.form) {
       throw new Error("UnicornGrid is depends on UnicornForm");

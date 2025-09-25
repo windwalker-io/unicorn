@@ -1,8 +1,8 @@
-import { h } from '@/modules/dom';
-import type { UnicornFormElement } from '@/components/form';
-import { __ } from '@/modules/lang';
-import { deleteConfirm, loadAlpine, simpleAlert, simpleConfirm, slideDown, slideUp } from '@/modules/ui';
-import { Nullable } from '@/types';
+import { h } from '../modules/dom';
+import type { UnicornFormElement } from '../components/form';
+import { __ } from '../modules/lang';
+import { deleteConfirm, loadAlpine, simpleAlert, simpleConfirm, slideDown, slideUp } from '../modules/ui';
+import { Nullable } from '../types';
 
 export class UnicornGridElement {
   options: Record<string, any>;
@@ -15,7 +15,6 @@ export class UnicornGridElement {
     public form: UnicornFormElement,
     options: Record<string, any> = {}
   ) {
-    this.element = element;
     this.options = { ...options };
 
     if (!this.form) {

@@ -1,1 +1,1 @@
-export declare function useFieldRepeatable(): Promise<typeof import('@/components/field-repeatable')>;
+export declare function useFieldRepeatable(): Promise<typeof import('../components/field-repeatable')>;

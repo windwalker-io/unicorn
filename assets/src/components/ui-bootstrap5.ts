@@ -1,7 +1,7 @@
-import type { ButtonRadio } from '@/bootstrap/button-radio';
-import type { LoadTab } from '@/bootstrap/keep-tab';
-import { html, module, selectAll, selectOne } from '@/modules';
-import type { UIThemeInterface } from '@/types';
+import type { ButtonRadio } from '../bootstrap/button-radio';
+import type { LoadTab } from '../bootstrap/keep-tab';
+import { html, module, selectAll, selectOne } from '../modules';
+import type { UIThemeInterface } from '../types';
 import { Tooltip } from 'bootstrap';
 
 export class UIBootstrap5 implements UIThemeInterface {
@@ -42,10 +42,10 @@ export class UIBootstrap5 implements UIThemeInterface {
     }
   }
 
-  async keepTab(): Promise<typeof import('@/bootstrap/keep-tab')>;
+  async keepTab(): Promise<typeof import('../bootstrap/keep-tab')>;
   async keepTab(selector?: string | HTMLElement, config?: Record<string, any>): Promise<LoadTab>;
   async keepTab(selector?: string | HTMLElement, config: Record<string, any> = {}): Promise<any> {
-    const module = await import('@/bootstrap/keep-tab');
+    const module = await import('../bootstrap/keep-tab');
 
     if (selector) {
       return new module.LoadTab(selector, config);
@@ -54,10 +54,10 @@ export class UIBootstrap5 implements UIThemeInterface {
     return module;
   }
 
-  async buttonRadio(): Promise<typeof import('@/bootstrap/button-radio')>;
+  async buttonRadio(): Promise<typeof import('../bootstrap/button-radio')>;
   async buttonRadio(selector: string | HTMLElement, config?: Record<string, any>): Promise<ButtonRadio>;
   async buttonRadio(selector?: string | HTMLElement, config: Record<string, any> = {}): Promise<any> {
-    const m = await import('@/bootstrap/button-radio');
+    const m = await import('../bootstrap/button-radio');
 
     if (selector) {
       return m.ButtonRadio.handle(selector, config);

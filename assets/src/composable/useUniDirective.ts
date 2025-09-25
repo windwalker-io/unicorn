@@ -1,4 +1,4 @@
-import { Dictionary } from '@/types';
+import { Dictionary } from '../types';
 import type { default as WebDirective } from 'web-directive';
 import type { WebDirectiveHandler, WebDirectiveOptions } from 'web-directive/src/types';
 

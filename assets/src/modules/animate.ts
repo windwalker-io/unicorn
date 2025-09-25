@@ -1,4 +1,4 @@
-import { selectOne } from '@/modules';
+import { selectOne } from './dom';
 
 export function animateTo(
   element: HTMLElement,

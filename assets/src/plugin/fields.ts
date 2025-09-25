@@ -1,4 +1,4 @@
-import type { UnicornApp } from '@/app';
+import type { UnicornApp } from '../app';
 import {
   useFieldCascadeSelect,
   useFieldFileDrag,
@@ -6,11 +6,10 @@ import {
   useFieldModalSelect,
   useFieldRepeatable,
   useFieldSingleImageDrag
-} from '@/composable';
-import { UnicornPlugin } from '@/types';
-import { useUnicorn } from '@/unicorn';
+} from '../composable';
+import { useUnicorn } from '../unicorn';
 
-declare module '@/app' {
+declare module '../app' {
   interface UnicornApp {
     $fields: typeof UnicornFormFields;
   }
@@ -24,7 +23,7 @@ export function useUnicornFormFields(app?: UnicornApp) {
   return app.$fields;
 }
 
-export class UnicornFormFields implements UnicornPlugin {
+export class UnicornFormFields {
   repeatable = useFieldRepeatable;
   flatpicker = useFieldFlatpickr;
   fileDrag = useFieldFileDrag;
@@ -32,8 +31,8 @@ export class UnicornFormFields implements UnicornPlugin {
   cascadeSelect = useFieldCascadeSelect;
   sid = useFieldSingleImageDrag;
 
-  install(app, options?: any) {
+  static install(app: UnicornApp) {
     app.$fields = this;
-    app.inject(UnicornFormFields, this);
+    app.provide(UnicornFormFields, this);
   }
 }

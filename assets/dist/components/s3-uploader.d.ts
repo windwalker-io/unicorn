@@ -1,5 +1,5 @@
 import { EventAwareInterface, EventMixin } from '../events';
-import { UnicornHttpClient } from './http-client';
+import { UnicornHttpClient } from '../components/http-client';
 import { AxiosProgressEvent, AxiosResponse } from 'axios';
 export declare function get(name: string, options?: Partial<S3UploaderGlobalOptions>): S3Uploader;
 export declare function create(name: string, options?: Partial<S3UploaderGlobalOptions>): S3Uploader;

@@ -1,8 +1,8 @@
-import { useHttpClient } from '@/composable';
-import { data } from '@/data';
-import { EventAwareInterface, EventMixin } from '@/events';
-import type { UnicornHttpClient } from '@/components/http-client';
-import { mergeDeep } from '@/utilities';
+import { useHttpClient } from '../composable';
+import { data } from '../data';
+import { EventAwareInterface, EventMixin } from '../events';
+import type { UnicornHttpClient } from '../components/http-client';
+import { mergeDeep } from '../utilities';
 import { AxiosProgressEvent, AxiosResponse } from 'axios';
 import { Mixin } from 'ts-mixer';
 

@@ -1,5 +1,5 @@
 
-import { Dictionary } from '@/types';
+import { Dictionary } from '../types';
 import { Stack, stack } from '@lyrasoft/ts-toolkit/generic';
 
 const stacks: Dictionary<Stack> = {};
