@@ -1,8 +1,9 @@
-import { useStack } from '@/composable/useStack';
-import { animateTo } from '@/modules/animate';
-import { html, module, selectAll, selectOne } from '@/modules/dom';
-import { useCssImport, useImport } from '@/modules/loader';
-import type { Constructor, Nullable, UIThemeInterface } from '@/types';
+import { useStack } from '../composable';
+import { data, removeData } from '../data';
+import { animateTo } from './animate';
+import { html, module, selectAll, selectOne } from './dom';
+import { useCssImport, useImport } from './loader';
+import type { Constructor, Nullable, UIThemeInterface } from '../types';
 import { AlertAdapter, deleteConfirm, simpleAlert, simpleConfirm } from '@lyrasoft/ts-toolkit/generic';
 import type AlpineGlobal from 'alpinejs';
 import type { default as SpectrumGlobal } from 'spectrum-vanilla';
@@ -196,9 +197,15 @@ export async function slideUp(target: string | HTMLElement, duration: number = 3
     { duration, easing: 'ease-out' }
   );
 
+  data(ele, 'animation.sliding.up', true);
+
   const r = await animation.finished;
 
-  ele.style.display = 'none';
+  if (!data(ele, 'animation.sliding.down')) {
+    ele.style.display = 'none';
+  }
+
+  removeData(ele, 'animation.sliding.up');
 
   return r;
 }
@@ -212,6 +219,8 @@ export function slideDown(
   if (!ele) {
     return Promise.resolve();
   }
+
+  data(ele, 'animation.sliding.down', true);
 
   ele.style.display = display;
 
@@ -234,7 +243,12 @@ export function slideDown(
 
   animation.addEventListener('finish', () => {
     ele.style.height = '';
-    ele.style.overflow = 'visible';
+
+    if (!data(ele, 'animation.sliding.up')) {
+      ele.style.overflow = 'visible';
+    }
+
+    removeData(ele, 'animation.sliding.down');
   });
 
   return animation.finished;
