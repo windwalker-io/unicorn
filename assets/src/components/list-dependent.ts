@@ -298,3 +298,8 @@ export const ready = useUniDirective('list-dependent', {
     ListDependent.handle(el).mergeOptions(options);
   }
 });
+
+export type ListDependentModule = {
+  ListDependent: typeof ListDependent;
+  ready: typeof ready;
+};

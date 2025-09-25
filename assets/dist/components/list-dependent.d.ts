@@ -63,4 +63,8 @@ export declare class ListDependent {
     mergeOptions(options: Partial<ListDependentOptions>): ListDependentOptions;
 }
 export declare const ready: Promise<void>;
+export type ListDependentModule = {
+    ListDependent: typeof ListDependent;
+    ready: typeof ready;
+};
 export {};
