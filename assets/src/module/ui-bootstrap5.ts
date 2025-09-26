@@ -1,8 +1,8 @@
+import { Tooltip } from 'bootstrap';
 import type { ButtonRadio, ButtonRadioModule, ButtonRadioOptions } from '../bootstrap/button-radio';
 import type { KeepTab, KeepTabModule, KeepTabOptions } from '../bootstrap/keep-tab';
-import { html, module, selectAll, selectOne } from '../service';
+import { forceArray, html, module, selectOne } from '../service';
 import type { UIThemeInterface } from '../types';
-import { Tooltip } from 'bootstrap';
 
 export class UIBootstrap5 implements UIThemeInterface {
   static instance: UIBootstrap5 | null = null;
@@ -70,11 +70,16 @@ export class UIBootstrap5 implements UIThemeInterface {
     return m;
   }
 
-  tooltip(selector: NodeListOf<Element> | Element | string = '[data-bs-toggle="tooltip"]', config: Record<string, any> = {}) {
-    return module(
-      selector,
-      'bs.tooltip',
-      (ele) => Tooltip.getOrCreateInstance(ele, config)
+  tooltip(
+    selector: NodeListOf<Element> | Element | string = '[data-bs-toggle="tooltip"]',
+    config: Partial<Tooltip.Options> = {}
+  ): Tooltip[] {
+    return forceArray(
+      module(
+        selector,
+        'bs.tooltip',
+        (ele) => Tooltip.getOrCreateInstance(ele, config)
+      )
     );
   }
 

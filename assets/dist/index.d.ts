@@ -20,6 +20,7 @@ import { SpectrumOptions } from 'spectrum-vanilla/dist/types/types';
 import { Stack } from '@lyrasoft/ts-toolkit/generic';
 import { TaskQueue } from '@lyrasoft/ts-toolkit/generic';
 import { tid } from '@lyrasoft/ts-toolkit/generic';
+import { Tooltip } from 'bootstrap';
 import { uid } from '@lyrasoft/ts-toolkit/generic';
 import { WebDirectiveHandler } from 'web-directive/src/types';
 import { WebDirectiveOptions } from 'web-directive/src/types';
@@ -631,7 +632,7 @@ declare class UIBootstrap5 implements UIThemeInterface {
     keepTab(selector?: string | HTMLElement, options?: KeepTabOptions): Promise<KeepTab>;
     buttonRadio(): Promise<ButtonRadioModule>;
     buttonRadio(selector: string | HTMLElement, config?: ButtonRadioOptions): Promise<ButtonRadio>;
-    tooltip(selector?: NodeListOf<Element> | Element | string, config?: Record<string, any>): any;
+    tooltip(selector?: NodeListOf<Element> | Element | string, config?: Partial<Tooltip.Options>): Tooltip[];
     getMajorVersion(module: any): number;
 }
 
@@ -1018,6 +1019,8 @@ export declare class UnicornUI {
     };
     installTheme(theme: any): void;
 }
+
+export declare function useBs5Tooltip(selector?: NodeListOf<Element> | Element | string, config?: Partial<Tooltip.Options>): Promise<Tooltip[]>;
 
 export declare function useCheckboxesMultiSelect(): Promise<any>;
 

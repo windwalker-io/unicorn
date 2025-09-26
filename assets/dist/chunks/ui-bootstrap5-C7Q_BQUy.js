@@ -1,5 +1,5 @@
 import { Tooltip } from "bootstrap";
-import { k as html, i as selectOne, o as module } from "./unicorn-BZTc9FFG.js";
+import { k as html, i as selectOne, t as forceArray, o as module } from "./unicorn-BzhUK5qp.js";
 class UIBootstrap5 {
   static instance = null;
   static get() {
@@ -29,7 +29,7 @@ class UIBootstrap5 {
     }
   }
   async keepTab(selector, options = {}) {
-    const module2 = await import("./keep-tab-DR0ECIQb.js");
+    const module2 = await import("./keep-tab-C2Z92EoW.js");
     await module2.ready;
     if (selector) {
       return new module2.KeepTab(selector, options);
@@ -37,7 +37,7 @@ class UIBootstrap5 {
     return module2;
   }
   async buttonRadio(selector, config = {}) {
-    const m = await import("./button-radio-a4c57Wdh.js");
+    const m = await import("./button-radio-BidjYg91.js");
     await m.ready;
     if (selector) {
       return m.ButtonRadio.handle(selector, config);
@@ -45,10 +45,12 @@ class UIBootstrap5 {
     return m;
   }
   tooltip(selector = '[data-bs-toggle="tooltip"]', config = {}) {
-    return module(
-      selector,
-      "bs.tooltip",
-      (ele) => Tooltip.getOrCreateInstance(ele, config)
+    return forceArray(
+      module(
+        selector,
+        "bs.tooltip",
+        (ele) => Tooltip.getOrCreateInstance(ele, config)
+      )
     );
   }
   getMajorVersion(module2) {

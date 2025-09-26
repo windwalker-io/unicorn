@@ -1,5 +1,5 @@
 import { Tab } from "bootstrap";
-import { f as useUniDirective, o as module, m as mergeDeep, i as selectOne, C as sleep, p as selectAll } from "./unicorn-BZTc9FFG.js";
+import { f as useUniDirective, o as module, m as mergeDeep, i as selectOne, D as sleep, p as selectAll } from "./unicorn-BzhUK5qp.js";
 const defaultOptions = {
   tabItemSelector: "[data-toggle=tab],[data-bs-toggle=tab],[data-toggle=pill],[data-bs-toggle=pill]",
   delay: 0

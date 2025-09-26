@@ -1124,7 +1124,7 @@ function createStack(store = []) {
   return stack(store);
 }
 async function useForm(ele, options = {}) {
-  const { UnicornFormElement } = await import("./form-DDewyNec.js");
+  const { UnicornFormElement } = await import("./form-B8KWP0ou.js");
   if (ele == null) {
     return new UnicornFormElement(void 0, void 0, options);
   }
@@ -1145,7 +1145,7 @@ async function useFormComponent(ele, options = {}) {
   return form;
 }
 async function useGrid(ele, options = {}) {
-  const { UnicornGridElement } = await import("./grid-DSkN3lH6.js");
+  const { UnicornGridElement } = await import("./grid-B70f0RbU.js");
   const selector = typeof ele === "string" ? ele : "";
   const element = selectOne(ele);
   if (!element) {
@@ -1164,7 +1164,7 @@ async function useGridComponent(ele, options = {}) {
   return grid;
 }
 async function useHttpClient(config) {
-  const { UnicornHttpClient } = await import("./http-client-orNnxHcV.js");
+  const { UnicornHttpClient } = await import("./http-client-CsB4VcCj.js");
   if (config && "interceptors" in config) {
     const axios = config;
     const http = new UnicornHttpClient();
@@ -1193,7 +1193,7 @@ async function createWebDirective(options = {}) {
   return wd;
 }
 async function useListDependent(element, dependent, options = {}) {
-  const module2 = await import("./list-dependent-Cv8QoNAM.js");
+  const module2 = await import("./list-dependent-BF762KdR.js");
   await module2.ready;
   if (element) {
     const { ListDependent } = module2;
@@ -1202,7 +1202,7 @@ async function useListDependent(element, dependent, options = {}) {
   return module2;
 }
 function useFieldFlatpickr() {
-  return import("./field-flatpickr-BbPaBUOc.js");
+  return import("./field-flatpickr-CL8_pByy.js");
 }
 async function useTomSelect(selector, options = {}, theme = "bootstrap5") {
   const modules = await useImport(
@@ -1252,12 +1252,12 @@ async function useTomSelect(selector, options = {}, theme = "bootstrap5") {
   return modules;
 }
 async function useIframeModal() {
-  const module2 = await import("./iframe-modal-BWKNzVwT.js");
+  const module2 = await import("./iframe-modal-CuUJXxOa.js");
   await module2.ready;
   return module2;
 }
 async function useS3Uploader(name, options = {}) {
-  const module2 = await import("./s3-uploader-D0Zher1w.js");
+  const module2 = await import("./s3-uploader-LE4dv0mt.js");
   if (!name) {
     return module2;
   }
@@ -1265,20 +1265,24 @@ async function useS3Uploader(name, options = {}) {
   return get(name, options);
 }
 async function useShowOn() {
-  const module2 = await import("./show-on-BqgY1f6R.js");
+  const module2 = await import("./show-on-Cvz9CvBu.js");
   await module2.ready;
   return module2;
 }
 async function useUIBootstrap5(install = false) {
-  const { UIBootstrap5 } = await import("./ui-bootstrap5-CkQix-8v.js");
+  const { UIBootstrap5 } = await import("./ui-bootstrap5-C7Q_BQUy.js");
   const theme = UIBootstrap5.get();
   if (install) {
     useUITheme(theme);
   }
   return theme;
 }
+async function useBs5Tooltip(selector = '[data-bs-toggle="tooltip"]', config = {}) {
+  const bs5 = await useUIBootstrap5();
+  return bs5.tooltip(selector, config);
+}
 async function useFormValidation(selector) {
-  const module2 = await import("./validation-OBIa01J2.js");
+  const module2 = await import("./validation-CHQoRor2.js");
   await module2.ready;
   if (!selector) {
     return module2;
@@ -1296,30 +1300,30 @@ async function addGlobalValidator(name, validator, options = {}) {
   UnicornFormValidation.addGlobalValidator(name, validator, options);
 }
 async function useFieldCascadeSelect() {
-  await import("./field-cascade-select-_H0iG2BG.js");
+  await import("./field-cascade-select-D3hvrclB.js");
 }
 async function useFieldFileDrag() {
-  const module2 = await import("./field-file-drag-BFPNPAd4.js");
+  const module2 = await import("./field-file-drag-0cYF8iDj.js");
   await module2.ready;
   return module2;
 }
 function useFieldModalSelect() {
-  return import("./field-modal-select-Bqz58FMF.js");
+  return import("./field-modal-select-Dzlu3HAR.js");
 }
 async function useCheckboxesMultiSelect(selector, options = {}) {
-  const m = await import("./checkboxes-multi-select-DXgDbq-m.js");
+  const m = await import("./checkboxes-multi-select-C-Ca9QzL.js");
   if (selector) {
     m.CheckboxesMultiSelect.handle(selector, options);
   }
   return m;
 }
 async function useFieldRepeatable() {
-  const module2 = await import("./field-repeatable-B1Sfa2IK.js");
+  const module2 = await import("./field-repeatable-iwEGMkZ-.js");
   await module2.ready;
   return module2;
 }
 function useFieldSingleImageDrag() {
-  return import("./field-single-image-drag-5MioZZV1.js");
+  return import("./field-single-image-drag-uIEBRivr.js");
 }
 let ui;
 AlertAdapter.alert = (title, text = "", type = "info") => {
@@ -1669,28 +1673,28 @@ function useInject(id, def) {
 }
 export {
   useLang as $,
-  initAlpine as A,
-  prepareAlpine as B,
-  sleep as C,
-  createUnicorn as D,
+  highlight as A,
+  initAlpine as B,
+  prepareAlpine as C,
+  sleep as D,
   EventMixin as E,
-  createUnicornWithPlugins as F,
-  useUnicorn as G,
-  useInject as H,
-  removeData as I,
-  EventBus as J,
-  animateTo as K,
-  base64UrlEncode as L,
+  createUnicorn as F,
+  createUnicornWithPlugins as G,
+  useUnicorn as H,
+  useInject as I,
+  removeData as J,
+  EventBus as K,
+  animateTo as L,
   Mixin as M,
-  base64UrlDecode as N,
-  tid as O,
-  randomBytes as P,
-  randomBytesString as Q,
-  serial as R,
-  domready as S,
-  getBoundedInstanceList as T,
-  delegate as U,
-  forceArray as V,
+  base64UrlEncode as N,
+  base64UrlDecode as O,
+  tid as P,
+  randomBytes as Q,
+  randomBytesString as R,
+  serial as S,
+  domready as T,
+  getBoundedInstanceList as U,
+  delegate as V,
   debounce as W,
   throttle as X,
   isDebug as Y,
@@ -1707,16 +1711,17 @@ export {
   notify as a7,
   clearNotifies as a8,
   mark as a9,
-  useFieldValidationSync as aA,
-  addGlobalValidator as aB,
-  useFieldCascadeSelect as aC,
-  useFieldFileDrag as aD,
-  useFieldModalSelect as aE,
-  useCheckboxesMultiSelect as aF,
-  useFieldRepeatable as aG,
-  useFieldSingleImageDrag as aH,
-  useUnicornFormFields as aI,
-  UnicornFormFields as aJ,
+  useFormValidationSync as aA,
+  useFieldValidationSync as aB,
+  addGlobalValidator as aC,
+  useFieldCascadeSelect as aD,
+  useFieldFileDrag as aE,
+  useFieldModalSelect as aF,
+  useCheckboxesMultiSelect as aG,
+  useFieldRepeatable as aH,
+  useFieldSingleImageDrag as aI,
+  useUnicornFormFields as aJ,
+  UnicornFormFields as aK,
   multiUploader as aa,
   modalTree as ab,
   slideToggle as ac,
@@ -1741,8 +1746,8 @@ export {
   useS3Uploader as av,
   useShowOn as aw,
   useUIBootstrap5 as ax,
-  useFormValidation as ay,
-  useFormValidationSync as az,
+  useBs5Tooltip as ay,
+  useFormValidation as az,
   simpleConfirm as b,
   deleteConfirm as c,
   data as d,
@@ -1761,11 +1766,11 @@ export {
   fadeIn as q,
   fadeOut as r,
   slideDown as s,
-  trans as t,
+  forceArray as t,
   useImport as u,
-  useUITheme as v,
-  uid as w,
-  useLoadedHttpClient as x,
-  injectCssToDocument as y,
-  highlight as z
+  trans as v,
+  useUITheme as w,
+  uid as x,
+  useLoadedHttpClient as y,
+  injectCssToDocument as z
 };
