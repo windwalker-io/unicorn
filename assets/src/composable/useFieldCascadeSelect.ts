@@ -1,4 +1,5 @@
 
-export function useFieldCascadeSelect(): Promise<typeof import('../module/field-cascade-select')> {
-  return import('../module/field-cascade-select');
+export async function useFieldCascadeSelect(): Promise<void> {
+  // Cascade Select has no exports now.
+  await import('../module/field-cascade-select');
 }

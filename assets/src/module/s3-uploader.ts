@@ -1,7 +1,7 @@
 import { useHttpClient } from '../composable';
 import { data } from '../data';
 import { EventAwareInterface, EventMixin } from '../events';
-import type { UnicornHttpClient } from './/http-client';
+import type { UnicornHttpClient } from './http-client';
 import { mergeDeep } from '../utilities';
 import { AxiosProgressEvent, AxiosResponse } from 'axios';
 import { Mixin } from 'ts-mixer';
@@ -172,3 +172,9 @@ export interface S3UploaderRequestOptions {
   [name: string]: any;
 }
 
+export interface S3UploaderModule {
+  get(name: string, options?: Partial<S3UploaderGlobalOptions>): S3Uploader;
+  create(name: string, options?: Partial<S3UploaderGlobalOptions>): S3Uploader;
+  destroy(name: string): void;
+  S3Uploader: typeof S3Uploader;
+}

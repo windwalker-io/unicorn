@@ -19,7 +19,7 @@ const defaultOptions: FileDragOptions = {
   height: 125,
 }
 
-class FieldFileDrag extends HTMLElement {
+export class FileDragElement extends HTMLElement {
   static is = 'uni-file-drag';
 
   element: HTMLInputElement;
@@ -241,7 +241,7 @@ class FieldFileDrag extends HTMLElement {
   }
 }
 
-customElements.define(FieldFileDrag.is, FieldFileDrag);
+customElements.define(FileDragElement.is, FileDragElement);
 
 export const ready = useUniDirective('file-drag-field', {
   mounted(el) {
@@ -279,3 +279,7 @@ export const ready = useUniDirective('file-drag-field', {
     }
   }
 });
+
+export interface FileDragModule {
+  FileDragElement: typeof FileDragElement;
+}

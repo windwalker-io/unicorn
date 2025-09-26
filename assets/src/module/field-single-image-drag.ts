@@ -34,7 +34,7 @@ const defaultOptions: SingleImageDragOptions = {
   height: 800,
 };
 
-class FieldSingleImageDrag extends HTMLElement {
+export class SingleImageDragElement extends HTMLElement {
   static is = 'uni-sid';
 
   currentImage = '';
@@ -443,7 +443,7 @@ class FieldSingleImageDrag extends HTMLElement {
 //     document.adoptedStyleSheets = [...document.adoptedStyleSheets, styleSheet];
 //   });
 
-customElements.define(FieldSingleImageDrag.is, FieldSingleImageDrag);
+customElements.define(SingleImageDragElement.is, SingleImageDragElement);
 
 function getFileExtension(file: File): string | undefined {
   const parts = file.name.split('.');
@@ -451,4 +451,9 @@ function getFileExtension(file: File): string | undefined {
     return parts.pop();
   }
   return undefined;
+}
+
+export interface SingleImageDragModule {
+  SingleImageDragElement: typeof SingleImageDragElement;
+  
 }

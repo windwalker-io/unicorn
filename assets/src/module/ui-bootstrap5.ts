@@ -1,5 +1,5 @@
-import type { ButtonRadio } from '../bootstrap/button-radio';
-import type { LoadTab } from '../bootstrap/keep-tab';
+import type { ButtonRadio, ButtonRadioModule, ButtonRadioOptions } from '../bootstrap/button-radio';
+import type { KeepTab, KeepTabModule, KeepTabOptions } from '../bootstrap/keep-tab';
 import { html, module, selectAll, selectOne } from '../service';
 import type { UIThemeInterface } from '../types';
 import { Tooltip } from 'bootstrap';
@@ -42,22 +42,26 @@ export class UIBootstrap5 implements UIThemeInterface {
     }
   }
 
-  async keepTab(): Promise<typeof import('../bootstrap/keep-tab')>;
-  async keepTab(selector?: string | HTMLElement, config?: Record<string, any>): Promise<LoadTab>;
-  async keepTab(selector?: string | HTMLElement, config: Record<string, any> = {}): Promise<any> {
+  async keepTab(): Promise<KeepTabModule>;
+  async keepTab(selector?: string | HTMLElement, options?: KeepTabOptions): Promise<KeepTab>;
+  async keepTab(selector?: string | HTMLElement, options: KeepTabOptions = {}): Promise<any> {
     const module = await import('../bootstrap/keep-tab');
 
+    await module.ready;
+
     if (selector) {
-      return new module.LoadTab(selector, config);
+      return new module.KeepTab(selector, options);
     }
 
     return module;
   }
 
-  async buttonRadio(): Promise<typeof import('../bootstrap/button-radio')>;
-  async buttonRadio(selector: string | HTMLElement, config?: Record<string, any>): Promise<ButtonRadio>;
-  async buttonRadio(selector?: string | HTMLElement, config: Record<string, any> = {}): Promise<any> {
+  async buttonRadio(): Promise<ButtonRadioModule>;
+  async buttonRadio(selector: string | HTMLElement, config?: ButtonRadioOptions): Promise<ButtonRadio>;
+  async buttonRadio(selector?: string | HTMLElement, config: ButtonRadioOptions = {}): Promise<any> {
     const m = await import('../bootstrap/button-radio');
+
+    await m.ready;
 
     if (selector) {
       return m.ButtonRadio.handle(selector, config);

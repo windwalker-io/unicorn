@@ -6,7 +6,7 @@ import { difference } from 'lodash-es';
 type HTMLInputTypes = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
 type Conditions = Record<string, any>;
 
-class ShowOn {
+export class ShowOn {
   el = null;
   input = null;
   conditions: Conditions = {};
@@ -160,3 +160,8 @@ export const ready = useUniDirective('show-on', {
     });
   }
 });
+
+export interface ShowOnModule {
+  ShowOn: typeof ShowOn;
+  ready: typeof ready;
+}

@@ -1,6 +1,19 @@
+import { useUniDirective } from '../composable';
 import { data } from '../data';
 import { getBoundedInstance, h, selectAll, selectOne } from '../service';
 import { mergeDeep } from '../utilities';
+
+export interface ButtonRadioOptions {
+  selector?: string;
+  buttonClass?: string;
+  activeClass?: string;
+  color?: {
+    'default'?: string;
+    green?: string;
+    red?: string;
+    blue?: string;
+  };
+}
 
 const defaultOptions = {
   selector: '.btn-group .radio',
@@ -21,17 +34,17 @@ export class ButtonRadio {
   inputs: HTMLInputElement[] = [];
   buttons: HTMLButtonElement[] = [];
   colors: string[] = [];
-  options: any = {};
+  options: ButtonRadioOptions;
 
-  static handle(el: any, options = {}) {
+  static handle(el: HTMLElement | string, options: ButtonRadioOptions = {}) {
     return getBoundedInstance(el, 'button-radio', (el: HTMLElement) => {
       return new this(el, options);
     });
   }
 
-  constructor(selector: any, options = {}) {
+  constructor(selector: HTMLElement | string, options: ButtonRadioOptions = {}) {
     this.element = selectOne(selector);
-    this.options = options = mergeDeep({}, defaultOptions, options);
+    this.options = mergeDeep({}, defaultOptions, options);
     let wrapper: HTMLElement;
 
     // Turn radios into btn-group
@@ -180,4 +193,16 @@ export class ButtonRadio {
     const classNameStr = className.join(' ');
     return classNameStr.split(' ').filter(t => t !== '');
   }
+}
+
+export const ready = useUniDirective('button-radio', {
+  mounted(el, { value }) {
+    const options: ButtonRadioOptions = JSON.parse(value || '{}');
+    ButtonRadio.handle(el, value || {});
+  }
+});
+
+export interface ButtonRadioModule {
+  ButtonRadio: typeof ButtonRadio;
+  ready: typeof ready;
 }

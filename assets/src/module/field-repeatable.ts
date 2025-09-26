@@ -179,4 +179,8 @@ prepareAlpine(() => {
   }));
 });
 
-await initAlpine('data-repeatable');
+export const ready = initAlpine('data-repeatable');
+
+export interface RepeatableModule {
+  ready: typeof ready;
+}

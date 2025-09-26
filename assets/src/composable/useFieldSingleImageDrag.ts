@@ -1,3 +1,5 @@
-export function useFieldSingleImageDrag(): Promise<typeof import('../module/field-single-image-drag')> {
+import { SingleImageDragModule } from '../module/field-single-image-drag';
+
+export function useFieldSingleImageDrag(): Promise<SingleImageDragModule> {
   return import('../module/field-single-image-drag');
 }

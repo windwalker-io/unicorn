@@ -1,3 +1,4 @@
-export function useFieldModalSelect(): Promise<typeof import('../module/field-modal-select')> {
+export function useFieldModalSelect(): Promise<any> {
+  // Modal select has no exports now
   return import('../module/field-modal-select');
 }

@@ -23,3 +23,14 @@ export async function useGrid(
     () => new UnicornGridElement(selector, element, form, options)
   );
 }
+
+export async function useGridComponent(
+  ele: string | HTMLElement,
+  options: Record<string, any> | undefined = {}
+): Promise<UnicornGridElement> {
+  const grid = await useGrid(ele, options);
+
+  await grid.initComponent();
+
+  return grid;
+}

@@ -76,14 +76,16 @@ class UnicornAssetSubscriber
                 ->filter('strlen')
                 ->map(fn (string $s) => Str::ensureRight($s, ';'));
 
-            $codes[] = "u.trigger('ready');";
+            if (!$script->next) {
+                $codes[] = "u.trigger('ready');";
+            }
 
             $script->importThen(
                 '@main',
                 (string) $codes->implode("\n"),
                 false
             );
-        } elseif ($script->importMain) {
+        } elseif ($script->importMain && !$script->next) {
             $script->importScript(
                 '@main',
                 false

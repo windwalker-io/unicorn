@@ -22,3 +22,10 @@ export async function useForm(ele?: string | Element, options: Record<string, an
   );
 }
 
+export async function useFormComponent(ele?: string | Element, options: Record<string, any> = {}) {
+  const form = await useForm(ele, options);
+
+  await form.initComponent();
+
+  return form;
+}

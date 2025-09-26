@@ -1,7 +1,7 @@
 import type { CheckboxesMultiSelect } from '../module/checkboxes-multi-select';
 import type { Nullable } from '../types';
 
-export async function useCheckboxesMultiSelect(): Promise<typeof import('../module/checkboxes-multi-select')>;
+export async function useCheckboxesMultiSelect(): Promise<any>;
 
 export async function useCheckboxesMultiSelect(
   selector?: Nullable<string | HTMLElement>,

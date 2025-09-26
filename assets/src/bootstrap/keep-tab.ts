@@ -1,27 +1,33 @@
-import { selectAll, selectOne, sleep } from '../service';
+import { useUniDirective } from '../composable';
+import { module, selectAll, selectOne, sleep } from '../service';
 import { Tab } from 'bootstrap';
+import { mergeDeep } from '../utilities';
 
-const TAB_ITEM_SELECTOR = '[data-toggle=tab],[data-bs-toggle=tab],[data-toggle=pill],[data-bs-toggle=pill]';
+export interface KeepTabOptions {
+  uid?: string;
+  delay?: number;
+  tabItemSelector?: string;
+}
 
-export class LoadTab {
+const defaultOptions = {
+  tabItemSelector: '[data-toggle=tab],[data-bs-toggle=tab],[data-toggle=pill],[data-bs-toggle=pill]',
+  delay: 0,
+};
+
+export class KeepTab {
   $element: HTMLElement;
-  tabButtons: any;
+  tabButtons: NodeListOf<HTMLElement>;
   storageKey: string = '';
   options: any;
 
-  /**
-   * Class init.
-   *
-   * @param {HTMLElement|string} selector
-   * @param {Object}      options
-   *
-   * @constructor
-   */
-  constructor(selector: any, options: any = {}) {
-    let uid = selector;
+  constructor(selector: HTMLElement | string, options: KeepTabOptions = {}) {
+    options = mergeDeep({}, defaultOptions, options);
+    let uid: string;
 
     if (typeof selector === 'object') {
       uid = options.uid || selector.id;
+    } else {
+      uid = selector;
     }
 
     const $element = this.$element = selectOne<HTMLElement>(selector)!;
@@ -32,7 +38,7 @@ export class LoadTab {
     }
 
     this.$element = $element;
-    this.tabButtons = $element.querySelectorAll(TAB_ITEM_SELECTOR);
+    this.tabButtons = $element.querySelectorAll(this.options.tabItemSelector);
 
     this.options = options;
 
@@ -63,7 +69,7 @@ export class LoadTab {
   }
 
   findTabButtonByHref(href: string) {
-    return selectAll<HTMLAnchorElement>(this.$element.querySelectorAll<HTMLAnchorElement>(TAB_ITEM_SELECTOR))
+    return selectAll<HTMLAnchorElement>(this.options.tabItemSelector)
       .filter((button: HTMLAnchorElement) => {
         if (button.href === href) {
           return true;
@@ -133,4 +139,17 @@ export class LoadTab {
     const hashArray = Array.from(new Uint8Array(hashBuffer));
     return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
   }
+}
+
+export const ready = useUniDirective('keeptab', {
+  mounted(el, { value }) {
+    const options: KeepTabOptions = JSON.parse(value || '{}');
+
+    module(el, 'uni.keeptab', () => new KeepTab(el, options));
+  }
+});
+
+export interface KeepTabModule {
+  KeepTab: typeof KeepTab;
+  ready: typeof ready;
 }

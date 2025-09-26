@@ -1000,3 +1000,10 @@ function handleParamValue(value: any) {
 
   return value;
 }
+
+export interface ValidationModule {
+  UnicornFormValidation: typeof UnicornFormValidation;
+  UnicornFieldValidation: typeof UnicornFieldValidation;
+  ready: Promise<any>;
+  validators: typeof validatorHandlers;
+}

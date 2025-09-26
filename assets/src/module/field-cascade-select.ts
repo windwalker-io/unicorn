@@ -282,3 +282,5 @@ loadAlpine(() => {
   // Todo: Test this
   Alpine.data('CascadeSelect', FieldCascadeSelect as any);
 });
+
+export default {};

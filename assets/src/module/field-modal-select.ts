@@ -1,6 +1,6 @@
-import type { IFrameModal } from './/iframe-modal';
+import type { IFrameModalElement } from './iframe-modal';
 import { data } from '../data';
-import { __, highlight, html, selectOne, slideUp, useImport } from '../service';
+import { __, highlight, html, selectOne, slideUp } from '../service';
 import { template } from 'lodash-es';
 import Sortable from 'sortablejs';
 
@@ -13,12 +13,12 @@ export class ModalSelect {
       //   };
       case 'list':
         return (item) => {
-          const modalList = document.querySelector(selector) as any as ModalListSelect;
+          const modalList = document.querySelector(selector) as any as ModalListSelectElement;
 
           if (!modalList.querySelector(`[data-value="${item.value}"]`)) {
             modalList.appendItem(item, true);
 
-            selectOne<IFrameModal>(modalSelector).close();
+            selectOne<IFrameModalElement>(modalSelector).close();
           } else {
             alert(__('unicorn.field.modal.already.selected'));
           }
@@ -42,7 +42,7 @@ export class ModalSelect {
 
           store.dispatchEvent(new CustomEvent('change'));
 
-          selectOne<IFrameModal>(modalSelector).close();
+          selectOne<IFrameModalElement>(modalSelector).close();
 
           highlight(title);
         };
@@ -58,7 +58,7 @@ interface ModalListOptions {
   max: number;
 }
 
-class ModalListSelect extends HTMLElement {
+class ModalListSelectElement extends HTMLElement {
   static is = 'uni-modal-list';
 
   itemTemplate: ReturnType<typeof template>;
@@ -69,7 +69,7 @@ class ModalListSelect extends HTMLElement {
   }
 
   get modal() {
-    return document.querySelector<IFrameModal>(this.options.modalSelector);
+    return document.querySelector<IFrameModalElement>(this.options.modalSelector);
   }
 
   get items(): Element[] {
@@ -164,4 +164,4 @@ class ModalListSelect extends HTMLElement {
   }
 }
 
-customElements.define(ModalListSelect.is, ModalListSelect);
+customElements.define(ModalListSelectElement.is, ModalListSelectElement);
