@@ -155,7 +155,7 @@ class UnicornPackage extends AbstractPackage implements
             );
         }
 
-        $isNext = $container->getParam('unicorn.service.next') ?? false;
+        $isNext = $container->getParam('unicorn.modules.next') ?? false;
         $unicornPackage = $isNext ? '@windwalker-io/unicorn-next' : '@windwalker-io/unicorn';
 
         $container->mergeParameters(
@@ -203,17 +203,17 @@ class UnicornPackage extends AbstractPackage implements
                 '@batch-modal' => '@theme::grid.batch-modal',
                 '@fieldset' => '@theme::form.fieldset',
                 '@bool-icon' => '@theme::bool-icon',
-                '@card' => '@theme::module.card',
-                '@input-group' => '@theme::module.input-group',
-                '@breadcrumb' => '@theme::module.breadcrumb',
-                '@pagination-stats' => '@theme::module.pagination-stats',
-                '@tabs' => '@theme::module.tabs',
-                '@tab' => '@theme::module.tab',
+                '@card' => '@theme::components.card',
+                '@input-group' => '@theme::components.input-group',
+                '@breadcrumb' => '@theme::components.breadcrumb',
+                '@pagination-stats' => '@theme::components.pagination-stats',
+                '@tabs' => '@theme::components.tabs',
+                '@tab' => '@theme::components.tab',
             ]
         );
 
         $container->mergeParameters(
-            'renderer.edge.module',
+            'renderer.edge.components',
             [
                 'title-bar' => '@title-bar',
                 'filter-bar' => '@filter-bar',
@@ -233,7 +233,7 @@ class UnicornPackage extends AbstractPackage implements
                 'fieldset' => '@fieldset',
                 'bool-icon' => '@bool-icon',
                 'card' => '@card',
-                'div' => '@theme::module.div',
+                'div' => '@theme::components.div',
                 'input-group' => '@input-group',
                 'breadcrumb' => '@breadcrumb',
                 'pagination-stats' => '@pagination-stats',

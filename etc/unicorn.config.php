@@ -27,7 +27,7 @@ static fn() => [
         UnicornPackage::class,
     ],
 
-    'service' => [
+    'modules' => [
         'next' => true
     ],
 
