@@ -1,8 +1,8 @@
-import type { TinymceController } from '../module/tinymce';
+import type { TinymceController, TinymceModule } from '../module/tinymce';
 import type { MaybePromise } from '../types';
 import type { TinyMCE } from 'tinymce';
 
-export async function useTinymce(): Promise<typeof import('../module/tinymce')>
+export async function useTinymce(): Promise<TinymceModule>
 export async function useTinymce(
   selector?: string,
   options?: Record<string, any>

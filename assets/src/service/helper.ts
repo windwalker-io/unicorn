@@ -40,3 +40,9 @@ export function isDebug() {
 export function nextTick(callback?: () => any): Promise<any> {
   return Promise.resolve().then(callback ?? (() => null));
 }
+
+export function wait<T extends readonly unknown[]>(
+  ...promisee: { [K in keyof T]: PromiseLike<T[K]> | T[K] }
+): Promise<Awaited<T>> {
+  return Promise.all(promisee) as Promise<Awaited<T>>;
+}

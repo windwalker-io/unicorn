@@ -1,4 +1,4 @@
-import { f as useUniDirective, g as getBoundedInstance, i as selectOne, m as mergeDeep, p as selectAll, v as trans, w as useUITheme, k as html } from "./unicorn-BzhUK5qp.js";
+import { f as useUniDirective, g as getBoundedInstance, i as selectOne, m as mergeDeep, p as selectAll, v as trans, w as useUITheme, k as html } from "./unicorn-DuXOh8pQ.js";
 const maxInt = 2147483647;
 const base = 36;
 const tMin = 1;
@@ -171,6 +171,9 @@ class UnicornFormValidation {
     this.init();
   }
   mergeOptions(options) {
+    if (Array.isArray(options)) {
+      options = {};
+    }
     return this.options = mergeDeep({}, defaultOptions, options);
   }
   get scrollEnabled() {
@@ -350,6 +353,9 @@ class UnicornFieldValidation {
   options;
   static is = "uni-field-validate";
   mergeOptions(options) {
+    if (Array.isArray(options)) {
+      options = {};
+    }
     return this.options = mergeDeep({}, defaultFieldOptions, options);
   }
   get $form() {

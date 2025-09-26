@@ -1,7 +1,8 @@
 import { resolve, basename } from 'node:path';
+import { rimraf } from 'rimraf';
 import treeShakeable from 'rollup-plugin-tree-shakeable';
 import { defineConfig } from 'vite';
-import dtsPlugin from 'vite-plugin-dts';
+import dts from 'unplugin-dts/vite';
 
 export default defineConfig(({ mode }) => {
   const src = resolve('./src').replace(/\\/g, '/');
@@ -54,18 +55,26 @@ export default defineConfig(({ mode }) => {
         ]
       },
       outDir: 'dist',
-      emptyOutDir: true,
+      emptyOutDir: false,
       minify: false,
     },
     plugins: [
       treeShakeable(),
-      dtsPlugin({
+      dts({
         // entryRoot: './src/unicorn/unicorn.ts',
         insertTypesEntry: true,
         outDir: 'dist',
         tsconfigPath: resolve('./tsconfig.json'),
-        rollupTypes: true
-      })
+        bundleTypes: true,
+        // rollupTypes: true
+      }),
+      {
+        name: 'clear-files',
+        generateBundle() {
+          rimraf.sync('./dist/**/*.js', { glob: true });
+          rimraf.sync('./dist/**/*.ts', { glob: true });
+        }
+      }
     ]
   };
 });

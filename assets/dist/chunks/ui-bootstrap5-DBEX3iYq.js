@@ -1,5 +1,5 @@
 import { Tooltip } from "bootstrap";
-import { k as html, i as selectOne, t as forceArray, o as module } from "./unicorn-BzhUK5qp.js";
+import { k as html, i as selectOne, t as forceArray, o as module } from "./unicorn-DuXOh8pQ.js";
 class UIBootstrap5 {
   static instance = null;
   static get() {
@@ -29,7 +29,7 @@ class UIBootstrap5 {
     }
   }
   async keepTab(selector, options = {}) {
-    const module2 = await import("./keep-tab-C2Z92EoW.js");
+    const module2 = await import("./keep-tab-wxpfxqqi.js");
     await module2.ready;
     if (selector) {
       return new module2.KeepTab(selector, options);
@@ -37,7 +37,7 @@ class UIBootstrap5 {
     return module2;
   }
   async buttonRadio(selector, config = {}) {
-    const m = await import("./button-radio-BidjYg91.js");
+    const m = await import("./button-radio-Cfm9scBw.js");
     await m.ready;
     if (selector) {
       return m.ButtonRadio.handle(selector, config);

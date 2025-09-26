@@ -1,4 +1,4 @@
-import { i as selectOne, A as highlight, _ as __, d as data, k as html, a as slideUp } from "./unicorn-BzhUK5qp.js";
+import { i as selectOne, A as highlight, _ as __, d as data, k as html, a as slideUp } from "./unicorn-DuXOh8pQ.js";
 import Sortable from "sortablejs";
 import { b as baseAssignValue, a as assignValue, i as isIndex, c as isPrototype, d as arrayLikeKeys, g as getPrototype, k as keys } from "./_getPrototype-CEtyiV4l.js";
 import { b as baseRest, a as apply } from "./_baseRest-CLQ7Kw-5.js";
@@ -281,40 +281,38 @@ function template(string, options, guard) {
   }
   return result;
 }
-class ModalSelect {
-  createCallback(type, selector, modalSelector) {
-    switch (type) {
-      // case 'tag':
-      //   return () => {
-      //
-      //   };
-      case "list":
-        return (item) => {
-          const modalList = document.querySelector(selector);
-          if (!modalList.querySelector(`[data-value="${item.value}"]`)) {
-            modalList.appendItem(item, true);
-            selectOne(modalSelector).close();
-          } else {
-            alert(__("unicorn.field.modal.already.selected"));
-          }
-        };
-      case "single":
-      default:
-        return (item) => {
-          const element = document.querySelector(selector);
-          const image = element.querySelector("[data-role=image]");
-          const title = element.querySelector("[data-role=title]");
-          const store = element.querySelector("[data-role=value]");
-          if (image && item.image) {
-            image.style.backgroundImage = `url(${item.image});`;
-          }
-          title.value = item.title || "";
-          store.value = item.value || "";
-          store.dispatchEvent(new CustomEvent("change"));
+function createCallback(type, selector, modalSelector) {
+  switch (type) {
+    // case 'tag':
+    //   return () => {
+    //
+    //   };
+    case "list":
+      return (item) => {
+        const modalList = document.querySelector(selector);
+        if (!modalList.querySelector(`[data-value="${item.value}"]`)) {
+          modalList.appendItem(item, true);
           selectOne(modalSelector).close();
-          highlight(title);
-        };
-    }
+        } else {
+          alert(__("unicorn.field.modal.already.selected"));
+        }
+      };
+    case "single":
+    default:
+      return (item) => {
+        const element = document.querySelector(selector);
+        const image = element.querySelector("[data-role=image]");
+        const title = element.querySelector("[data-role=title]");
+        const store = element.querySelector("[data-role=value]");
+        if (image && item.image) {
+          image.style.backgroundImage = `url(${item.image});`;
+        }
+        title.value = item.title || "";
+        store.value = item.value || "";
+        store.dispatchEvent(new CustomEvent("change"));
+        selectOne(modalSelector).close();
+        highlight(title);
+      };
   }
 }
 class ModalListSelectElement extends HTMLElement {
@@ -398,5 +396,5 @@ class ModalListSelectElement extends HTMLElement {
 }
 /* @__PURE__ */ customElements.define(/* @__PURE__ */ (() => ModalListSelectElement.is)(), ModalListSelectElement);
 export {
-  ModalSelect
+  createCallback
 };

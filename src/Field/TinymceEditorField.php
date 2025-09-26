@@ -101,6 +101,7 @@ class TinymceEditorField extends AbstractEditorField
         $defaultOptions = [
             'relative_urls' => true,
             'document_base_url' => UriNormalizer::ensureDir($this->systemUri->root),
+            'base_url' => $this->assetService->handleUri('@vendor/tinymce/'),
         ];
 
         $defaultOptions['plugins'] = [];

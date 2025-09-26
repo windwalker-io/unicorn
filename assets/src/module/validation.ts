@@ -78,6 +78,11 @@ export class UnicornFormValidation {
   }
 
   mergeOptions(options: Partial<FormValidationOptions>) {
+    // Fix PHP empty array to JSON issue.
+    if (Array.isArray(options)) {
+      options = {};
+    }
+
     return this.options = mergeDeep({}, defaultOptions, options);
   }
 
@@ -323,6 +328,11 @@ export class UnicornFieldValidation {
   }
 
   mergeOptions(options: Partial<FieldValidationOptions>) {
+    // Fix PHP empty array to JSON issue.
+    if (Array.isArray(options)) {
+      options = {};
+    }
+
     return this.options = mergeDeep({}, defaultFieldOptions, options);
   }
 

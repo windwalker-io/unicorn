@@ -27,6 +27,10 @@ class FormScript extends AbstractScript
 
     public function choices(?string $selector = null, array $options = []): static
     {
+        if ($this->next) {
+            throw new \LogicException('Choices not supports at unicorn next.');
+        }
+
         if ($selector && $this->available($selector)) {
             $opt = static::getJSObject($options);
             $this->unicornScript->importMainThen("u.\$ui.choices('$selector', $opt)");
@@ -161,13 +165,21 @@ class FormScript extends AbstractScript
         string $callbackName
     ): static {
         if ($this->available($callbackName)) {
-            $this->unicornScript->importMainThen(
-                <<<JS
+            if ($this->next) {
+                $this->unicornScript->importMainThen(
+                    <<<JS
+                u.\$ui.modalField().then(({ createCallback }) => window.$callbackName = createCallback('$type', '$selector', '$modalSelector'));
+                JS
+                );
+            } else {
+                $this->unicornScript->importMainThen(
+                    <<<JS
                 u.\$ui.modalField().then(function () {
                     window.$callbackName = u.\$modalField.createCallback('$type', '$selector', '$modalSelector');
                 });
                 JS
-            );
+                );
+            }
         }
 
         return $this;

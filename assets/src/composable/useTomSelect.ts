@@ -1,4 +1,4 @@
-import { module, useCssImport, useImport } from '../service';
+import { module, useCssImport, useCssIncludes, useImport, wait } from '../service';
 import type { Nullable } from '../types';
 import { mergeDeep } from '../utilities';
 
@@ -10,8 +10,8 @@ export async function useTomSelect(
   options: Record<string, any> = {},
   theme: string = 'bootstrap5'
 ) {
-  const modules = await useImport(
-    '@vendor/tom-select/dist/js/tom-select.complete.min.js',
+  const [m] = await wait(
+    useImport('@vendor/tom-select/dist/js/tom-select.complete.min.js'),
     useCssImport(`@vendor/tom-select/dist/css/tom-select.${theme}.min.css`)
   );
 
@@ -68,5 +68,5 @@ export async function useTomSelect(
     );
   }
 
-  return modules;
+  return m;
 }

@@ -8,6 +8,8 @@ export * from './service';
 export * from './composable';
 export * from './plugin';
 
+export type { UnicornApp };
+
 let app: UnicornApp;
 
 export function createUnicorn(): UnicornApp {
@@ -39,4 +41,9 @@ export function useInject<T>(id: InjectionKey<T>): T;
 export function useInject<T>(id: InjectionKey<T>, def: T): T;
 export function useInject<T>(id: InjectionKey<T>, def?: T): T | undefined {
   return useUnicorn().inject<T>(id, def);
+}
+
+export function pushUnicornToGlobal(app?: UnicornApp) {
+  // @ts-ignore
+  window.u = app ?? useUnicorn();
 }

@@ -4,49 +4,49 @@ import { __, highlight, html, selectOne, slideUp } from '../service';
 import { template } from 'lodash-es';
 import Sortable from 'sortablejs';
 
-export class ModalSelect {
-  createCallback(type: string, selector: string, modalSelector: string) {
-    switch (type) {
-      // case 'tag':
-      //   return () => {
-      //
-      //   };
-      case 'list':
-        return (item) => {
-          const modalList = document.querySelector(selector) as any as ModalListSelectElement;
+export type ModalSelectCallback = (item: any) => void;
 
-          if (!modalList.querySelector(`[data-value="${item.value}"]`)) {
-            modalList.appendItem(item, true);
+export function createCallback(type: 'list' | 'single', selector: string, modalSelector: string): ModalSelectCallback {
+  switch (type) {
+    // case 'tag':
+    //   return () => {
+    //
+    //   };
+    case 'list':
+      return (item: any) => {
+        const modalList = document.querySelector(selector) as any as ModalListSelectElement;
 
-            selectOne<IFrameModalElement>(modalSelector).close();
-          } else {
-            alert(__('unicorn.field.modal.already.selected'));
-          }
-        };
-
-      case 'single':
-      default:
-        return (item) => {
-          const element = document.querySelector<HTMLDivElement>(selector);
-
-          const image = element.querySelector<HTMLDivElement>('[data-role=image]');
-          const title = element.querySelector<HTMLInputElement>('[data-role=title]');
-          const store = element.querySelector<HTMLInputElement>('[data-role=value]');
-
-          if (image && item.image) {
-            image.style.backgroundImage = `url(${item.image});`;
-          }
-
-          title.value = item.title || '';
-          store.value = item.value || '';
-
-          store.dispatchEvent(new CustomEvent('change'));
+        if (!modalList.querySelector(`[data-value="${item.value}"]`)) {
+          modalList.appendItem(item, true);
 
           selectOne<IFrameModalElement>(modalSelector).close();
+        } else {
+          alert(__('unicorn.field.modal.already.selected'));
+        }
+      };
 
-          highlight(title);
-        };
-    }
+    case 'single':
+    default:
+      return (item) => {
+        const element = document.querySelector<HTMLDivElement>(selector);
+
+        const image = element.querySelector<HTMLDivElement>('[data-role=image]');
+        const title = element.querySelector<HTMLInputElement>('[data-role=title]');
+        const store = element.querySelector<HTMLInputElement>('[data-role=value]');
+
+        if (image && item.image) {
+          image.style.backgroundImage = `url(${item.image});`;
+        }
+
+        title.value = item.title || '';
+        store.value = item.value || '';
+
+        store.dispatchEvent(new CustomEvent('change'));
+
+        selectOne<IFrameModalElement>(modalSelector).close();
+
+        highlight(title);
+      };
   }
 }
 
@@ -165,3 +165,7 @@ class ModalListSelectElement extends HTMLElement {
 }
 
 customElements.define(ModalListSelectElement.is, ModalListSelectElement);
+
+export interface ModalSelectModule {
+  createCallback: typeof createCallback;
+}

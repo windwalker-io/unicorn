@@ -335,7 +335,7 @@ export async function highlight(
 /**
  * Color Picker.
  */
-export async function colorPicker(
+export async function useColorPicker(
   selector?: Nullable<string | HTMLElement | NodeListOf<HTMLElement>>,
   options: Partial<SpectrumOptions> = {}
 ): Promise<any> {
@@ -370,7 +370,7 @@ export async function colorPicker(
   return m;
 }
 
-export function disableOnSubmit(
+export function useDisableOnSubmit(
   formSelector: string | HTMLFormElement = '#admin-form',
   buttonSelector: string = '',
   options: Record<string, any> = {}
@@ -435,7 +435,7 @@ export function disableOnSubmit(
   });
 }
 
-export function disableIfStackNotEmpty(buttonSelector: string = '[data-task=save]', stackName: string = 'uploading') {
+export function useDisableIfStackNotEmpty(buttonSelector: string = '[data-task=save]', stackName: string = 'uploading') {
   const stack = useStack(stackName);
 
   stack.observe((stack, length) => {
@@ -454,7 +454,7 @@ export function disableIfStackNotEmpty(buttonSelector: string = '[data-task=save
 /**
  * Keep alive.
  */
-export function keepAlive(url: string, time: number = 60000): () => void {
+export function useKeepAlive(url: string, time: number = 60000): () => void {
   const aliveHandle = window.setInterval(() => fetch(url), time);
 
   return () => {
@@ -465,7 +465,7 @@ export function keepAlive(url: string, time: number = 60000): () => void {
 /**
  * Vue component field.
  */
-export async function vueComponentField(
+export async function useVueComponentField(
   selector?: Nullable<string | HTMLElement>,
   value?: any,
   options: Record<string, any> = {}

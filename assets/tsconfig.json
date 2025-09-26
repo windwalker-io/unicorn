@@ -3,7 +3,8 @@
     //        "@vue/tsconfig/tsconfig.dom.json"
   ],
   "include": [
-    "./src/**/*.ts"
+    "./src/**/*.ts",
+//    "./src/types/app.d.ts"
   ],
   "exclude": [
     "node_modules/**/*"

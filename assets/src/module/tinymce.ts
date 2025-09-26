@@ -1,8 +1,8 @@
+import type { Editor, EditorOptions, TinyMCE } from 'tinymce';
 import { useHttpClient, useStack } from '../composable';
-import { useImport } from '../service/loader';
+import { useImport } from '../service';
 import { Dictionary, MaybePromise } from '../types';
 import { mergeDeep } from '../utilities';
-import type { Editor, EditorOptions, TinyMCE } from 'tinymce';
 
 const instances: Dictionary<TinymceController> = {};
 let hooks: ((tinymce: TinyMCE) => MaybePromise<any>)[] = [];
@@ -39,7 +39,7 @@ async function loadTinymce() {
     return tinymce;
   }
   imported = true;
-  for (const hook of this.hooks) {
+  for (const hook of hooks) {
     hook(tinymce);
   }
   await registerDragPlugin();
@@ -125,8 +125,8 @@ export class TinymceController {
     return this.editor?.getContent() ?? '';
   }
 
-  setValue(text: string): string {
-    return this.editor?.setContent(text) ?? '';
+  setValue(text: string): void {
+    this.editor?.setContent(text);
   }
 
   // filePickerCallback(callback, value, meta) {
@@ -250,4 +250,12 @@ function registerDragPlugin() {
   });
 
   return Promise.resolve();
+}
+
+export interface TinymceModule {
+  get: typeof get;
+  destroy: typeof destroy;
+  addHook: typeof addHook;
+  clearHooks: typeof clearHooks;
+  TinymceController: typeof TinymceController;
 }

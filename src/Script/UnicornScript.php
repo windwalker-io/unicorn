@@ -308,7 +308,7 @@ class UnicornScript extends AbstractScript
 CSS;
 
             $this->internalCSS($css);
-            // $this->importMainThen("u.domready(function () { document.body.classList.remove('$className') })");
+            $this->importMainThen("u.domready(() => document.body.classList.remove('$className'))");
 
             $body ??= $this->app->service(HtmlFrame::class);
 

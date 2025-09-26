@@ -78,6 +78,8 @@ class UnicornAssetSubscriber
 
             if (!$script->next) {
                 $codes[] = "u.trigger('ready');";
+            } else {
+                $codes->unshift("const { u } = module;");
             }
 
             $script->importThen(

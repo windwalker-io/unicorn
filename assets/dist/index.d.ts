@@ -11,6 +11,8 @@ import { CreateAxiosDefaults } from 'axios';
 import { default as default_2 } from 'web-directive';
 import { default as default_3 } from 'cropperjs';
 import { deleteConfirm } from '@lyrasoft/ts-toolkit/generic';
+import { Editor } from 'tinymce';
+import { EditorOptions } from 'tinymce';
 import { randomBytes } from '@lyrasoft/ts-toolkit/generic';
 import { randomBytesString } from '@lyrasoft/ts-toolkit/generic';
 import { simpleAlert } from '@lyrasoft/ts-toolkit/generic';
@@ -20,6 +22,7 @@ import { SpectrumOptions } from 'spectrum-vanilla/dist/types/types';
 import { Stack } from '@lyrasoft/ts-toolkit/generic';
 import { TaskQueue } from '@lyrasoft/ts-toolkit/generic';
 import { tid } from '@lyrasoft/ts-toolkit/generic';
+import { TinyMCE } from 'tinymce';
 import { Tooltip } from 'bootstrap';
 import { uid } from '@lyrasoft/ts-toolkit/generic';
 import { WebDirectiveHandler } from 'web-directive/src/types';
@@ -28,6 +31,8 @@ import { WebDirectiveOptions } from 'web-directive/src/types';
 export declare function __(id: string, ...args: any[]): string;
 
 export declare function addGlobalValidator(name: string, validator: ValidationHandler, options?: Record<string, any>): Promise<void>;
+
+declare function addHook(handler: ((tinymce: TinyMCE) => MaybePromise<any>)): void;
 
 export { AlertAdapter }
 
@@ -86,6 +91,8 @@ declare class CheckboxesMultiSelect {
     select(box: HTMLInputElement, event: MouseEvent): void;
 }
 
+declare function clearHooks(): void;
+
 /**
  * Clear messages.
  */
@@ -96,14 +103,11 @@ export declare function clearMessages(): void;
  */
 export declare function clearNotifies(): void;
 
-/**
- * Color Picker.
- */
-export declare function colorPicker(selector?: Nullable<string | HTMLElement | NodeListOf<HTMLElement>>, options?: Partial<SpectrumOptions>): Promise<any>;
-
 declare type Conditions = Record<string, any>;
 
 declare type Constructor<T> = new (...args: any[]) => T;
+
+declare function createCallback(type: 'list' | 'single', selector: string, modalSelector: string): ModalSelectCallback;
 
 export declare function createQueue(maxRunning?: number): TaskQueue;
 
@@ -132,15 +136,13 @@ export declare function delegate(wrapper: Element | string, selector: string, ev
 
 export { deleteConfirm }
 
+declare function destroy(selector: string): void;
+
 declare interface Dictionary<T = any> {
     [key: string]: T;
 }
 
-export declare function disableIfStackNotEmpty(buttonSelector?: string, stackName?: string): void;
-
-export declare function disableOnSubmit(formSelector?: string | HTMLFormElement, buttonSelector?: string, options?: Record<string, any>): void;
-
-export declare function doImport<T = any>(src: string): T;
+export declare function doImport<T = any>(src: string): Promise<T>;
 
 /**
  * @see https://stackoverflow.com/a/9899701
@@ -229,6 +231,8 @@ declare interface FormValidationOptions {
     enabled: boolean;
 }
 
+declare function get(selector: string, options?: Record<string, any>): Promise<TinymceController>;
+
 export declare function getBoundedInstance<T = any, E = Element>(selector: E, name: string, callback?: ((el: E) => any)): T;
 
 export declare function getBoundedInstance<T = any, E extends Element = Element>(selector: string | E, name: string, callback?: ((el: E) => any)): T | null;
@@ -281,11 +285,6 @@ declare type InjectionKey<T = any> = string | symbol | Constructor<T>;
 declare type InputElements = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
 
 export declare function isDebug(): boolean;
-
-/**
- * Keep alive.
- */
-export declare function keepAlive(url: string, time?: number): () => void;
 
 declare class KeepTab {
     $element: HTMLElement;
@@ -399,6 +398,14 @@ export declare function mark(selector?: string | HTMLElement, keyword?: string, 
 
 declare type MaybeGroupedListItems = Record<string, ListItems> | ListItems;
 
+declare type MaybePromise<T> = T | Promise<T>;
+
+declare type ModalSelectCallback = (item: any) => void;
+
+declare interface ModalSelectModule {
+    createCallback: typeof createCallback;
+}
+
 export declare function modalTree(): Promise<any>;
 
 declare function module_2<T = any, E extends Element = Element>(ele: string, name: string, callback?: ((el: E) => any)): (T | null)[];
@@ -428,6 +435,8 @@ declare type Nullable<T> = T | null | undefined;
  * Before Alpine init
  */
 export declare function prepareAlpine(callback: () => void): void;
+
+export declare function pushUnicornToGlobal(app?: UnicornApp): void;
 
 export { randomBytes }
 
@@ -621,6 +630,26 @@ export declare function throttle<T extends Function = Function>(handler: T, wait
 
 export { tid }
 
+declare class TinymceController {
+    element: HTMLElement;
+    editor?: Editor;
+    options: Record<string, any>;
+    constructor(element: HTMLElement, options: Record<string, any>);
+    prepareOptions(options: Record<string, any>, version?: string): Record<string, any>;
+    insert(text: string): void;
+    getValue(): string;
+    setValue(text: string): void;
+    imageUploadHandler(blobInfo: UploadHandlerParams[0], progress: UploadHandlerParams[1]): Promise<any>;
+}
+
+declare interface TinymceModule {
+    get: typeof get;
+    destroy: typeof destroy;
+    addHook: typeof addHook;
+    clearHooks: typeof clearHooks;
+    TinymceController: typeof TinymceController;
+}
+
 export declare function trans(id: string, ...args: any[]): string;
 
 declare class UIBootstrap5 implements UIThemeInterface {
@@ -643,10 +672,10 @@ declare interface UIThemeInterface {
     clearMessages(): void;
 }
 
-declare interface UnicornApp extends EventAwareInterface {
+export declare interface UnicornApp extends EventAwareInterface {
 }
 
-declare class UnicornApp extends UnicornApp_base implements EventAwareInterface {
+export declare class UnicornApp extends UnicornApp_base implements EventAwareInterface {
     registry: Map<any, any>;
     plugins: Map<any, any>;
     waits: Promise<any>[];
@@ -757,16 +786,6 @@ declare class UnicornFormElement {
      */
     static flattenObject(ob: Record<string, any>): Record<string, any>;
     static buildFieldName(field: string): string;
-}
-
-export declare class UnicornFormFields {
-    repeatable: typeof useFieldRepeatable;
-    flatpicker: typeof useFieldFlatpickr;
-    fileDrag: typeof useFieldFileDrag;
-    modalSelect: typeof useFieldModalSelect;
-    cascadeSelect: typeof useFieldCascadeSelect;
-    sid: typeof useFieldSingleImageDrag;
-    static install(app: UnicornApp): void;
 }
 
 declare class UnicornFormValidation {
@@ -1006,6 +1025,10 @@ declare class UnicornLang {
     getStrings(): Record<string, string>;
 }
 
+export declare class UnicornPhpAdapter {
+    static install(app: UnicornApp): void;
+}
+
 declare interface UnicornPlugin {
     install?(app: UnicornApp, options?: Record<string, any>): void;
     uninstall?(app: UnicornApp): void;
@@ -1020,13 +1043,26 @@ export declare class UnicornUI {
     installTheme(theme: any): void;
 }
 
+declare type UploadHandlerParams = Parameters<NonNullable<EditorOptions['images_upload_handler']>>;
+
 export declare function useBs5Tooltip(selector?: NodeListOf<Element> | Element | string, config?: Partial<Tooltip.Options>): Promise<Tooltip[]>;
 
 export declare function useCheckboxesMultiSelect(): Promise<any>;
 
 export declare function useCheckboxesMultiSelect(selector?: Nullable<string | HTMLElement>, options?: Record<string, any>): Promise<CheckboxesMultiSelect>;
 
-export declare function useCssImport(...src: string[]): Promise<CSSStyleSheet[]>;
+/**
+ * Color Picker.
+ */
+export declare function useColorPicker(selector?: Nullable<string | HTMLElement | NodeListOf<HTMLElement>>, options?: Partial<SpectrumOptions>): Promise<any>;
+
+export declare function useCssImport(...hrefs: string[]): Promise<CSSStyleSheet[]>;
+
+export declare function useCssIncludes(...hrefs: string[]): Promise<void[]>;
+
+export declare function useDisableIfStackNotEmpty(buttonSelector?: string, stackName?: string): void;
+
+export declare function useDisableOnSubmit(formSelector?: string | HTMLFormElement, buttonSelector?: string, options?: Record<string, any>): void;
 
 export declare function useFieldCascadeSelect(): Promise<void>;
 
@@ -1034,7 +1070,7 @@ export declare function useFieldFileDrag(): Promise<FileDragModule>;
 
 export declare function useFieldFlatpickr(): Promise<any>;
 
-export declare function useFieldModalSelect(): Promise<any>;
+export declare function useFieldModalSelect(): Promise<ModalSelectModule>;
 
 export declare function useFieldRepeatable(): Promise<RepeatableModule>;
 
@@ -1076,6 +1112,11 @@ export declare function useInject<T>(id: InjectionKey<T>): T;
 
 export declare function useInject<T>(id: InjectionKey<T>, def: T): T;
 
+/**
+ * Keep alive.
+ */
+export declare function useKeepAlive(url: string, time?: number): () => void;
+
 export declare function useLang(): UnicornLang;
 
 export declare function useListDependent(): Promise<ListDependentModule>;
@@ -1089,6 +1130,8 @@ export declare function useQueue(name?: string, maxRunning?: number): TaskQueue;
 export declare function useS3Uploader(): Promise<S3UploaderModule>;
 
 export declare function useS3Uploader(name: string, options?: Partial<S3UploaderGlobalOptions>): Promise<S3Uploader>;
+
+export declare function useScriptImport(src: string, attrs?: Record<string, string>): Promise<void>;
 
 export declare function useSeriesImport(...src: any[]): Promise<any>;
 
@@ -1106,6 +1149,10 @@ export declare function useShowOn(): Promise<ShowOnModule>;
 
 export declare function useStack<T = any>(name?: string, store?: any[]): Stack<T>;
 
+declare function useTinymce(): Promise<TinymceModule>;
+
+declare function useTinymce(selector?: string, options?: Record<string, any>): Promise<TinymceController>;
+
 /**
  * @see https://tom-select.js.org/
  */
@@ -1119,9 +1166,23 @@ export declare function useUITheme<T extends UIThemeInterface>(theme?: T | Const
 
 export declare function useUnicorn(instance?: UnicornApp): UnicornApp;
 
-export declare function useUnicornFormFields(app?: UnicornApp): typeof UnicornFormFields;
+export declare function useUnicornPhpAdapter(app?: UnicornApp): {
+    repeatable: typeof useFieldRepeatable;
+    flatpickr: typeof useFieldFlatpickr;
+    fileDrag: typeof useFieldFileDrag;
+    modalField: typeof useFieldModalSelect;
+    cascadeSelect: typeof useFieldCascadeSelect;
+    sid: typeof useFieldSingleImageDrag;
+    tinymce: typeof useTinymce;
+    iframeModal: typeof useIframeModal;
+};
 
 export declare function useUniDirective(name: string, handler: WebDirectiveHandler, wdInstance?: default_2 | string): Promise<void>;
+
+/**
+ * Vue component field.
+ */
+export declare function useVueComponentField(selector?: Nullable<string | HTMLElement>, value?: any, options?: Record<string, any>): Promise<any>;
 
 export declare function useWebDirective(name?: string, options?: Partial<WebDirectiveOptions>): Promise<default_2>;
 
@@ -1141,12 +1202,44 @@ declare type Validator = {
 
 declare const validatorHandlers: Record<string, ValidationHandler>;
 
-/**
- * Vue component field.
- */
-export declare function vueComponentField(selector?: Nullable<string | HTMLElement>, value?: any, options?: Record<string, any>): Promise<any>;
+export declare function wait<T extends readonly unknown[]>(...promisee: {
+    [K in keyof T]: PromiseLike<T[K]> | T[K];
+}): Promise<Awaited<T>>;
 
 export { }
+
+
+declare global {
+    var Alpine: typeof AlpineGlobal;
+    var tinymce: typeof Tinymce;
+    var TomSelect: typeof TomSelectGlobal;
+    var Spectrum: typeof SpectrumGlobal;
+    var Mark: any;
+}
+
+
+declare module '@windwalker-io/unicorn-next' {
+    interface UnicornApp {
+        /** @deprecated Only for code generator use. */
+        $ui: UnicornFormFields;
+    }
+}
+
+
+declare global {
+    interface Node {
+        __unicorn?: any;
+    }
+}
+
+declare global {
+    var S: any;
+}
+
+
+declare global {
+    let axios: AxiosStatic;
+}
 
 
 declare module 'axios' {
@@ -1156,5 +1249,15 @@ declare module 'axios' {
         methodSimulateByHeader?: boolean;
     }
     interface CreateAxiosDefaults {
+    }
+}
+
+
+declare module '@windwalker-io/unicorn-next' {
+    interface UnicornApp {
+        /** @deprecated Only for code generator use. */
+        $ui: typeof methods;
+        /** @deprecated Only for code generator use. */
+        domready: typeof domready;
     }
 }

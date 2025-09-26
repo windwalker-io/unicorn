@@ -1,4 +1,4 @@
-import { f as useUniDirective, m as mergeDeep } from "./unicorn-BzhUK5qp.js";
+import { f as useUniDirective, m as mergeDeep } from "./unicorn-DuXOh8pQ.js";
 class IFrameModalElement extends HTMLElement {
   static is = "uni-iframe-modal";
   options;

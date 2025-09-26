@@ -770,15 +770,15 @@ function forceArray(item) {
     return [item];
   }
 }
-function debounce(handler, wait = 1) {
+function debounce(handler, wait2 = 1) {
   let timer, result;
   return function(...args) {
     clearTimeout(timer);
-    timer = setTimeout(() => result = handler.call(this, ...args), wait);
+    timer = setTimeout(() => result = handler.call(this, ...args), wait2);
     return result;
   };
 }
-function throttle(handler, wait = 1) {
+function throttle(handler, wait2 = 1) {
   return function(...args) {
     {
       return handler.call(this, ...args);
@@ -790,6 +790,9 @@ function isDebug() {
 }
 function nextTick(callback) {
   return Promise.resolve().then(callback ?? (() => null));
+}
+function wait(...promisee) {
+  return Promise.all(promisee);
 }
 var sprintf = {};
 var hasRequiredSprintf;
@@ -1075,8 +1078,29 @@ class UnicornLang {
     return data("unicorn.languages") || {};
   }
 }
+function useScriptImport(src, attrs = {}) {
+  const script = document.createElement("script");
+  script.src = src;
+  for (const key in attrs) {
+    script.setAttribute(key, attrs[key]);
+  }
+  return new Promise((resolve, reject) => {
+    script.onload = () => {
+      resolve();
+      document.body.removeChild(script);
+    };
+    script.onerror = (e) => {
+      reject(e);
+      document.body.removeChild(script);
+    };
+    document.body.appendChild(script);
+  });
+}
 function doImport(src) {
-  return import(src);
+  return import(
+    /* @vite-ignore */
+    src
+  );
 }
 async function useImport(...src) {
   if (src.length === 1) {
@@ -1103,11 +1127,64 @@ async function useSeriesImport(...src) {
   }
   return modules;
 }
-async function useCssImport(...src) {
-  let modules = await useImport(...src);
-  modules = forceArray(modules);
+async function useCssIncludes(...hrefs) {
+  const promises = hrefs.map((href) => {
+    href = resolveUrl(href);
+    return new Promise((resolve, reject) => {
+      const link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href = href;
+      link.onload = () => resolve();
+      link.onerror = (e) => reject(e);
+      document.head.appendChild(link);
+    });
+  });
+  return Promise.all(promises);
+}
+const importedSheets = {};
+async function useCssImport(...hrefs) {
+  const modules = await Promise.all(
+    hrefs.map((href) => {
+      if (importedSheets[href]) {
+        return importedSheets[href];
+      }
+      return importedSheets[href] = simulateCssImport(href);
+    })
+  );
   const styles = modules.map((module2) => module2.default);
   return injectCssToDocument(...styles);
+}
+async function simulateCssImport(href) {
+  href = resolveUrl(href);
+  const response = await fetch(href);
+  if (!response.ok) {
+    throw new Error(`Failed to load CSS: ${href}`);
+  }
+  const cssText = await response.text();
+  const sheet = new CSSStyleSheet();
+  await sheet.replace(cssText);
+  return { default: sheet };
+}
+let importMap;
+function parseImportMap() {
+  const importMapScript = document.querySelector('script[type="importmap"]');
+  if (importMapScript) {
+    try {
+      return JSON.parse(importMapScript.textContent || "{}").imports || {};
+    } catch (e) {
+      console.error("Failed to parse import map:", e);
+    }
+  }
+  return {};
+}
+function resolveUrl(specifier) {
+  importMap ??= parseImportMap();
+  for (const [prefix, target] of Object.entries(importMap)) {
+    if (specifier.startsWith(prefix)) {
+      return specifier.replace(prefix, target);
+    }
+  }
+  return specifier;
 }
 const queues = {};
 function useQueue(name = "default", maxRunning = 1) {
@@ -1124,7 +1201,7 @@ function createStack(store = []) {
   return stack(store);
 }
 async function useForm(ele, options = {}) {
-  const { UnicornFormElement } = await import("./form-B8KWP0ou.js");
+  const { UnicornFormElement } = await import("./form-BWwqC6g1.js");
   if (ele == null) {
     return new UnicornFormElement(void 0, void 0, options);
   }
@@ -1145,7 +1222,7 @@ async function useFormComponent(ele, options = {}) {
   return form;
 }
 async function useGrid(ele, options = {}) {
-  const { UnicornGridElement } = await import("./grid-B70f0RbU.js");
+  const { UnicornGridElement } = await import("./grid-Uc4MeZDq.js");
   const selector = typeof ele === "string" ? ele : "";
   const element = selectOne(ele);
   if (!element) {
@@ -1164,7 +1241,7 @@ async function useGridComponent(ele, options = {}) {
   return grid;
 }
 async function useHttpClient(config) {
-  const { UnicornHttpClient } = await import("./http-client-CsB4VcCj.js");
+  const { UnicornHttpClient } = await import("./http-client-DAAPNr6f.js");
   if (config && "interceptors" in config) {
     const axios = config;
     const http = new UnicornHttpClient();
@@ -1193,7 +1270,7 @@ async function createWebDirective(options = {}) {
   return wd;
 }
 async function useListDependent(element, dependent, options = {}) {
-  const module2 = await import("./list-dependent-BF762KdR.js");
+  const module2 = await import("./list-dependent-BI57MBVL.js");
   await module2.ready;
   if (element) {
     const { ListDependent } = module2;
@@ -1202,11 +1279,11 @@ async function useListDependent(element, dependent, options = {}) {
   return module2;
 }
 function useFieldFlatpickr() {
-  return import("./field-flatpickr-CL8_pByy.js");
+  return import("./field-flatpickr-CLOzdtym.js");
 }
 async function useTomSelect(selector, options = {}, theme = "bootstrap5") {
-  const modules = await useImport(
-    "@vendor/tom-select/dist/js/tom-select.complete.min.js",
+  const [m] = await wait(
+    useImport("@vendor/tom-select/dist/js/tom-select.complete.min.js"),
     useCssImport(`@vendor/tom-select/dist/css/tom-select.${theme}.min.css`)
   );
   if (selector) {
@@ -1249,15 +1326,15 @@ async function useTomSelect(selector, options = {}, theme = "bootstrap5") {
       }
     );
   }
-  return modules;
+  return m;
 }
 async function useIframeModal() {
-  const module2 = await import("./iframe-modal-CuUJXxOa.js");
+  const module2 = await import("./iframe-modal-Bm-mLiu7.js");
   await module2.ready;
   return module2;
 }
 async function useS3Uploader(name, options = {}) {
-  const module2 = await import("./s3-uploader-LE4dv0mt.js");
+  const module2 = await import("./s3-uploader-BndeiQ0r.js");
   if (!name) {
     return module2;
   }
@@ -1265,12 +1342,12 @@ async function useS3Uploader(name, options = {}) {
   return get(name, options);
 }
 async function useShowOn() {
-  const module2 = await import("./show-on-Cvz9CvBu.js");
+  const module2 = await import("./show-on-Bcp5Er_l.js");
   await module2.ready;
   return module2;
 }
 async function useUIBootstrap5(install = false) {
-  const { UIBootstrap5 } = await import("./ui-bootstrap5-C7Q_BQUy.js");
+  const { UIBootstrap5 } = await import("./ui-bootstrap5-DBEX3iYq.js");
   const theme = UIBootstrap5.get();
   if (install) {
     useUITheme(theme);
@@ -1282,7 +1359,7 @@ async function useBs5Tooltip(selector = '[data-bs-toggle="tooltip"]', config = {
   return bs5.tooltip(selector, config);
 }
 async function useFormValidation(selector) {
-  const module2 = await import("./validation-CHQoRor2.js");
+  const module2 = await import("./validation-o-1FzLXq.js");
   await module2.ready;
   if (!selector) {
     return module2;
@@ -1300,30 +1377,30 @@ async function addGlobalValidator(name, validator, options = {}) {
   UnicornFormValidation.addGlobalValidator(name, validator, options);
 }
 async function useFieldCascadeSelect() {
-  await import("./field-cascade-select-D3hvrclB.js");
+  await import("./field-cascade-select-Dfs2xGti.js");
 }
 async function useFieldFileDrag() {
-  const module2 = await import("./field-file-drag-0cYF8iDj.js");
+  const module2 = await import("./field-file-drag-BxmMZ12x.js");
   await module2.ready;
   return module2;
 }
 function useFieldModalSelect() {
-  return import("./field-modal-select-Dzlu3HAR.js");
+  return import("./field-modal-select-CwjPQmq7.js");
 }
 async function useCheckboxesMultiSelect(selector, options = {}) {
-  const m = await import("./checkboxes-multi-select-C-Ca9QzL.js");
+  const m = await import("./checkboxes-multi-select-Dlssym2W.js");
   if (selector) {
     m.CheckboxesMultiSelect.handle(selector, options);
   }
   return m;
 }
 async function useFieldRepeatable() {
-  const module2 = await import("./field-repeatable-iwEGMkZ-.js");
+  const module2 = await import("./field-repeatable-wptpXpiW.js");
   await module2.ready;
   return module2;
 }
 function useFieldSingleImageDrag() {
-  return import("./field-single-image-drag-uIEBRivr.js");
+  return import("./field-single-image-drag-D2WzaUOI.js");
 }
 let ui;
 AlertAdapter.alert = (title, text = "", type = "info") => {
@@ -1532,7 +1609,7 @@ async function highlight(selector, color = "#ffff99", duration = 600) {
   await animation.finished;
   return animateTo(ele, { backgroundColor: bg }, { duration });
 }
-async function colorPicker(selector, options = {}) {
+async function useColorPicker(selector, options = {}) {
   if (options?.theme === "dark") {
     useCssImport("@spectrum/spectrum-dark.min.css");
   } else if (!options?.theme) {
@@ -1556,7 +1633,7 @@ async function colorPicker(selector, options = {}) {
   }
   return m;
 }
-function disableOnSubmit(formSelector = "#admin-form", buttonSelector = "", options = {}) {
+function useDisableOnSubmit(formSelector = "#admin-form", buttonSelector = "", options = {}) {
   buttonSelector = buttonSelector || [
     "#admin-toolbar button",
     "#admin-toolbar a",
@@ -1602,7 +1679,7 @@ function disableOnSubmit(formSelector = "#admin-form", buttonSelector = "", opti
     }, 0);
   });
 }
-function disableIfStackNotEmpty(buttonSelector = "[data-task=save]", stackName = "uploading") {
+function useDisableIfStackNotEmpty(buttonSelector = "[data-task=save]", stackName = "uploading") {
   const stack2 = useStack(stackName);
   stack2.observe((stack22, length) => {
     for (const button of selectAll(buttonSelector)) {
@@ -1616,13 +1693,13 @@ function disableIfStackNotEmpty(buttonSelector = "[data-task=save]", stackName =
     }
   });
 }
-function keepAlive(url, time = 6e4) {
+function useKeepAlive(url, time = 6e4) {
   const aliveHandle = window.setInterval(() => fetch(url), time);
   return () => {
     clearInterval(aliveHandle);
   };
 }
-async function vueComponentField(selector, value, options = {}) {
+async function useVueComponentField(selector, value, options = {}) {
   const m = await useImport("@unicorn/field/vue-component-field.js");
   if (selector) {
     m.VueComponentField.init(selector, value, options);
@@ -1635,21 +1712,33 @@ function removeCloak() {
   }
   selectAll("[uni-cloak]", (el) => el.removeAttribute("uni-cloak"));
 }
-function useUnicornFormFields(app2) {
-  app2 ??= useUnicorn();
-  app2.use(UnicornFormFields);
-  return app2.$fields;
+async function useTinymce(selector, options = {}) {
+  const { get } = await import("./tinymce-0nuu96w9.js");
+  return get(selector, options);
 }
-class UnicornFormFields {
-  repeatable = useFieldRepeatable;
-  flatpicker = useFieldFlatpickr;
-  fileDrag = useFieldFileDrag;
-  modalSelect = useFieldModalSelect;
-  cascadeSelect = useFieldCascadeSelect;
-  sid = useFieldSingleImageDrag;
+function useUnicornPhpAdapter(app2) {
+  app2 ??= useUnicorn();
+  app2.use(UnicornPhpAdapter);
+  return app2.$ui;
+}
+const methods = {
+  repeatable: useFieldRepeatable,
+  flatpickr: useFieldFlatpickr,
+  fileDrag: useFieldFileDrag,
+  modalField: useFieldModalSelect,
+  cascadeSelect: useFieldCascadeSelect,
+  sid: useFieldSingleImageDrag,
+  tinymce: useTinymce,
+  iframeModal: useIframeModal
+};
+class UnicornPhpAdapter {
   static install(app2) {
-    app2.$fields = this;
-    app2.provide(UnicornFormFields, this);
+    if (app2.$ui) {
+      app2.$ui = { ...app2.$ui, ...methods };
+    } else {
+      app2.$ui = methods;
+    }
+    app2.domready = domready;
   }
 }
 let app;
@@ -1671,83 +1760,90 @@ function useUnicorn(instance) {
 function useInject(id, def) {
   return useUnicorn().inject(id, def);
 }
+function pushUnicornToGlobal(app2) {
+  window.u = app2 ?? useUnicorn();
+}
 export {
-  useLang as $,
+  isDebug as $,
   highlight as A,
   initAlpine as B,
   prepareAlpine as C,
-  sleep as D,
+  useStack as D,
   EventMixin as E,
-  createUnicorn as F,
-  createUnicornWithPlugins as G,
-  useUnicorn as H,
-  useInject as I,
-  removeData as J,
-  EventBus as K,
-  animateTo as L,
+  sleep as F,
+  createUnicorn as G,
+  createUnicornWithPlugins as H,
+  useUnicorn as I,
+  useInject as J,
+  pushUnicornToGlobal as K,
+  removeData as L,
   Mixin as M,
-  base64UrlEncode as N,
-  base64UrlDecode as O,
-  tid as P,
-  randomBytes as Q,
-  randomBytesString as R,
-  serial as S,
-  domready as T,
-  getBoundedInstanceList as U,
-  delegate as V,
-  debounce as W,
-  throttle as X,
-  isDebug as Y,
-  nextTick as Z,
+  EventBus as N,
+  animateTo as O,
+  base64UrlEncode as P,
+  base64UrlDecode as Q,
+  tid as R,
+  randomBytes as S,
+  randomBytesString as T,
+  serial as U,
+  domready as V,
+  getBoundedInstanceList as W,
+  delegate as X,
+  debounce as Y,
+  throttle as Z,
   __ as _,
   slideUp as a,
-  doImport as a0,
-  useSeriesImport as a1,
-  AlertAdapter as a2,
-  useUI as a3,
-  UnicornUI as a4,
-  renderMessage as a5,
-  clearMessages as a6,
-  notify as a7,
-  clearNotifies as a8,
-  mark as a9,
-  useFormValidationSync as aA,
-  useFieldValidationSync as aB,
-  addGlobalValidator as aC,
-  useFieldCascadeSelect as aD,
-  useFieldFileDrag as aE,
-  useFieldModalSelect as aF,
-  useCheckboxesMultiSelect as aG,
-  useFieldRepeatable as aH,
-  useFieldSingleImageDrag as aI,
-  useUnicornFormFields as aJ,
-  UnicornFormFields as aK,
-  multiUploader as aa,
-  modalTree as ab,
-  slideToggle as ac,
-  colorPicker as ad,
-  disableOnSubmit as ae,
-  disableIfStackNotEmpty as af,
-  keepAlive as ag,
-  vueComponentField as ah,
-  useQueue as ai,
-  createQueue as aj,
-  useStack as ak,
-  createStack as al,
-  useForm as am,
-  useFormComponent as an,
-  useGrid as ao,
-  useGridComponent as ap,
-  useWebDirective as aq,
-  useListDependent as ar,
-  useFieldFlatpickr as as,
-  useTomSelect as at,
-  useIframeModal as au,
-  useS3Uploader as av,
-  useShowOn as aw,
-  useUIBootstrap5 as ax,
-  useBs5Tooltip as ay,
-  useFormValidation as az,
+  nextTick as a0,
+  wait as a1,
+  useLang as a2,
+  useScriptImport as a3,
+  doImport as a4,
+  useSeriesImport as a5,
+  useCssIncludes as a6,
+  AlertAdapter as a7,
+  useUI as a8,
+  UnicornUI as a9,
+  useShowOn as aA,
+  useUIBootstrap5 as aB,
+  useBs5Tooltip as aC,
+  useFormValidation as aD,
+  useFormValidationSync as aE,
+  useFieldValidationSync as aF,
+  addGlobalValidator as aG,
+  useFieldCascadeSelect as aH,
+  useFieldFileDrag as aI,
+  useFieldModalSelect as aJ,
+  useCheckboxesMultiSelect as aK,
+  useFieldRepeatable as aL,
+  useFieldSingleImageDrag as aM,
+  useUnicornPhpAdapter as aN,
+  UnicornPhpAdapter as aO,
+  renderMessage as aa,
+  clearMessages as ab,
+  notify as ac,
+  clearNotifies as ad,
+  mark as ae,
+  multiUploader as af,
+  modalTree as ag,
+  slideToggle as ah,
+  useColorPicker as ai,
+  useDisableOnSubmit as aj,
+  useDisableIfStackNotEmpty as ak,
+  useKeepAlive as al,
+  useVueComponentField as am,
+  useQueue as an,
+  createQueue as ao,
+  createStack as ap,
+  useForm as aq,
+  useFormComponent as ar,
+  useGrid as as,
+  useGridComponent as at,
+  useWebDirective as au,
+  useListDependent as av,
+  useFieldFlatpickr as aw,
+  useTomSelect as ax,
+  useIframeModal as ay,
+  useS3Uploader as az,
   simpleConfirm as b,
   deleteConfirm as c,
   data as d,

@@ -1,4 +1,4 @@
-import { M as Mixin, E as EventMixin, d as data, m as mergeDeep, j as useHttpClient } from "./unicorn-BzhUK5qp.js";
+import { M as Mixin, E as EventMixin, d as data, m as mergeDeep, j as useHttpClient } from "./unicorn-DuXOh8pQ.js";
 const instances = {};
 function get(name, options = {}) {
   return instances[name] ??= create(name, options);

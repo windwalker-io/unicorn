@@ -1,10 +1,30 @@
+import { Dictionary } from '../types';
 import { injectCssToDocument } from './';
-import { forceArray } from './';
-import { Dictionary, MaybeArray } from '../types';
 
-export function doImport<T = any>(src: string): T {
-  // @ts-ignore
-  return import(src);
+export function useScriptImport(src: string, attrs: Record<string, string> = {}): Promise<void> {
+  const script = document.createElement('script');
+  script.src = src;
+
+  for (const key in attrs) {
+    script.setAttribute(key, attrs[key]);
+  }
+
+  return new Promise((resolve, reject) => {
+    script.onload = () => {
+      resolve();
+      document.body.removeChild(script);
+    };
+    script.onerror = (e) => {
+      reject(e);
+      document.body.removeChild(script);
+    };
+
+    document.body.appendChild(script);
+  });
+}
+
+export function doImport<T = any>(src: string): Promise<T> {
+  return import(/* @vite-ignore */src);
 }
 
 export async function useImport(...src: any[]): Promise<any>;
@@ -50,13 +70,77 @@ export async function useSeriesImport(...src: any[]): Promise<any> {
   return modules;
 }
 
-export async function useCssImport(...src: string[]): Promise<CSSStyleSheet[]> {
-  let modules: MaybeArray<{ default: CSSStyleSheet }> = await useImport(...src);
+export async function useCssIncludes(...hrefs: string[]): Promise<void[]> {
+  const promises = hrefs.map((href) => {
+    href = resolveUrl(href);
 
-  modules = forceArray(modules);
+    return new Promise<void>((resolve, reject) => {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = href;
+      link.onload = () => resolve();
+      link.onerror = (e) => reject(e);
 
+      document.head.appendChild(link);
+    });
+  });
+
+  return Promise.all(promises);
+}
+
+const importedSheets: Record<string, Promise<{ default: CSSStyleSheet }>> = {};
+
+export async function useCssImport(...hrefs: string[]): Promise<CSSStyleSheet[]> {
+  // Todo: Use `{ assert: { type: "css" }` after all browsers support it.
+  const modules = await Promise.all(
+    hrefs.map((href) => {
+      if (importedSheets[href]) {
+        return importedSheets[href];
+      }
+
+      return importedSheets[href] = simulateCssImport(href);
+    })
+  );
   const styles = modules.map(module => module.default);
 
   return injectCssToDocument(...styles);
 }
 
+async function simulateCssImport(href: string) {
+  href = resolveUrl(href);
+
+  const response = await fetch(href);
+  if (!response.ok) {
+    throw new Error(`Failed to load CSS: ${href}`);
+  }
+  const cssText = await response.text();
+
+  const sheet = new CSSStyleSheet();
+  await sheet.replace(cssText);
+  return { default: sheet };
+}
+
+let importMap: Record<string, string>;
+
+function parseImportMap() {
+  const importMapScript = document.querySelector('script[type="importmap"]');
+  if (importMapScript) {
+    try {
+      return JSON.parse(importMapScript.textContent || '{}').imports || {};
+    } catch (e) {
+      console.error('Failed to parse import map:', e);
+    }
+  }
+  return {};
+}
+
+function resolveUrl(specifier: string) {
+  importMap ??= parseImportMap();
+
+  for (const [prefix, target] of Object.entries(importMap)) {
+    if (specifier.startsWith(prefix)) {
+      return specifier.replace(prefix, target);
+    }
+  }
+  return specifier;
+}
