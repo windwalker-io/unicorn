@@ -1,4 +1,4 @@
-import { module, useCssImport, useImport } from '../modules';
+import { module, useCssImport, useImport } from '../service';
 import type { Nullable } from '../types';
 import { mergeDeep } from '../utilities';
 

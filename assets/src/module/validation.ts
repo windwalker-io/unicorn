@@ -1,5 +1,5 @@
 import { useUniDirective } from '../composable';
-import { getBoundedInstance, html, selectAll, selectOne, trans, useUITheme } from '../modules';
+import { getBoundedInstance, html, selectAll, selectOne, trans, useUITheme } from '../service';
 import { Nullable } from '../types';
 import { mergeDeep } from '../utilities';
 import * as punycode from 'punycode';

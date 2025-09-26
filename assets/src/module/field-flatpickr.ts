@@ -1,4 +1,4 @@
-import { useCssImport, useImport } from '../modules';
+import { useCssImport, useImport } from '../service';
 import flatpickr from 'flatpickr';
 import monthSelectPlugin from 'flatpickr/dist/plugins/monthSelect';
 

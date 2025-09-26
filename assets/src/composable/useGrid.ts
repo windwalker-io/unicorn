@@ -1,12 +1,12 @@
-import type { UnicornGridElement } from '../components/grid';
+import type { UnicornGridElement } from '../module/grid';
 import { useForm } from './useForm';
-import { selectOne, module } from '../modules';
+import { selectOne, module } from '../service';
 
 export async function useGrid(
   ele: string | HTMLElement,
   options: Record<string, any> | undefined = {}
 ): Promise<UnicornGridElement> {
-  const { UnicornGridElement } = await import('../components/grid');
+  const { UnicornGridElement } = await import('../module/grid');
 
   const selector = typeof ele === 'string' ? ele : '';
   const element = selectOne(ele);

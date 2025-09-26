@@ -1,6 +1,6 @@
 
 import { useHttpClient } from '../composable';
-import { __, injectCssToDocument, selectAll, simpleAlert } from '../modules';
+import { __, injectCssToDocument, selectAll, simpleAlert } from '../service';
 import { mergeDeep } from '../utilities';
 import css from '../../scss/field/single-image-drag.scss?inline';
 import { Modal } from 'bootstrap';
@@ -438,8 +438,8 @@ class FieldSingleImageDrag extends HTMLElement {
 //   import('@cropperjs/cropper.min.js'),
 //   import('@cropperjs/cropper.css'),
 // ])
-//   .then((modules) => {
-//     const styleSheet = modules[1].default;
+//   .then((service) => {
+//     const styleSheet = service[1].default;
 //     document.adoptedStyleSheets = [...document.adoptedStyleSheets, styleSheet];
 //   });
 

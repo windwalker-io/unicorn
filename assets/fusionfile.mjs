@@ -20,8 +20,8 @@ import fusion, {
 import { babelBasicOptions } from '@windwalker-io/fusion/src/utilities/babel.js';
 import dtsBundle from 'bundle-declarations-webpack-plugin';
 import * as path from 'path';
-import * as moduleTasks from './src/fusion/modules.mjs';
-export * from './src/fusion/modules.mjs';
+import * as moduleTasks from './src/fusion/service.mjs';
+export * from './src/fusion/service.mjs';
 
 export async function js() {
   // Watch start

@@ -4,7 +4,7 @@ import { removeCloak } from './utilities';
 
 export * from './data';
 export * from './events';
-export * from './modules';
+export * from './service';
 export * from './composable';
 export * from './plugin';
 

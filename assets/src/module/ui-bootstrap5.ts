@@ -1,6 +1,6 @@
 import type { ButtonRadio } from '../bootstrap/button-radio';
 import type { LoadTab } from '../bootstrap/keep-tab';
-import { html, module, selectAll, selectOne } from '../modules';
+import { html, module, selectAll, selectOne } from '../service';
 import type { UIThemeInterface } from '../types';
 import { Tooltip } from 'bootstrap';
 

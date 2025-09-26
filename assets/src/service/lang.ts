@@ -1,5 +1,5 @@
 import { data } from '../data';
-import { isDebug } from '../modules/helper';
+import { isDebug } from './/helper';
 import { Dictionary } from '../types';
 import { vsprintf } from 'sprintf-js';
 

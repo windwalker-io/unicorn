@@ -1,6 +1,6 @@
 
-export async function useIframeModal(): Promise<typeof import('../components/iframe-modal')> {
-  const module = await import('../components/iframe-modal');
+export async function useIframeModal(): Promise<typeof import('../module/iframe-modal')> {
+  const module = await import('../module/iframe-modal');
 
   await module.ready;
 

@@ -1,7 +1,7 @@
-import { h } from '../modules/dom';
-import type { UnicornFormElement } from '../components/form';
-import { __ } from '../modules/lang';
-import { deleteConfirm, loadAlpine, simpleAlert, simpleConfirm, slideDown, slideUp } from '../modules/ui';
+import { h } from '../service/dom';
+import type { UnicornFormElement } from './/form';
+import { __ } from '../service/lang';
+import { deleteConfirm, loadAlpine, simpleAlert, simpleConfirm, slideDown, slideUp } from '../service/ui';
 import { Nullable } from '../types';
 
 export class UnicornGridElement {

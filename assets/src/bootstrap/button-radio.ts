@@ -1,5 +1,5 @@
 import { data } from '../data';
-import { getBoundedInstance, h, selectAll, selectOne } from '../modules';
+import { getBoundedInstance, h, selectAll, selectOne } from '../service';
 import { mergeDeep } from '../utilities';
 
 const defaultOptions = {

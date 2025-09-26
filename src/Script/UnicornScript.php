@@ -21,7 +21,7 @@ use Windwalker\Utilities\Str;
 class UnicornScript extends AbstractScript
 {
     // public bool $next {
-    //     get => $this->app->config('unicorn.modules.next') ?? false;
+    //     get => $this->app->config('unicorn.service.next') ?? false;
     // }
 
     protected array $data = [];

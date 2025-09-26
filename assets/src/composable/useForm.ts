@@ -1,8 +1,8 @@
-import type { UnicornFormElement } from '../components/form';
-import { selectOne, module } from '../modules';
+import type { UnicornFormElement } from '../module/form';
+import { selectOne, module } from '../service';
 
 export async function useForm(ele?: string | Element, options: Record<string, any> = {}): Promise<UnicornFormElement> {
-  const { UnicornFormElement } = await import('../components/form');
+  const { UnicornFormElement } = await import('../module/form');
 
   if (ele == null) {
     return new UnicornFormElement(undefined, undefined, options);

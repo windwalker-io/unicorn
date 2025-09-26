@@ -1,3 +1,3 @@
-export function useFieldModalSelect(): Promise<typeof import('../components/field-modal-select')> {
-  return import('../components/field-modal-select');
+export function useFieldModalSelect(): Promise<typeof import('../module/field-modal-select')> {
+  return import('../module/field-modal-select');
 }

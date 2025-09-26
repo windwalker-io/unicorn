@@ -27,7 +27,7 @@ export default defineConfig(({ mode }) => {
           format: 'es',
           entryFileNames: 'unicorn.js',
           chunkFileNames(chunkInfo) {
-            // if (chunkInfo.facadeModuleId && chunkInfo.facadeModuleId.includes('/components/')) {
+            // if (chunkInfo.facadeModuleId && chunkInfo.facadeModuleId.includes('/module/')) {
             //   const relPath = chunkInfo.facadeModuleId.replace(src + '/', '');
             //   const dir = relPath.split('/').slice(0, -1).join('/');
             //   const filename = basename(relPath, '.ts');

@@ -125,7 +125,7 @@ class Breadcrumb
         $params['breadcrumb'] = $this;
 
         return $this->rendererService->render(
-            '@theme::components.breadcrumb',
+            '@theme::module.breadcrumb',
             $params,
         );
     }

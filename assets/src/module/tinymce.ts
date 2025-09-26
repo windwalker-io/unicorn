@@ -1,5 +1,5 @@
 import { useHttpClient, useStack } from '../composable';
-import { useImport } from '../modules/loader';
+import { useImport } from '../service/loader';
 import { Dictionary, MaybePromise } from '../types';
 import { mergeDeep } from '../utilities';
 import type { Editor, EditorOptions, TinyMCE } from 'tinymce';

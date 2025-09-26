@@ -1,6 +1,6 @@
 import { data } from '../data';
-import { useImport } from '../modules/loader';
-import { route } from '../modules/router';
+import { useImport } from '../service/loader';
+import { route } from '../service/router';
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosStatic, CreateAxiosDefaults } from 'axios';
 import type { AxiosError } from 'axios';
 import { parseTemplate } from 'url-template';

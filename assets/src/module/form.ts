@@ -1,6 +1,6 @@
 import { data } from '../data';
-import { loadAlpine } from '../modules/ui';
-import { useSystemUri } from '../modules/uri';
+import { loadAlpine } from '../service/ui';
+import { useSystemUri } from '../service/uri';
 import type { Nullable } from '../types';
 
 export class UnicornFormElement {

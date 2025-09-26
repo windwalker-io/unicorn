@@ -1,5 +1,5 @@
-import { injectCssToDocument } from '../modules';
-import { forceArray } from '../modules';
+import { injectCssToDocument } from './';
+import { forceArray } from './';
 import { Dictionary, MaybeArray } from '../types';
 
 export function doImport<T = any>(src: string): T {
