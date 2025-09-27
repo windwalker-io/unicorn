@@ -14,6 +14,8 @@ use Windwalker\Form\Field\AbstractField;
 use Windwalker\Query\Query;
 use Windwalker\Utilities\Cache\InstanceCacheTrait;
 
+use Windwalker\Utilities\Wrapper\RawWrapper;
+
 use function Windwalker\raw;
 
 /**
@@ -64,7 +66,9 @@ class ModalTreeField extends AbstractField
     {
         $key = 'field.modal-tree:' . $this->getId();
 
-        $input['source'] = $this->getSource();
+        $source = $this->getSource();
+
+        $input[':source'] = $source instanceof RawWrapper ? $source() : json_encode($source);
         $input['modal-title'] = $this->getModalTitle();
         $input[':branch-selectable'] = $this->isBranchSelectable() ? 'true' : null;
         $input['name'] .= '[]';
@@ -87,7 +91,7 @@ class ModalTreeField extends AbstractField
 
         // $input['value-key'] = $key;
         $input[':items'] = raw(
-            "function () { return \$u.data('$key'); }"
+            "function () { return \$getData('$key'); }"
         );
 
         $input->removeAttribute('value');

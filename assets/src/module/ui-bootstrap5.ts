@@ -1,3 +1,4 @@
+import * as bootstrap from 'bootstrap';
 import { Tooltip } from 'bootstrap';
 import type { ButtonRadio, ButtonRadioModule, ButtonRadioOptions } from '../bootstrap/button-radio';
 import type { KeepTab, KeepTabModule, KeepTabOptions } from '../bootstrap/keep-tab';
@@ -6,6 +7,8 @@ import type { UIThemeInterface } from '../types';
 
 export class UIBootstrap5 implements UIThemeInterface {
   static instance: UIBootstrap5 | null = null;
+
+  bootstrap = bootstrap;
 
   static get() {
     return this.instance ??= new this();
@@ -85,5 +88,15 @@ export class UIBootstrap5 implements UIThemeInterface {
 
   getMajorVersion(module: any) {
     return Number(module.VERSION.split('.').shift());
+  }
+
+  pushBootstrapToGlobal() {
+    window.bootstrap = bootstrap;
+  }
+}
+
+declare global {
+  export interface Window {
+    bootstrap: typeof bootstrap;
   }
 }

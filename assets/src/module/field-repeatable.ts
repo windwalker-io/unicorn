@@ -1,6 +1,6 @@
-import { mergeDeep } from '../utilities';
 import { cloneDeep } from 'lodash-es';
-import { initAlpineComponent, prepareAlpine, uid, useCssImport, loadAlpine, prepareAlpineDefer } from '../service';
+import { initAlpineComponent, prepareAlpineDefer, uid, useCssImport } from '../service';
+import { mergeDeep } from '../utilities';
 
 export interface RepeatableOptions {
   id?: string;

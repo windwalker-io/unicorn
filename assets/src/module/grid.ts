@@ -227,10 +227,12 @@ export class UnicornGridElement {
   /**
    * Update a item with batch task.
    */
-  updateItemByTask(task: string,
-                   id: string | number,
-                   url?: Nullable<string>,
-                   data?: Nullable<Record<string, any>>): boolean {
+  updateItemByTask(
+    task: string,
+    id: string | number,
+    url?: Nullable<string>,
+    data?: Nullable<Record<string, any>>
+  ): boolean {
     data = data || {};
     data.task = task;
 
@@ -289,9 +291,11 @@ export class UnicornGridElement {
   /**
    * Delete checked items.
    */
-  deleteList(message?: Nullable<string> | false,
-             url?: Nullable<string>,
-             data?: Nullable<Record<string, any>>): boolean {
+  deleteList(
+    message?: Nullable<string> | false,
+    url?: Nullable<string>,
+    data?: Nullable<Record<string, any>>
+  ): boolean {
     if (!this.validateChecked()) {
       return false;
     }
@@ -400,7 +404,7 @@ export class UnicornGridElement {
   /**
    * Validate there has one or more checked boxes.
    */
-  validateChecked(event?: Event, callback?: Function, msg?: string): this {
+  validateChecked(event?: Event, callback?: (grid: UnicornGridElement) => any, msg?: string): this {
     msg = msg || __('unicorn.message.grid.checked');
 
     if (!this.hasChecked()) {

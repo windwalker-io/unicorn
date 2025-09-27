@@ -3,7 +3,7 @@ import {
   useFieldCascadeSelect,
   useFieldFileDrag,
   useFieldFlatpickr,
-  useFieldModalSelect,
+  useFieldModalSelect, useFieldModalTree,
   useFieldRepeatable,
   useFieldSingleImageDrag,
   useIframeModal,
@@ -48,6 +48,7 @@ const methods = {
   },
   iframeModal: useIframeModal,
   initShowOn: useShowOn,
+  modalTree: useFieldModalTree,
 };
 
 export class UnicornPhpAdapter {

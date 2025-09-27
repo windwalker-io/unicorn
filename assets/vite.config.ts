@@ -1,3 +1,4 @@
+import vuePlugin from '@vitejs/plugin-vue';
 import { resolve, basename } from 'node:path';
 import { rimraf } from 'rimraf';
 import treeShakeable from 'rollup-plugin-tree-shakeable';
@@ -53,14 +54,21 @@ export default defineConfig(({ mode }) => {
           'alpinejs',
           'cropperjs',
           'tinymce',
+          'vue',
         ]
       },
       outDir: 'dist',
       emptyOutDir: false,
+      sourcemap: mode === 'development' ? 'inline' : false,
       minify: false,
     },
     plugins: [
       treeShakeable(),
+      vuePlugin({
+        features: {
+          prodDevtools: true,
+        }
+      }),
       dts({
         // entryRoot: './src/unicorn/unicorn.ts',
         insertTypesEntry: true,

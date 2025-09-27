@@ -167,7 +167,7 @@ class UnicornPackage extends AbstractPackage implements
             '@spectrum/' => 'vendor/spectrum-vanilla/dist/',
             '@spectrum' => 'vendor/spectrum-vanilla/dist/spectrum.min.js',
             '@tinymce' => 'vendor/tinymce/tinymce.js',
-            '@vue' => 'vendor/vue/dist/vue.global' . ($this->app->isDebug() ? '' : '.prod') . '.js',
+            // '@vue' => 'vendor/vue/dist/vue.global' . ($this->app->isDebug() ? '' : '.prod') . '.js',
             '@vue-animate' => 'vendor/@asika32764/vue-animate/dist/vue-animate.min.css',
         ];
 

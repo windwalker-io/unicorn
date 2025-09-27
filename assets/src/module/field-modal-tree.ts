@@ -1,6 +1,8 @@
-import '@asika32764/vue-animate/dist/vue-animate.css';
-import { createApp, nextTick, onMounted, reactive, ref, toRefs } from 'vue';
-import ModalTreeApp from '../../vue/components/modal-tree/modal-tree.vue';
+import { data } from '../data';
+import { useCssImport } from '../service';
+import { createApp } from 'vue';
+import ModalTreeApp from '../vue/components/ModalTree/ModalTreeApp.vue';
+useCssImport('@vue-animate');
 
 const app = createApp({
   name: 'modal-tree',
@@ -8,18 +10,18 @@ const app = createApp({
     ModalTreeApp
   }
 });
-app.config.globalProperties.$u = u;
+app.config.globalProperties.$getData = data;
 
 class ModalTreeElement extends HTMLElement {
   static is = 'modal-tree';
 
+  vm: any;
+
   connectedCallback() {
     if (!this.vm) {
-      app.mount(this);
-
-      this.vm = app;
+      this.vm = app.mount(this);
     }
   }
 }
 
-u.defineCustomElement(ModalTreeElement.is, ModalTreeElement);
+customElements.define(ModalTreeElement.is, ModalTreeElement);
