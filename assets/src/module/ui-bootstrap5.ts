@@ -57,14 +57,14 @@ export class UIBootstrap5 implements UIThemeInterface {
   }
 
   async buttonRadio(): Promise<ButtonRadioModule>;
-  async buttonRadio(selector: string | HTMLElement, config?: ButtonRadioOptions): Promise<ButtonRadio>;
-  async buttonRadio(selector?: string | HTMLElement, config: ButtonRadioOptions = {}): Promise<any> {
+  async buttonRadio(selector: string | HTMLElement, options?: ButtonRadioOptions): Promise<ButtonRadio>;
+  async buttonRadio(selector?: string | HTMLElement, options: ButtonRadioOptions = {}): Promise<any> {
     const m = await import('../bootstrap/button-radio');
 
     await m.ready;
 
     if (selector) {
-      return m.ButtonRadio.handle(selector, config);
+      return m.ButtonRadio.handle(selector, options);
     }
 
     return m;

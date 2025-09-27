@@ -1180,6 +1180,11 @@ function parseImportMap() {
 function resolveUrl(specifier) {
   importMap ??= parseImportMap();
   for (const [prefix, target] of Object.entries(importMap)) {
+    if (specifier === prefix) {
+      return target;
+    }
+  }
+  for (const [prefix, target] of Object.entries(importMap)) {
     if (specifier.startsWith(prefix)) {
       return specifier.replace(prefix, target);
     }
@@ -1201,7 +1206,7 @@ function createStack(store = []) {
   return stack(store);
 }
 async function useForm(ele, options = {}) {
-  const { UnicornFormElement } = await import("./form-BWwqC6g1.js");
+  const { UnicornFormElement } = await import("./form-FV4DUX_b.js");
   if (ele == null) {
     return new UnicornFormElement(void 0, void 0, options);
   }
@@ -1222,7 +1227,7 @@ async function useFormComponent(ele, options = {}) {
   return form;
 }
 async function useGrid(ele, options = {}) {
-  const { UnicornGridElement } = await import("./grid-Uc4MeZDq.js");
+  const { UnicornGridElement } = await import("./grid-B1xFZhkm.js");
   const selector = typeof ele === "string" ? ele : "";
   const element = selectOne(ele);
   if (!element) {
@@ -1241,7 +1246,7 @@ async function useGridComponent(ele, options = {}) {
   return grid;
 }
 async function useHttpClient(config) {
-  const { UnicornHttpClient } = await import("./http-client-DAAPNr6f.js");
+  const { UnicornHttpClient } = await import("./http-client-D3dAu0Cs.js");
   if (config && "interceptors" in config) {
     const axios = config;
     const http = new UnicornHttpClient();
@@ -1270,7 +1275,7 @@ async function createWebDirective(options = {}) {
   return wd;
 }
 async function useListDependent(element, dependent, options = {}) {
-  const module2 = await import("./list-dependent-BI57MBVL.js");
+  const module2 = await import("./list-dependent-BcEQdqe8.js");
   await module2.ready;
   if (element) {
     const { ListDependent } = module2;
@@ -1279,7 +1284,7 @@ async function useListDependent(element, dependent, options = {}) {
   return module2;
 }
 function useFieldFlatpickr() {
-  return import("./field-flatpickr-CLOzdtym.js");
+  return import("./field-flatpickr-uRzz_LEF.js");
 }
 async function useTomSelect(selector, options = {}, theme = "bootstrap5") {
   const [m] = await wait(
@@ -1329,12 +1334,12 @@ async function useTomSelect(selector, options = {}, theme = "bootstrap5") {
   return m;
 }
 async function useIframeModal() {
-  const module2 = await import("./iframe-modal-Bm-mLiu7.js");
+  const module2 = await import("./iframe-modal-BSPTHyfC.js");
   await module2.ready;
   return module2;
 }
 async function useS3Uploader(name, options = {}) {
-  const module2 = await import("./s3-uploader-BndeiQ0r.js");
+  const module2 = await import("./s3-uploader-BICfisT6.js");
   if (!name) {
     return module2;
   }
@@ -1342,12 +1347,12 @@ async function useS3Uploader(name, options = {}) {
   return get(name, options);
 }
 async function useShowOn() {
-  const module2 = await import("./show-on-Bcp5Er_l.js");
+  const module2 = await import("./show-on-Bgh6hpas.js");
   await module2.ready;
   return module2;
 }
 async function useUIBootstrap5(install = false) {
-  const { UIBootstrap5 } = await import("./ui-bootstrap5-DBEX3iYq.js");
+  const { UIBootstrap5 } = await import("./ui-bootstrap5-BzJj6wcZ.js");
   const theme = UIBootstrap5.get();
   if (install) {
     useUITheme(theme);
@@ -1358,8 +1363,16 @@ async function useBs5Tooltip(selector = '[data-bs-toggle="tooltip"]', config = {
   const bs5 = await useUIBootstrap5();
   return bs5.tooltip(selector, config);
 }
+async function useBs5KeepTab(selector, options = {}) {
+  const bs5 = await useUIBootstrap5();
+  return bs5.keepTab(selector, options);
+}
+async function useBs5ButtonRadio(selector, options = {}) {
+  const bs5 = await useUIBootstrap5();
+  return bs5.buttonRadio(selector, options);
+}
 async function useFormValidation(selector) {
-  const module2 = await import("./validation-o-1FzLXq.js");
+  const module2 = await import("./validation-BIE_w0_X.js");
   await module2.ready;
   if (!selector) {
     return module2;
@@ -1377,30 +1390,30 @@ async function addGlobalValidator(name, validator, options = {}) {
   UnicornFormValidation.addGlobalValidator(name, validator, options);
 }
 async function useFieldCascadeSelect() {
-  await import("./field-cascade-select-Dfs2xGti.js");
+  await import("./field-cascade-select-Df2iitbr.js");
 }
 async function useFieldFileDrag() {
-  const module2 = await import("./field-file-drag-BxmMZ12x.js");
+  const module2 = await import("./field-file-drag-DhRHR-sW.js");
   await module2.ready;
   return module2;
 }
 function useFieldModalSelect() {
-  return import("./field-modal-select-CwjPQmq7.js");
+  return import("./field-modal-select-CleLxhch.js");
 }
 async function useCheckboxesMultiSelect(selector, options = {}) {
-  const m = await import("./checkboxes-multi-select-Dlssym2W.js");
+  const m = await import("./checkboxes-multi-select-CnUrUP7y.js");
   if (selector) {
     m.CheckboxesMultiSelect.handle(selector, options);
   }
   return m;
 }
 async function useFieldRepeatable() {
-  const module2 = await import("./field-repeatable-wptpXpiW.js");
+  const module2 = await import("./field-repeatable-i3LMXdRK.js");
   await module2.ready;
   return module2;
 }
 function useFieldSingleImageDrag() {
-  return import("./field-single-image-drag-D2WzaUOI.js");
+  return import("./field-single-image-drag-BAc-lcoy.js");
 }
 let ui;
 AlertAdapter.alert = (title, text = "", type = "info") => {
@@ -1465,15 +1478,26 @@ class UnicornUI {
   //   return Promise.resolve(true);
   // }
 }
+const prepares = [];
+const { promise: alpineLoaded, resolve: alpineResolve } = /* @__PURE__ */ Promise.withResolvers();
 async function loadAlpine(callback) {
-  if (callback) {
-    prepareAlpine(callback);
+  if (callback && !window.Alpine) {
+    prepares.push(callback);
   }
-  let m = await useImport("@alpinejs");
-  return m;
+  const { default: Alpine } = await useImport("@alpinejs");
+  if (!window.Alpine) {
+    await Promise.all(prepares.map((callback2) => Promise.resolve(callback2(Alpine))));
+    Alpine.start();
+    window.Alpine = Alpine;
+    alpineResolve(Alpine);
+  } else if (callback) {
+    await callback(Alpine);
+  }
+  return Alpine;
 }
-async function initAlpine(directive) {
-  await loadAlpine();
+async function initAlpineComponent(directive) {
+  const Alpine = await alpineLoaded;
+  await nextTick();
   selectAll(`[${directive}]`, (el) => {
     const code = el.getAttribute(directive) || "";
     el.removeAttribute(directive);
@@ -1483,12 +1507,16 @@ async function initAlpine(directive) {
     Alpine.initTree(el);
   });
 }
-function prepareAlpine(callback) {
+async function prepareAlpine(callback) {
   if (window.Alpine) {
-    callback();
+    await callback(window.Alpine);
   } else {
-    document.addEventListener("alpine:init", callback);
+    prepares.push(callback);
   }
+}
+async function prepareAlpineDefer(callback) {
+  await alpineLoaded;
+  await callback(window.Alpine);
 }
 function renderMessage(messages, type = "info") {
   ui.theme.renderMessage(messages, type);
@@ -1658,7 +1686,6 @@ function useDisableOnSubmit(formSelector = "#admin-form", buttonSelector = "", o
   });
   const form = selectOne(formSelector);
   form?.addEventListener(event, (e) => {
-    console.log(e.submitter);
     setTimeout(() => {
       if (!form.checkValidity()) {
         return;
@@ -1706,6 +1733,78 @@ async function useVueComponentField(selector, value, options = {}) {
   }
   return m;
 }
+function useSystemUri(type, path) {
+  const uri2 = UnicornSystemUri.get();
+  if (type) {
+    return uri2[type](path);
+  }
+  return uri2;
+}
+function useAssetUri(type, path) {
+  const asset2 = UnicornAssetUri.get();
+  if (type) {
+    return asset2[type](path);
+  }
+  return asset2;
+}
+function uri(type) {
+  return data("unicorn.uri")[type];
+}
+function asset(type) {
+  return uri("asset")[type];
+}
+function addUriBase(uri2, type = "path") {
+  if (uri2.substring(0, 2) === "//" || uri2.substring(0, 4) === "http") {
+    return uri2;
+  }
+  return asset(type) + "/" + uri2;
+}
+class UnicornSystemUri extends URL {
+  static instance;
+  static get() {
+    return this.instance ??= new this(uri("full"));
+  }
+  path(path = "") {
+    return uri("path") + path;
+  }
+  root(path = "") {
+    return uri("root") + path;
+  }
+  current() {
+    return uri("current") || "";
+  }
+  full() {
+    return uri("full") || "";
+  }
+  route() {
+    return uri("route") || "";
+  }
+  script() {
+    return uri("script") || "";
+  }
+  routeWithQuery() {
+    const route = this.route();
+    const query = this.searchParams.toString();
+    return query ? `${route}?${query}` : route;
+  }
+  routeAndQuery() {
+    const route = this.route();
+    const query = this.searchParams.toString();
+    return [route, query];
+  }
+}
+class UnicornAssetUri {
+  static instance;
+  static get() {
+    return this.instance ??= new this();
+  }
+  path(path = "") {
+    return asset("path") + path;
+  }
+  root(path = "") {
+    return asset("root") + path;
+  }
+}
 function removeCloak() {
   if (globalThis.document == null) {
     return;
@@ -1713,7 +1812,7 @@ function removeCloak() {
   selectAll("[uni-cloak]", (el) => el.removeAttribute("uni-cloak"));
 }
 async function useTinymce(selector, options = {}) {
-  const { get } = await import("./tinymce-0nuu96w9.js");
+  const { get } = await import("./tinymce-BrlKOA-q.js");
   return get(selector, options);
 }
 function useUnicornPhpAdapter(app2) {
@@ -1764,109 +1863,117 @@ function pushUnicornToGlobal(app2) {
   window.u = app2 ?? useUnicorn();
 }
 export {
-  isDebug as $,
-  highlight as A,
-  initAlpine as B,
-  prepareAlpine as C,
-  useStack as D,
+  throttle as $,
+  injectCssToDocument as A,
+  highlight as B,
+  prepareAlpineDefer as C,
+  initAlpineComponent as D,
   EventMixin as E,
-  sleep as F,
-  createUnicorn as G,
-  createUnicornWithPlugins as H,
-  useUnicorn as I,
-  useInject as J,
-  pushUnicornToGlobal as K,
-  removeData as L,
+  useStack as F,
+  sleep as G,
+  createUnicorn as H,
+  createUnicornWithPlugins as I,
+  useUnicorn as J,
+  useInject as K,
+  pushUnicornToGlobal as L,
   Mixin as M,
-  EventBus as N,
-  animateTo as O,
-  base64UrlEncode as P,
-  base64UrlDecode as Q,
-  tid as R,
-  randomBytes as S,
-  randomBytesString as T,
-  serial as U,
-  domready as V,
-  getBoundedInstanceList as W,
-  delegate as X,
-  debounce as Y,
-  throttle as Z,
+  removeData as N,
+  EventBus as O,
+  animateTo as P,
+  base64UrlEncode as Q,
+  base64UrlDecode as R,
+  tid as S,
+  randomBytes as T,
+  randomBytesString as U,
+  serial as V,
+  domready as W,
+  getBoundedInstanceList as X,
+  delegate as Y,
+  debounce as Z,
   __ as _,
   slideUp as a,
-  nextTick as a0,
-  wait as a1,
-  useLang as a2,
-  useScriptImport as a3,
-  doImport as a4,
-  useSeriesImport as a5,
-  useCssIncludes as a6,
-  AlertAdapter as a7,
-  useUI as a8,
-  UnicornUI as a9,
-  useShowOn as aA,
-  useUIBootstrap5 as aB,
-  useBs5Tooltip as aC,
-  useFormValidation as aD,
-  useFormValidationSync as aE,
-  useFieldValidationSync as aF,
-  addGlobalValidator as aG,
-  useFieldCascadeSelect as aH,
-  useFieldFileDrag as aI,
-  useFieldModalSelect as aJ,
-  useCheckboxesMultiSelect as aK,
-  useFieldRepeatable as aL,
-  useFieldSingleImageDrag as aM,
-  useUnicornPhpAdapter as aN,
-  UnicornPhpAdapter as aO,
-  renderMessage as aa,
-  clearMessages as ab,
-  notify as ac,
-  clearNotifies as ad,
-  mark as ae,
-  multiUploader as af,
-  modalTree as ag,
-  slideToggle as ah,
-  useColorPicker as ai,
-  useDisableOnSubmit as aj,
-  useDisableIfStackNotEmpty as ak,
-  useKeepAlive as al,
-  useVueComponentField as am,
-  useQueue as an,
-  createQueue as ao,
-  createStack as ap,
-  useForm as aq,
-  useFormComponent as ar,
-  useGrid as as,
-  useGridComponent as at,
-  useWebDirective as au,
-  useListDependent as av,
-  useFieldFlatpickr as aw,
-  useTomSelect as ax,
-  useIframeModal as ay,
-  useS3Uploader as az,
+  isDebug as a0,
+  nextTick as a1,
+  wait as a2,
+  useLang as a3,
+  useScriptImport as a4,
+  doImport as a5,
+  useSeriesImport as a6,
+  useCssIncludes as a7,
+  AlertAdapter as a8,
+  useUI as a9,
+  useWebDirective as aA,
+  useListDependent as aB,
+  useFieldFlatpickr as aC,
+  useTomSelect as aD,
+  useIframeModal as aE,
+  useS3Uploader as aF,
+  useShowOn as aG,
+  useUIBootstrap5 as aH,
+  useBs5Tooltip as aI,
+  useBs5KeepTab as aJ,
+  useBs5ButtonRadio as aK,
+  useFormValidation as aL,
+  useFormValidationSync as aM,
+  useFieldValidationSync as aN,
+  addGlobalValidator as aO,
+  useFieldCascadeSelect as aP,
+  useFieldFileDrag as aQ,
+  useFieldModalSelect as aR,
+  useCheckboxesMultiSelect as aS,
+  useFieldRepeatable as aT,
+  useFieldSingleImageDrag as aU,
+  useUnicornPhpAdapter as aV,
+  UnicornPhpAdapter as aW,
+  UnicornUI as aa,
+  prepareAlpine as ab,
+  renderMessage as ac,
+  clearMessages as ad,
+  notify as ae,
+  clearNotifies as af,
+  mark as ag,
+  multiUploader as ah,
+  modalTree as ai,
+  slideToggle as aj,
+  useColorPicker as ak,
+  useDisableOnSubmit as al,
+  useDisableIfStackNotEmpty as am,
+  useKeepAlive as an,
+  useVueComponentField as ao,
+  useAssetUri as ap,
+  addUriBase as aq,
+  UnicornSystemUri as ar,
+  UnicornAssetUri as as,
+  useQueue as at,
+  createQueue as au,
+  createStack as av,
+  useForm as aw,
+  useFormComponent as ax,
+  useGrid as ay,
+  useGridComponent as az,
   simpleConfirm as b,
   deleteConfirm as c,
   data as d,
   simpleAlert as e,
-  useUniDirective as f,
-  getBoundedInstance as g,
+  useImport as f,
+  useUniDirective as g,
   h,
-  selectOne as i,
-  useHttpClient as j,
-  html as k,
+  getBoundedInstance as i,
+  selectOne as j,
+  useHttpClient as k,
   loadAlpine as l,
-  mergeDeep as m,
-  useCssImport as n,
-  module as o,
-  selectAll as p,
-  fadeIn as q,
-  fadeOut as r,
+  html as m,
+  mergeDeep as n,
+  useCssImport as o,
+  module as p,
+  selectAll as q,
+  fadeIn as r,
   slideDown as s,
-  forceArray as t,
-  useImport as u,
-  trans as v,
-  useUITheme as w,
-  uid as x,
-  useLoadedHttpClient as y,
-  injectCssToDocument as z
+  fadeOut as t,
+  useSystemUri as u,
+  forceArray as v,
+  trans as w,
+  useUITheme as x,
+  uid as y,
+  useLoadedHttpClient as z
 };

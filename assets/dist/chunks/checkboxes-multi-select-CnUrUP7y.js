@@ -1,4 +1,4 @@
-import { p as selectAll, i as selectOne } from "./unicorn-DuXOh8pQ.js";
+import { q as selectAll, j as selectOne } from "./unicorn-CV7iCwj6.js";
 class CheckboxesMultiSelect {
   defaultOptions = {
     duration: 100,

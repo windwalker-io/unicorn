@@ -1,8 +1,6 @@
-import { h } from '../service/dom';
-import type { UnicornFormElement } from './/form';
-import { __ } from '../service/lang';
-import { deleteConfirm, loadAlpine, simpleAlert, simpleConfirm, slideDown, slideUp } from '../service/ui';
+import { __, deleteConfirm, h, loadAlpine, simpleAlert, simpleConfirm, slideDown, slideUp } from '../service';
 import { Nullable } from '../types';
+import type { UnicornFormElement } from './form';
 
 export class UnicornGridElement {
   options: Record<string, any>;
@@ -51,7 +49,7 @@ export class UnicornGridElement {
       }
     }
 
-    return loadAlpine(() => {
+    return loadAlpine((Alpine) => {
       Alpine.store(store, this.useState(custom));
     });
   }

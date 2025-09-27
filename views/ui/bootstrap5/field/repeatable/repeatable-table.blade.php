@@ -31,7 +31,7 @@ use Windwalker\Form\Field\HiddenField;
 
 $app->service(\Unicorn\Script\FormScript::class)->repeatable();
 
-$inputElement = $field->getPreparedInput();
+$inputElement = $field->compileInput();
 
 $optString = AssetService::getJSObject(
     [

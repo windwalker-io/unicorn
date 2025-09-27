@@ -166,7 +166,7 @@ class UnicornPackage extends AbstractPackage implements
                 '@unicorn'      => "vendor/$unicornPackage/dist/unicorn.js",
                 '@main'         => "vendor/$unicornPackage/dist/unicorn.js",
                 '@jquery'       => 'vendor/jquery/dist/jquery.min.js',
-                '@alpinejs'     => 'vendor/alpinejs/dist/cdn.js',
+                '@alpinejs'     => 'vendor/alpinejs/dist/' . ($isNext ? 'module.esm.js' : 'cdn.js'),
                 '@spruce'       => 'vendor/@ryangjchandler/spruce/dist/spruce.umd.js',
                 '@axios'        => 'vendor/axios/dist/axios.js',
                 '@awesome-checkbox' => 'vendor/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css',

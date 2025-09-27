@@ -1,4 +1,4 @@
-import { l as loadAlpine, s as slideDown, a as slideUp, h, _ as __, b as simpleConfirm, c as deleteConfirm, e as simpleAlert } from "./unicorn-DuXOh8pQ.js";
+import { l as loadAlpine, s as slideDown, a as slideUp, h, _ as __, b as simpleConfirm, c as deleteConfirm, e as simpleAlert } from "./unicorn-CV7iCwj6.js";
 class UnicornGridElement {
   constructor(selector, element, form, options = {}) {
     this.element = element;
@@ -33,7 +33,7 @@ class UnicornGridElement {
         this.ordering += " ASC";
       }
     }
-    return loadAlpine(() => {
+    return loadAlpine((Alpine) => {
       Alpine.store(store, this.useState(custom));
     });
   }

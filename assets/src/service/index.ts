@@ -5,3 +5,4 @@ export * from './helper';
 export * from './lang';
 export * from './loader';
 export * from './ui';
+export * from './uri';

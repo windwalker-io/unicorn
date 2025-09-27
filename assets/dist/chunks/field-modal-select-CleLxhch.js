@@ -1,5 +1,4 @@
-import { i as selectOne, A as highlight, _ as __, d as data, k as html, a as slideUp } from "./unicorn-DuXOh8pQ.js";
-import Sortable from "sortablejs";
+import { j as selectOne, B as highlight, _ as __, d as data, m as html, a as slideUp } from "./unicorn-CV7iCwj6.js";
 import { b as baseAssignValue, a as assignValue, i as isIndex, c as isPrototype, d as arrayLikeKeys, g as getPrototype, k as keys } from "./_getPrototype-CEtyiV4l.js";
 import { b as baseRest, a as apply } from "./_baseRest-CLQ7Kw-5.js";
 import { b as isObjectLike, d as baseGetTag, i as isArray, S as Symbol$1, e as isObject, c as isArrayLike, f as eq } from "./isArguments-D7k1ciaJ.js";
@@ -336,7 +335,9 @@ class ModalListSelectElement extends HTMLElement {
       emptyInput.name = emptyInput.dataset.name;
     }
     if (this.options.sortable) {
-      new Sortable(this.listContainer, { handle: ".h-drag-handle" });
+      import("sortablejs").then(({ default: Sortable }) => {
+        new Sortable(this.listContainer, { handle: ".h-drag-handle", animation: 150 });
+      });
     }
     const selectButton = this.querySelector("[data-role=select]");
     selectButton.addEventListener("click", (e) => {
@@ -381,8 +382,9 @@ class ModalListSelectElement extends HTMLElement {
     event.preventDefault();
     event.stopPropagation();
     const max = this.options.max;
+    const target = event.target;
     if (!max) {
-      this.modal.open(event.target.href, { size: "modal-xl" });
+      this.modal.open(target.href, { size: "modal-xl" });
       return;
     }
     if (this.listContainer.children.length >= max) {
@@ -391,7 +393,7 @@ class ModalListSelectElement extends HTMLElement {
       );
       return;
     }
-    this.modal.open(event.target.href, { size: "modal-xl" });
+    this.modal.open(target.href, { size: "modal-xl" });
   }
 }
 /* @__PURE__ */ customElements.define(/* @__PURE__ */ (() => ModalListSelectElement.is)(), ModalListSelectElement);

@@ -1,15 +1,15 @@
-import { useStack } from '../composable';
-import { data, removeData } from '../data';
-import { animateTo } from './animate';
-import { html, module, selectAll, selectOne } from './dom';
-import { useCssImport, useImport } from './loader';
-import type { Constructor, Nullable, UIThemeInterface } from '../types';
 import { AlertAdapter, deleteConfirm, simpleAlert, simpleConfirm } from '@lyrasoft/ts-toolkit/generic';
-import type AlpineGlobal from 'alpinejs';
+import type { Alpine as AlpineGlobal } from 'alpinejs';
 import type { default as SpectrumGlobal } from 'spectrum-vanilla';
 import type { SpectrumOptions } from 'spectrum-vanilla/dist/types/types';
-import type Tinymce from 'tinymce';
 import type { default as TomSelectGlobal } from 'tom-select';
+import { useStack } from '../composable';
+import { data, removeData } from '../data';
+import type { Constructor, MaybePromise, Nullable, UIThemeInterface } from '../types';
+import { animateTo } from './animate';
+import { html, module, selectAll, selectOne } from './dom';
+import { nextTick } from './helper';
+import { useCssImport, useImport } from './loader';
 
 let ui: UnicornUI;
 
@@ -94,19 +94,36 @@ export class UnicornUI {
   // }
 }
 
-export async function loadAlpine(callback?: Nullable<() => void>) {
-  // For V3
-  if (callback) {
-    prepareAlpine(callback);
+const prepares: AlpinePrepareCallback[] = [];
+type AlpinePrepareCallback = (Alpine: AlpineGlobal) => MaybePromise<any>;
+const { promise: alpineLoaded, resolve: alpineResolve } = Promise.withResolvers<AlpineGlobal>();
+
+export async function loadAlpine(callback?: Nullable<AlpinePrepareCallback>): Promise<AlpineGlobal> {
+  if (callback && !window.Alpine) {
+    prepares.push(callback);
   }
 
-  let m = await useImport('@alpinejs');
+  const { default: Alpine }: { default: AlpineGlobal } = await useImport('@alpinejs');
 
-  return m;
+  if (!window.Alpine) {
+    await Promise.all(prepares.map((callback) => Promise.resolve(callback(Alpine))));
+
+    Alpine.start();
+
+    window.Alpine = Alpine;
+
+    alpineResolve(Alpine);
+  } else if (callback) {
+    await callback(Alpine);
+  }
+
+  return Alpine;
 }
 
-export async function initAlpine(directive: string) {
-  await loadAlpine();
+export async function initAlpineComponent(directive: string) {
+  const Alpine = await alpineLoaded;
+
+  await nextTick();
 
   selectAll<HTMLElement>(`[${directive}]`, (el) => {
     const code = el.getAttribute(directive) || '';
@@ -124,12 +141,17 @@ export async function initAlpine(directive: string) {
 /**
  * Before Alpine init
  */
-export function prepareAlpine(callback: () => void) {
+export async function prepareAlpine(callback: AlpinePrepareCallback) {
   if (window.Alpine) {
-    callback();
+    await callback(window.Alpine);
   } else {
-    document.addEventListener('alpine:init', callback);
+    prepares.push(callback);
   }
+}
+export async function prepareAlpineDefer(callback: AlpinePrepareCallback) {
+  const Alpine = await alpineLoaded;
+
+  await callback(window.Alpine);
 }
 
 /**
@@ -405,8 +427,6 @@ export function useDisableOnSubmit(
 
   const form = selectOne<HTMLFormElement>(formSelector);
   form?.addEventListener(event, (e: SubmitEvent) => {
-    console.log(e.submitter);
-
     setTimeout(() => {
       if (!form.checkValidity()) {
         return;
@@ -435,7 +455,8 @@ export function useDisableOnSubmit(
   });
 }
 
-export function useDisableIfStackNotEmpty(buttonSelector: string = '[data-task=save]', stackName: string = 'uploading') {
+export function useDisableIfStackNotEmpty(buttonSelector: string = '[data-task=save]',
+                                          stackName: string = 'uploading') {
   const stack = useStack(stackName);
 
   stack.observe((stack, length) => {
@@ -480,8 +501,7 @@ export async function useVueComponentField(
 }
 
 declare global {
-  var Alpine: typeof AlpineGlobal;
-  var tinymce: typeof Tinymce;
+  var Alpine: AlpineGlobal;
   var TomSelect: typeof TomSelectGlobal;
   var Spectrum: typeof SpectrumGlobal;
   var Mark: any;

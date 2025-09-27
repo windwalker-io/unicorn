@@ -1,47 +1,4 @@
-import { d as data, l as loadAlpine } from "./unicorn-DuXOh8pQ.js";
-function useSystemUri(type, path) {
-  const uri2 = UnicornSystemUri.get();
-  {
-    return uri2[type](path);
-  }
-}
-function uri(type) {
-  return data("unicorn.uri")[type];
-}
-class UnicornSystemUri extends URL {
-  static instance;
-  static get() {
-    return this.instance ??= new this(uri("full"));
-  }
-  path(path = "") {
-    return uri("path") + path;
-  }
-  root(path = "") {
-    return uri("root") + path;
-  }
-  current() {
-    return uri("current") || "";
-  }
-  full() {
-    return uri("full") || "";
-  }
-  route() {
-    return uri("route") || "";
-  }
-  script() {
-    return uri("script") || "";
-  }
-  routeWithQuery() {
-    const route = this.route();
-    const query = this.searchParams.toString();
-    return query ? `${route}?${query}` : route;
-  }
-  routeAndQuery() {
-    const route = this.route();
-    const query = this.searchParams.toString();
-    return [route, query];
-  }
-}
+import { u as useSystemUri, d as data, l as loadAlpine } from "./unicorn-CV7iCwj6.js";
 class UnicornFormElement {
   element;
   options;
@@ -68,7 +25,7 @@ class UnicornFormElement {
     this.options = { ...options };
   }
   initComponent(store = "form", custom = {}) {
-    return loadAlpine(() => {
+    return loadAlpine((Alpine) => {
       Alpine.store(store, this.useState(custom));
     });
   }

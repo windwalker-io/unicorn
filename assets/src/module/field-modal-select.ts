@@ -2,7 +2,6 @@ import type { IFrameModalElement } from './iframe-modal';
 import { data } from '../data';
 import { __, highlight, html, selectOne, slideUp } from '../service';
 import { template } from 'lodash-es';
-import Sortable from 'sortablejs';
 
 export type ModalSelectCallback = (item: any) => void;
 
@@ -87,7 +86,9 @@ class ModalListSelectElement extends HTMLElement {
     }
 
     if (this.options.sortable) {
-      new Sortable(this.listContainer, { handle: '.h-drag-handle' });
+      import('sortablejs').then(({ default: Sortable }) => {
+        new Sortable(this.listContainer, { handle: '.h-drag-handle', animation: 150 });
+      });
     }
 
     const selectButton = this.querySelector<HTMLButtonElement>('[data-role=select]');
@@ -141,14 +142,16 @@ class ModalListSelectElement extends HTMLElement {
     }
   }
 
-  open(event) {
+  open(event: Event) {
     event.preventDefault();
     event.stopPropagation();
 
     const max = this.options.max;
 
+    const target = event.target as HTMLAnchorElement;
+
     if (!max) {
-      this.modal.open(event.target.href, { size: 'modal-xl' });
+      this.modal.open(target.href, { size: 'modal-xl' });
       return;
     }
 
@@ -160,7 +163,7 @@ class ModalListSelectElement extends HTMLElement {
       return;
     }
 
-    this.modal.open(event.target.href, { size: 'modal-xl' });
+    this.modal.open(target.href, { size: 'modal-xl' });
   }
 }
 

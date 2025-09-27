@@ -1,4 +1,5 @@
 import { AlertAdapter } from '@lyrasoft/ts-toolkit/generic';
+import { Alpine as Alpine_2 } from 'alpinejs';
 import { AxiosError } from 'axios';
 import { AxiosInstance } from 'axios';
 import { AxiosProgressEvent } from 'axios';
@@ -34,9 +35,15 @@ export declare function addGlobalValidator(name: string, validator: ValidationHa
 
 declare function addHook(handler: ((tinymce: TinyMCE) => MaybePromise<any>)): void;
 
+export declare function addUriBase(uri: string, type?: string): string;
+
 export { AlertAdapter }
 
+declare type AlpinePrepareCallback = (Alpine: Alpine_2) => MaybePromise<any>;
+
 export declare function animateTo(element: HTMLElement, styles: Partial<Record<keyof CSSStyleDeclaration, any>>, options?: number | KeyframeAnimationOptions): Animation;
+
+declare type AssetTypes = 'root' | 'path';
 
 /**
  * Base64 URL decode
@@ -274,7 +281,7 @@ declare interface IFrameModalOptions {
     height?: string;
 }
 
-export declare function initAlpine(directive: string): Promise<void>;
+export declare function initAlpineComponent(directive: string): Promise<void>;
 
 export declare function injectCssToDocument(doc: Document, ...css: (string | CSSStyleSheet)[]): CSSStyleSheet[];
 
@@ -392,7 +399,7 @@ declare interface ListDependentOptions {
 
 declare type ListItems = Record<string, any>[];
 
-export declare function loadAlpine(callback?: Nullable<() => void>): Promise<any>;
+export declare function loadAlpine(callback?: Nullable<AlpinePrepareCallback>): Promise<Alpine_2>;
 
 export declare function mark(selector?: string | HTMLElement, keyword?: string, options?: Record<string, any>): Promise<any>;
 
@@ -434,7 +441,9 @@ declare type Nullable<T> = T | null | undefined;
 /**
  * Before Alpine init
  */
-export declare function prepareAlpine(callback: () => void): void;
+export declare function prepareAlpine(callback: AlpinePrepareCallback): Promise<void>;
+
+export declare function prepareAlpineDefer(callback: AlpinePrepareCallback): Promise<void>;
 
 export declare function pushUnicornToGlobal(app?: UnicornApp): void;
 
@@ -660,7 +669,7 @@ declare class UIBootstrap5 implements UIThemeInterface {
     keepTab(): Promise<KeepTabModule>;
     keepTab(selector?: string | HTMLElement, options?: KeepTabOptions): Promise<KeepTab>;
     buttonRadio(): Promise<ButtonRadioModule>;
-    buttonRadio(selector: string | HTMLElement, config?: ButtonRadioOptions): Promise<ButtonRadio>;
+    buttonRadio(selector: string | HTMLElement, options?: ButtonRadioOptions): Promise<ButtonRadio>;
     tooltip(selector?: NodeListOf<Element> | Element | string, config?: Partial<Tooltip.Options>): Tooltip[];
     getMajorVersion(module: any): number;
 }
@@ -692,6 +701,13 @@ export declare class UnicornApp extends UnicornApp_base implements EventAwareInt
 }
 
 declare const UnicornApp_base: Class<any[], EventMixin, typeof EventMixin>;
+
+export declare class UnicornAssetUri {
+    static instance: UnicornAssetUri;
+    static get(): UnicornAssetUri;
+    path(path?: string): string;
+    root(path?: string): string;
+}
 
 declare class UnicornFieldValidation {
     protected el: HTMLElement;
@@ -753,7 +769,7 @@ declare class UnicornFormElement {
     element: HTMLFormElement | undefined;
     options: Record<string, any>;
     constructor(selector?: string | Element, element?: HTMLFormElement, options?: Record<string, any>);
-    initComponent(store?: string, custom?: {}): Promise<any>;
+    initComponent(store?: string, custom?: {}): Promise<Alpine_2>;
     useState(custom?: {}): Record<string, any>;
     getElement(): HTMLFormElement;
     submit(url?: Nullable<string>, data?: Nullable<Record<string, any>>, method?: Nullable<string>, customMethod?: Nullable<string>): boolean;
@@ -832,7 +848,7 @@ declare class UnicornGridElement {
     state: {};
     constructor(selector: string, element: HTMLElement, form: UnicornFormElement, options?: Record<string, any>);
     bindEvents(): void;
-    initComponent(store?: string, custom?: Record<string, string>): Promise<any>;
+    initComponent(store?: string, custom?: Record<string, string>): Promise<Alpine_2>;
     useState(this: any, custom?: Record<string, any>): Partial<Record<string, any>> & Record<string, any>;
     getElement(): HTMLElement;
     sendFilter($event?: Event, method?: string): void;
@@ -1034,6 +1050,19 @@ declare interface UnicornPlugin {
     uninstall?(app: UnicornApp): void;
 }
 
+export declare class UnicornSystemUri extends URL {
+    static instance: UnicornSystemUri;
+    static get(): UnicornSystemUri;
+    path(path?: string): string;
+    root(path?: string): string;
+    current(): string;
+    full(): string;
+    route(): string;
+    script(): string;
+    routeWithQuery(): string;
+    routeAndQuery(): string[];
+}
+
 export declare class UnicornUI {
     theme?: any;
     aliveHandle?: any;
@@ -1044,6 +1073,16 @@ export declare class UnicornUI {
 }
 
 declare type UploadHandlerParams = Parameters<NonNullable<EditorOptions['images_upload_handler']>>;
+
+declare type UriTypes = 'full' | 'path' | 'root' | 'current' | 'route' | 'script';
+
+export declare function useAssetUri(): UnicornAssetUri;
+
+export declare function useAssetUri(type?: AssetTypes, path?: string): string;
+
+export declare function useBs5ButtonRadio(selector?: string | HTMLElement, options?: ButtonRadioOptions): Promise<ButtonRadio>;
+
+export declare function useBs5KeepTab(selector?: string | HTMLElement, options?: KeepTabOptions): Promise<KeepTab>;
 
 export declare function useBs5Tooltip(selector?: NodeListOf<Element> | Element | string, config?: Partial<Tooltip.Options>): Promise<Tooltip[]>;
 
@@ -1149,6 +1188,10 @@ export declare function useShowOn(): Promise<ShowOnModule>;
 
 export declare function useStack<T = any>(name?: string, store?: any[]): Stack<T>;
 
+export declare function useSystemUri(): UnicornSystemUri;
+
+export declare function useSystemUri(type: UriTypes): string;
+
 declare function useTinymce(): Promise<TinymceModule>;
 
 declare function useTinymce(selector?: string, options?: Record<string, any>): Promise<TinymceController>;
@@ -1210,8 +1253,7 @@ export { }
 
 
 declare global {
-    var Alpine: typeof AlpineGlobal;
-    var tinymce: typeof Tinymce;
+    var Alpine: AlpineGlobal;
     var TomSelect: typeof TomSelectGlobal;
     var Spectrum: typeof SpectrumGlobal;
     var Mark: any;

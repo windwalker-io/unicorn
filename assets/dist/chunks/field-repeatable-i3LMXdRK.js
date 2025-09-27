@@ -1,6 +1,4 @@
-import "@asika32764/vue-animate";
-import Sortable from "sortablejs";
-import { B as initAlpine, C as prepareAlpine, m as mergeDeep, x as uid } from "./unicorn-DuXOh8pQ.js";
+import { C as prepareAlpineDefer, o as useCssImport, n as mergeDeep, D as initAlpineComponent, y as uid } from "./unicorn-CV7iCwj6.js";
 import { L as ListCache, b as Map, M as MapCache, a as arrayPush } from "./_arrayPush-Ym4XMK2x.js";
 import { k as keys, c as isPrototype, g as getPrototype, e as baseUnary, n as nodeUtil, f as isBuffer, a as assignValue } from "./_getPrototype-CEtyiV4l.js";
 import { h as getNative, r as root, e as isObject, i as isArray, d as baseGetTag, t as toSource, S as Symbol$1, b as isObjectLike } from "./isArguments-D7k1ciaJ.js";
@@ -294,118 +292,125 @@ const defaultOptions = {
   max: null
 };
 function prepareItem(item) {
+  if (item === "__EMPTY_ARRAY__") {
+    item = {};
+  }
   if (item.uid == null) {
     item.uid = uid();
   }
   return item;
 }
-/* @__PURE__ */ prepareAlpine(() => {
-  Alpine.data("RepeatableField", ({ items, defaultValues, attrs }, options) => ({
-    items,
-    defaultValues,
-    attrs,
-    options: mergeDeep(defaultOptions, options),
-    init() {
-      if (this.options.sortable) {
-        Sortable.create(this.$refs.tbody, {
-          handle: ".h-handle",
-          animation: 300,
-          onEnd: (event) => {
-            const items2 = Alpine.raw(this.items);
-            const droppedAtItem = items2.splice(event.oldIndex, 1)[0];
-            items2.splice(event.newIndex, 0, droppedAtItem);
-            this.items = items2;
-            let keys2 = [];
-            for (let item of items2) {
-              keys2.push(item.uid);
-            }
-            this.$refs.steps_template._x_prevKeys = keys2;
-            const elements = this.$refs.steps_template.parentElement.querySelectorAll("tr");
-            [].slice.call(elements).forEach((ele, i) => {
-              if (ele?._x_dataStack[0]?.i != null) {
-                ele._x_dataStack[0].i = i;
+async function init() {
+  await prepareAlpineDefer(async (Alpine) => {
+    useCssImport("@vue-animate");
+    Alpine.data("RepeatableField", ({ items, defaultValues, attrs }, options) => ({
+      items,
+      defaultValues,
+      attrs,
+      options: mergeDeep(defaultOptions, options),
+      init() {
+        if (this.options.sortable) {
+          import("sortablejs").then(({ default: Sortable }) => {
+            Sortable.create(this.$refs.tbody, {
+              handle: ".h-handle",
+              animation: 300,
+              onEnd: (event) => {
+                const items2 = Alpine.raw(this.items);
+                const droppedAtItem = items2.splice(event.oldIndex, 1)[0];
+                items2.splice(event.newIndex, 0, droppedAtItem);
+                this.items = items2;
+                let keys2 = [];
+                for (let item of items2) {
+                  keys2.push(item.uid);
+                }
+                this.$refs.steps_template._x_prevKeys = keys2;
+                const elements = this.$refs.steps_template.parentElement.querySelectorAll("tr");
+                [].slice.call(elements).forEach((ele, i) => {
+                  if (ele?._x_dataStack[0]?.i != null) {
+                    ele._x_dataStack[0].i = i;
+                  }
+                });
               }
             });
+          });
+        }
+        items.forEach(prepareItem);
+        if (this.options.ensureFirstRow) {
+          this.makeSureDefaultItem();
+        }
+      },
+      addItem(i) {
+        const item = prepareItem(this.getEmptyItem());
+        this.items.splice(i + 1, 0, item);
+      },
+      delItem(i) {
+        const el = this.getItemElementByUID(this.items[i].uid);
+        let hasAnimate = false;
+        el.addEventListener("animationstart", () => {
+          hasAnimate = true;
+        }, { once: true });
+        el.classList.add("animate__fadeOut");
+        setTimeout(() => {
+          if (!hasAnimate) {
+            this._removeItem(i);
           }
-        });
-      }
-      items.forEach((item) => {
-        prepareItem(item);
-      });
-      if (this.options.ensureFirstRow) {
-        this.makeSureDefaultItem();
-      }
-    },
-    addItem(i) {
-      const item = prepareItem(this.getEmptyItem());
-      this.items.splice(i + 1, 0, item);
-    },
-    delItem(i) {
-      const el = this.getItemElementByUID(this.items[i].uid);
-      let hasAnimate = false;
-      el.addEventListener("animationstart", () => {
-        hasAnimate = true;
-      }, { once: true });
-      el.classList.add("animate__fadeOut");
-      setTimeout(() => {
-        if (!hasAnimate) {
+        }, 100);
+        el.addEventListener("animationend", () => {
           this._removeItem(i);
+        }, { once: true });
+      },
+      _removeItem(i) {
+        this.items.splice(i, 1);
+        if (this.options.ensureFirstRow) {
+          this.ensureFirstRow();
         }
-      }, 100);
-      el.addEventListener("animationend", () => {
-        this._removeItem(i);
-      }, { once: true });
-    },
-    _removeItem(i) {
-      this.items.splice(i, 1);
-      if (this.options.ensureFirstRow) {
-        this.makeSureDefaultItem();
-      }
-    },
-    makeSureDefaultItem() {
-      if (this.items.length === 0) {
-        this.items.push(prepareItem(this.getEmptyItem()));
-      }
-    },
-    getItemElementByUID(uid2) {
-      return this.$root.querySelector(`[data-item="${uid2}"]`);
-    },
-    getId(i, item, field) {
-      return `${this.id}-${item.uid}-${field}`;
-    },
-    getName(i, item, field) {
-      if (this.options.singleArray) {
-        if (this.options.hasKey) {
-          if (field === "key") {
-            return "";
+      },
+      ensureFirstRow() {
+        if (this.items.length === 0) {
+          this.items.push(prepareItem(this.getEmptyItem()));
+        }
+      },
+      getItemElementByUID(uid2) {
+        return this.$root.querySelector(`[data-item="${uid2}"]`);
+      },
+      getId(i, item, field) {
+        return `${this.id}-${item.uid}-${field}`;
+      },
+      getName(i, item, field) {
+        if (this.options.singleArray) {
+          if (this.options.hasKey) {
+            if (field === "key") {
+              return "";
+            }
+            return `${this.fieldName}[${item.key}]`;
           }
-          return `${this.fieldName}[${item.key}]`;
+          return `${this.fieldName}[]`;
         }
-        return `${this.fieldName}[]`;
+        return `${this.fieldName}[${i}][${field}]`;
+      },
+      getEmptyItem() {
+        return cloneDeep(this.defaultValues);
+      },
+      get canAdd() {
+        if (!this.options.max) {
+          return true;
+        }
+        return this.options.max > this.items.length;
+      },
+      get canModify() {
+        return this.attrs.disabled == null && this.attrs.readonly == null;
+      },
+      get fieldName() {
+        return this.options.fieldName;
+      },
+      get id() {
+        return this.options.id;
       }
-      return `${this.fieldName}[${i}][${field}]`;
-    },
-    getEmptyItem() {
-      return cloneDeep(this.defaultValues);
-    },
-    get canAdd() {
-      if (!this.options.max) {
-        return true;
-      }
-      return this.options.max > this.items.length;
-    },
-    get canModify() {
-      return this.attrs.disabled == null && this.attrs.readonly == null;
-    },
-    get fieldName() {
-      return this.options.fieldName;
-    },
-    get id() {
-      return this.options.id;
-    }
-  }));
-});
-const ready = /* @__PURE__ */ initAlpine("data-repeatable");
+    }));
+  });
+  await initAlpineComponent("data-repeatable");
+}
+const ready = /* @__PURE__ */ init();
 export {
   ready
 };

@@ -140,7 +140,11 @@ class FormScript extends AbstractScript
     public function repeatable(): static
     {
         if ($this->available()) {
-            $this->js('@unicorn/field/repeatable.js');
+            if ($this->next) {
+                $this->unicornScript->importMainThen("u.\$ui.repeatable()");
+            } else {
+                $this->js('@unicorn/field/repeatable.js');
+            }
         }
 
         return $this;

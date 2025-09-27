@@ -138,6 +138,12 @@ function resolveUrl(specifier: string) {
   importMap ??= parseImportMap();
 
   for (const [prefix, target] of Object.entries(importMap)) {
+    if (specifier === prefix) {
+      return target;
+    }
+  }
+
+  for (const [prefix, target] of Object.entries(importMap)) {
     if (specifier.startsWith(prefix)) {
       return specifier.replace(prefix, target);
     }

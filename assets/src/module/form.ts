@@ -1,6 +1,5 @@
 import { data } from '../data';
-import { loadAlpine } from '../service/ui';
-import { useSystemUri } from '../service/uri';
+import { loadAlpine, useSystemUri } from '../service';
 import type { Nullable } from '../types';
 
 export class UnicornFormElement {
@@ -41,7 +40,7 @@ export class UnicornFormElement {
   }
 
   initComponent(store = 'form', custom = {}) {
-    return loadAlpine(() => {
+    return loadAlpine((Alpine) => {
       Alpine.store(store, this.useState(custom));
     });
   }
