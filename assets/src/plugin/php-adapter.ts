@@ -7,6 +7,7 @@ import {
   useFieldRepeatable,
   useFieldSingleImageDrag,
   useIframeModal,
+  useShowOn,
 } from '../composable';
 import { useTinymce } from '../composable/useTinymce';
 import { useUnicorn } from '../unicorn';
@@ -46,6 +47,7 @@ const methods = {
     init: useTinymce
   },
   iframeModal: useIframeModal,
+  initShowOn: useShowOn,
 };
 
 export class UnicornPhpAdapter {
