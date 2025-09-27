@@ -23,15 +23,9 @@ class EditorScript extends AbstractScript
         if ($this->available($selector)) {
             $optionsString = static::getJSObject($options);
 
-            if ($this->next) {
-                $this->unicornScript->importMainThen(
-                    "u.\$ui.tinymce('$selector', $optionsString)"
-                );
-            } else {
-                $this->unicornScript->importMainThen(
-                    "u.\$ui.tinymce.init('$selector', $optionsString);"
-                );
-            }
+            $this->unicornScript->importMainThen(
+                "u.\$ui.tinymce.init('$selector', $optionsString);"
+            );
         }
     }
 }

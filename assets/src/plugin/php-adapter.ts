@@ -16,8 +16,6 @@ declare module '../app' {
   export interface UnicornApp {
     /** @deprecated Only for code generator use. */
     $ui: typeof methods;
-    /** @deprecated Only for code generator use. */
-    domready: typeof domready;
   }
 }
 
@@ -26,8 +24,6 @@ declare module '@windwalker-io/unicorn-next' {
   export interface UnicornApp {
     /** @deprecated Only for code generator use. */
     $ui: typeof methods;
-    /** @deprecated Only for code generator use. */
-    domready: typeof domready;
   }
 }
 
@@ -46,7 +42,9 @@ const methods = {
   modalField: useFieldModalSelect,
   cascadeSelect: useFieldCascadeSelect,
   sid: useFieldSingleImageDrag,
-  tinymce: useTinymce,
+  tinymce: {
+    init: useTinymce
+  },
   iframeModal: useIframeModal,
 };
 

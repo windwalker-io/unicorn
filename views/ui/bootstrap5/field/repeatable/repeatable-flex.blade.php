@@ -22,6 +22,7 @@ use Windwalker\Core\DateTime\ChronosService;
 use Windwalker\Core\Language\LangService;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\SystemUri;
+use Windwalker\Form\Field\AbstractField;
 use Windwalker\Form\Field\HiddenField;
 
 /**
@@ -31,7 +32,7 @@ use Windwalker\Form\Field\HiddenField;
 
 $app->service(\Unicorn\Script\FormScript::class)->repeatable();
 
-$inputElement = $field->getPreparedInput();
+$inputElement = $field->compileInput();
 
 $optString = AssetService::getJSObject(
     [
@@ -46,6 +47,38 @@ $optString = AssetService::getJSObject(
 );
 
 $data = AssetService::getJSObject($field->prepareJSData());
+
+$colClass = function (AbstractField $subField, $i) use ($field) {
+    if (array_key_exists($i, $field->colClasses)) {
+        return $field->colClasses[$i];
+    }
+
+    if (array_key_exists($i, $field->colWidths) && is_numeric($field->colWidths[$i])) {
+        return 'col-lg-' . $field->colWidths[$i];
+    }
+
+    return $subField->get('subfield_class');
+};
+
+$colWidth = function (AbstractField $subField, $i) use ($field) {
+    $width = null;
+
+    if (array_key_exists($i, $field->colWidths)) {
+        if (!is_numeric($field->colWidths[$i])) {
+            $width = $field->colWidths[$i];
+        } else {
+            return '';
+        }
+    }
+
+    $width ??= $subField->get('subfield_width') ?: 'auto';
+
+    if (!$width) {
+        return '';
+    }
+
+    return "width: {$width};";
+};
 ?>
 
 <div id="{{ $field->getId('-wrap') }}" class="c-repeatable-field"
@@ -91,13 +124,15 @@ $data = AssetService::getJSObject($field->prepareJSData());
                     </td>
                 </template>
                 <td class="">
-                    <div class="row">
+                    <div class="row gy-3">
+                        @php($i = 0)
                         @foreach ($form->getFields() as $subField)
-                            <div class="{{ $subField->get('subfield_class') ?: 'col-lg-4' }}"
-                                style="{{ $subField instanceof HiddenField ? 'display: none;' : '' }}{{ 'width: ' . $subField->get('subfield_width', 'auto') . ';' }}"
+                            <div class="{{ $colClass($subField, $i) }}"
+                                style="{{ $subField instanceof HiddenField ? 'display: none;' : '' }}{{ $colWidth($subField, $i) }}"
                             >
                                 <x-field :field="$subField"></x-field>
                             </div>
+                            @php($i++)
                         @endforeach
                     </div>
                 </td>

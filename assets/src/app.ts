@@ -1,5 +1,7 @@
 
+import { data } from './data';
 import { EventAwareInterface, EventMixin } from './events';
+import { domready } from './service';
 import { Constructor, UnicornPlugin } from './types';
 import { Mixin } from 'ts-mixer';
 
@@ -14,6 +16,8 @@ export class UnicornApp extends Mixin(EventMixin) implements EventAwareInterface
   waits: Promise<any>[] = [];
   options: Record<string, any>;
   defaultOptions: Record<string, any> = {};
+  domready = domready;
+  data = data;
 
   constructor(options = {}) {
     super();

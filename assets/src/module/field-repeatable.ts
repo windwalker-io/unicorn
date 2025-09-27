@@ -23,10 +23,6 @@ const defaultOptions: RepeatableOptions = {
 };
 
 function prepareItem(item: any) {
-  if (item === '__EMPTY_ARRAY__') {
-    item = {};
-  }
-
   if (item.uid == null) {
     item.uid = uid();
   }
@@ -49,6 +45,8 @@ async function init() {
       attrs,
       options: mergeDeep<RepeatableOptions>(defaultOptions, options),
       init() {
+        this.items = this.items.filter((item) => item !== '__EMPTY_ARRAY__');
+
         if (this.options.sortable) {
           // @see https://github.com/alpinejs/alpine/discussions/1635
           import('sortablejs').then(({ default: Sortable }) => {
@@ -92,7 +90,7 @@ async function init() {
           });
         }
 
-        items.forEach(prepareItem);
+        this.items.forEach(prepareItem);
 
         if (this.options.ensureFirstRow) {
           this.makeSureDefaultItem();
