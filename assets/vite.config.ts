@@ -52,6 +52,7 @@ export default defineConfig(({ mode }) => {
           '@asika32764/vue-animate',
           'alpinejs',
           'cropperjs',
+          'tinymce',
         ]
       },
       outDir: 'dist',

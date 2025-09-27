@@ -1,6 +1,6 @@
 
 import { useLoadedHttpClient } from '../composable';
-import { loadAlpine, module, uid } from '../service';
+import { loadAlpine, module, uid, prepareAlpineDefer, initAlpineComponent } from '../service';
 import { mergeDeep } from '../utilities';
 import AlpineComponent from '@rubenbimmel/alpine-class-component/dist/alpineComponent';
 import Component from '@rubenbimmel/alpine-class-component/dist/decorators/component';
@@ -278,9 +278,18 @@ declare global {
   var S: any;
 }
 
-loadAlpine(() => {
-  // Todo: Test this
-  Alpine.data('CascadeSelect', FieldCascadeSelect as any);
-});
 
-export default {};
+
+async function init() {
+  await prepareAlpineDefer(() => {
+    Alpine.data('CascadeSelect', (options) => new FieldCascadeSelect(options));
+  });
+  
+  await initAlpineComponent('data-cascade-select');
+}
+
+export const ready = init();
+
+export interface CascadeSelectModule {
+  ready: typeof ready;
+}

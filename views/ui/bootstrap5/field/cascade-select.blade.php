@@ -52,16 +52,15 @@ $config = [
 ];
 $config = array_merge($config, (array) $field->getCascadeSelectOptions());
 $configString = AssetService::getJSObject($config);
-$inputElement ??= $field->getPreparedInput();
+$inputElement ??= $field->compileInput();
 
 $inputElement->setAttribute(':value', 'getFinalValue')
 ?>
 
 <div id="{{ $field->getId('-select-wrapper') }}"
-    data-cascade-select
     class="c-cascade-select"
     x-title="cascade-select"
-    x-data="CascadeSelect({{ $configString}})"
+    data-cascade-select="CascadeSelect({{ $configString}})"
     :class="[options.horizontal ? 'row' : '']"
     >
     <template x-for="(items, i) of lists" :key="items?.map(item => item[options.valueField]).join(',')">

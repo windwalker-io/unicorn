@@ -4,6 +4,7 @@ import { __, injectCssToDocument, selectAll, simpleAlert } from '../service';
 import { mergeDeep } from '../utilities';
 import css from '../../scss/field/single-image-drag.scss?inline';
 import { Modal } from 'bootstrap';
+import type Cropper from 'cropperjs';
 
 injectCssToDocument(css);
 
@@ -453,7 +454,7 @@ function getFileExtension(file: File): string | undefined {
   return undefined;
 }
 
-async function loadCropper() {
+async function loadCropper(): Promise<typeof Cropper> {
   const [module] = await Promise.all([
     import('cropperjs'),
     import('cropperjs/dist/cropper.min.css?inline').then(({ default: css }) => {
