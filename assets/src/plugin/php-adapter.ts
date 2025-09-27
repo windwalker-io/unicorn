@@ -55,7 +55,5 @@ export class UnicornPhpAdapter {
     } else {
       app.$ui = methods;
     }
-
-    app.domready = domready;
   }
 }
