@@ -1,13 +1,15 @@
-import { useCssImport, useImport } from '../service';
+import { useCssImport, useImport, injectCssToDocument } from '../service';
 import flatpickr from 'flatpickr';
-import monthSelectPlugin from 'flatpickr/dist/plugins/monthSelect';
+import css from 'flatpickr/dist/flatpickr.css?inline';
+
+injectCssToDocument(css);
 
 class FlatpickrElement extends HTMLElement {
   static get is() {
     return 'uni-flatpickr';
   }
 
-  instance;
+  instance: flatpickr.Instance;
 
   constructor() {
     super();
@@ -39,14 +41,35 @@ class FlatpickrElement extends HTMLElement {
     return options;
   }
 
-  connectedCallback() {
-    const options = JSON.parse(this.getAttribute('options')) || {};
+  get $input(): HTMLInputElement {
+    return this.querySelector('input');
+  }
 
-    this.handleOptions(options).then((options) => {
-      this.instance = flatpickr(
-        this.querySelector(this.selector),
-        options
-      );
+  async connectedCallback() {
+    let options: flatpickr.Options.Options = JSON.parse(this.getAttribute('options')) || {};
+
+    options.autoFillDefaultTime = true;
+    const now = new Date();
+    options.defaultHour = now.getHours();
+    options.defaultMinute = now.getMinutes();
+    options.defaultSeconds = now.getSeconds();
+
+    options = await this.handleOptions(options);
+
+    this.instance = flatpickr(
+      this.querySelector(this.selector),
+      options
+    );
+
+    // If no value, set default time on open
+    this.instance.config.onOpen.push(() => {
+      if (this.instance.input.value === '') {
+        const now = new Date();
+        this.instance.jumpToDate(now);
+        this.instance.config.defaultHour = now.getHours();
+        this.instance.config.defaultMinute = now.getMinutes();
+        this.instance.config.defaultSeconds = now.getSeconds();
+      }
     });
 
     this.querySelector('[data-toggle]')?.addEventListener('click', () => {
@@ -56,48 +79,44 @@ class FlatpickrElement extends HTMLElement {
     });
   }
 
-  handleOptions(options: Record<string, any>) {
-    const promises = [];
+  async handleOptions(options: flatpickr.Options.Options): Promise<flatpickr.Options.Options> {
+    options.plugins = options.plugins || [];
 
-    if (options.monthSelect) {
-      promises.push(
-        useImport('@flatpickr/plugins/monthSelect/index.js'),
-        useCssImport('@flatpickr/plugins/monthSelect/style.css')
-      );
-    }
+    await Promise.all([
+      this.handleLocale(options),
+      this.handleMonthSelect(options)
+    ]);
 
+    return options;
+  }
+
+  private async handleLocale(options: Record<string, any>) {
     if (this.locale) {
-      promises.push(useImport(`@flatpickr/l10n/${this.locale}.js`));
+      await useImport(`flatpickr/dist/l10n/${this.locale}.js`);
+
+      options.locale = this.locale.replace(/-/, '_');
     }
 
-    if (promises.length > 0) {
-      return Promise.all(promises)
-        .then((modules) => {
-          if (options.monthSelect) {
-            options.plugins = options.plugins || [];
+    return options;
+  }
 
-            if (typeof options.monthSelect === 'boolean') {
-              options.monthSelect = {
-                shorthand: true,
-                dateFormat: 'Y-m',
-                altFormat: 'Y-m'
-              };
-            }
+  private async handleMonthSelect(options: Record<string, any>) {
+    if (options.monthSelect) {
+      useCssImport('flatpickr/dist/plugins/monthSelect/style.css');
+      const { default: monthSelect } = await import('flatpickr/dist/plugins/monthSelect');
 
-            options.plugins.push(
-              monthSelectPlugin(options.monthSelect)
-            );
-          }
+      if (typeof options.monthSelect === 'boolean') {
+        options.monthSelect = {
+          shorthand: true,
+          dateFormat: 'Y-m',
+          altFormat: 'Y-m'
+        };
+      }
 
-          if (this.locale) {
-            options.locale = this.locale.replace(/-/, '_');
-          }
-
-          return options;
-        });
+      options.plugins.push(monthSelect(options.monthSelect));
     }
 
-    return Promise.resolve(options);
+    return options;
   }
 
   getInstance() {
@@ -105,9 +124,4 @@ class FlatpickrElement extends HTMLElement {
   }
 }
 
-Promise.all([
-  useImport('@flatpickr/flatpickr.js'),
-  useCssImport('@flatpickr/flatpickr.css')
-]).then(() => {
-  customElements.define(FlatpickrElement.is, FlatpickrElement);
-});
+customElements.define(FlatpickrElement.is, FlatpickrElement);

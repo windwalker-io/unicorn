@@ -253,7 +253,7 @@ export const ready = useUniDirective('file-drag-field', {
     if (preview) {
       const previewLink = preview.querySelector<HTMLAnchorElement>('.c-file-drag-preview__link')!;
       const delButton = preview.querySelector<HTMLAnchorElement>('.c-file-drag-preview__delete')!;
-      let linkTitle = previewLink.textContent;
+      // let linkTitle = previewLink.textContent;
       let inputValue = placeholderInput.value;
       let required = input.required;
 
@@ -264,13 +264,15 @@ export const ready = useUniDirective('file-drag-field', {
       delButton.addEventListener('click', () => {
         if (delButton.classList.contains('active')) {
           // Restore
-          previewLink.textContent = linkTitle;
+          previewLink.style.textDecoration = '';
+          previewLink.style.setProperty('color', '');
           placeholderInput.value = inputValue;
           delButton.classList.remove('active');
           input.required = false;
         } else {
           // Delete
-          previewLink.textContent = '';
+          previewLink.style.textDecoration = 'line-through';
+          previewLink.style.color = 'var(--fd-delete-color, var(--bs-danger))';
           placeholderInput.value = '';
           delButton.classList.add('active');
           input.required = required;

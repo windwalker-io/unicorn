@@ -33,7 +33,7 @@ export function clearHooks() {
 }
 
 async function loadTinymce() {
-  let tinymce = (await useImport<TinyMCE>('@tinymce')).default;
+  let tinymce = (await useImport('@tinymce')).default;
 
   if (imported) {
     return tinymce;

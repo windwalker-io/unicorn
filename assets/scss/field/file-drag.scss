@@ -1,5 +1,6 @@
 .c-file-drag {
   --bs-card-border-color: var(--bs-gray-400);
+  --fd-delete-color: var(--bs-danger);
 
   overflow: hidden;
   border: 1px solid var(--bs-card-border-color, #ddd);

@@ -6,3 +6,4 @@ export * from './lang';
 export * from './loader';
 export * from './ui';
 export * from './uri';
+export * from './router';

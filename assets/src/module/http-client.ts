@@ -1,9 +1,14 @@
-import { data } from '../data';
-import { useImport } from '../service/loader';
-import { route } from '../service/router';
-import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosStatic, CreateAxiosDefaults } from 'axios';
-import type { AxiosError } from 'axios';
+import type {
+  AxiosError,
+  AxiosInstance,
+  AxiosRequestConfig,
+  AxiosResponse,
+  AxiosStatic,
+  CreateAxiosDefaults
+} from 'axios';
 import { parseTemplate } from 'url-template';
+import { data } from '../data';
+import { route, useImport } from '../service';
 
 declare global {
   let axios: AxiosStatic;
@@ -27,8 +32,10 @@ export class UnicornHttpClient {
   constructor(protected config?: CreateAxiosDefaults) {
   }
 
-  static importAxios(): Promise<any> {
-    return useImport('@axios');
+  static async importAxios(): Promise<any> {
+    const { default: axios } = await import('axios');
+
+    return axios;
   }
 
   static async getAxiosStatic(): Promise<AxiosStatic> {

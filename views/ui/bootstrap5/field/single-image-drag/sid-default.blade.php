@@ -146,7 +146,7 @@ $options['modalTarget'] = '#' . $field->getId('__modal');
 @teleport('uni.sid:' . $field->getId())
 <div class="modal fade c-sid-modal" id="{{ $field->getId('__modal') }}" tabindex="-1" role="dialog"
     data-sid="modal"
-    aria-labelledby="{{ $field->getId('__modal-label') }}" aria-hidden="true">
+    aria-labelledby="{{ $field->getId('__modal-label') }}">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">

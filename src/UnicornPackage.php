@@ -158,33 +158,40 @@ class UnicornPackage extends AbstractPackage implements
         $isNext = $container->getParam('unicorn.modules.next') ?? false;
         $unicornPackage = $isNext ? '@windwalker-io/unicorn-next' : '@windwalker-io/unicorn';
 
-        $container->mergeParameters(
-            'asset.import_map.imports',
-            [
-                '@systemjs'     => 'vendor/systemjs/dist/system.js',
-                '@unicorn/'     => "vendor/$unicornPackage/dist/",
-                '@unicorn'      => "vendor/$unicornPackage/dist/unicorn.js",
-                '@main'         => "vendor/$unicornPackage/dist/unicorn.js",
-                '@jquery'       => 'vendor/jquery/dist/jquery.min.js',
-                '@alpinejs'     => 'vendor/alpinejs/dist/' . ($isNext ? 'module.esm.js' : 'cdn.js'),
-                '@spruce'       => 'vendor/@ryangjchandler/spruce/dist/spruce.umd.js',
-                '@axios'        => 'vendor/axios/dist/axios.js',
-                '@awesome-checkbox' => 'vendor/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css',
-                '@regenerator-runtime' => 'vendor/regenerator-runtime/runtime.js',
-                '@flatpickr/'   => 'vendor/flatpickr/dist/',
-                '@cropperjs/'   => 'vendor/cropperjs/dist/',
-                '@tinymce'      => 'vendor/tinymce/tinymce.js',
-                '@sortablejs'   => 'vendor/sortablejs/Sortable.min.js',
-                '@spectrum/'   => 'vendor/spectrum-vanilla/dist/',
-                '@spectrum'   => 'vendor/spectrum-vanilla/dist/spectrum.min.js',
-                '@vue'          => 'vendor/vue/dist/vue.global' . ($this->app->isDebug() ? '' : '.prod') . '.js',
-                '@vuedraggable' => 'vendor/vuedraggable/dist/vuedraggable.umd.min.js',
-                '@vue2-animate' => 'vendor/vue2-animate/dist/vue2-animate.min.css',
-                '@vue-animate' => 'vendor/@asika32764/vue-animate/dist/vue-animate.min.css',
-                '@core-js'      => 'vendor/core-js-bundle/minified.js',
-                '@current-script-polyfill' => 'vendor/current-script-polyfill/currentScript.js',
-            ]
-        );
+        $imports = [
+            '@systemjs' => 'vendor/systemjs/dist/system.js',
+            '@unicorn/' => "vendor/$unicornPackage/dist/",
+            '@unicorn' => "vendor/$unicornPackage/dist/unicorn.js",
+            '@main' => "vendor/$unicornPackage/dist/unicorn.js",
+            '@alpinejs' => 'vendor/alpinejs/dist/' . ($isNext ? 'module.esm.js' : 'cdn.js'),
+            '@spectrum/' => 'vendor/spectrum-vanilla/dist/',
+            '@spectrum' => 'vendor/spectrum-vanilla/dist/spectrum.min.js',
+            '@tinymce' => 'vendor/tinymce/tinymce.js',
+            '@vue' => 'vendor/vue/dist/vue.global' . ($this->app->isDebug() ? '' : '.prod') . '.js',
+            '@vue-animate' => 'vendor/@asika32764/vue-animate/dist/vue-animate.min.css',
+        ];
+
+        if (!$isNext) {
+            $imports = [
+                ...$imports,
+                ...[
+                    '@jquery' => 'vendor/jquery/dist/jquery.min.js',
+                    '@spruce' => 'vendor/@ryangjchandler/spruce/dist/spruce.umd.js',
+                    '@axios' => 'vendor/axios/dist/axios.js',
+                    '@awesome-checkbox' => 'vendor/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css',
+                    '@regenerator-runtime' => 'vendor/regenerator-runtime/runtime.js',
+                    '@flatpickr/' => 'vendor/flatpickr/dist/',
+                    '@core-js' => 'vendor/core-js-bundle/minified.js',
+                    '@sortablejs' => 'vendor/sortablejs/Sortable.min.js',
+                    '@cropperjs/' => 'vendor/cropperjs/dist/',
+                    '@vuedraggable' => 'vendor/vuedraggable/dist/vuedraggable.umd.min.js',
+                    '@vue2-animate' => 'vendor/vue2-animate/dist/vue2-animate.min.css',
+                    '@current-script-polyfill' => 'vendor/current-script-polyfill/currentScript.js',
+                ],
+            ];
+        }
+
+        $container->mergeParameters('asset.import_map.imports', $imports);
 
         $container->mergeParameters(
             'renderer.aliases',
