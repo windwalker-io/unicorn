@@ -4,7 +4,6 @@ import { __, injectCssToDocument, selectAll, simpleAlert } from '../service';
 import { mergeDeep } from '../utilities';
 import css from '../../scss/field/single-image-drag.scss?inline';
 import { Modal } from 'bootstrap';
-import Cropper from 'cropperjs';
 
 injectCssToDocument(css);
 
@@ -82,8 +81,8 @@ export class SingleImageDragElement extends HTMLElement {
     this.savebutton = this.modalElement.querySelector<HTMLButtonElement>('[data-sid=save-button]');
     this.modalToolbarButtons = this.modalElement.querySelectorAll<HTMLButtonElement>('[data-sid-toolbar]');
 
-    const modalShown = () => {
-      const cropper = this.getCropper();
+    const modalShown = async () => {
+      const cropper = await this.getCropper();
       cropper.replace(this.currentImage);
       this.cropContainer.style.visibility = '';
       this.currentImage = null;
@@ -214,8 +213,10 @@ export class SingleImageDragElement extends HTMLElement {
     this.saveImage(file);
   }
 
-  saveCropped() {
-    this.getCropper().getCroppedCanvas({
+  async saveCropped() {
+    const Cropper = await this.getCropper();
+
+    Cropper.getCroppedCanvas({
         width: this.options.width,
         height: this.options.height,
         imageSmoothingEnabled: true
@@ -226,29 +227,28 @@ export class SingleImageDragElement extends HTMLElement {
       }, 'image/png');
   }
 
-  getCropper() {
-    return this.cropper = this.cropper || (() => {
-      // Todo: Use ^2.0
-      const cropper = new Cropper(this.cropContainer.querySelector('img'), {
-        aspectRatio: this.options.width / this.options.height,
-        autoCropArea: 1,
-        viewMode: 1,
-        dragMode: 'move',
-        cropBoxMovable: false,
-        cropBoxResizable: false,
-        ready: (e) => {
-          //
-        },
-      });
+  async getCropper() {
+    if (this.cropper) {
+      return this.cropper;
+    }
 
-      // cropper.addEv
+    const Cropper = await loadCropper();
 
-      return cropper;
-    })();
+    return this.cropper = new Cropper(this.cropContainer.querySelector('img'), {
+      aspectRatio: this.options.width / this.options.height,
+      autoCropArea: 1,
+      viewMode: 1,
+      dragMode: 'move',
+      cropBoxMovable: false,
+      cropBoxResizable: false,
+      ready: (e) => {
+        //
+      },
+    });
   }
 
-  toolbarClicked(button, event) {
-    const cropper = this.getCropper();
+  async toolbarClicked(button: HTMLButtonElement, event: MouseEvent) {
+    const cropper = await this.getCropper();
 
     const data = cropper.getData();
 
@@ -453,7 +453,19 @@ function getFileExtension(file: File): string | undefined {
   return undefined;
 }
 
+async function loadCropper() {
+  const [module] = await Promise.all([
+    import('cropperjs'),
+    import('cropperjs/dist/cropper.min.css?inline').then(({ default: css }) => {
+      injectCssToDocument(css);
+    })
+  ]);
+
+  return module.default;
+}
+
+loadCropper();
+
 export interface SingleImageDragModule {
   SingleImageDragElement: typeof SingleImageDragElement;
-  
 }
