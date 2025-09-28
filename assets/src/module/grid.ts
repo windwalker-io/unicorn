@@ -15,10 +15,6 @@ export class UnicornGridElement {
   ) {
     this.options = { ...options };
 
-    if (!this.form) {
-      throw new Error('UnicornGrid is depends on UnicornForm');
-    }
-
     this.bindEvents();
   }
 

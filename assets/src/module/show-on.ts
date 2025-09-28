@@ -7,18 +7,18 @@ type HTMLInputTypes = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
 type Conditions = Record<string, any>;
 
 export class ShowOn {
-  el = null;
-  input = null;
+  el!: HTMLElement;
+  input!: HTMLInputTypes;
   conditions: Conditions = {};
   targets = {};
   readonly = false;
-  initialDisplay = null;
+  initialDisplay!: string;
 
   constructor(el: HTMLElement, conditions: Conditions) {
     this.el = el;
-    this.input = this.el.querySelector(
+    this.input = this.el.querySelector<HTMLInputTypes>(
       this.el.dataset.inputSelector || '[data-field-input]'
-    );
+    )!;
     this.conditions = conditions;
 
     this.init();
@@ -30,7 +30,7 @@ export class ShowOn {
     for (const selector in this.conditions) {
       const value = this.conditions[selector];
 
-      const target = selectOne<HTMLElement>(selector);
+      const target = selectOne<HTMLElement>(selector)!;
 
       if (this.input) {
         this.readonly = this.input.hasAttribute('readonly');
@@ -149,7 +149,7 @@ export class ShowOn {
       }
     }
 
-    return;
+    return 'input';
   }
 }
 

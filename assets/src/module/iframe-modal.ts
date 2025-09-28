@@ -1,3 +1,4 @@
+import { Modal } from 'bootstrap';
 import { useUniDirective } from '../composable';
 import { mergeDeep } from '../utilities';
 
@@ -11,10 +12,10 @@ interface IFrameModalOptions {
 export class IFrameModalElement extends HTMLElement {
   static is = 'uni-iframe-modal';
 
-  options: IFrameModalOptions;
-  modalElement: HTMLDivElement;
-  modal: any;
-  iframe: HTMLIFrameElement;
+  options!: IFrameModalOptions;
+  modalElement!: HTMLDivElement;
+  modal!: Modal;
+  iframe!: HTMLIFrameElement;
 
   template() {
     return `
@@ -47,8 +48,8 @@ export class IFrameModalElement extends HTMLElement {
       this.innerHTML = this.template();
     }
 
-    this.modalElement = this.querySelector(this.selector);
-    this.iframe = this.modalElement.querySelector<HTMLIFrameElement>('iframe');
+    this.modalElement = this.querySelector<HTMLDivElement>(this.selector)!;
+    this.iframe = this.modalElement.querySelector<HTMLIFrameElement>('iframe')!;
 
     // @ts-ignore
     this.iframe.modalLink = () => {
@@ -68,7 +69,7 @@ export class IFrameModalElement extends HTMLElement {
   async open(href: string, options: IFrameModalOptions = {}) {
     options = mergeDeep(
       {
-        height: null,
+        height: undefined,
         resize: false,
         size: 'modal-lg',
       },
@@ -89,7 +90,7 @@ export class IFrameModalElement extends HTMLElement {
     }
 
     if (options.size != null) {
-      const dialog = this.modalElement.querySelector('.modal-dialog');
+      const dialog = this.modalElement.querySelector<HTMLDivElement>('.modal-dialog')!;
       dialog.classList.remove('modal-lg', 'modal-xl', 'modal-sm', 'modal-xs');
       dialog.classList.add(options.size);
     }
@@ -107,6 +108,10 @@ export class IFrameModalElement extends HTMLElement {
 
   resize(iframe: HTMLIFrameElement) {
     setTimeout(() => {
+      if (!iframe.contentWindow) {
+        return;
+      }
+
       let height = iframe.contentWindow.document.documentElement.scrollHeight;
 
       height += 30;
@@ -136,7 +141,7 @@ export const ready = useUniDirective('modal-link', {
 
     const target = binding.value;
 
-    el.style.pointerEvents = null;
+    el.style.pointerEvents = '';
 
     el.addEventListener('click', (e) => {
       e.preventDefault();

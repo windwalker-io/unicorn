@@ -5,7 +5,7 @@ import { selectOne, module } from '../service';
 export async function useGrid(
   ele: string | HTMLElement,
   options: Record<string, any> | undefined = {}
-): Promise<UnicornGridElement> {
+): Promise<UnicornGridElement | null> {
   const { UnicornGridElement } = await import('../module/grid');
 
   const selector = typeof ele === 'string' ? ele : '';
@@ -17,6 +17,10 @@ export async function useGrid(
 
   const form = await useForm(selector || element);
 
+  if (!form) {
+    throw new Error('UnicornGrid is depends on UnicornForm');
+  }
+
   return module(
     element,
     'grid.plugin',
@@ -27,10 +31,10 @@ export async function useGrid(
 export async function useGridComponent(
   ele: string | HTMLElement,
   options: Record<string, any> | undefined = {}
-): Promise<UnicornGridElement> {
+): Promise<UnicornGridElement | null> {
   const grid = await useGrid(ele, options);
 
-  await grid.initComponent();
+  await grid?.initComponent();
 
   return grid;
 }

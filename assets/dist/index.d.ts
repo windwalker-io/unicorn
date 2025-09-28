@@ -15,6 +15,7 @@ import { default as default_3 } from 'web-directive';
 import { deleteConfirm } from '@lyrasoft/ts-toolkit/generic';
 import { Editor } from 'tinymce';
 import { EditorOptions } from 'tinymce';
+import { Modal } from 'bootstrap';
 import { randomBytes } from '@lyrasoft/ts-toolkit/generic';
 import { randomBytesString } from '@lyrasoft/ts-toolkit/generic';
 import { simpleAlert } from '@lyrasoft/ts-toolkit/generic';
@@ -69,7 +70,7 @@ declare class ButtonRadio {
     inputs: HTMLInputElement[];
     buttons: HTMLButtonElement[];
     colors: string[];
-    options: ButtonRadioOptions;
+    options: Required<ButtonRadioOptions>;
     static handle(el: HTMLElement | string, options?: ButtonRadioOptions): any;
     constructor(selector: HTMLElement | string, options?: ButtonRadioOptions);
     prepareButton(radio: HTMLInputElement, exists?: boolean): HTMLButtonElement;
@@ -268,15 +269,17 @@ export declare function highlight(selector: string | HTMLElement, color?: string
 
 export declare function html<T extends Element = HTMLElement>(html: string): T;
 
+declare type HTMLInputTypes = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
+
 declare class IFrameModalElement extends HTMLElement {
     static is: string;
     options: IFrameModalOptions;
     modalElement: HTMLDivElement;
-    modal: any;
+    modal: Modal;
     iframe: HTMLIFrameElement;
     template(): string;
     get selector(): string;
-    getBootstrapModal(): Promise<any>;
+    getBootstrapModal(): Promise<Modal>;
     connectedCallback(): void;
     bindEvents(): void;
     open(href: string, options?: IFrameModalOptions): Promise<void>;
@@ -348,9 +351,9 @@ declare class ListDependent {
     element: HTMLSelectElement;
     dependent: HTMLSelectElement;
     options: ListDependentOptions;
-    cancelToken: null;
-    static handle(el: string | Element, dependent?: null, options?: Partial<ListDependentOptions>): ListDependent;
-    constructor(element: any, dependent: any, options?: Partial<ListDependentOptions>);
+    abortController: AbortController | null;
+    static handle(el: string | HTMLSelectElement, dependent?: string | HTMLSelectElement, options?: Partial<ListDependentOptions>): ListDependent;
+    constructor(element: string | HTMLSelectElement, dependent?: string | HTMLSelectElement, options?: Partial<ListDependentOptions>);
     /**
      * Bind events.
      */
@@ -364,9 +367,6 @@ declare class ListDependent {
     changeList(value: string, initial?: boolean): void;
     /**
      * Update list by source.
-     *
-     * @param {string} value
-     * @param {bool}   initial
      */
     sourceUpdate(value: string, initial?: boolean): void;
     /**
@@ -375,6 +375,7 @@ declare class ListDependent {
      * @param {string} value
      */
     ajaxUpdate(value: string): Promise<void>;
+    abort(): void;
     updateListElements(items: MaybeGroupedListItems): void;
     appendOptionTo(item: any, parent: any): void;
     isSelected(value: string): boolean;
@@ -400,10 +401,10 @@ declare interface ListDependentOptions {
         value_field: string;
         data: Record<string, any> | ((data: Record<string, any>, self: ListDependent) => Record<string, any>);
     };
-    source: Record<string, any> | null;
+    source?: Record<string, any>;
     text_field: string;
     value_field: string;
-    first_option: Record<string, any> | null;
+    first_option?: Record<string, any>;
     default_value: any;
     initial_load: boolean;
     empty_mark: string;
@@ -574,12 +575,12 @@ export declare function selectOne<E extends Element = Element>(ele: string | E):
 export declare function serial(): number;
 
 declare class ShowOn {
-    el: null;
-    input: null;
+    el: HTMLElement;
+    input: HTMLInputTypes;
     conditions: Conditions;
     targets: {};
     readonly: boolean;
-    initialDisplay: null;
+    initialDisplay: string;
     constructor(el: HTMLElement, conditions: Conditions);
     init(): void;
     updateShowState(target: HTMLElement, value: any, duration?: number): void;
@@ -604,7 +605,7 @@ export { simpleConfirm }
 declare class SingleImageDragElement extends HTMLElement {
     static is: string;
     currentImage: string;
-    currentFile: any;
+    currentFile: File | undefined;
     lastZoom: number;
     valueBackup: string;
     private options;
@@ -630,15 +631,8 @@ declare class SingleImageDragElement extends HTMLElement {
     getCropper(): Promise<default_2>;
     toolbarClicked(button: HTMLButtonElement, event: MouseEvent): Promise<void>;
     checkFile(file: File): boolean;
-    compareMimeType(accept: any, mime: any): boolean;
-    /**
-     * Check image size.
-     *
-     * @param {Image} image
-     *
-     * @returns {boolean}
-     */
-    checkSize(image: any): boolean;
+    compareMimeType(accept: string, mime: string): boolean;
+    checkSize(image: HTMLImageElement): boolean;
     alert(title: string, text?: string, type?: string): Promise<void>;
     saveImage(file: File): Promise<void>;
     uploadImage(file: File): Promise<AxiosResponse<any, any, {}>>;
@@ -665,10 +659,11 @@ export declare function throttle<T extends Function = Function>(handler: T, wait
 export { tid }
 
 declare class TinymceController {
+    protected tinymce: TinyMCE;
     element: HTMLElement;
     editor?: Editor;
     options: Record<string, any>;
-    constructor(element: HTMLElement, options: Record<string, any>);
+    constructor(tinymce: TinyMCE, element: HTMLElement, options: Record<string, any>);
     prepareOptions(options: Record<string, any>, version?: string): Record<string, any>;
     insert(text: string): void;
     getValue(): string;
@@ -695,8 +690,9 @@ declare class UIBootstrap5 implements UIThemeInterface {
     keepTab(): Promise<KeepTabModule>;
     keepTab(selector?: string | HTMLElement, options?: KeepTabOptions): Promise<KeepTab>;
     buttonRadio(): Promise<ButtonRadioModule>;
-    buttonRadio(selector: string | HTMLElement, options?: ButtonRadioOptions): Promise<ButtonRadio>;
+    buttonRadio(selector?: string | HTMLElement, options?: ButtonRadioOptions): Promise<ButtonRadio>;
     tooltip(selector?: NodeListOf<Element> | Element | string, config?: Partial<Tooltip.Options>): Tooltip[];
+    protected selectAsArray(selector: NodeListOf<Element> | Element | string): Element[];
     getMajorVersion(module: any): number;
     pushBootstrapToGlobal(): void;
 }
@@ -724,6 +720,7 @@ export declare class UnicornApp extends UnicornApp_base implements EventAwareInt
     detach(plugin: any): this;
     inject<T>(id: InjectionKey<T>): T;
     inject<T>(id: InjectionKey<T>, def: T): T;
+    inject<T>(id: InjectionKey<T>, def?: T): T;
     provide<T>(id: InjectionKey<T>, value: any): this;
     wait(callback: Function): Promise<any>;
     completed(): Promise<any[]>;
@@ -1109,9 +1106,9 @@ export declare function useAssetUri(): UnicornAssetUri;
 
 export declare function useAssetUri(type?: AssetTypes, path?: string): string;
 
-export declare function useBs5ButtonRadio(selector?: string | HTMLElement, options?: ButtonRadioOptions): Promise<ButtonRadioModule & ButtonRadio>;
+export declare const useBs5ButtonRadio: typeof UIBootstrap5.prototype.buttonRadio;
 
-export declare function useBs5KeepTab(selector?: string | HTMLElement, options?: KeepTabOptions): Promise<KeepTab>;
+export declare const useBs5KeepTab: typeof UIBootstrap5.prototype.keepTab;
 
 export declare function useBs5Tooltip(selector?: NodeListOf<Element> | Element | string, config?: Partial<Tooltip.Options>): Promise<Tooltip[]>;
 
@@ -1148,21 +1145,21 @@ export declare function useFieldRepeatable(): Promise<RepeatableModule>;
 
 export declare function useFieldSingleImageDrag(): Promise<SingleImageDragModule>;
 
-export declare function useFieldValidationSync(selector: string | Element): UnicornFieldValidation;
+export declare function useFieldValidationSync(selector: string | Element): UnicornFieldValidation | null;
 
-export declare function useForm(ele?: string | Element, options?: Record<string, any>): Promise<UnicornFormElement>;
+export declare function useForm(ele?: string | Element, options?: Record<string, any>): Promise<UnicornFormElement | null>;
 
-export declare function useFormComponent(ele?: string | Element, options?: Record<string, any>): Promise<UnicornFormElement>;
+export declare function useFormComponent(ele?: string | Element, options?: Record<string, any>): Promise<UnicornFormElement | null>;
 
 export declare function useFormValidation(): Promise<ValidationModule>;
 
-export declare function useFormValidation(selector: string | Element): Promise<UnicornFormValidation>;
+export declare function useFormValidation(selector: string | Element): Promise<UnicornFormValidation | null>;
 
-export declare function useFormValidationSync(selector: string | Element): UnicornFormValidation;
+export declare function useFormValidationSync(selector: string | Element): UnicornFormValidation | null;
 
-export declare function useGrid(ele: string | HTMLElement, options?: Record<string, any> | undefined): Promise<UnicornGridElement>;
+export declare function useGrid(ele: string | HTMLElement, options?: Record<string, any> | undefined): Promise<UnicornGridElement | null>;
 
-export declare function useGridComponent(ele: string | HTMLElement, options?: Record<string, any> | undefined): Promise<UnicornGridElement>;
+export declare function useGridComponent(ele: string | HTMLElement, options?: Record<string, any> | undefined): Promise<UnicornGridElement | null>;
 
 export declare function useHttpClient(config?: CreateAxiosDefaults | AxiosInstance): Promise<UnicornHttpClient>;
 
@@ -1180,9 +1177,7 @@ export declare function useImport<D = any, C = any>(src: string): Promise<{
     default: D;
 } & Dictionary<C>>;
 
-export declare function useInject<T>(id: InjectionKey<T>): T;
-
-export declare function useInject<T>(id: InjectionKey<T>, def: T): T;
+export declare const useInject: typeof UnicornApp.prototype.inject;
 
 /**
  * Keep alive.
@@ -1193,7 +1188,7 @@ export declare function useLang(): UnicornLang;
 
 export declare function useListDependent(): Promise<ListDependentModule>;
 
-export declare function useListDependent(element: string | HTMLElement, dependent?: Nullable<string | HTMLElement>, options?: Partial<ListDependentOptions>): Promise<ListDependent>;
+export declare function useListDependent(element: string | HTMLSelectElement, dependent?: Nullable<string | HTMLSelectElement>, options?: Partial<ListDependentOptions>): Promise<ListDependent>;
 
 export declare function useLoadedHttpClient(config?: CreateAxiosDefaults): Promise<UnicornHttpClient>;
 
@@ -1258,7 +1253,7 @@ export declare function useUnicornPhpAdapter(app?: UnicornApp): {
     multiUploader: typeof useFieldMultiUploader;
 };
 
-export declare function useUniDirective(name: string, handler: WebDirectiveHandler, wdInstance?: default_3 | string): Promise<void>;
+export declare function useUniDirective<T extends Element = HTMLElement>(name: string, handler: WebDirectiveHandler<T>, wdInstance?: default_3 | string): Promise<void>;
 
 /**
  * Vue component field.
@@ -1291,17 +1286,17 @@ export { }
 
 
 declare global {
-    var Alpine: AlpineGlobal;
-    var TomSelect: typeof TomSelectGlobal;
-    var Spectrum: typeof SpectrumGlobal;
-    var Mark: any;
+    interface Node {
+        __unicorn?: any;
+    }
 }
 
 
 declare global {
-    interface Node {
-        __unicorn?: any;
-    }
+    var Alpine: AlpineGlobal;
+    var TomSelect: typeof TomSelectGlobal;
+    var Spectrum: typeof SpectrumGlobal;
+    var Mark: any;
 }
 
 
@@ -1310,6 +1305,10 @@ declare module '@windwalker-io/unicorn-next' {
         /** @deprecated Only for code generator use. */
         $ui: typeof methods;
     }
+}
+
+declare global {
+    var S: any;
 }
 
 
@@ -1326,10 +1325,6 @@ declare module 'axios' {
     }
     interface CreateAxiosDefaults {
     }
-}
-
-declare global {
-    var S: any;
 }
 
 

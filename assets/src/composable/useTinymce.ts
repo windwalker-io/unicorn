@@ -11,9 +11,13 @@ export async function useTinymce(
   selector?: string,
   options: Record<string, any> = {}
 ): Promise<any> {
-  const { get } = await import('../module/tinymce');
+  const module = await import('../module/tinymce');
 
-  return get(selector, options);
+  if (selector) {
+    return module.get(selector, options);
+  }
+
+  return module;
 }
 
 export async function useTinymceHook(

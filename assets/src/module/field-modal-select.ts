@@ -18,7 +18,7 @@ export function createCallback(type: 'list' | 'single', selector: string, modalS
         if (!modalList.querySelector(`[data-value="${item.value}"]`)) {
           modalList.appendItem(item, true);
 
-          selectOne<IFrameModalElement>(modalSelector).close();
+          selectOne<IFrameModalElement>(modalSelector)?.close();
         } else {
           alert(__('unicorn.field.modal.already.selected'));
         }
@@ -27,11 +27,11 @@ export function createCallback(type: 'list' | 'single', selector: string, modalS
     case 'single':
     default:
       return (item) => {
-        const element = document.querySelector<HTMLDivElement>(selector);
+        const element = document.querySelector<HTMLDivElement>(selector)!;
 
-        const image = element.querySelector<HTMLDivElement>('[data-role=image]');
-        const title = element.querySelector<HTMLInputElement>('[data-role=title]');
-        const store = element.querySelector<HTMLInputElement>('[data-role=value]');
+        const image = element.querySelector<HTMLDivElement>('[data-role=image]')!;
+        const title = element.querySelector<HTMLInputElement>('[data-role=title]')!;
+        const store = element.querySelector<HTMLInputElement>('[data-role=value]')!;
 
         if (image && item.image) {
           image.style.backgroundImage = `url(${item.image});`;
@@ -42,7 +42,7 @@ export function createCallback(type: 'list' | 'single', selector: string, modalS
 
         store.dispatchEvent(new CustomEvent('change'));
 
-        selectOne<IFrameModalElement>(modalSelector).close();
+        selectOne<IFrameModalElement>(modalSelector)?.close();
 
         highlight(title);
       };
@@ -60,11 +60,11 @@ interface ModalListOptions {
 class ModalListSelectElement extends HTMLElement {
   static is = 'uni-modal-list';
 
-  itemTemplate: ReturnType<typeof template>;
-  options: ModalListOptions;
+  itemTemplate!: ReturnType<typeof template>;
+  options!: ModalListOptions;
 
   get listContainer() {
-    return this.querySelector<HTMLDivElement>('[data-role=list-container]');
+    return this.querySelector<HTMLDivElement>('[data-role=list-container]')!;
   }
 
   get modal() {
@@ -82,7 +82,7 @@ class ModalListSelectElement extends HTMLElement {
     const emptyInput = this.querySelector<HTMLInputElement>('[data-role=empty]');
 
     if (emptyInput) {
-      emptyInput.name = emptyInput.dataset.name;
+      emptyInput.name = emptyInput.dataset.name || '';
     }
 
     if (this.options.sortable) {
@@ -91,35 +91,35 @@ class ModalListSelectElement extends HTMLElement {
       });
     }
 
-    const selectButton = this.querySelector<HTMLButtonElement>('[data-role=select]');
+    const selectButton = this.querySelector<HTMLButtonElement>('[data-role=select]')!;
     selectButton.addEventListener('click', (e) => {
       this.open(e);
     });
 
-    this.querySelector('[data-role=clear]').addEventListener('click', () => {
+    this.querySelector('[data-role=clear]')?.addEventListener('click', () => {
       this.items.forEach((item) => {
-        item.querySelector<HTMLButtonElement>('[data-role=remove]').click();
+        item.querySelector<HTMLButtonElement>('[data-role=remove]')?.click();
       });
     });
 
-    selectButton.style.pointerEvents = null;
+    selectButton.style.pointerEvents = '';
 
     this.render();
   }
 
   render() {
-    const items = data('unicorn.modal-field')[this.options.dataKey] || [];
+    const items: Record<string, any>[] = data('unicorn.modal-field')[this.options.dataKey] || [];
 
     items.forEach((item) => {
       this.appendItem(item);
     });
   }
 
-  appendItem(item: any, highlights = false) {
+  appendItem(item: Record<string, any>, highlights = false) {
     const itemHtml = html(this.itemTemplate({ item }));
 
     itemHtml.dataset.value = item.value;
-    itemHtml.querySelector('[data-role=remove]').addEventListener('click', () => {
+    itemHtml.querySelector<HTMLButtonElement>('[data-role=remove]')?.addEventListener('click', () => {
       slideUp(itemHtml).then(() => {
         itemHtml.remove();
         this.toggleRequired();
@@ -151,7 +151,7 @@ class ModalListSelectElement extends HTMLElement {
     const target = event.target as HTMLAnchorElement;
 
     if (!max) {
-      this.modal.open(target.href, { size: 'modal-xl' });
+      this.modal?.open(target.href, { size: 'modal-xl' });
       return;
     }
 
@@ -163,7 +163,7 @@ class ModalListSelectElement extends HTMLElement {
       return;
     }
 
-    this.modal.open(target.href, { size: 'modal-xl' });
+    this.modal?.open(target.href, { size: 'modal-xl' });
   }
 }
 

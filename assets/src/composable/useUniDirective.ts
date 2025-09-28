@@ -11,14 +11,15 @@ export async function useWebDirective(
   return instances[name] ??= await createWebDirective(Object.assign({}, options, { prefix: 'uni-' }));
 }
 
-export async function useUniDirective(
+export async function useUniDirective<T extends Element = HTMLElement>(
   name: string,
-  handler: WebDirectiveHandler,
+  handler: WebDirectiveHandler<T>,
   wdInstance: WebDirective | string = 'unicorn'
 ): Promise<void> {
   const wd = typeof wdInstance === 'string' ? await useWebDirective(wdInstance) : wdInstance;
 
-  wd.register(name, handler);
+  // Todo: Should fix web-directive types
+  wd.register(name, handler as WebDirectiveHandler<any>);
 }
 
 async function createWebDirective(options: Partial<WebDirectiveOptions> = {}): Promise<WebDirective> {

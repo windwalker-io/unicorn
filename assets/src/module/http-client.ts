@@ -8,7 +8,7 @@ import type {
 } from 'axios';
 import { parseTemplate } from 'url-template';
 import { data } from '../data';
-import { route, useImport } from '../service';
+import { route } from '../service';
 
 declare global {
   let axios: AxiosStatic;
@@ -87,7 +87,7 @@ export class UnicornHttpClient {
           }
         }
 
-        if (config.method.toLowerCase() !== 'get') {
+        if (config.method?.toLowerCase() !== 'get') {
           config.method = 'POST';
         }
       }

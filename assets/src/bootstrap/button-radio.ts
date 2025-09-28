@@ -34,7 +34,7 @@ export class ButtonRadio {
   inputs: HTMLInputElement[] = [];
   buttons: HTMLButtonElement[] = [];
   colors: string[] = [];
-  options: ButtonRadioOptions;
+  options: Required<ButtonRadioOptions>;
 
   static handle(el: HTMLElement | string, options: ButtonRadioOptions = {}) {
     return getBoundedInstance(el, 'button-radio', (el: HTMLElement) => {
@@ -43,7 +43,7 @@ export class ButtonRadio {
   }
 
   constructor(selector: HTMLElement | string, options: ButtonRadioOptions = {}) {
-    this.element = selectOne(selector);
+    this.element = selectOne<HTMLElement>(selector)!;
     this.options = mergeDeep({}, defaultOptions, options);
     let wrapper: HTMLElement;
 
@@ -118,15 +118,15 @@ export class ButtonRadio {
     if (!color) {
       switch (input.value) {
         case '':
-          color = options.color.blue;
+          color = options.color.blue || '';
           break;
 
         case '0':
-          color = options.color.red;
+          color = options.color.red || '';
           break;
 
         default:
-          color = options.color.green;
+          color = options.color.green || '';
           break;
       }
 
@@ -177,14 +177,14 @@ export class ButtonRadio {
     this.buttons.forEach((button) => {
       const input: HTMLInputElement = data(button, 'input');
 
-      button.classList.add(...this.parseClasses(options.color.default));
+      button.classList.add(...this.parseClasses(options.color.default || ''));
       button.classList.remove(...this.parseClasses(options.activeClass));
       button.classList.remove(...this.parseClasses(...this.colors));
 
       if (input.checked) {
         button.classList.add(...this.parseClasses(options.activeClass));
-        button.classList.add(...this.parseClasses(input.dataset.colorClass));
-        button.classList.remove(...this.parseClasses(options.color.default));
+        button.classList.add(...this.parseClasses(input.dataset.colorClass || ''));
+        button.classList.remove(...this.parseClasses(options.color.default || ''));
       }
     });
   }

@@ -16,7 +16,7 @@ const defaultOptions = {
 
 export class KeepTab {
   $element: HTMLElement;
-  tabButtons: NodeListOf<HTMLElement>;
+  tabButtons!: NodeListOf<HTMLElement>;
   storageKey: string = '';
   options: any;
 

@@ -3,13 +3,13 @@ import { Nullable } from '../types';
 
 export async function useListDependent(): Promise<ListDependentModule>;
 export async function useListDependent(
-  element: string | HTMLElement,
-  dependent?: Nullable<string | HTMLElement>,
+  element: string | HTMLSelectElement,
+  dependent?: Nullable<string | HTMLSelectElement>,
   options?: Partial<ListDependentOptions>
 ): Promise<ListDependent>;
 export async function useListDependent(
-  element?: Nullable<string | HTMLElement>,
-  dependent?: Nullable<string | HTMLElement>,
+  element?: Nullable<string | HTMLSelectElement>,
+  dependent?: Nullable<string | HTMLSelectElement>,
   options: Partial<ListDependentOptions> = {}
 ): Promise<any> {
   const module = await import('../module/list-dependent');
@@ -19,7 +19,7 @@ export async function useListDependent(
   if (element) {
     const { ListDependent } = module;
 
-    return ListDependent.handle(element, dependent, options);
+    return ListDependent.handle(element, dependent ?? undefined, options);
   }
 
   return module;

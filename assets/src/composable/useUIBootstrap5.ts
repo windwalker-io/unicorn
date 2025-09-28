@@ -1,6 +1,6 @@
 import type { Tooltip } from 'bootstrap';
 import { ButtonRadioOptions } from '../bootstrap/button-radio';
-import type { KeepTab, KeepTabModule, KeepTabOptions } from '../bootstrap/keep-tab';
+import type { KeepTabOptions } from '../bootstrap/keep-tab';
 import type { UIBootstrap5 } from '../module/ui-bootstrap5';
 import { useUITheme } from '../service';
 
@@ -29,14 +29,20 @@ export async function useBs5Tooltip(
   return bs5.tooltip(selector, config);
 }
 
-export async function useBs5KeepTab(selector?: string | HTMLElement, options: KeepTabOptions = {}) {
+export const useBs5KeepTab: typeof UIBootstrap5.prototype.keepTab = async (
+  selector?: string | HTMLElement,
+  options: KeepTabOptions = {}
+): Promise<any> => {
   const bs5 = await useUIBootstrap5();
 
   return bs5.keepTab(selector, options);
-}
+};
 
-export async function useBs5ButtonRadio(selector?: string | HTMLElement, options: ButtonRadioOptions = {}) {
+export const useBs5ButtonRadio: typeof UIBootstrap5.prototype.buttonRadio = async (
+  selector?: string | HTMLElement,
+  options: ButtonRadioOptions = {}
+): Promise<any> => {
   const bs5 = await useUIBootstrap5();
 
   return bs5.buttonRadio(selector, options);
-}
+};

@@ -22,10 +22,10 @@ const defaultOptions: FileDragOptions = {
 export class FileDragElement extends HTMLElement {
   static is = 'uni-file-drag';
 
-  element: HTMLInputElement;
-  overlayLabel: HTMLLabelElement;
-  button: HTMLButtonElement;
-  options: FileDragOptions;
+  element!: HTMLInputElement;
+  overlayLabel!: HTMLLabelElement;
+  button!: HTMLButtonElement;
+  options!: FileDragOptions;
 
   get inputSelector() {
     return this.getAttribute('selector') || 'input[type=file]';
@@ -36,7 +36,7 @@ export class FileDragElement extends HTMLElement {
   }
 
   connectedCallback(): void {
-    this.element = this.querySelector(this.inputSelector);
+    this.element = this.querySelector(this.inputSelector)!;
 
     this.prepareElements();
 
@@ -83,7 +83,7 @@ export class FileDragElement extends HTMLElement {
       this.createElementsLayout();
     }
 
-    this.overlayLabel = this.querySelector('[data-overlay-label]');
+    this.overlayLabel = this.querySelector<HTMLLabelElement>('[data-overlay-label]')!;
 
     let button = this.overlayLabel.querySelector('button');
 
@@ -125,7 +125,7 @@ export class FileDragElement extends HTMLElement {
   }
 
   onChange(evt?: Event) {
-    const files = this.element.files;
+    const files = this.element.files || [];
     const limit = this.options.maxFiles;
     const maxSize = this.options.maxSize;
     let placeholder = this.options.placeholder;
@@ -189,11 +189,11 @@ export class FileDragElement extends HTMLElement {
     }
 
     //replace the "Choose a file" label
-    this.overlayLabel.querySelector('span').innerHTML = text;
+    this.overlayLabel.querySelector<HTMLSpanElement>('span')!.innerHTML = text;
   }
 
   checkFileType(accepted: string[], file: File) {
-    const fileExt = file.name.split('.').pop();
+    const fileExt = file.name.split('.').pop() || '';
 
     if (accepted.length) {
       let allow = false;

@@ -9,7 +9,7 @@ class FlatpickrElement extends HTMLElement {
     return 'uni-flatpickr';
   }
 
-  instance: flatpickr.Instance;
+  instance!: flatpickr.Instance;
 
   constructor() {
     super();
@@ -25,7 +25,7 @@ class FlatpickrElement extends HTMLElement {
 
   // todo: Currently not support single option attributes
   getOptions() {
-    const options = {};
+    const options: any = {};
     const ignore = [
       'selector'
     ];
@@ -42,11 +42,11 @@ class FlatpickrElement extends HTMLElement {
   }
 
   get $input(): HTMLInputElement {
-    return this.querySelector('input');
+    return this.querySelector<HTMLInputElement>('input')!;
   }
 
   async connectedCallback() {
-    let options: flatpickr.Options.Options = JSON.parse(this.getAttribute('options')) || {};
+    let options: flatpickr.Options.Options = JSON.parse(this.getAttribute('options') || '{}') || {};
 
     options.autoFillDefaultTime = true;
     const now = new Date();
@@ -57,7 +57,7 @@ class FlatpickrElement extends HTMLElement {
     options = await this.handleOptions(options);
 
     this.instance = flatpickr(
-      this.querySelector(this.selector),
+      this.querySelector<HTMLElement>(this.selector)!,
       options
     );
 

@@ -45,7 +45,7 @@ async function init() {
       attrs,
       options: mergeDeep<RepeatableOptions>(defaultOptions, options),
       init() {
-        this.items = this.items.filter((item) => item !== '__EMPTY_ARRAY__');
+        // this.items = this.items.filter((item) => item !== '__EMPTY_ARRAY__');
 
         if (this.options.sortable) {
           // @see https://github.com/alpinejs/alpine/discussions/1635
@@ -75,13 +75,17 @@ async function init() {
                 }
 
                 // HACK update index of dataStack
+                // @ts-ignore
                 this.$refs.steps_template._x_prevKeys = keys;
+                // @ts-ignore
                 const elements = this.$refs.steps_template
                   .parentElement
                   .querySelectorAll('tr');
 
                 [].slice.call(elements).forEach((ele, i) => {
+                  // @ts-ignore
                   if (ele?._x_dataStack[0]?.i != null) {
+                    // @ts-ignore
                     ele._x_dataStack[0].i = i;
                   }
                 });
@@ -93,7 +97,7 @@ async function init() {
         this.items.forEach(prepareItem);
 
         if (this.options.ensureFirstRow) {
-          this.makeSureDefaultItem();
+          this.ensureFirstRow();
         }
       },
 
@@ -107,11 +111,11 @@ async function init() {
         const el = this.getItemElementByUID(this.items[i].uid);
         let hasAnimate = false;
 
-        el.addEventListener('animationstart', () => {
+        el?.addEventListener('animationstart', () => {
           hasAnimate = true;
         }, { once: true });
 
-        el.classList.add('animate__fadeOut');
+        el?.classList.add('animate__fadeOut');
 
         setTimeout(() => {
           if (!hasAnimate) {
@@ -119,7 +123,7 @@ async function init() {
           }
         }, 100);
 
-        el.addEventListener('animationend', () => {
+        el?.addEventListener('animationend', () => {
           this._removeItem(i);
         }, { once: true });
       },

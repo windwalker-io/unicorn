@@ -282,7 +282,7 @@ declare global {
 
 async function init() {
   await prepareAlpineDefer(() => {
-    Alpine.data('CascadeSelect', (options) => new FieldCascadeSelect(options));
+    Alpine.data('CascadeSelect', (options: CascadeSelectOptions) => new FieldCascadeSelect(options));
   });
   
   await initAlpineComponent('data-cascade-select');

@@ -1,188 +1,125 @@
-
-import type { CancelTokenSource } from 'axios';
-import { useHttpClient, useUniDirective } from '../composable';
-import { getBoundedInstance, html, selectOne } from '../service';
-import { mergeDeep } from '../utilities';
-
-const nope = () => {};
-
-export interface ListDependentOptions {
-  ajax: {
-    url: string | null | ((self: ListDependent) => string);
-    value_field: string;
-    data: Record<string, any> | ((data: Record<string, any>, self: ListDependent) => Record<string, any>);
-  };
-  source?: Record<string, any>;
-  text_field: string;
-  value_field: string;
-  first_option?: Record<string, any>;
-  default_value: any;
-  initial_load: boolean;
-  empty_mark: string;
-  hooks: {
-    before_request: (value: any, element: HTMLSelectElement, dependent: HTMLSelectElement) => any;
-    after_request: (value: any, element: HTMLSelectElement, dependent: HTMLSelectElement) => any;
-  };
-}
-
-const defaultOptions: ListDependentOptions = {
+import { d as useUniDirective, A as getBoundedInstance, a as selectOne, q as useHttpClient, h as html, m as mergeDeep } from "./unicorn-x6CrrtPV.js";
+const nope = () => {
+};
+const defaultOptions = {
   ajax: {
     url: null,
-    value_field: 'value',
-    data: {},
+    value_field: "value",
+    data: {}
   },
-  source: undefined,
-  text_field: 'title',
-  value_field: 'id',
-  first_option: undefined,
+  source: void 0,
+  text_field: "title",
+  value_field: "id",
+  first_option: void 0,
   default_value: null,
   initial_load: true,
-  empty_mark: '__EMPTY__',
+  empty_mark: "__EMPTY__",
   hooks: {
     before_request: nope,
     after_request: nope
   }
 };
-
-type ListItems = Record<string, any>[];
-type MaybeGroupedListItems = Record<string, ListItems> | ListItems;
-
-export class ListDependent {
-  element: HTMLSelectElement;
-  dependent: HTMLSelectElement;
-  options: ListDependentOptions;
-  abortController: AbortController | null = null;
-
-  static handle(el: string | HTMLSelectElement, dependent?: string | HTMLSelectElement, options: Partial<ListDependentOptions> = {}): ListDependent {
-    return getBoundedInstance(el, 'list-dependent', () => {
+class ListDependent {
+  element;
+  dependent;
+  options;
+  abortController = null;
+  static handle(el, dependent, options = {}) {
+    return getBoundedInstance(el, "list-dependent", () => {
       return new this(el, dependent, options);
     });
   }
-
-  constructor(element: string | HTMLSelectElement, dependent?: string | HTMLSelectElement, options: Partial<ListDependentOptions> = {}) {
+  constructor(element, dependent, options = {}) {
     this.options = this.mergeOptions(options);
-
-    this.element = selectOne<HTMLSelectElement>(element)!;
-
+    this.element = selectOne(element);
     if (!dependent) {
-      dependent = this.element.dataset.dependent || '';
+      dependent = this.element.dataset.dependent || "";
     }
-
-    this.dependent = selectOne<HTMLSelectElement>(dependent)!;
-
+    this.dependent = selectOne(dependent);
     this.bindEvents();
-
     if (this.options.initial_load) {
       this.changeList(this.dependent.value, true);
     }
   }
-
   /**
    * Bind events.
    */
   bindEvents() {
-    this.dependent.addEventListener('change', (event) => {
-      this.changeList((event.currentTarget as HTMLSelectElement)?.value);
+    this.dependent.addEventListener("change", (event) => {
+      this.changeList(event.currentTarget?.value);
     });
   }
-
   /**
    * Update the list elements.
    *
    * @param {*}    value
    * @param {bool} initial
    */
-  changeList(value: string, initial = false) {
+  changeList(value, initial = false) {
     value = value || this.dependent.value;
-
-    // Empty mark
-    if (value === '') {
+    if (value === "") {
       value = this.options.empty_mark;
     }
-
     if (this.options.ajax.url) {
       this.ajaxUpdate(value);
     } else if (this.options.source) {
       this.sourceUpdate(value, initial);
     }
   }
-
   /**
    * Update list by source.
    */
-  sourceUpdate(value: string, initial = false) {
+  sourceUpdate(value, initial = false) {
     const source = this.options.source;
-
     if (!source) {
       return;
     }
-
     this.beforeHook(value, this.element, this.dependent);
-
     if (source[value]) {
       this.updateListElements(source[value]);
     } else {
       this.updateListElements([]);
-
-      if (!initial && value !== '' && parseInt(value) !== 0) {
-        console.log('List for value: ' + value + ' not found.');
+      if (!initial && value !== "" && parseInt(value) !== 0) {
+        console.log("List for value: " + value + " not found.");
       }
     }
-
     this.afterHook(value, this.element, this.dependent);
   }
-
   /**
    * Do ajax.
    *
    * @param {string} value
    */
-  async ajaxUpdate(value: string) {
-    let data: Record<string, any> = {};
-
+  async ajaxUpdate(value) {
+    let data = {};
     data[this.options.ajax.value_field] = value;
-
-    if (typeof this.options.ajax.data === 'object') {
+    if (typeof this.options.ajax.data === "object") {
       data = { ...data, ...this.options.ajax.data };
-    } else if (typeof this.options.ajax.data === 'function') {
+    } else if (typeof this.options.ajax.data === "function") {
       data = this.options.ajax.data(data, this) || data;
     }
-
     this.beforeHook(value, this.element, this.dependent);
-
     this.abort();
-
     let url = this.options.ajax.url;
-
-    if (typeof url === 'function') {
+    if (typeof url === "function") {
       url = url(this);
     }
-
     if (!url) {
-      throw new Error('Ajax URL is not set.');
+      throw new Error("Ajax URL is not set.");
     }
-
     const http = await useHttpClient();
-
     this.abortController = new AbortController();
-
     try {
-      const res = await http.get<{
-        success: boolean;
-        data: any;
-      }>(url, {
+      const res = await http.get(url, {
         params: data,
         signal: this.abortController.signal
       });
-
       const { success, data: returnData } = res.data;
-
       if (success) {
         this.updateListElements(returnData);
       } else {
         console.error(returnData);
       }
-
     } catch (e) {
       console.error(e);
     } finally {
@@ -190,132 +127,104 @@ export class ListDependent {
       this.abortController = null;
     }
   }
-
   abort() {
     if (this.abortController) {
       this.abortController.abort();
       this.abortController = null;
     }
   }
-
-  updateListElements(items: MaybeGroupedListItems) {
+  updateListElements(items) {
     const textField = this.options.text_field;
     const valueField = this.options.value_field;
-    this.element.innerHTML = '';
-
+    this.element.innerHTML = "";
     if (this.options.first_option && Array.isArray(items)) {
       items.unshift({});
       items[0][textField] = this.options.first_option[textField];
       items[0][valueField] = this.options.first_option[valueField];
     }
-
     for (const i in items) {
-      const item = items[i as keyof typeof items] as Record<string, any> | ListItems;
-
+      const item = items[i];
       if (Array.isArray(item)) {
         const group = html(`<optgroup label="${i}"></optgroup>`);
-
         for (const k in item) {
           const child = item[k];
           this.appendOptionTo({
             value: child[valueField],
             text: child[textField],
-            attributes: child.attributes,
+            attributes: child.attributes
           }, group);
         }
-
         this.element.appendChild(group);
         continue;
       }
-
       this.appendOptionTo({
         value: item[valueField],
         text: item[textField],
-        attributes: item.attributes,
+        attributes: item.attributes
       }, this.element);
     }
-
-    this.element.dispatchEvent(new CustomEvent('change'));
-    this.element.dispatchEvent(new CustomEvent('list:updated'));
+    this.element.dispatchEvent(new CustomEvent("change"));
+    this.element.dispatchEvent(new CustomEvent("list:updated"));
   }
-
-  appendOptionTo(item: any, parent: any) {
+  appendOptionTo(item, parent) {
     const value = item.value;
-    const option = html('<option>' + item.text + '</option>');
-    option.setAttribute('value', value);
-
+    const option = html("<option>" + item.text + "</option>");
+    option.setAttribute("value", value);
     if (item.attributes) {
       for (const index in item.attributes) {
         const val = item.attributes[index];
         option.setAttribute(index, val);
       }
     }
-
     if (this.isSelected(value)) {
-      option.setAttribute('selected', 'selected');
+      option.setAttribute("selected", "selected");
     }
-
     parent.appendChild(option);
   }
-
-  isSelected(value: string) {
-    let defaultValues: any[] = [];
-
-    // Convert all types to array
+  isSelected(value) {
+    let defaultValues = [];
     let defValue = this.element.dataset.selected ?? this.options.default_value;
-
-    if (typeof defValue === 'function') {
+    if (typeof defValue === "function") {
       defValue = defValue(value, this);
     }
-
     if (Array.isArray(defValue)) {
       defaultValues = defValue;
-    } else if (defValue && typeof defValue === 'object') {
+    } else if (defValue && typeof defValue === "object") {
       defaultValues = Object.keys(defValue);
     } else {
       defaultValues = [defValue];
     }
-
     return defaultValues.indexOf(value) !== -1;
   }
-
   /**
    * Before hook.
    */
-  beforeHook(value: string, element: HTMLSelectElement, dependent: HTMLSelectElement) {
+  beforeHook(value, element, dependent) {
     const before = this.options.hooks.before_request;
-
     return before.call(this, value, element, dependent);
   }
-
   /**
    * After hook.
    */
-  afterHook(value: string, element: HTMLSelectElement, dependent: HTMLSelectElement) {
+  afterHook(value, element, dependent) {
     const after = this.options.hooks.after_request;
-
     return after.call(this, value, element, dependent);
   }
-
-  mergeOptions(options: Partial<ListDependentOptions>): ListDependentOptions {
-    return mergeDeep<ListDependentOptions>({}, defaultOptions, options);
+  mergeOptions(options) {
+    return mergeDeep({}, defaultOptions, options);
   }
 }
-
-export const ready = useUniDirective<HTMLSelectElement>('list-dependent', {
+const ready = /* @__PURE__ */ useUniDirective("list-dependent", {
   mounted(el, binding) {
     const options = JSON.parse(binding.value);
-
     ListDependent.handle(el, options.dependent, options);
   },
   updated(el, binding) {
     const options = JSON.parse(binding.value);
-
     ListDependent.handle(el).mergeOptions(options);
   }
 });
-
-export type ListDependentModule = {
-  ListDependent: typeof ListDependent;
-  ready: typeof ready;
+export {
+  ListDependent,
+  ready
 };

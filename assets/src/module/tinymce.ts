@@ -15,9 +15,9 @@ export async function get(
   selector: string,
   options: Record<string, any> = {}
 ): Promise<TinymceController> {
-  await loadTinymce();
+  const tinymce = await loadTinymce();
 
-  return instances[selector] ??= new TinymceController(document.querySelector(selector)!, options);
+  return instances[selector] ??= new TinymceController(tinymce, document.querySelector(selector)!, options);
 }
 
 export function destroy(selector: string): void {
@@ -32,7 +32,7 @@ export function clearHooks() {
   hooks = [];
 }
 
-async function loadTinymce() {
+async function loadTinymce(): Promise<TinyMCE> {
   let tinymce = (await useImport('@tinymce')).default;
 
   if (imported) {
@@ -42,7 +42,7 @@ async function loadTinymce() {
   for (const hook of hooks) {
     hook(tinymce);
   }
-  await registerDragPlugin();
+  await registerDragPlugin(tinymce);
   return tinymce;
 }
 
@@ -52,7 +52,7 @@ export class TinymceController {
   editor?: Editor;
   options: Record<string, any> = {};
 
-  constructor(public element: HTMLElement, options: Record<string, any>) {
+  constructor(protected tinymce: TinyMCE, public element: HTMLElement, options: Record<string, any>) {
     options.target = element;
 
     this.options = mergeDeep(
@@ -104,7 +104,7 @@ export class TinymceController {
 
     defaults.setup = (editor) => {
       editor.on('change', () => {
-        tinymce.triggerSave();
+        this.tinymce.triggerSave();
       });
     };
 
@@ -207,7 +207,7 @@ export class TinymceController {
   }
 }
 
-function registerDragPlugin() {
+function registerDragPlugin(tinymce: TinyMCE) {
   tinymce.PluginManager.add('unicorndragdrop', function (editor) {
     // Reset the drop area border
     tinymce.DOM.bind(document, 'dragleave', function (e) {

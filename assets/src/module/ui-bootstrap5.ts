@@ -2,7 +2,7 @@ import * as bootstrap from 'bootstrap';
 import { Tooltip } from 'bootstrap';
 import type { ButtonRadio, ButtonRadioModule, ButtonRadioOptions } from '../bootstrap/button-radio';
 import type { KeepTab, KeepTabModule, KeepTabOptions } from '../bootstrap/keep-tab';
-import { forceArray, html, module, selectOne } from '../service';
+import { getBoundedInstanceList, html, selectAll, selectOne } from '../service';
 import type { UIThemeInterface } from '../types';
 
 export class UIBootstrap5 implements UIThemeInterface {
@@ -60,7 +60,7 @@ export class UIBootstrap5 implements UIThemeInterface {
   }
 
   async buttonRadio(): Promise<ButtonRadioModule>;
-  async buttonRadio(selector: string | HTMLElement, options?: ButtonRadioOptions): Promise<ButtonRadio>;
+  async buttonRadio(selector?: string | HTMLElement, options?: ButtonRadioOptions): Promise<ButtonRadio>;
   async buttonRadio(selector?: string | HTMLElement, options: ButtonRadioOptions = {}): Promise<any> {
     const m = await import('../bootstrap/button-radio');
 
@@ -77,13 +77,18 @@ export class UIBootstrap5 implements UIThemeInterface {
     selector: NodeListOf<Element> | Element | string = '[data-bs-toggle="tooltip"]',
     config: Partial<Tooltip.Options> = {}
   ): Tooltip[] {
-    return forceArray(
-      module(
-        selector,
-        'bs.tooltip',
-        (ele) => Tooltip.getOrCreateInstance(ele, config)
-      )
-    );
+    return this.selectAsArray(selector)
+      .map((ele) => Tooltip.getOrCreateInstance(ele, config));
+  }
+
+  protected selectAsArray(selector: NodeListOf<Element> | Element | string) {
+    if (selector instanceof NodeList) {
+      return Array.from(selector);
+    } else if (typeof selector === 'string') {
+      return selectAll(selector);
+    } else {
+      return [selector];
+    }
   }
 
   getMajorVersion(module: any) {

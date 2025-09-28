@@ -37,9 +37,7 @@ export function useUnicorn(instance?: UnicornApp): UnicornApp {
   return app ??= createUnicorn();
 }
 
-export function useInject<T>(id: InjectionKey<T>): T;
-export function useInject<T>(id: InjectionKey<T>, def: T): T;
-export function useInject<T>(id: InjectionKey<T>, def?: T): T | undefined {
+export const useInject: typeof UnicornApp.prototype.inject = <T = any>(id: InjectionKey<T>, def?: T): T => {
   return useUnicorn().inject<T>(id, def);
 }
 

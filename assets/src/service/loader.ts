@@ -94,11 +94,11 @@ export async function useCssImport(...hrefs: string[]): Promise<CSSStyleSheet[]>
   // Todo: Use `{ assert: { type: "css" }` after all browsers support it.
   const modules = await Promise.all(
     hrefs.map((href) => {
-      if (importedSheets[href]) {
-        return importedSheets[href];
+      if (!importedSheets[href]) {
+        importedSheets[href] = simulateCssImport(href);
       }
 
-      return importedSheets[href] = simulateCssImport(href);
+      return importedSheets[href];
     })
   );
   const styles = modules.map(module => module.default);

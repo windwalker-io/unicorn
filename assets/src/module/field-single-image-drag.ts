@@ -18,10 +18,10 @@ export interface SingleImageDragOptions {
   min_width?: number;
   max_height?: number;
   min_height?: number;
-  modalTarget?: string;
+  modalTarget: string;
 }
 
-const defaultOptions: SingleImageDragOptions = {
+const defaultOptions: Partial<SingleImageDragOptions> = {
   accept: [
     'image/jpeg',
     'image/png',
@@ -38,24 +38,24 @@ export class SingleImageDragElement extends HTMLElement {
   static is = 'uni-sid';
 
   currentImage = '';
-  currentFile;
+  currentFile: File | undefined = undefined;
   lastZoom = 0;
   valueBackup = '';
 
-  private options: SingleImageDragOptions;
-  private valueInput: HTMLInputElement;
-  private fileInput: HTMLInputElement;
-  private selectButton: HTMLButtonElement;
-  private pasteButton: HTMLButtonElement;
-  private dragarea: HTMLDivElement;
-  private previewImage: HTMLImageElement;
-  private removeCheckbox: HTMLInputElement;
-  private modalElement: HTMLDivElement;
-  private modal: Modal;
-  private cropContainer: HTMLDivElement;
-  private savebutton: HTMLButtonElement;
-  private modalToolbarButtons: NodeListOf<HTMLButtonElement>;
-  private cropper: Cropper;
+  private options!: SingleImageDragOptions;
+  private valueInput!: HTMLInputElement;
+  private fileInput!: HTMLInputElement;
+  private selectButton!: HTMLButtonElement;
+  private pasteButton!: HTMLButtonElement;
+  private dragarea!: HTMLDivElement;
+  private previewImage!: HTMLImageElement;
+  private removeCheckbox!: HTMLInputElement;
+  private modalElement!: HTMLDivElement;
+  private modal!: Modal;
+  private cropContainer!: HTMLDivElement;
+  private savebutton!: HTMLButtonElement;
+  private modalToolbarButtons!: NodeListOf<HTMLButtonElement>;
+  private cropper!: Cropper;
 
   constructor() {
     super();
@@ -68,25 +68,25 @@ export class SingleImageDragElement extends HTMLElement {
       JSON.parse(this.getAttribute('options') || '{}')
     );
 
-    this.valueInput = this.querySelector<HTMLInputElement>('[data-field-input]');
-    this.fileInput = this.querySelector<HTMLInputElement>('[data-sid=file]');
-    this.selectButton = this.querySelector<HTMLButtonElement>('[data-sid=select]');
-    this.pasteButton = this.querySelector<HTMLButtonElement>('[data-sid=paste]');
-    this.dragarea = this.querySelector<HTMLDivElement>('[data-sid=dragarea]');
-    this.previewImage = this.querySelector<HTMLImageElement>('[data-sid=preview]');
-    this.removeCheckbox = this.querySelector<HTMLInputElement>('[data-sid=remove]');
+    this.valueInput = this.querySelector<HTMLInputElement>('[data-field-input]')!;
+    this.fileInput = this.querySelector<HTMLInputElement>('[data-sid=file]')!;
+    this.selectButton = this.querySelector<HTMLButtonElement>('[data-sid=select]')!;
+    this.pasteButton = this.querySelector<HTMLButtonElement>('[data-sid=paste]')!;
+    this.dragarea = this.querySelector<HTMLDivElement>('[data-sid=dragarea]')!;
+    this.previewImage = this.querySelector<HTMLImageElement>('[data-sid=preview]')!;
+    this.removeCheckbox = this.querySelector<HTMLInputElement>('[data-sid=remove]')!;
 
-    this.modalElement = document.querySelector<HTMLDivElement>(this.options.modalTarget);
+    this.modalElement = document.querySelector<HTMLDivElement>(this.options.modalTarget)!;
     this.modal = Modal.getOrCreateInstance(this.modalElement);
-    this.cropContainer = this.modalElement.querySelector<HTMLDivElement>('[data-sid="crop-container"]');
-    this.savebutton = this.modalElement.querySelector<HTMLButtonElement>('[data-sid=save-button]');
+    this.cropContainer = this.modalElement.querySelector<HTMLDivElement>('[data-sid="crop-container"]')!;
+    this.savebutton = this.modalElement.querySelector<HTMLButtonElement>('[data-sid=save-button]')!;
     this.modalToolbarButtons = this.modalElement.querySelectorAll<HTMLButtonElement>('[data-sid-toolbar]');
 
     const modalShown = async () => {
       const cropper = await this.getCropper();
       cropper.replace(this.currentImage);
       this.cropContainer.style.visibility = '';
-      this.currentImage = null;
+      this.currentImage = '';
     };
 
     this.modalElement.addEventListener('shown.bs.modal', modalShown.bind(this));
@@ -122,7 +122,7 @@ export class SingleImageDragElement extends HTMLElement {
 
       this.dragarea.classList.remove('hover');
 
-      const files = (event.target as HTMLInputElement).files || event.dataTransfer.files;
+      const files = (event.target as HTMLInputElement).files || event.dataTransfer?.files || [];
       this.handleFileSelect(files[0]);
     });
 
@@ -133,7 +133,7 @@ export class SingleImageDragElement extends HTMLElement {
       input.setAttribute('accept', this.getInputAccept());
       input.style.display = 'none';
       input.addEventListener('change', (e) => {
-        this.handleFileSelect(input.files[0]);
+        this.handleFileSelect(input.files![0]!);
 
         input.remove();
       });
@@ -200,7 +200,7 @@ export class SingleImageDragElement extends HTMLElement {
 
       reader.addEventListener('load', (event) => {
         this.cropContainer.style.visibility = 'hidden';
-        this.currentImage = event.target.result as string;
+        this.currentImage = event.target!.result as string;
         this.currentFile = file;
 
         // After modal shown, cropper will auto load.
@@ -223,7 +223,7 @@ export class SingleImageDragElement extends HTMLElement {
         imageSmoothingEnabled: true
       })
       .toBlob((blob) => {
-        const file = new File([ blob ], this.currentFile.name, { type: 'image/png' });
+        const file = new File([ blob! ], this.currentFile!.name, { type: 'image/png' });
         this.saveImage(file);
       }, 'image/png');
   }
@@ -235,7 +235,7 @@ export class SingleImageDragElement extends HTMLElement {
 
     const Cropper = await loadCropper();
 
-    return this.cropper = new Cropper(this.cropContainer.querySelector('img'), {
+    return this.cropper = new Cropper(this.cropContainer.querySelector('img')!, {
       aspectRatio: this.options.width / this.options.height,
       autoCropArea: 1,
       viewMode: 1,
@@ -314,7 +314,7 @@ export class SingleImageDragElement extends HTMLElement {
     return false;
   }
 
-  compareMimeType(accept, mime) {
+  compareMimeType(accept: string, mime: string) {
     const accept2 = accept.split('/');
     const mime2 = mime.split('/');
 
@@ -325,34 +325,27 @@ export class SingleImageDragElement extends HTMLElement {
     return accept === mime;
   }
 
-  /**
-   * Check image size.
-   *
-   * @param {Image} image
-   *
-   * @returns {boolean}
-   */
-  checkSize(image) {
+  checkSize(image: HTMLImageElement): boolean {
     try {
-      if (this.options.max_width !== null && this.options.max_width < image.width) {
+      if (this.options.max_width && this.options.max_width < image.width) {
         throw new Error(__('unicorn.field.sid.message.invalid.size.max.width', this.options.max_width));
       }
 
-      if (this.options.min_width !== null && this.options.min_width > image.width) {
+      if (this.options.min_width && this.options.min_width > image.width) {
         throw new Error(__('unicorn.field.sid.message.invalid.size.min.width', this.options.min_width));
       }
 
-      if (this.options.max_height !== null && this.options.max_height < image.height) {
+      if (this.options.max_height && this.options.max_height < image.height) {
         throw new Error(__('unicorn.field.sid.message.invalid.size.max.height', this.options.max_height));
       }
 
-      if (this.options.min_height !== null && this.options.min_height > image.height) {
+      if (this.options.min_height && this.options.min_height > image.height) {
         throw new Error(__('unicorn.field.sid.message.invalid.size.min.height', this.options.min_height));
       }
     } catch (e) {
       this.alert(
         __('unicorn.field.sid.message.invalid.size.title'),
-        e.message,
+        (e as Error).message,
         'error'
       );
 
@@ -368,7 +361,7 @@ export class SingleImageDragElement extends HTMLElement {
 
   async saveImage(file: File) {
     if (this.options.ajax_url) {
-      const loading = this.querySelector<HTMLImageElement>('[data-sid=file-uploading]');
+      const loading = this.querySelector<HTMLImageElement>('[data-sid=file-uploading]')!;
 
       this.previewImage.src = '';
       this.previewImage.style.display = 'none';
@@ -378,7 +371,7 @@ export class SingleImageDragElement extends HTMLElement {
         await this.uploadImage(file);
       } catch (e) {
         console.error(e);
-        simpleAlert(e.message);
+        simpleAlert((e as Error).message);
         return;
       } finally {
         loading.style.display = 'none';
@@ -399,7 +392,7 @@ export class SingleImageDragElement extends HTMLElement {
     this.fileInput.dispatchEvent(new CustomEvent('change', { bubbles: true }));
     this.fileInput.dispatchEvent(new CustomEvent('input', { bubbles: true }));
 
-    this.storeValue(null, URL.createObjectURL(file));
+    this.storeValue('', URL.createObjectURL(file));
   }
 
   async uploadImage(file: File) {
@@ -408,7 +401,7 @@ export class SingleImageDragElement extends HTMLElement {
 
     const { post } = await useHttpClient();
 
-    return post(this.options.ajax_url, formData, {
+    return post(this.options.ajax_url!, formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
