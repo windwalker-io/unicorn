@@ -57,6 +57,10 @@ class MultiUploaderField extends AbstractField
 
     public function getDefaultLayout(): string
     {
+        if ($this->formScript->next) {
+            return '@theme::field.multi-uploader-next';
+        }
+
         return '@theme::field.multi-uploader';
     }
 
@@ -118,6 +122,8 @@ class MultiUploaderField extends AbstractField
             }
         }
 
+        unset($value);
+
         // Prepare default value placeholder
         foreach ($subForm->getFields() as $field) {
             $current[$field->getName()] = $field->get('multiple') ? [] : '';
@@ -135,7 +141,9 @@ class MultiUploaderField extends AbstractField
             'loading' => false,
             'canReplace' => $this->isCanReplace(),
             'fieldName' => $this->getName(),
-            'fieldFullName' => $this->getInputName()
+            'fieldFullName' => $this->getInputName(),
+            'maxConcurrent' => (int) ($this->getMaxConcurrent() ?: 2),
+            'accept' => implode(',', (array) $this->getAccept()) ?: [],
         ];
 
         return $this->renderLayout(

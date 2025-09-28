@@ -8,6 +8,7 @@ import {
   useFieldSingleImageDrag,
   useIframeModal,
 } from '../composable';
+import { useFieldMultiUploader } from '../composable/useFieldMultiUploader';
 import { useTinymce } from '../composable/useTinymce';
 import { useUnicorn } from '../unicorn';
 import { domready } from '../service';
@@ -48,6 +49,7 @@ const methods = {
   sid: useFieldSingleImageDrag,
   tinymce: useTinymce,
   iframeModal: useIframeModal,
+  multiUploader: useFieldMultiUploader,
 };
 
 export class UnicornPhpAdapter {

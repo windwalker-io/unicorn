@@ -21,6 +21,7 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "skipLibCheck": true,
+    "strict": true,
     //        "declaration": true,
     "paths": {
 //      "@/*": ["./src/*"],
