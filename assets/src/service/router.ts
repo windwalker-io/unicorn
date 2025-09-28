@@ -1,6 +1,6 @@
 
 import { data } from '../data';
-import { parse, stringify } from 'qs';
+import { decode, encode } from 'qss';
 
 /**
  * Add a route.
@@ -104,15 +104,15 @@ export function addQuery(url: string, query?: Record<string, any>): string {
     return url;
   }
 
-  const queryString = stringify(query);
+  const queryString = encode(query);
 
   return url + (/\?/.test(url) ? `&${queryString}` : `?${queryString}`);
 }
 
 export function parseQuery<T = Record<string, any>>(queryString: string): T {
-  return parse(queryString) as T;
+  return decode(queryString) as T;
 }
 
 export function buildQuery(query: Record<string, any>): string {
-  return stringify(query);
+  return encode(query);
 }

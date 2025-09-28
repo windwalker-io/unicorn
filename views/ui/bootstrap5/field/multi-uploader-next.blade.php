@@ -76,42 +76,52 @@ $data['tmplSelector'] ??= ('#' . $tmplId);
     />
 
     <MultiUploader
+        ref="uploader"
         id="{{ $field->getId() }}"
-        :instance="uploader"
+        upload-url="{{ $data['uploadUrl'] }}"
+        v-model="value"
+        :options="uploaderOptions"
         @change="onChange"
         @uploading="uploading"
         @uploaded="uploaded"
         @delete-item="domEmit('delete-item', $event)"
-        {{-- todo: @reorder="domEmit('reorder', $event)"--}}
-        @attr('v-on:item-click', $hasEditForm ? 'itemClick' : 'openFile')
+        class=""
     >
         <template #items="{ instance, instance: { canUpload, openFileSelector, deleteItem } }">
+            <VueDraggable class="d-flex gap-2 flex-wrap w-100"
+                v-model="instance.items"
+                v-bind="draggableOptions"
+                @move="domEmit('reorder', $event)"
+            >
             <ItemCard v-for="(item, i) of instance.items"
                 :key="item.key"
-                class="item"
+                class="c-drag-item"
                 :item
                 :i="i"
+                :size="options.thumbSize + 'px'"
+                :isReadonly="instance.readonly || instance.disabled"
+                @click="{{ $hasEditForm ? 'itemClick(item, i, $event)' : 'openFile(item, i, $event)' }}"
                 @delete="deleteItem"
             >
                 <template v-slot:extra="{ item }">
                 @if ($hasEditForm)
-                    <h5 v-if="isImage(item.url) && item.title !== ''" class="preview-img__title text-white p-4">
-                        @{{ item.title }}
+                        <h5 v-if="isImage(item.url) && item.data.title !== ''" class="preview-img__title text-white p-4">
+                        @{{ item.data.title }}
                     </h5>
                     @endif
                     @if (!$field->isDisabled())
-                    <div class="d-none">
+                        <div class="d-none">
                         @if ($hasEditForm)
-                            <input type="hidden" :name="`{{ $field->getInputName() }}[${i}][url]`"
-                                :value="item.url" />
-                            @foreach ($subForm->getFields() as $field)
-                                <input type="hidden"
-                                    :name="`{{ $field->getInputName() }}[${i}][{{ $field->getName() }}]`"
-                                    :value="item.{{ $field->getName() }}" />
-                            @endforeach
-                        @else
-                            <input type="hidden" :name="`{{ $field->getInputName() }}[${i}]`" :value="item.url" />
-                        @endif
+                                <input type="hidden" :name="`{{ $field->getInputName() }}[${i}][url]`"
+                                    :value="item.url" />
+                                @foreach ($subForm->getFields() as $subField)
+                                    <input type="hidden"
+                                        :name="`{{ $field->getInputName() }}[${i}][{{ $subField->getName() }}]`"
+                                        :value="item.data?.{{ $subField->getName() }}" />
+                                @endforeach
+                            @else
+                                <input type="hidden" :name="`{{ $field->getInputName() }}[${i}]`" :value="item.url" />
+                            @endif
                     </div>
                     @endif
                 </template>
@@ -120,13 +130,15 @@ $data['tmplSelector'] ??= ('#' . $tmplId);
             <ItemCardPlaceholder
                 v-if="canUpload"
                 class=""
+                :size="options.thumbSize + 'px'"
                 text="{{ $field->getPlaceholder() ?? $lang('unicorn.field.multi.uploader.placeholder') }}"
                 @click="openFileSelector"
             >
-            <template #icon>
-              <span class="fa-solid fa-cloud-arrow-up" style="font-size: 2rem"></span>
-            </template>
+                <template #icon>
+                  <span class="fa-solid fa-cloud-arrow-up" style="font-size: 2rem"></span>
+                </template>
             </ItemCardPlaceholder>
+            </VueDraggable>
         </template>
     </MultiUploader>
 

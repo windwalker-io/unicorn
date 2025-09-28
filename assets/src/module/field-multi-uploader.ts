@@ -1,23 +1,26 @@
-
 import { Modal } from 'bootstrap';
+import type { Options } from 'sortablejs';
 import {
+  type ComponentPublicInstance,
+  computed,
   createApp,
   defineComponent,
-  type ComponentPublicInstance,
-  ref,
-  PropType,
   getCurrentInstance,
-  onMounted, nextTick
+  nextTick,
+  onMounted,
+  PropType,
+  ref,
+  useTemplateRef
 } from 'vue';
-import type { UseDraggableOptions } from 'vue-draggable-plus';
+import { VueDraggable } from 'vue-draggable-plus';
 import {
   createItem,
   ItemCard,
   ItemCardPlaceholder,
   MultiUploader,
+  MultiUploaderComposableInstance,
   MultiUploaderOptions,
-  UploaderItem,
-  useMultiUploader
+  UploaderItem
 } from 'vue-multi-uploader';
 import css from 'vue-multi-uploader/src/vue-multi-uploader.scss?inline';
 import { useStack } from '../composable';
@@ -28,8 +31,6 @@ import { mergeDeep } from '../utilities';
 injectCssToDocument(css);
 
 export type UniMultiUploaderOptions = {
-  sortable: boolean | UseDraggableOptions<any>;
-  // uploaderOptions: MultiUploaderOptions;
   value?: any[];
   uploadUrl: string;
   maxFiles?: number;
@@ -49,6 +50,7 @@ const defaultOptions = {
   readonly: false,
   disabled: false,
   sortable: false,
+  thumbSize: 150,
   maxConcurrent: 5,
   canReplace: false,
   tmplSelector: '#multi-uploader-field-tmpl',
@@ -64,24 +66,19 @@ class MultiUploaderElement extends HTMLElement {
     let options: Partial<UniMultiUploaderOptions> = JSON.parse(
       this.getAttribute('options') || '{}'
     );
+
     const resolvedOptions: UniMultiUploaderOptions = mergeDeep({}, defaultOptions, options);
+
+    // Make some default options since PHP will send NULL
+    resolvedOptions.thumbSize ??= 150;
 
     this.modalElement = this.querySelector<HTMLDivElement>('.modal')!;
 
     const tmplSelector = resolvedOptions.tmplSelector;
 
-    const app = createApp({ name: 'multi-uploader-field' });
-
-    app.component('app', createAppInstance(resolvedOptions, document.querySelector(tmplSelector)!.innerHTML, this));
-
-    if (resolvedOptions.sortable) {
-      const { VueDraggable } = await import('vue-draggable-plus');
-      app.component('VueDraggable', VueDraggable);
-    }
-
-    app.component('MultiUploader', MultiUploader);
-    app.component('ItemCard', ItemCard);
-    app.component('ItemCardPlaceholder', ItemCardPlaceholder);
+    const app = createApp(
+      createAppInstance(resolvedOptions, document.querySelector(tmplSelector)!.innerHTML, this)
+    );
 
     this.vm = app.mount(this);
   }
@@ -93,6 +90,12 @@ function createAppInstance(opt: UniMultiUploaderOptions, tmpl: string, el: Multi
   return defineComponent({
     name: 'MultiUploaderFieldApp',
     template: tmpl,
+    components: {
+      VueDraggable,
+      MultiUploader,
+      ItemCard,
+      ItemCardPlaceholder,
+    },
     props: {
       stackName: String as PropType<string>,
     },
@@ -104,8 +107,13 @@ function createAppInstance(opt: UniMultiUploaderOptions, tmpl: string, el: Multi
       const dragarea = ref<HTMLDivElement>();
       const modal = ref<HTMLDivElement>();
       const app = getCurrentInstance();
+      const uploader = useTemplateRef<typeof MultiUploader>('uploader');
+      const canModify = computed(() => !options.value.disabled && !options.value.readonly);
+      const instance = ref<MultiUploaderComposableInstance>();
 
       onMounted(() => {
+        instance.value = uploader.value!.instance;
+
         domEmit('multi-uploader:mounted', { app, uploader });
       });
 
@@ -127,32 +135,33 @@ function createAppInstance(opt: UniMultiUploaderOptions, tmpl: string, el: Multi
         items.value.push(uploadItem);
       }
 
-      const uploader = useMultiUploader(
-        items,
-        options.value.uploadUrl,
-        {
-          maxFiles: () => options.value.maxFiles,
-          readonly: () => options.value.readonly,
-          disabled: () => options.value.disabled,
-          thumbSize: () => options.value.thumbSize,
-          sortable: () => options.value.sortable,
-          accept: () => options.value.accept,
-          maxConcurrent: () => options.value.maxConcurrent,
-          value: () => options.value.value || [],
-          prepareXhr(xhr) {
-            xhr.setRequestHeader(
-              'X-CSRF-TOKEN',
-              data('csrf-token')
-            );
-          },
-          onItemUploadSuccess(item, xhr) {
-            const res = JSON.parse(xhr.responseText);
-            item.url = res.data.url;
-            item.thumbUrl = res.data.thumbUrl || res.data.thumb_url || res.data.url;
-            item.data = res.data;
-          }
+      const uploadUrl = options.value.uploadUrl;
+      const value = items.value;
+      const uploaderOptions = ref<MultiUploaderOptions>({
+        maxFiles: () => options.value.maxFiles,
+        readonly: () => options.value.readonly,
+        disabled: () => options.value.disabled,
+        accept: () => options.value.accept,
+        maxConcurrent: () => options.value.maxConcurrent,
+        prepareXhr(xhr) {
+          xhr.setRequestHeader(
+            'X-CSRF-TOKEN',
+            data('csrf-token')
+          );
+        },
+        onItemUploadSuccess(item, xhr) {
+          const res = JSON.parse(xhr.responseText);
+          item.url = res.data.url;
+          item.thumbUrl = res.data.thumbUrl || res.data.thumb_url || res.data.url;
+          item.data = res.data;
+          item.data.title ??= item.url.split('/').pop()?.split('?').shift() || '';
         }
-      )
+      });
+      const draggableOptions: Options = {
+        draggable: '.c-drag-item',
+        animation: 300,
+        disabled: !canModify.value,
+      };
 
       function openFile(item: UploaderItem) {
         if (options.value.openFileHandler) {
@@ -220,24 +229,21 @@ function createAppInstance(opt: UniMultiUploaderOptions, tmpl: string, el: Multi
           return;
         }
 
-        // Todo: rewrite replace logic
-        // uploader.value.checkFile(file);
-        //
-        // if (uploader.value.isReadonly) {
-        //   return;
-        // }
-        //
-        // const reader = new FileReader();
-        //
-        // item.file = file;
-        //
-        // const itemComponent = uploader.value.$refs[item.key];
-        //
-        // state.loading = true;
-        //
-        // itemComponent.upload().finally(() => {
-        //   state.loading = false;
-        // });
+        instance.value!.checkFile(file);
+
+        if (instance.value!.isReadonly) {
+          return;
+        }
+
+        item!.file = file;
+
+        loading.value = true;
+
+        try {
+          instance.value!.uploadFile(item!);
+        } finally {
+          loading.value = false;
+        }
       }
 
       function uploading() {
@@ -253,27 +259,37 @@ function createAppInstance(opt: UniMultiUploaderOptions, tmpl: string, el: Multi
       }
 
       // Todo: Fix this
-      function onChange(e) {
+      function onChange(item: UploaderItem) {
         // state.value = e;
 
-        domEmit('change', e);
+        domEmit('change', item);
       }
 
       function domEmit(event: string, detail?: any) {
         el.dispatchEvent(new CustomEvent(event, { detail }));
       }
 
+      const foo = ref<string>();
+
+      foo.value = 'Bar';
+
       // el.uploader = uploader;
       // el.app = ref(app.proxy);
 
       return {
         uploader,
+        uploadUrl,
+        value,
+        uploaderOptions,
+        draggableOptions,
         modal,
         dragarea,
         options,
         current,
         currentIndex,
         loading,
+        instance,
+        canModify,
 
         openFile,
         itemClick,

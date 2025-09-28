@@ -164,7 +164,13 @@ class MultiUploaderField extends AbstractField
 
         foreach ($form->getFields() as $field) {
             $field->setValue(null);
-            $field->attr('v-model', 'current.' . $field->getName());
+
+            if ($this->formScript->next) {
+                $field->attr('v-model', 'current.data.' . $field->getName());
+            } else {
+                $field->attr('v-model', 'current.' . $field->getName());
+            }
+
             $field->disabled($this->isDisabled());
             $field->readonly($this->isReadonly());
         }

@@ -54,10 +54,13 @@ export default defineConfig(({ mode }) => {
           'alpinejs',
           'cropperjs',
           'tinymce',
+          'bootstrap',
           'vue',
+          'vue-draggable-plus',
           'vue-multi-uploader',
           'web-directive',
           'bigint-toolkit',
+          'axios',
         ]
       },
       outDir: 'dist',

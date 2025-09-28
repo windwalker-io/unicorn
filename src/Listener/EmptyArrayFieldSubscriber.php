@@ -20,7 +20,7 @@ use Windwalker\Utilities\Arr;
 #[EventSubscriber]
 class EmptyArrayFieldSubscriber
 {
-    public function __construct(protected Container $container, protected $emptyValue = '__EMPTY_ARRAY__')
+    public function __construct(protected Container $container, protected string $emptyValue = '__EMPTY_ARRAY__')
     {
     }
 
