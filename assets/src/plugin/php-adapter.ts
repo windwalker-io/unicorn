@@ -6,7 +6,7 @@ import {
   useFieldModalSelect, useFieldModalTree,
   useFieldRepeatable,
   useFieldSingleImageDrag,
-  useIframeModal,
+  useIframeModal, useS3Uploader,
   useShowOn,
 } from '../composable';
 import { useFieldMultiUploader } from '../composable/useFieldMultiUploader';
@@ -46,6 +46,7 @@ const methods = {
   tinymce: {
     init: useTinymce
   },
+  s3Uploader: useS3Uploader,
   iframeModal: useIframeModal,
   initShowOn: useShowOn,
   modalTree: useFieldModalTree,

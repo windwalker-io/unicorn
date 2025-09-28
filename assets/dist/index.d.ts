@@ -171,6 +171,8 @@ export declare function doImport<T = any>(src: string): Promise<T>;
  */
 export declare function domready(callback?: ((value: any) => any)): Promise<void>;
 
+declare type EndEventHandler = () => void;
+
 export declare interface EventAwareInterface {
     on(event: string | string[], handler: EventHandler): this;
     once(event: string | string[], handler: EventHandler): this;
@@ -464,6 +466,16 @@ export declare function prepareAlpine(callback: AlpinePrepareCallback): Promise<
 
 export declare function prepareAlpineDefer(callback: AlpinePrepareCallback): Promise<void>;
 
+declare type ProgressEvent_2 = {
+    percent: number;
+    loaded: number;
+    total: number;
+};
+
+declare type ProgressEventHandler = (total: number, e: AxiosProgressEvent) => void;
+
+declare type ProgressEventHandler_2 = (e: ProgressEvent_2) => void;
+
 export declare function pushUnicornToGlobal(app?: UnicornApp): void;
 
 export { randomBytes }
@@ -502,6 +514,68 @@ declare interface RepeatableModule {
  */
 export declare function route(route: string, query?: Record<string, any>): string;
 
+declare type RouteActions = 'init' | 'sign' | 'complete' | 'abort';
+
+declare type RoutingOptions = {
+    init: string;
+    sign: string;
+    complete: string;
+    abort: string;
+} | ((action: RouteActions) => MaybePromise<string>);
+
+declare class S3MultipartUploader extends S3MultipartUploader_base {
+    options: S3MultipartUploaderOptions;
+    constructor(options: Partial<S3MultipartUploaderOptions>);
+    upload(file: string | File | Blob, path: string, options?: S3MultipartUploaderRequestOptions): Promise<{
+        url: string;
+    }>;
+    protected uploadPart(file: File, payload: {
+        id: string;
+        path: string;
+        partNumber: number;
+        chunkSize: number;
+    }): Promise<{
+        blob: Blob;
+        etag: any;
+    }>;
+    abort(id: string, path: string): Promise<void>;
+    updateProgress(loaded: number, total: number, options: S3MultipartUploaderRequestOptions): void;
+    resolveRoute(action: RouteActions): Promise<string>;
+    replaceExt(path: string, file: File | Blob): string;
+    on(event: 'start', handler: (file: File, data: {
+        path: string;
+        extra: Record<string, any>;
+        [name: string]: any;
+    }) => void): this;
+    on(event: 'success', handler: (url: string) => void): this;
+    on(event: 'progress', handler: (event: ProgressEvent_2) => void): this;
+}
+
+declare const S3MultipartUploader_base: Class<any[], EventMixin, typeof EventMixin>;
+
+declare interface S3MultipartUploaderModule {
+    S3MultipartUploader: typeof S3MultipartUploader;
+}
+
+declare interface S3MultipartUploaderOptions {
+    profile?: string;
+    chunkSize: number;
+    concurrency: number;
+    routes: RoutingOptions;
+    onProgress?: ProgressEventHandler_2;
+    ACL?: string;
+    extra?: Record<string, any>;
+}
+
+declare interface S3MultipartUploaderRequestOptions {
+    onProgress?: ProgressEventHandler_2;
+    filename?: string;
+    ContentType?: string;
+    ContentDisposition?: string;
+    ACL?: string;
+    extra?: Record<string, any>;
+}
+
 declare class S3Uploader extends S3Uploader_base implements EventAwareInterface {
     protected name: string;
     options: S3UploaderGlobalOptions;
@@ -512,6 +586,17 @@ declare class S3Uploader extends S3Uploader_base implements EventAwareInterface 
      * Do upload.
      */
     upload(file: string | File | Blob, path: string, options?: Partial<S3UploaderRequestOptions>): Promise<S3UploaderResponse>;
+    replaceExt(path: string, file: File | Blob): string;
+    on(event: 'start', handler: StartEventHandler): this;
+    on(event: 'success', handler: SuccessEventHandler): this;
+    on(event: 'end', handler: EndEventHandler): this;
+    on(event: 'upload-progress', handler: UploadProgressEventHandler): this;
+    on(event: 'progress', handler: ProgressEventHandler): this;
+    onStart(handler: StartEventHandler): this;
+    onSuccess(handler: SuccessEventHandler): this;
+    onEnd(handler: EndEventHandler): this;
+    onProgress(handler: UploadProgressEventHandler): this;
+    onProgressWithTotal(handler: ProgressEventHandler): this;
 }
 
 declare const S3Uploader_base: Class<any[], EventMixin, typeof EventMixin>;
@@ -653,6 +738,10 @@ export declare function slideDown(target: string | HTMLElement, duration?: numbe
 export declare function slideToggle(target: string | HTMLElement, duration?: number, display?: string): Promise<Animation | void>;
 
 export declare function slideUp(target: string | HTMLElement, duration?: number): Promise<Animation | void>;
+
+declare type StartEventHandler = (fileData: FormData) => void;
+
+declare type SuccessEventHandler = (url: string, res: S3UploaderResponse) => void;
 
 export declare function throttle<T extends Function = Function>(handler: T, wait?: number): T;
 
@@ -1100,6 +1189,8 @@ export declare class UnicornUI {
 
 declare type UploadHandlerParams = Parameters<NonNullable<EditorOptions['images_upload_handler']>>;
 
+declare type UploadProgressEventHandler = (e: AxiosProgressEvent) => void;
+
 declare type UriTypes = 'full' | 'path' | 'root' | 'current' | 'route' | 'script';
 
 export declare function useAssetUri(): UnicornAssetUri;
@@ -1194,6 +1285,10 @@ export declare function useLoadedHttpClient(config?: CreateAxiosDefaults): Promi
 
 export declare function useQueue(name?: string, maxRunning?: number): TaskQueue;
 
+export declare function useS3MultipartUploader(): Promise<S3MultipartUploaderModule>;
+
+export declare function useS3MultipartUploader(options: Partial<S3MultipartUploaderOptions>): Promise<S3MultipartUploader>;
+
 export declare function useS3Uploader(): Promise<S3UploaderModule>;
 
 export declare function useS3Uploader(name: string, options?: Partial<S3UploaderGlobalOptions>): Promise<S3Uploader>;
@@ -1247,6 +1342,7 @@ export declare function useUnicornPhpAdapter(app?: UnicornApp): {
     tinymce: {
         init: typeof useTinymce;
     };
+    s3Uploader: typeof useS3Uploader;
     iframeModal: typeof useIframeModal;
     initShowOn: typeof useShowOn;
     modalTree: typeof useFieldModalTree;
@@ -1292,19 +1388,19 @@ declare global {
 }
 
 
-declare global {
-    var Alpine: AlpineGlobal;
-    var TomSelect: typeof TomSelectGlobal;
-    var Spectrum: typeof SpectrumGlobal;
-    var Mark: any;
-}
-
-
 declare module '@windwalker-io/unicorn-next' {
     interface UnicornApp {
         /** @deprecated Only for code generator use. */
         $ui: typeof methods;
     }
+}
+
+
+declare global {
+    var Alpine: AlpineGlobal;
+    var TomSelect: typeof TomSelectGlobal;
+    var Spectrum: typeof SpectrumGlobal;
+    var Mark: any;
 }
 
 declare global {

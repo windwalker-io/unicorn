@@ -1,6 +1,6 @@
 import { useHttpClient } from '../composable';
 import { data } from '../data';
-import { EventAwareInterface, EventMixin } from '../events';
+import { EventAwareInterface, EventHandler, EventMixin } from '../events';
 import type { UnicornHttpClient } from './http-client';
 import { mergeDeep } from '../utilities';
 import { AxiosProgressEvent, AxiosResponse } from 'axios';
@@ -73,13 +73,20 @@ export class S3Uploader extends Mixin(EventMixin) implements EventAwareInterface
       file = new Blob([file], { type: options['Content-Type'] || 'text/plain' });
     }
 
+    if (file instanceof Blob && path.endsWith('.{ext}')) {
+      throw new Error('If using Blob or file data string, you must provide a valid file extension in the path.');
+    }
+
     if ((file instanceof Blob) || (file as any) instanceof File) {
       options['Content-Type'] = options['Content-Type'] || file.type;
     }
 
     if (options['filename']) {
-      options['Content-Disposition'] = 'attachment; filename*=UTF-8\'\'' + encodeURIComponent(options['filename']);
+      const filename = this.replaceExt(options['filename'], file);
+      options['Content-Disposition'] = 'attachment; filename*=UTF-8\'\'' + encodeURIComponent(filename);
     }
+
+    path = this.replaceExt(path, file);
 
     options['key'] = trimSlashes(this.options.subfolder || '') + '/'
       + trimSlashes(path);
@@ -134,7 +141,54 @@ export class S3Uploader extends Mixin(EventMixin) implements EventAwareInterface
       this.trigger('end');
     }
   }
+
+  replaceExt(path: string, file: File | Blob): string {
+    if (file instanceof File) {
+      const fileExt = file.name.split('.').pop();
+
+      if (path.endsWith('.{ext}')) {
+        return path.replace(/\.{ext}$/, fileExt ? '.' + fileExt : '');
+      }
+    }
+
+    return path;
+  }
+
+  on(event: 'start', handler: StartEventHandler): this;
+  on(event: 'success', handler: SuccessEventHandler): this;
+  on(event: 'end', handler: EndEventHandler): this;
+  on(event: 'upload-progress', handler: UploadProgressEventHandler): this;
+  on(event: 'progress', handler: ProgressEventHandler): this;
+  on(event: string | string[], handler: EventHandler): this {
+    return super.on(event, handler);
+  }
+
+  onStart(handler: StartEventHandler): this {
+    return this.on('start', handler);
+  }
+
+  onSuccess(handler: SuccessEventHandler): this {
+    return this.on('success', handler);
+  }
+
+  onEnd(handler: EndEventHandler): this {
+    return this.on('end', handler);
+  }
+
+  onProgress(handler: UploadProgressEventHandler): this {
+    return this.on('upload-progress', handler);
+  }
+
+  onProgressWithTotal(handler: ProgressEventHandler): this {
+    return this.on('progress', handler);
+  }
 }
+
+type EndEventHandler = () => void;
+type SuccessEventHandler = (url: string, res: S3UploaderResponse) => void;
+type StartEventHandler = (fileData: FormData) => void;
+type UploadProgressEventHandler = (e: AxiosProgressEvent) => void;
+type ProgressEventHandler = (total: number, e: AxiosProgressEvent) => void;
 
 function trimSlashes(str: string) {
   return str.replace(/^\/+|\/+$/g, '');

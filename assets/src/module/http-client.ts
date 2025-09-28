@@ -14,6 +14,14 @@ declare global {
   let axios: AxiosStatic;
 }
 
+export interface ApiReturn<T = any> {
+  success: boolean;
+  message?: string;
+  code: number;
+  status: number;
+  data: T;
+}
+
 declare module 'axios' {
   export interface AxiosRequestConfig {
     vars?: Record<string, any>;
