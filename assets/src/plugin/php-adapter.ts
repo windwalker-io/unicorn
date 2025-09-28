@@ -9,9 +9,9 @@ import {
   useIframeModal,
   useShowOn,
 } from '../composable';
+import { useFieldMultiUploader } from '../composable/useFieldMultiUploader';
 import { useTinymce } from '../composable/useTinymce';
 import { useUnicorn } from '../unicorn';
-import { domready } from '../service';
 
 declare module '../app' {
   export interface UnicornApp {
@@ -49,6 +49,7 @@ const methods = {
   iframeModal: useIframeModal,
   initShowOn: useShowOn,
   modalTree: useFieldModalTree,
+  multiUploader: useFieldMultiUploader,
 };
 
 export class UnicornPhpAdapter {

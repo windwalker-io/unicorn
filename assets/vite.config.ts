@@ -55,6 +55,9 @@ export default defineConfig(({ mode }) => {
           'cropperjs',
           'tinymce',
           'vue',
+          'vue-multi-uploader',
+          'web-directive',
+          'bigint-toolkit',
         ]
       },
       outDir: 'dist',
