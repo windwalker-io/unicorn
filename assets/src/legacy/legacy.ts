@@ -5,15 +5,18 @@ import {
   useBs5Tooltip,
   useCheckboxesMultiSelect,
   useFieldValidationSync,
+  useForm,
+  useFormAsync,
   useFormValidation,
   useFormValidationSync,
+  useGrid,
+  useGridAsync,
   useHttpClient,
   useQueue,
   useStack,
   useTomSelect,
   useUniDirective
 } from '../composable';
-import { LegacyLoader } from './loader';
 import {
   __,
   animateTo,
@@ -58,6 +61,7 @@ import {
   useKeepAlive,
   useSystemUri
 } from '../service';
+import { LegacyLoader } from './loader';
 
 export async function useLegacyMethods(app: any) {
   const http = await useHttpClient();
@@ -174,49 +178,9 @@ function handleUI(app: any) {
 }
 
 async function handleFormGrid(app: any) {
-  const { UnicornFormElement } = await import('../module/form');
-  const { UnicornGridElement } = await import('../module/grid');
+  await useFormAsync();
+  await useGridAsync();
 
-  app.form = function useForm(ele?: string | Element, options: Record<string, any> = {}) {
-    if (ele == null) {
-      return new UnicornFormElement(undefined, undefined, options);
-    }
-
-    const selector = typeof ele === 'string' ? ele : undefined;
-    const el = selectOne<HTMLFormElement>(ele as string);
-
-    if (!el) {
-      throw new Error(`Form element of: ${selector} not found.`);
-    }
-
-    return module(
-      el,
-      'unicorn.form',
-      () => new UnicornFormElement(selector, el, options)
-    );
-  };
-
-  app.grid = function useGrid(
-    ele: string | HTMLElement,
-    options: Record<string, any> | undefined = {}
-  ) {
-    const selector = typeof ele === 'string' ? ele : '';
-    const element = selectOne(ele);
-
-    if (!element) {
-      throw new Error('Element is empty');
-    }
-
-    const form = app.form(selector || element);
-
-    if (!form) {
-      throw new Error('UnicornGrid is depends on UnicornForm');
-    }
-
-    return module(
-      element,
-      'grid.plugin',
-      () => new UnicornGridElement(selector, element, form, options)
-    );
-  };
+  app.form = useForm;
+  app.grid = useGrid;
 }

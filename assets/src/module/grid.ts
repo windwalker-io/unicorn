@@ -236,6 +236,13 @@ export class UnicornGridElement {
   }
 
   /**
+   * @deprecated  Use updateItemByTask() instead.
+   */
+  doTask(task: string, id: number | string, url?: Nullable<string>, data?: Nullable<Record<string, any>>): boolean {
+    return this.updateItemByTask(task, id, url, data);
+  }
+
+  /**
    * Update a row with batch task.
    */
   updateRowByTask(task: string, row: number, url?: Nullable<string>, data?: Nullable<Record<string, any>>): boolean {

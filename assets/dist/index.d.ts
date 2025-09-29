@@ -460,7 +460,7 @@ export declare function prepareAlpine(callback: AlpinePrepareCallback): Promise<
 export declare function prepareAlpineDefer(callback: AlpinePrepareCallback): Promise<void>;
 
 declare type ProgressEvent_2 = {
-    percent: number;
+    percentage: number;
     loaded: number;
     total: number;
 };
@@ -529,6 +529,7 @@ declare class S3MultipartUploader extends S3MultipartUploader_base {
         path: string;
         partNumber: number;
         chunkSize: number;
+        onUploadProgress: (e: AxiosProgressEvent) => void;
     }): Promise<{
         blob: Blob;
         etag: string;
@@ -537,6 +538,8 @@ declare class S3MultipartUploader extends S3MultipartUploader_base {
     abort(id: string, path: string): Promise<void>;
     updateProgress(loaded: number, total: number, options: S3MultipartUploaderRequestOptions): void;
     resolveRoute(action: RouteActions): Promise<string>;
+    setChunkSize(size: number): this;
+    setChunkSizeInMiB(size: number): this;
     replaceExt(path: string, file: File | Blob): string;
     on(event: 'start', handler: (file: File, data: {
         path: string;
@@ -993,6 +996,10 @@ declare class UnicornGridElement {
      */
     updateItemByTask(task: string, id: string | number, url?: Nullable<string>, data?: Nullable<Record<string, any>>): boolean;
     /**
+     * @deprecated  Use updateItemByTask() instead.
+     */
+    doTask(task: string, id: number | string, url?: Nullable<string>, data?: Nullable<Record<string, any>>): boolean;
+    /**
      * Update a row with batch task.
      */
     updateRowByTask(task: string, row: number, url?: Nullable<string>, data?: Nullable<Record<string, any>>): boolean;
@@ -1236,7 +1243,13 @@ export declare function useFieldSingleImageDrag(): Promise<SingleImageDragModule
 
 export declare function useFieldValidationSync(selector: string | Element): UnicornFieldValidation | null;
 
-export declare function useForm(ele?: string | Element, options?: Record<string, any>): Promise<UnicornFormElement | null>;
+export declare function useForm(): UnicornFormElement;
+
+export declare function useForm(ele?: string | Element, options?: Record<string, any>): UnicornFormElement | null;
+
+export declare function useFormAsync(): Promise<UnicornFormElement>;
+
+export declare function useFormAsync(ele?: string | Element, options?: Record<string, any>): Promise<UnicornFormElement | null>;
 
 export declare function useFormComponent(ele?: string | Element, options?: Record<string, any>): Promise<UnicornFormElement | null>;
 
@@ -1246,7 +1259,9 @@ export declare function useFormValidation(selector: string | Element): Promise<U
 
 export declare function useFormValidationSync(selector: string | Element): UnicornFormValidation | null;
 
-export declare function useGrid(ele: string | HTMLElement, options?: Record<string, any> | undefined): Promise<UnicornGridElement | null>;
+export declare function useGrid(ele: string | HTMLElement, options?: Record<string, any> | undefined): UnicornGridElement | null;
+
+export declare function useGridAsync(ele?: string | HTMLElement, options?: Record<string, any> | undefined): Promise<UnicornGridElement | null>;
 
 export declare function useGridComponent(ele: string | HTMLElement, options?: Record<string, any> | undefined): Promise<UnicornGridElement | null>;
 
@@ -1349,6 +1364,7 @@ export declare function useUnicornPhpAdapter(app?: UnicornApp): {
     initShowOn: typeof useShowOn;
     modalTree: typeof useFieldModalTree;
     multiUploader: typeof useFieldMultiUploader;
+    tomSelect: typeof useTomSelect;
 };
 
 export declare function useUniDirective<T extends Element = HTMLElement>(name: string, handler: WebDirectiveHandler<T>, wdInstance?: default_3 | string): Promise<void>;
@@ -1383,9 +1399,10 @@ export declare function wait<T extends readonly unknown[]>(...promisee: {
 export { }
 
 
-declare global {
-    interface Node {
-        __unicorn?: any;
+declare module '@windwalker-io/unicorn-next' {
+    interface UnicornApp {
+        /** @deprecated Only for code generator use. */
+        $ui: typeof methods;
     }
 }
 
@@ -1398,15 +1415,17 @@ declare global {
 }
 
 
-declare module '@windwalker-io/unicorn-next' {
-    interface UnicornApp {
-        /** @deprecated Only for code generator use. */
-        $ui: typeof methods;
+declare global {
+    interface Node {
+        __unicorn?: any;
     }
 }
 
+
 declare global {
-    var S: any;
+    export interface Window {
+        bootstrap: typeof bootstrap;
+    }
 }
 
 
@@ -1425,9 +1444,11 @@ declare module 'axios' {
     }
 }
 
+declare global {
+    var S: any;
+}
+
 
 declare global {
-    export interface Window {
-        bootstrap: typeof bootstrap;
-    }
+    var tinymce: TinyMCE;
 }

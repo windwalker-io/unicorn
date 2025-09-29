@@ -33,7 +33,7 @@ export function clearHooks() {
 }
 
 async function loadTinymce(): Promise<TinyMCE> {
-  let tinymce = (await useImport('@tinymce')).default;
+  await useImport('@tinymce');
 
   if (imported) {
     return tinymce;
@@ -258,4 +258,8 @@ export interface TinymceModule {
   addHook: typeof addHook;
   clearHooks: typeof clearHooks;
   TinymceController: typeof TinymceController;
+}
+
+declare global {
+  var tinymce: TinyMCE;
 }

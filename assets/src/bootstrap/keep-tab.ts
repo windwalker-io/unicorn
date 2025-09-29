@@ -37,10 +37,10 @@ export class KeepTab {
       return;
     }
 
+    this.options = options;
+
     this.$element = $element;
     this.tabButtons = $element.querySelectorAll(this.options.tabItemSelector);
-
-    this.options = options;
 
     this.init(uid);
   }

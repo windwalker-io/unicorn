@@ -1,5 +1,5 @@
 import vuePlugin from '@vitejs/plugin-vue';
-import { resolve, basename } from 'node:path';
+import { resolve, basename, relative } from 'node:path';
 import { rimraf } from 'rimraf';
 import treeShakeable from 'rollup-plugin-tree-shakeable';
 import { defineConfig } from 'vite';
@@ -37,11 +37,22 @@ export default defineConfig(({ mode }) => {
             //   return `${dir}/${filename}.js`;
             // }
 
-            return 'chunks/[name]-[hash].js';
+            return 'chunks/[name].js';
           },
           // assetFileNames: 'assets/[name][extname]',
-          // preserveModules: true,       // 保留模組結構
+          // preserveModules: true,
           // preserveModulesRoot: 'src/unicorn',
+          manualChunks(id) {
+            if (!/node_modules/.test(id)) {
+              const chunk = relative(process.cwd() + '/src/', id);
+              if (chunk.startsWith('.')) {
+                return undefined;
+              }
+
+              // Remove any extension
+              return chunk.replace(/\.[^/.]+$/, '');
+            }
+          }
         },
         external: [
           'node:crypto',

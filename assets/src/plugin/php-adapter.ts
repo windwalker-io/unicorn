@@ -7,7 +7,7 @@ import {
   useFieldRepeatable,
   useFieldSingleImageDrag,
   useIframeModal, useS3Uploader,
-  useShowOn,
+  useShowOn, useTomSelect,
 } from '../composable';
 import { useFieldMultiUploader } from '../composable/useFieldMultiUploader';
 import { useTinymce } from '../composable/useTinymce';
@@ -51,6 +51,7 @@ const methods = {
   initShowOn: useShowOn,
   modalTree: useFieldModalTree,
   multiUploader: useFieldMultiUploader,
+  tomSelect: useTomSelect,
 };
 
 export class UnicornPhpAdapter {

@@ -1,10 +1,9 @@
 {
   "extends": [
-    //        "@vue/tsconfig/tsconfig.dom.json"
+    "./tsconfig.js.json"
   ],
   "include": [
     "./src/**/*.ts",
-//    "./src/types/app.d.ts"
   ],
   "exclude": [
     "node_modules/**/*"
@@ -13,18 +12,6 @@
     "reflect-metadata"
   ],
   "compilerOptions": {
-    "target": "esnext",
-    "module": "esnext",
-    "moduleResolution": "bundler",
-    "esModuleInterop": false,
-    "allowJs": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "skipLibCheck": true,
-    "strict": true,
-    //        "declaration": true,
-    "paths": {
-//      "@/*": ["./src/*"],
-    }
+    //
   }
 }
