@@ -509,6 +509,8 @@ declare interface RepeatableModule {
     ready: typeof ready_2;
 }
 
+declare type RequestHandler = <T = Record<string, any>>(action: RouteActions, data: Record<string, any>) => Promise<T>;
+
 /**
  * Get route.
  */
@@ -536,8 +538,9 @@ declare class S3MultipartUploader extends S3MultipartUploader_base {
         chunkSize: number;
     }): Promise<{
         blob: Blob;
-        etag: any;
+        etag: string;
     }>;
+    protected request<T = Record<string, any>>(action: RouteActions, body: Record<string, any>): Promise<T>;
     abort(id: string, path: string): Promise<void>;
     updateProgress(loaded: number, total: number, options: S3MultipartUploaderRequestOptions): void;
     resolveRoute(action: RouteActions): Promise<string>;
@@ -562,6 +565,7 @@ declare interface S3MultipartUploaderOptions {
     chunkSize: number;
     concurrency: number;
     routes: RoutingOptions;
+    requestHandler?: RequestHandler;
     onProgress?: ProgressEventHandler_2;
     ACL?: string;
     extra?: Record<string, any>;
@@ -813,6 +817,7 @@ export declare class UnicornApp extends UnicornApp_base implements EventAwareInt
     provide<T>(id: InjectionKey<T>, value: any): this;
     wait(callback: Function): Promise<any>;
     completed(): Promise<any[]>;
+    macro(name: string, callback: Function): this;
 }
 
 declare const UnicornApp_base: Class<any[], EventMixin, typeof EventMixin>;
@@ -1277,11 +1282,15 @@ export declare function useKeepAlive(url: string, time?: number): () => void;
 
 export declare function useLang(): UnicornLang;
 
+export declare function useLegacy(app?: UnicornApp): Promise<UnicornApp>;
+
 export declare function useListDependent(): Promise<ListDependentModule>;
 
 export declare function useListDependent(element: string | HTMLSelectElement, dependent?: Nullable<string | HTMLSelectElement>, options?: Partial<ListDependentOptions>): Promise<ListDependent>;
 
 export declare function useLoadedHttpClient(config?: CreateAxiosDefaults): Promise<UnicornHttpClient>;
+
+export declare function useMacro(name: string, handler: (...args: any[]) => any): void;
 
 export declare function useQueue(name?: string, maxRunning?: number): TaskQueue;
 
@@ -1381,17 +1390,17 @@ export declare function wait<T extends readonly unknown[]>(...promisee: {
 export { }
 
 
-declare global {
-    interface Node {
-        __unicorn?: any;
-    }
-}
-
-
 declare module '@windwalker-io/unicorn-next' {
     interface UnicornApp {
         /** @deprecated Only for code generator use. */
         $ui: typeof methods;
+    }
+}
+
+
+declare global {
+    interface Node {
+        __unicorn?: any;
     }
 }
 
@@ -1403,8 +1412,11 @@ declare global {
     var Mark: any;
 }
 
+
 declare global {
-    var S: any;
+    export interface Window {
+        bootstrap: typeof bootstrap;
+    }
 }
 
 
@@ -1423,9 +1435,14 @@ declare module 'axios' {
     }
 }
 
+declare global {
+    var S: any;
+}
+
 
 declare global {
-    export interface Window {
-        bootstrap: typeof bootstrap;
-    }
+    var Alpine: AlpineGlobal;
+    var TomSelect: typeof TomSelectGlobal;
+    var Spectrum: typeof SpectrumGlobal;
+    var Mark: any;
 }

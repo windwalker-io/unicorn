@@ -193,17 +193,6 @@ export async function mark(selector?: string | HTMLElement, keyword: string = ''
   return modules;
 }
 
-/**
- * Multiple Uploader
- */
-export function multiUploader(): Promise<any> {
-  return useImport('@unicorn/field/multi-uploader.js');
-}
-
-export function modalTree(): Promise<any> {
-  return useImport('@unicorn/field/modal-tree.js');
-}
-
 export async function slideUp(target: string | HTMLElement, duration: number = 300): Promise<Animation | void> {
   const ele = selectOne(target);
 

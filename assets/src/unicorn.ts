@@ -1,4 +1,6 @@
+import { aw } from '../dist/chunks/unicorn-DR9JpPYO';
 import { InjectionKey, UnicornApp } from './app';
+import { UnicornLegacy, useLegacyMethods } from './legacy/legacy';
 import { polyfill } from './polyfill';
 import { removeCloak } from './utilities';
 
@@ -44,4 +46,20 @@ export const useInject: typeof UnicornApp.prototype.inject = <T = any>(id: Injec
 export function pushUnicornToGlobal(app?: UnicornApp) {
   // @ts-ignore
   window.u = app ?? useUnicorn();
+}
+
+export function useMacro(name: string, handler: (...args: any[]) => any) {
+  useUnicorn().macro(name, handler);
+}
+
+export async function useLegacy(app?: UnicornApp) {
+  app ??= useUnicorn();
+
+  pushUnicornToGlobal(app);
+
+  const { useLegacyMethods } = await import('./legacy/legacy');
+
+  await useLegacyMethods(app);
+
+  return app;
 }
