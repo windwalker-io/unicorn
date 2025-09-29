@@ -432,8 +432,6 @@ declare interface ModalSelectModule {
     createCallback: typeof createCallback;
 }
 
-export declare function modalTree(): Promise<any>;
-
 declare function module_2<T = any, E extends Element = Element>(ele: string, name: string, callback?: ((el: E) => any)): (T | null)[];
 
 declare function module_2<T = any, E extends Element = Element>(ele: NodeListOf<Element>, name: string, callback?: ((el: E) => any)): (T | null)[];
@@ -442,11 +440,6 @@ declare function module_2<T = any, E extends Element = Element>(ele: Element, na
 
 declare function module_2<T = any, E extends Element = Element>(ele: string | Element | NodeListOf<Element>, name: string, callback?: ((el: E) => any)): (T | null)[] | T | null;
 export { module_2 as module }
-
-/**
- * Multiple Uploader
- */
-export declare function multiUploader(): Promise<any>;
 
 export declare function nextTick(callback?: () => any): Promise<any>;
 
@@ -1390,14 +1383,6 @@ export declare function wait<T extends readonly unknown[]>(...promisee: {
 export { }
 
 
-declare module '@windwalker-io/unicorn-next' {
-    interface UnicornApp {
-        /** @deprecated Only for code generator use. */
-        $ui: typeof methods;
-    }
-}
-
-
 declare global {
     interface Node {
         __unicorn?: any;
@@ -1413,10 +1398,15 @@ declare global {
 }
 
 
-declare global {
-    export interface Window {
-        bootstrap: typeof bootstrap;
+declare module '@windwalker-io/unicorn-next' {
+    interface UnicornApp {
+        /** @deprecated Only for code generator use. */
+        $ui: typeof methods;
     }
+}
+
+declare global {
+    var S: any;
 }
 
 
@@ -1435,14 +1425,9 @@ declare module 'axios' {
     }
 }
 
-declare global {
-    var S: any;
-}
-
 
 declare global {
-    var Alpine: AlpineGlobal;
-    var TomSelect: typeof TomSelectGlobal;
-    var Spectrum: typeof SpectrumGlobal;
-    var Mark: any;
+    export interface Window {
+        bootstrap: typeof bootstrap;
+    }
 }

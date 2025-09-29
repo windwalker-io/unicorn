@@ -1,6 +1,4 @@
-import { aw } from '../dist/chunks/unicorn-DR9JpPYO';
 import { InjectionKey, UnicornApp } from './app';
-import { UnicornLegacy, useLegacyMethods } from './legacy/legacy';
 import { polyfill } from './polyfill';
 import { removeCloak } from './utilities';
 
