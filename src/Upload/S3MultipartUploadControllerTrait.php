@@ -20,7 +20,7 @@ trait S3MultipartUploadControllerTrait
         #[Input] array $extra = [],
         #[Input] ?string $profile = null,
     ): array {
-        $id = $uploader->init($path, $filename, $extra, $profile);
+        $id = $uploader->initWithFilename($path, $filename, $extra, $profile);
 
         return [
             'id' => $id,

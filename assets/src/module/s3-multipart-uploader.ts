@@ -1,3 +1,4 @@
+import { AxiosResponseHeaders } from 'axios';
 import { Mixin } from 'ts-mixer';
 import { createQueue, useHttpClient } from '../composable';
 import { EventHandler, EventMixin } from '../events';
@@ -13,12 +14,14 @@ declare type RoutingOptions = {
 } | ((action: RouteActions) => MaybePromise<string>);
 
 declare type RouteActions = 'init' | 'sign' | 'complete' | 'abort';
+declare type RequestHandler = <T = Record<string, any>>(action: RouteActions, data: Record<string, any>) => Promise<T>;
 
 export interface S3MultipartUploaderOptions {
   profile?: string;
   chunkSize: number;
   concurrency: number;
   routes: RoutingOptions;
+  requestHandler?: RequestHandler;
   onProgress?: ProgressEventHandler;
   ACL?: string;
   extra?: Record<string, any>;
@@ -80,7 +83,6 @@ export class S3MultipartUploader extends Mixin(EventMixin) {
     path = this.replaceExt(path, file);
 
     const initData: Record<string, any> = { extra, path, profile: this.options.profile };
-    const http = await useHttpClient();
 
     if (options['filename']) {
       initData['filename'] = options['filename'];
@@ -88,13 +90,11 @@ export class S3MultipartUploader extends Mixin(EventMixin) {
 
     this.trigger('start', file, initData);
 
-    // Init
-    const initRes = await http.post<ApiReturn<{ id: string; }>>(
-      await this.resolveRoute('init'),
+    // @Request sign
+    const { id } = await this.request<{ id: string; }>(
+      'init',
       initData
     );
-
-    const { id } = initRes.data.data;
 
     try {
       const chunkSize = this.options.chunkSize;
@@ -128,9 +128,9 @@ export class S3MultipartUploader extends Mixin(EventMixin) {
 
       await Promise.all(promises);
 
-      // Complete
-      const completeRes = await http.post<ApiReturn<{ url: string }>>(
-        await this.resolveRoute('complete'),
+      // @Request sign
+      const { url } = await this.request<{ url: string }>(
+        'complete',
         {
           id,
           path,
@@ -138,8 +138,6 @@ export class S3MultipartUploader extends Mixin(EventMixin) {
           profile: this.options.profile,
         },
       );
-
-      const { url } = completeRes.data.data;
 
       this.trigger('success', url);
 
@@ -160,9 +158,9 @@ export class S3MultipartUploader extends Mixin(EventMixin) {
 
     const blob = file.slice(start, end);
 
-    // Sign
-    const signRes = await http.post<ApiReturn<{ url: string; }>>(
-      await this.resolveRoute('sign'),
+    // @Request sign
+    const { url } = await this.request<{ url: string; }>(
+      'sign',
       {
         id,
         path,
@@ -170,21 +168,30 @@ export class S3MultipartUploader extends Mixin(EventMixin) {
         profile: this.options.profile,
       }
     );
-    const { url } = signRes.data.data;
 
     // PUT to S3
     const res = await http.put(url, blob);
 
-    const etag = res.headers?.get('ETag') || '';
+    const etag = String((res.headers as AxiosResponseHeaders).get('ETag') || '');
 
     return { blob, etag };
   }
 
-  async abort(id: string, path: string) {
+  protected async request<T = Record<string, any>>(action: RouteActions, body: Record<string, any>): Promise<T> {
+    if (this.options.requestHandler) {
+      return this.options.requestHandler<T>(action, body);
+    }
+
     const http = await useHttpClient();
 
-    await http.post(
-      await this.resolveRoute('abort'),
+    const res = await http.post<ApiReturn<T>>(await this.resolveRoute(action), body);
+
+    return res.data.data;
+  }
+
+  async abort(id: string, path: string) {
+    await this.request(
+      'abort',
       {
         id,
         path,

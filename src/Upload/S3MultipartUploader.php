@@ -19,13 +19,9 @@ class S3MultipartUploader
     {
     }
 
-    public function init(string $path, ?string $filename, array $extra = [], ?string $profile = null): string
+    public function init(string $path, array $extra = [], ?string $profile = null): string
     {
         [$s3Service, $s3Client] = $this->getS3Service($profile);
-
-        if ($filename) {
-            $extra['ContentDisposition'] = HeaderHelper::attachmentContentDisposition($filename);
-        }
 
         $result = $s3Client->createMultipartUpload(
             [
@@ -38,14 +34,27 @@ class S3MultipartUploader
         return $result['UploadId'];
     }
 
+    public function initWithFilename(
+        string $path,
+        ?string $filename,
+        array $extra = [],
+        ?string $profile = null
+    ): string {
+        if ($filename) {
+            $extra['ContentDisposition'] = HeaderHelper::attachmentContentDisposition($filename);
+        }
+
+        return $this->init($path, $extra, $profile);
+    }
+
     public function sign(string $id, string $path, int $partNumber, ?string $profile = null): RequestInterface
     {
         [$s3Service, $s3Client] = $this->getS3Service($profile);
 
         $cmd = $s3Client->getCommand('UploadPart', [
-            'Bucket'     => $s3Service->getBucketName(),
-            'Key'        => $path,
-            'UploadId'   => $id,
+            'Bucket' => $s3Service->getBucketName(),
+            'Key' => $path,
+            'UploadId' => $id,
             'PartNumber' => $partNumber,
         ]);
 
@@ -57,8 +66,8 @@ class S3MultipartUploader
         [$s3Service, $s3Client] = $this->getS3Service($profile);
 
         return $s3Client->completeMultipartUpload([
-            'Bucket'   => $s3Service->getBucketName(),
-            'Key'      => $path,
+            'Bucket' => $s3Service->getBucketName(),
+            'Key' => $path,
             'UploadId' => $id,
             'MultipartUpload' => [
                 'Parts' => $parts,
@@ -71,8 +80,8 @@ class S3MultipartUploader
         [$s3Service, $s3Client] = $this->getS3Service($profile);
 
         return $s3Client->abortMultipartUpload([
-            'Bucket'   => $s3Service->getBucketName(),
-            'Key'      => $path,
+            'Bucket' => $s3Service->getBucketName(),
+            'Key' => $path,
             'UploadId' => $id,
         ]);
     }
