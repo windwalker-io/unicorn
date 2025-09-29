@@ -1,4 +1,4 @@
-import { AxiosResponseHeaders } from 'axios';
+import { AxiosProgressEvent, AxiosResponseHeaders } from 'axios';
 import { Mixin } from 'ts-mixer';
 import { createQueue, useHttpClient } from '../composable';
 import { EventHandler, EventMixin } from '../events';
@@ -64,7 +64,7 @@ export class S3MultipartUploader extends Mixin(EventMixin) {
       file = new Blob([file], { type: options['ContentType'] || 'text/plain' });
     }
 
-    if (file instanceof Blob) {
+    if (file instanceof Blob && !(file instanceof File)) {
       if (path.endsWith('.{ext}')) {
         throw new Error('If using Blob or file data string, you must provide a valid file extension in the path.');
       }
@@ -105,6 +105,7 @@ export class S3MultipartUploader extends Mixin(EventMixin) {
       let currentPart = 1;
       const queue = createQueue(this.options.concurrency);
       const promises = [];
+      const partsUploaded: Record<number, number> = {};
 
       // Loop from 1 to chunks
       while (currentPart <= chunks) {
@@ -112,7 +113,22 @@ export class S3MultipartUploader extends Mixin(EventMixin) {
 
         // Push to queue
         const p = queue.push(async () => {
-          const { blob, etag } = await this.uploadPart(file as File, { id, path, partNumber, chunkSize });
+          const { blob, etag } = await this.uploadPart(
+            file as File,
+            {
+              id,
+              path,
+              partNumber,
+              chunkSize,
+              onUploadProgress: (e) => {
+                partsUploaded[partNumber] = e.loaded;
+
+                const uploaded = Object.values(partsUploaded).reduce((sum, a) => sum + a, 0);
+
+                this.updateProgress(uploaded, file.size, options);
+              }
+            }
+          );
 
           uploadedBytes += blob.size;
 
@@ -149,9 +165,18 @@ export class S3MultipartUploader extends Mixin(EventMixin) {
     }
   }
 
-  protected async uploadPart(file: File, payload: { id: string; path: string; partNumber: number; chunkSize: number; }) {
+  protected async uploadPart(
+    file: File,
+    payload: {
+      id: string;
+      path: string;
+      partNumber: number;
+      chunkSize: number;
+      onUploadProgress: (e: AxiosProgressEvent) => void;
+    }
+  ) {
     const http = await useHttpClient();
-    const { id, path, partNumber, chunkSize } = payload;
+    const { id, path, partNumber, chunkSize, onUploadProgress } = payload;
 
     const start = (partNumber - 1) * chunkSize;
     const end = Math.min(partNumber * chunkSize, file.size);
@@ -170,7 +195,13 @@ export class S3MultipartUploader extends Mixin(EventMixin) {
     );
 
     // PUT to S3
-    const res = await http.put(url, blob);
+    const res = await http.put(
+      url,
+      blob,
+      {
+        onUploadProgress,
+      }
+    );
 
     const etag = String((res.headers as AxiosResponseHeaders).get('ETag') || '');
 
@@ -201,9 +232,9 @@ export class S3MultipartUploader extends Mixin(EventMixin) {
   }
 
   updateProgress(loaded: number, total: number, options: S3MultipartUploaderRequestOptions) {
-    const percent = (loaded / total) * 100;
+    const percentage = (loaded / total) * 100;
 
-    const event = { percent, loaded, total };
+    const event: ProgressEvent = { percentage, loaded, total };
 
     this.trigger('progress', event);
 
@@ -220,6 +251,18 @@ export class S3MultipartUploader extends Mixin(EventMixin) {
     }
 
     return this.options.routes[action];
+  }
+
+  setChunkSize(size: number): this {
+    this.options.chunkSize = size;
+
+    return this;
+  }
+
+  setChunkSizeInMiB(size: number): this {
+    this.options.chunkSize = size * 1024 * 1024;
+
+    return this;
   }
 
   replaceExt(path: string, file: File | Blob): string {
@@ -246,7 +289,7 @@ export class S3MultipartUploader extends Mixin(EventMixin) {
 }
 
 type ProgressEvent = {
-  percent: number;
+  percentage: number;
   loaded: number;
   total: number;
 };

@@ -2,19 +2,32 @@
 
 declare(strict_types=1);
 
-namespace Unicorn\Upload;
+namespace Unicorn\Aws;
 
 use Aws\Result;
 use Aws\S3\S3Client;
 use Psr\Http\Message\RequestInterface;
-use Unicorn\Aws\S3Service;
 use Unicorn\Storage\Adapter\S3Storage;
 use Unicorn\Storage\StorageInterface;
 use Windwalker\Core\Application\ApplicationInterface;
 use Windwalker\Http\Helper\HeaderHelper;
+use Windwalker\Utilities\Arr;
 
 class S3MultipartUploader
 {
+    use S3ConstantTrait;
+
+    public protected(set) array $allowedExtra = [
+        'ContentDisposition',
+        'ContentType',
+    ];
+
+    public protected(set) ?string $profile = null;
+
+    public protected(set) string $acl = self::ACL_AUTHENTICATED_READ;
+
+    public protected(set) int|string|\DateTimeInterface $presignExpires = '+10 minutes';
+
     public function __construct(protected ApplicationInterface $app)
     {
     }
@@ -22,6 +35,8 @@ class S3MultipartUploader
     public function init(string $path, array $extra = [], ?string $profile = null): string
     {
         [$s3Service, $s3Client] = $this->getS3Service($profile);
+
+        $extra = (array) Arr::only($extra, $this->allowedExtra);
 
         $result = $s3Client->createMultipartUpload(
             [
@@ -58,7 +73,7 @@ class S3MultipartUploader
             'PartNumber' => $partNumber,
         ]);
 
-        return $s3Client->createPresignedRequest($cmd, '+10 minutes');
+        return $s3Client->createPresignedRequest($cmd, $this->presignExpires);
     }
 
     public function complete(string $id, string $path, array $parts, ?string $profile = null): Result
@@ -93,6 +108,8 @@ class S3MultipartUploader
      */
     public function getS3Service(?string $profile = null): array
     {
+        $profile ??= $this->profile;
+
         $storage = $this->app->retrieve(StorageInterface::class, tag: $profile);
 
         if (!$storage instanceof S3Storage) {
@@ -103,5 +120,55 @@ class S3MultipartUploader
         $s3Client = $s3Service->getClient();
 
         return [$s3Service, $s3Client];
+    }
+
+    public function allowExtra(string ...$args): static
+    {
+        $this->allowedExtra = [...$this->allowedExtra, ...$args];
+
+        return $this;
+    }
+
+    public function clearAllowExtra(): static
+    {
+        $this->allowedExtra = [];
+
+        return $this;
+    }
+
+    public function getAcl(): string
+    {
+        return $this->acl;
+    }
+
+    public function useACL(string $acl): static
+    {
+        $this->acl = $acl;
+
+        return $this;
+    }
+
+    public function getProfile(): ?string
+    {
+        return $this->profile;
+    }
+
+    public function useProfile(?string $profile): static
+    {
+        $this->profile = $profile;
+
+        return $this;
+    }
+
+    public function getPresignExpires(): \DateTimeInterface|int|string
+    {
+        return $this->presignExpires;
+    }
+
+    public function presignExpires(\DateTimeInterface|int|string $presignExpires): static
+    {
+        $this->presignExpires = $presignExpires;
+
+        return $this;
     }
 }

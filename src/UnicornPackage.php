@@ -35,7 +35,6 @@ use Unicorn\Script\ModernScript;
 use Unicorn\Script\UnicornScript;
 use Unicorn\Script\VueScript;
 use Unicorn\Upload\FileUploadManager;
-use Unicorn\Upload\S3MultipartUploader;
 use Windwalker\Core\Application\AppClient;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Application\ApplicationInterface;
@@ -133,7 +132,6 @@ class UnicornPackage extends AbstractPackage implements
         $container->prepareSharedObject(VueScript::class);
         $container->prepareSharedObject(ModernScript::class);
         $container->prepareSharedObject(AwsScript::class);
-        $container->prepareSharedObject(S3MultipartUploader::class);
         $container->prepareSharedObject(FileUploadManager::class);
         $container->prepareSharedObject(MimeTypes::class)
             ->alias(MimeTypesInterface::class, MimeTypes::class);

@@ -2,25 +2,46 @@
 
 declare(strict_types=1);
 
-namespace Unicorn\Upload;
+namespace Unicorn\Aws;
 
 use Unicorn\Attributes\Ajax;
 use Unicorn\Controller\AjaxControllerTrait;
+use Windwalker\Core\Application\ApplicationInterface;
 use Windwalker\Core\Attributes\Request\Input;
+use Windwalker\DI\Attributes\Inject;
 
 trait S3MultipartUploadControllerTrait
 {
     use AjaxControllerTrait;
 
+    #[Inject]
+    protected ApplicationInterface $app;
+
+    protected S3MultipartUploader $uploader;
+
+    protected function getS3MultipartUploader(): S3MultipartUploader
+    {
+        if (isset($this->uploader)) {
+            return $this->uploader;
+        }
+
+        $uploader = new S3MultipartUploader($this->app);
+
+        self::configureUploader($uploader);
+
+        return $uploader;
+    }
+
+    abstract protected static function configureUploader(S3MultipartUploader $uploader): void;
+
     #[Ajax]
     public function init(
-        S3MultipartUploader $uploader,
         #[Input] string $path,
         #[Input] ?string $filename = null,
         #[Input] array $extra = [],
         #[Input] ?string $profile = null,
     ): array {
-        $id = $uploader->initWithFilename($path, $filename, $extra, $profile);
+        $id = $this->getS3MultipartUploader()->initWithFilename($path, $filename, $extra, $profile);
 
         return [
             'id' => $id,
@@ -29,14 +50,13 @@ trait S3MultipartUploadControllerTrait
 
     #[Ajax]
     public function sign(
-        S3MultipartUploader $uploader,
         #[Input] string $id,
         #[Input] string $path,
         #[Input] int $partNumber,
         #[Input] ?string $profile = null,
     ): array {
         try {
-            $request = $uploader->sign($id, $path, $partNumber, $profile);
+            $request = $this->getS3MultipartUploader()->sign($id, $path, $partNumber, $profile);
 
             return [
                 'url' => (string) $request->getUri(),
@@ -50,20 +70,19 @@ trait S3MultipartUploadControllerTrait
 
     #[Ajax]
     public function complete(
-        S3MultipartUploader $uploader,
         #[Input] string $id,
         #[Input] string $path,
         #[Input] array $parts,
         #[Input] ?string $profile = null,
     ): array {
         try {
-            $result = $uploader->complete($id, $path, $parts, $profile);
+            $result = $this->getS3MultipartUploader()->complete($id, $path, $parts, $profile);
 
             return [
                 'url' => $result['Location'],
             ];
         } catch (\Throwable $e) {
-            $this->abort($uploader, $id, $path, $profile);
+            $this->abort($id, $path, $profile);
 
             throw $e;
         }
@@ -71,12 +90,11 @@ trait S3MultipartUploadControllerTrait
 
     #[Ajax]
     public function abort(
-        S3MultipartUploader $uploader,
         #[Input] string $id,
         #[Input] string $path,
         #[Input] ?string $profile = null,
     ): true {
-        $uploader->abort($id, $path, $profile);
+        $this->getS3MultipartUploader()->abort($id, $path, $profile);
 
         return true;
     }
