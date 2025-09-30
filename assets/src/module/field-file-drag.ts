@@ -1,6 +1,6 @@
 import css from '../../scss/field/file-drag.scss?inline';
 import { useUniDirective } from '../composable';
-import { __, html, injectCssToDocument, simpleAlert, uid } from '../service';
+import { __, html, injectCssToDocument, simpleAlert, uid, watchAttributes } from '../service';
 import { mergeDeep } from '../utilities';
 
 injectCssToDocument(document, css);
@@ -41,6 +41,11 @@ export class FileDragElement extends HTMLElement {
     this.prepareElements();
 
     const options = JSON.parse(this.getAttribute('options') || '{}') || {};
+
+    const observer = watchAttributes(this.element);
+    observer.watch('readonly', (el) => {
+      el.disabled = el.readOnly;
+    });
 
     if (this.element.readOnly) {
       this.element.disabled = true;

@@ -11,7 +11,7 @@ export class ShowOn {
   input!: HTMLInputTypes;
   conditions: Conditions = {};
   targets = {};
-  readonly = false;
+  defaultReadonly = false;
   initialDisplay!: string;
 
   constructor(el: HTMLElement, conditions: Conditions) {
@@ -33,7 +33,7 @@ export class ShowOn {
       const target = selectOne<HTMLElement>(selector)!;
 
       if (this.input) {
-        this.readonly = this.input.hasAttribute('readonly');
+        this.defaultReadonly = this.input.hasAttribute('readonly');
       }
 
       let listenTarget: HTMLInputTypes[];
@@ -62,12 +62,18 @@ export class ShowOn {
         fadeIn(this.el, duration, this.initialDisplay);
       }, duration + 30);
     } else {
+      if (this.input) {
+        this.defaultReadonly = this.input.hasAttribute('readonly');
+      }
+
       fadeOut(this.el, duration);
     }
 
     if (this.input) {
       if (matched) {
-        this.input.removeAttribute('readonly');
+        if (!this.defaultReadonly) {
+          this.input.removeAttribute('readonly');
+        }
       } else {
         this.input.setAttribute('readonly', 'readonly');
       }
@@ -95,7 +101,7 @@ export class ShowOn {
         break;
 
       case 'checkbox':
-        targetValue = (target as HTMLInputElement).checked ? (target as HTMLInputElement).value : null;
+        targetValue = (target as HTMLInputElement).checked ? (target as HTMLInputElement).value : [null, false];
         break;
 
       case 'radio':

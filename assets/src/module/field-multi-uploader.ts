@@ -99,7 +99,7 @@ function createAppInstance(opt: UniMultiUploaderOptions, tmpl: string, el: Multi
     props: {
       stackName: String as PropType<string>,
     },
-    setup(props, ctx) {
+    setup(props, { expose }) {
       const options = ref<UniMultiUploaderOptions>(opt);
       const current = ref<UploaderItem>();
       const currentIndex = ref<number>();
@@ -258,10 +258,7 @@ function createAppInstance(opt: UniMultiUploaderOptions, tmpl: string, el: Multi
         domEmit('uploaded');
       }
 
-      // Todo: Fix this
       function onChange(item: UploaderItem) {
-        // state.value = e;
-
         domEmit('change', item);
       }
 
@@ -273,8 +270,63 @@ function createAppInstance(opt: UniMultiUploaderOptions, tmpl: string, el: Multi
 
       foo.value = 'Bar';
 
-      // el.uploader = uploader;
-      // el.app = ref(app.proxy);
+      const icons = ref<Record<string, string>>({
+        default: 'fas fa-file',
+        pdf: 'fas fa-file-pdf text-danger',
+        xls: 'fas fa-file-excel text-success',
+        xlsx: 'fas fa-file-excel text-success',
+        doc: 'fas fa-file-word text-primary',
+        docx: 'fas fa-file-word text-primary',
+        ppt: 'fas fa-file-powerpoint text-warning',
+        pptx: 'fas fa-file-powerpoint text-warning',
+        zip: 'fas fa-file-archive text-dark',
+        '7z': 'fas fa-file-archive text-dark',
+        rar: 'fas fa-file-archive text-dark',
+        mp4: 'fas fa-file-video text-dark',
+        avi: 'fas fa-file-video text-dark',
+        flv: 'fas fa-file-video text-dark',
+        mov: 'fas fa-file-video text-dark',
+        ogg: 'fas fa-file-video text-dark',
+        webm: 'fas fa-file-video text-dark',
+        mpg: 'fas fa-file-video text-dark',
+        mp3: 'fas fa-file-audio text-dark',
+        acc: 'fas fa-file-audio text-dark',
+        wav: 'fas fa-file-audio text-dark',
+      });
+
+      function setIcons(newIcons: Record<string, string>, merge = true) {
+        if (merge) {
+          icons.value = { ...icons.value, ...newIcons };
+          return;
+        }
+
+        icons.value = newIcons;
+      }
+
+      expose({
+        uploader,
+        instance,
+        value,
+        canModify,
+        openFile,
+        itemClick,
+        isImage,
+        setIcons,
+      });
+
+      function fileIcon(item: UploaderItem) {
+        let path = item.file ? item.file.name : item.url;
+
+        // strip query
+        path = String(path).split('?')[0];
+
+        // Get extension
+        const ext = path.split('.').pop() || '';
+
+        const def = 'default' in icons ? icons.default : 'fas fa-file';
+
+        return icons[String(ext || 'default').toLowerCase() as keyof typeof icons] || def;
+      }
 
       return {
         uploader,
@@ -301,7 +353,8 @@ function createAppInstance(opt: UniMultiUploaderOptions, tmpl: string, el: Multi
         uploading,
         uploaded,
         onChange,
-        domEmit
+        domEmit,
+        fileIcon,
       };
     }
   });

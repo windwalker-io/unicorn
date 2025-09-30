@@ -1,6 +1,7 @@
 export * from './animate';
 export * from './crypto';
 export * from './dom';
+export * from './dom-watcher';
 export * from './helper';
 export * from './lang';
 export * from './loader';

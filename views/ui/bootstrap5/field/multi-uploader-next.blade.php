@@ -49,8 +49,8 @@ $lang = $app->service(LangService::class);
  *     readonly: bool,
  *     loading: bool,
  *     canReplace: bool,
-// *     fieldName: string,
-// *     fieldFullName: string
+ *     fieldName: string,
+ *     fieldFullName: string
  * }
  */
 
@@ -103,6 +103,10 @@ $data['tmplSelector'] ??= ('#' . $tmplId);
                 @click="{{ $hasEditForm ? 'itemClick(item, i, $event)' : 'openFile(item, i, $event)' }}"
                 @delete="deleteItem"
             >
+                <template #icon="{ item }">
+                  <span :class="fileIcon(item)" style="font-size: 2.5rem"></span>
+                </template>
+
                 <template v-slot:extra="{ item }">
                 @if ($hasEditForm)
                         <h5 v-if="isImage(item.url) && item.data.title !== ''" class="preview-img__title text-white p-4">
