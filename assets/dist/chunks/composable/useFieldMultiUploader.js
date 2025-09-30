@@ -1,7 +1,0 @@
-async function useFieldMultiUploader() {
-  await import("../module/field-multi-uploader.js");
-}
-export {
-  useFieldMultiUploader as u
-};
-//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoidXNlRmllbGRNdWx0aVVwbG9hZGVyLmpzIiwic291cmNlcyI6WyIuLi8uLi8uLi9zcmMvY29tcG9zYWJsZS91c2VGaWVsZE11bHRpVXBsb2FkZXIudHMiXSwic291cmNlc0NvbnRlbnQiOlsiZXhwb3J0IGFzeW5jIGZ1bmN0aW9uIHVzZUZpZWxkTXVsdGlVcGxvYWRlcigpIHtcbiAgYXdhaXQgaW1wb3J0KCcuLi9tb2R1bGUvZmllbGQtbXVsdGktdXBsb2FkZXInKTtcbn1cbiJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQSxlQUFzQix3QkFBd0I7QUFDNUMsUUFBTSxPQUFPLG1DQUFnQztBQUMvQzsifQ==

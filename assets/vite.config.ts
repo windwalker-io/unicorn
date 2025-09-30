@@ -42,21 +42,21 @@ export default defineConfig(({ mode }) => {
           // assetFileNames: 'assets/[name][extname]',
           // preserveModules: true,
           // preserveModulesRoot: 'src/unicorn',
-          manualChunks(id) {
-            if (!/node_modules/.test(id)) {
-              const chunk = relative(process.cwd() + '/src/', id).replace(/\\/g, '/');
-              if (chunk.startsWith('.')) {
-                return undefined;
-              }
-
-              if (chunk.includes('ts-mixer')) {
-                return 'ts-mixer';
-              }
-
-              // Remove any extension
-              return chunk.replace(/\.[^/.]+$/, '');
-            }
-          }
+          // manualChunks(id) {
+          //   if (!/node_modules/.test(id)) {
+          //     const chunk = relative(process.cwd() + '/src/', id).replace(/\\/g, '/');
+          //     if (chunk.startsWith('.')) {
+          //       return undefined;
+          //     }
+          //
+          //     if (chunk.includes('ts-mixer')) {
+          //       return 'ts-mixer';
+          //     }
+          //
+          //     // Remove any extension
+          //     return chunk.replace(/\.[^/.]+$/, '');
+          //   }
+          // }
         },
         external: [
           'node:crypto',
@@ -68,6 +68,7 @@ export default defineConfig(({ mode }) => {
           '@asika32764/vue-animate',
           'alpinejs',
           'cropperjs',
+          'cropperjs/*',
           'tinymce',
           'bootstrap',
           'vue',
@@ -80,7 +81,7 @@ export default defineConfig(({ mode }) => {
       },
       outDir: 'dist',
       emptyOutDir: false,
-      sourcemap: 'inline',
+      sourcemap: 'external',
       minify: false,
     },
     plugins: [

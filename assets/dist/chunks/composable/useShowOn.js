@@ -1,9 +1,0 @@
-async function useShowOn() {
-  const module = await import("../module/show-on.js");
-  await module.ready;
-  return module;
-}
-export {
-  useShowOn as u
-};
-//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoidXNlU2hvd09uLmpzIiwic291cmNlcyI6WyIuLi8uLi8uLi9zcmMvY29tcG9zYWJsZS91c2VTaG93T24udHMiXSwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgU2hvd09uTW9kdWxlIH0gZnJvbSAnLi4vbW9kdWxlL3Nob3ctb24nO1xyXG5cclxuZXhwb3J0IGFzeW5jIGZ1bmN0aW9uIHVzZVNob3dPbigpOiBQcm9taXNlPFNob3dPbk1vZHVsZT4ge1xyXG4gIGNvbnN0IG1vZHVsZSA9IGF3YWl0IGltcG9ydCgnLi4vbW9kdWxlL3Nob3ctb24nKTtcclxuXHJcbiAgYXdhaXQgbW9kdWxlLnJlYWR5O1xyXG5cclxuICByZXR1cm4gbW9kdWxlO1xyXG59XHJcbiJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFFQSxlQUFzQixZQUFtQztBQUN2RCxRQUFNLFNBQVMsTUFBTSxPQUFPLHNCQUFtQjtBQUUvQyxRQUFNLE9BQU87QUFFYixTQUFPO0FBQ1Q7In0=

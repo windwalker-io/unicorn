@@ -1,191 +1,125 @@
-import { U as UnicornApp } from "./chunks/app.js";
-import { p as polyfill } from "./chunks/polyfill/index.js";
-import { d, r } from "./chunks/data.js";
-import { E } from "./chunks/events.js";
-import { r as removeCloak } from "./chunks/utilities/base.js";
-import { a } from "./chunks/service/animate.js";
-import { a as a2, b, s } from "./chunks/service/crypto.js";
-import { A, h, g, r as r2, j, c, b as b2, s as s2, t, d as d2, u } from "./chunks/composable/useQueue.js";
-import { e, d as d3, g as g2, b as b3, h as h2, c as c2, i, m, a as a3, s as s3 } from "./chunks/service/dom.js";
-import { d as d4, f, i as i2, n, t as t2, w } from "./chunks/service/helper.js";
-import { _, t as t3, u as u2 } from "./chunks/service/lang.js";
-import { d as d5, u as u3, e as e2, a as a4, b as b4, c as c3 } from "./chunks/service/loader.js";
-import { U, c as c4, a as a5, e as e3, f as f2, h as h3, i as i3, l, m as m2, n as n2, p, q, r as r3, b as b5, d as d6, s as s4, g as g3, k, j as j2, o, t as t4, u as u4, v } from "./chunks/service/ui.js";
-import { c as c5, U as U2, b as b6, a as a6, u as u5 } from "./chunks/service/uri.js";
-import { b as b7, a as a7, c as c6, h as h4, p as p2, r as r4 } from "./chunks/service/router.js";
-import { u as u6 } from "./chunks/composable/useCheckboxesMultiSelect.js";
-import { u as u7 } from "./chunks/composable/useFieldCascadeSelect.js";
-import { u as u8 } from "./chunks/composable/useFieldFileDrag.js";
-import { u as u9 } from "./chunks/composable/useFieldFlatpickr.js";
-import { u as u10 } from "./chunks/composable/useFieldModalSelect.js";
-import { u as u11 } from "./chunks/composable/useFieldModalTree.js";
-import { u as u12 } from "./chunks/composable/useFieldRepeatable.js";
-import { u as u13 } from "./chunks/composable/useFieldSingleImageDrag.js";
-import { a as a8, u as u14, b as b8 } from "./chunks/composable/useForm.js";
-import { a as a9, u as u15, b as b9 } from "./chunks/composable/useGrid.js";
-import { u as u16, a as a10 } from "./chunks/composable/useHttp.js";
-import { u as u17 } from "./chunks/composable/useIframeModal.js";
-import { u as u18 } from "./chunks/composable/useListDependent.js";
-import { a as a11, u as u19 } from "./chunks/composable/useS3Uploader.js";
-import { u as u20 } from "./chunks/composable/useShowOn.js";
-import { c as c7, u as u21 } from "./chunks/composable/useStack.js";
-import { u as u22 } from "./chunks/composable/useTomSelect.js";
-import { c as c8, b as b10, u as u23, a as a12 } from "./chunks/composable/useUIBootstrap5.js";
-import { u as u24, a as a13 } from "./chunks/composable/useUniDirective.js";
-import { a as a14, b as b11, u as u25, c as c9 } from "./chunks/composable/useValidation.js";
-import { U as U3, u as u26 } from "./chunks/plugin/php-adapter.js";
-let app;
-function createUnicorn() {
-  polyfill();
-  removeCloak();
-  return app = new UnicornApp();
-}
-function createUnicornWithPlugins() {
-  const app2 = createUnicorn();
-  return app2;
-}
-function useUnicorn(instance) {
-  if (instance) {
-    app = instance;
-  }
-  return app ??= createUnicorn();
-}
-const useInject = (id, def) => {
-  return useUnicorn().inject(id, def);
-};
-function pushUnicornToGlobal(app2) {
-  window.u = app2 ?? useUnicorn();
-}
-function useMacro(name, handler) {
-  useUnicorn().macro(name, handler);
-}
-async function useLegacy(app2) {
-  app2 ??= useUnicorn();
-  pushUnicornToGlobal(app2);
-  const { useLegacyMethods } = await import("./chunks/legacy/legacy.js").then((n3) => n3.l);
-  await useLegacyMethods(app2);
-  return app2;
-}
+import { aB, at, ae, aH, b5, aG, aD, _, h, aK, aI, aF, b, J, I, aM, d, e, af, a$, aj, ak, aa, D, C, ac, ay, t, T, S, ab, x, y, A, aJ, U, B, f, a7, i, l, N, z, au, n, aL, p, a4, an, ar, as, aq, c, r, w, v, M, G, F, ai, Q, R, P, E, L, ag, K, s, b2, b1, $, Y, V, a9, aA, X, W, aN, aO, aP, aQ, aR, aS, aT, j, a2, a0, aU, g, k, a3, a1, aV, u, aW, a8, am, Z, aw, ap, aX, ao, o, aZ, aY, ax, az, a_, m, q, O, aC, b0, ah, a, al, b4, aE, b3, av, a6 } from "./chunks/unicorn.js";
 export {
-  A as AlertAdapter,
-  E as EventMixin,
-  c5 as UnicornAssetUri,
-  U3 as UnicornPhpAdapter,
-  U2 as UnicornSystemUri,
-  U as UnicornUI,
+  aB as AlertAdapter,
+  at as AttributeMutationObserver,
+  ae as EventMixin,
+  aH as UnicornAssetUri,
+  b5 as UnicornPhpAdapter,
+  aG as UnicornSystemUri,
+  aD as UnicornUI,
   _ as __,
-  a14 as addGlobalValidator,
-  b7 as addQuery,
-  a7 as addRoute,
-  b6 as addUriBase,
-  a as animateTo,
-  a2 as base64UrlDecode,
-  b as base64UrlEncode,
-  c6 as buildQuery,
-  c4 as clearMessages,
-  a5 as clearNotifies,
-  h as createQueue,
-  c7 as createStack,
-  createUnicorn,
-  createUnicornWithPlugins,
-  d as data,
-  d4 as debounce,
-  e as delegate,
-  g as deleteConfirm,
-  d5 as doImport,
-  d3 as domready,
-  e3 as fadeIn,
-  f2 as fadeOut,
-  f as forceArray,
-  g2 as getBoundedInstance,
-  b3 as getBoundedInstanceList,
-  h2 as h,
-  h4 as hasRoute,
-  h3 as highlight,
-  c2 as html,
-  i3 as initAlpineComponent,
-  i as injectCssToDocument,
-  i2 as isDebug,
+  h as addGlobalValidator,
+  aK as addQuery,
+  aI as addRoute,
+  aF as addUriBase,
+  b as animateTo,
+  J as base64UrlDecode,
+  I as base64UrlEncode,
+  aM as buildQuery,
+  d as clearMessages,
+  e as clearNotifies,
+  af as createQueue,
+  a$ as createStack,
+  aj as createUnicorn,
+  ak as createUnicornWithPlugins,
+  aa as data,
+  D as debounce,
+  C as delegate,
+  ac as deleteConfirm,
+  ay as doImport,
+  t as domready,
+  T as fadeIn,
+  S as fadeOut,
+  ab as forceArray,
+  x as getBoundedInstance,
+  y as getBoundedInstanceList,
+  A as h,
+  aJ as hasRoute,
+  U as highlight,
+  B as html,
+  f as initAlpineComponent,
+  a7 as injectCssToDocument,
+  i as isDebug,
   l as loadAlpine,
-  m2 as mark,
-  m as module,
-  n as nextTick,
-  n2 as notify,
-  p2 as parseQuery,
+  N as mark,
+  z as module,
+  au as nextTick,
+  n as notify,
+  aL as parseQuery,
   p as prepareAlpine,
-  q as prepareAlpineDefer,
-  pushUnicornToGlobal,
-  r2 as randomBytes,
-  j as randomBytesString,
-  r as removeData,
-  r3 as renderMessage,
-  r4 as route,
-  a3 as selectAll,
-  s3 as selectOne,
-  s as serial,
-  c as simpleAlert,
-  b2 as simpleConfirm,
-  s2 as sleep,
-  b5 as slideDown,
-  d6 as slideToggle,
-  s4 as slideUp,
-  t2 as throttle,
-  t as tid,
-  t3 as trans,
-  d2 as uid,
-  a6 as useAssetUri,
-  c8 as useBs5ButtonRadio,
-  b10 as useBs5KeepTab,
-  u23 as useBs5Tooltip,
-  u6 as useCheckboxesMultiSelect,
-  g3 as useColorPicker,
-  u3 as useCssImport,
-  e2 as useCssIncludes,
-  k as useDisableIfStackNotEmpty,
-  j2 as useDisableOnSubmit,
-  u7 as useFieldCascadeSelect,
-  u8 as useFieldFileDrag,
-  u9 as useFieldFlatpickr,
-  u10 as useFieldModalSelect,
-  u11 as useFieldModalTree,
-  u12 as useFieldRepeatable,
-  u13 as useFieldSingleImageDrag,
-  b11 as useFieldValidationSync,
-  a8 as useForm,
-  u14 as useFormAsync,
-  b8 as useFormComponent,
-  u25 as useFormValidation,
-  c9 as useFormValidationSync,
-  a9 as useGrid,
-  u15 as useGridAsync,
-  b9 as useGridComponent,
-  u16 as useHttpClient,
-  u17 as useIframeModal,
-  a4 as useImport,
-  useInject,
-  o as useKeepAlive,
-  u2 as useLang,
-  useLegacy,
-  u18 as useListDependent,
-  a10 as useLoadedHttpClient,
-  useMacro,
-  u as useQueue,
-  a11 as useS3MultipartUploader,
-  u19 as useS3Uploader,
-  b4 as useScriptImport,
-  c3 as useSeriesImport,
-  u20 as useShowOn,
-  u21 as useStack,
-  u5 as useSystemUri,
-  u22 as useTomSelect,
-  t4 as useUI,
-  a12 as useUIBootstrap5,
-  u4 as useUITheme,
-  u24 as useUniDirective,
-  useUnicorn,
-  u26 as useUnicornPhpAdapter,
-  v as useVueComponentField,
-  a13 as useWebDirective,
-  w as wait
+  a4 as prepareAlpineDefer,
+  an as pushUnicornToGlobal,
+  ar as randomBytes,
+  as as randomBytesString,
+  aq as removeData,
+  c as renderMessage,
+  r as route,
+  w as selectAll,
+  v as selectOne,
+  M as serial,
+  G as simpleAlert,
+  F as simpleConfirm,
+  ai as sleep,
+  Q as slideDown,
+  R as slideToggle,
+  P as slideUp,
+  E as throttle,
+  L as tid,
+  ag as trans,
+  K as uid,
+  s as useAssetUri,
+  b2 as useBs5ButtonRadio,
+  b1 as useBs5KeepTab,
+  $ as useBs5Tooltip,
+  Y as useCheckboxesMultiSelect,
+  V as useColorPicker,
+  a9 as useCssImport,
+  aA as useCssIncludes,
+  X as useDisableIfStackNotEmpty,
+  W as useDisableOnSubmit,
+  aN as useFieldCascadeSelect,
+  aO as useFieldFileDrag,
+  aP as useFieldFlatpickr,
+  aQ as useFieldModalSelect,
+  aR as useFieldModalTree,
+  aS as useFieldRepeatable,
+  aT as useFieldSingleImageDrag,
+  j as useFieldValidationSync,
+  a2 as useForm,
+  a0 as useFormAsync,
+  aU as useFormComponent,
+  g as useFormValidation,
+  k as useFormValidationSync,
+  a3 as useGrid,
+  a1 as useGridAsync,
+  aV as useGridComponent,
+  u as useHttpClient,
+  aW as useIframeModal,
+  a8 as useImport,
+  am as useInject,
+  Z as useKeepAlive,
+  aw as useLang,
+  ap as useLegacy,
+  aX as useListDependent,
+  ao as useMacro,
+  o as useQueue,
+  aZ as useS3MultipartUploader,
+  aY as useS3Uploader,
+  ax as useScriptImport,
+  az as useSeriesImport,
+  a_ as useShowOn,
+  m as useStack,
+  q as useSystemUri,
+  O as useTomSelect,
+  aC as useUI,
+  b0 as useUIBootstrap5,
+  ah as useUITheme,
+  a as useUniDirective,
+  al as useUnicorn,
+  b4 as useUnicornPhpAdapter,
+  aE as useVueComponentField,
+  b3 as useWebDirective,
+  av as wait,
+  a6 as watchAttributes
 };
-//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoidW5pY29ybi5qcyIsInNvdXJjZXMiOlsiLi4vc3JjL3VuaWNvcm4udHMiXSwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgSW5qZWN0aW9uS2V5LCBVbmljb3JuQXBwIH0gZnJvbSAnLi9hcHAnO1xyXG5pbXBvcnQgeyBwb2x5ZmlsbCB9IGZyb20gJy4vcG9seWZpbGwnO1xyXG5pbXBvcnQgeyByZW1vdmVDbG9hayB9IGZyb20gJy4vdXRpbGl0aWVzJztcclxuXHJcbmV4cG9ydCAqIGZyb20gJy4vZGF0YSc7XHJcbmV4cG9ydCAqIGZyb20gJy4vZXZlbnRzJztcclxuZXhwb3J0ICogZnJvbSAnLi9zZXJ2aWNlJztcclxuZXhwb3J0ICogZnJvbSAnLi9jb21wb3NhYmxlJztcclxuZXhwb3J0ICogZnJvbSAnLi9wbHVnaW4nO1xyXG5cclxuZXhwb3J0IHR5cGUgeyBVbmljb3JuQXBwIH07XHJcblxyXG5sZXQgYXBwOiBVbmljb3JuQXBwO1xyXG5cclxuZXhwb3J0IGZ1bmN0aW9uIGNyZWF0ZVVuaWNvcm4oKTogVW5pY29ybkFwcCB7XHJcbiAgcG9seWZpbGwoKTtcclxuICByZW1vdmVDbG9haygpO1xyXG5cclxuICByZXR1cm4gYXBwID0gbmV3IFVuaWNvcm5BcHAoKTtcclxufVxyXG5cclxuZXhwb3J0IGZ1bmN0aW9uIGNyZWF0ZVVuaWNvcm5XaXRoUGx1Z2lucygpOiBVbmljb3JuQXBwIHtcclxuICBjb25zdCBhcHAgPSBjcmVhdGVVbmljb3JuKCk7XHJcblxyXG4gIC8vIGFwcC51c2UoVW5pY29yblVJKTtcclxuXHJcbiAgLy8gYXBwLnVzZShVbmljb3JuRG9tKTtcclxuXHJcbiAgcmV0dXJuIGFwcDtcclxufVxyXG5cclxuZXhwb3J0IGZ1bmN0aW9uIHVzZVVuaWNvcm4oaW5zdGFuY2U/OiBVbmljb3JuQXBwKTogVW5pY29ybkFwcCB7XHJcbiAgaWYgKGluc3RhbmNlKSB7XHJcbiAgICBhcHAgPSBpbnN0YW5jZTtcclxuICB9XHJcblxyXG4gIHJldHVybiBhcHAgPz89IGNyZWF0ZVVuaWNvcm4oKTtcclxufVxyXG5cclxuZXhwb3J0IGNvbnN0IHVzZUluamVjdDogdHlwZW9mIFVuaWNvcm5BcHAucHJvdG90eXBlLmluamVjdCA9IDxUID0gYW55PihpZDogSW5qZWN0aW9uS2V5PFQ+LCBkZWY/OiBUKTogVCA9PiB7XHJcbiAgcmV0dXJuIHVzZVVuaWNvcm4oKS5pbmplY3Q8VD4oaWQsIGRlZik7XHJcbn1cclxuXHJcbmV4cG9ydCBmdW5jdGlvbiBwdXNoVW5pY29yblRvR2xvYmFsKGFwcD86IFVuaWNvcm5BcHApIHtcclxuICAvLyBAdHMtaWdub3JlXHJcbiAgd2luZG93LnUgPSBhcHAgPz8gdXNlVW5pY29ybigpO1xyXG59XHJcblxyXG5leHBvcnQgZnVuY3Rpb24gdXNlTWFjcm8obmFtZTogc3RyaW5nLCBoYW5kbGVyOiAoLi4uYXJnczogYW55W10pID0+IGFueSkge1xyXG4gIHVzZVVuaWNvcm4oKS5tYWNybyhuYW1lLCBoYW5kbGVyKTtcclxufVxyXG5cclxuZXhwb3J0IGFzeW5jIGZ1bmN0aW9uIHVzZUxlZ2FjeShhcHA/OiBVbmljb3JuQXBwKSB7XHJcbiAgYXBwID8/PSB1c2VVbmljb3JuKCk7XHJcblxyXG4gIHB1c2hVbmljb3JuVG9HbG9iYWwoYXBwKTtcclxuXHJcbiAgY29uc3QgeyB1c2VMZWdhY3lNZXRob2RzIH0gPSBhd2FpdCBpbXBvcnQoJy4vbGVnYWN5L2xlZ2FjeScpO1xyXG5cclxuICBhd2FpdCB1c2VMZWdhY3lNZXRob2RzKGFwcCk7XHJcblxyXG4gIHJldHVybiBhcHA7XHJcbn1cclxuIl0sIm5hbWVzIjpbImFwcCIsIm4iXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7OztBQVlBLElBQUk7QUFFRyxTQUFTLGdCQUE0QjtBQUMxQyxXQUFBO0FBQ0EsY0FBQTtBQUVBLFNBQU8sTUFBTSxJQUFJLFdBQUE7QUFDbkI7QUFFTyxTQUFTLDJCQUF1QztBQUNyRCxRQUFNQSxPQUFNLGNBQUE7QUFNWixTQUFPQTtBQUNUO0FBRU8sU0FBUyxXQUFXLFVBQW1DO0FBQzVELE1BQUksVUFBVTtBQUNaLFVBQU07QUFBQSxFQUNSO0FBRUEsU0FBTyxRQUFRLGNBQUE7QUFDakI7QUFFTyxNQUFNLFlBQWdELENBQVUsSUFBcUIsUUFBZTtBQUN6RyxTQUFPLFdBQUEsRUFBYSxPQUFVLElBQUksR0FBRztBQUN2QztBQUVPLFNBQVMsb0JBQW9CQSxNQUFrQjtBQUVwRCxTQUFPLElBQUlBLFFBQU8sV0FBQTtBQUNwQjtBQUVPLFNBQVMsU0FBUyxNQUFjLFNBQWtDO0FBQ3ZFLGVBQWEsTUFBTSxNQUFNLE9BQU87QUFDbEM7QUFFQSxlQUFzQixVQUFVQSxNQUFrQjtBQUNoREEsV0FBUSxXQUFBO0FBRVIsc0JBQW9CQSxJQUFHO0FBRXZCLFFBQU0sRUFBRSxpQkFBQSxJQUFxQixNQUFNLE9BQU8sMkJBQWlCLEVBQUEsS0FBQSxDQUFBQyxPQUFBQSxHQUFBLENBQUE7QUFFM0QsUUFBTSxpQkFBaUJELElBQUc7QUFFMUIsU0FBT0E7QUFDVDsifQ==
+//# sourceMappingURL=unicorn.js.map

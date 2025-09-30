@@ -5,9 +5,7 @@ import { AxiosInstance } from 'axios';
 import { AxiosProgressEvent } from 'axios';
 import { AxiosRequestConfig } from 'axios';
 import { AxiosResponse } from 'axios';
-import { AxiosStatic } from 'axios';
 import * as bootstrap_2 from 'bootstrap';
-import { CanceledError } from 'axios';
 import { Class } from 'ts-mixer/dist/types/types';
 import { CreateAxiosDefaults } from 'axios';
 import { default as default_2 } from 'cropperjs';
@@ -15,6 +13,8 @@ import { default as default_3 } from 'web-directive';
 import { deleteConfirm } from '@lyrasoft/ts-toolkit/generic';
 import { Editor } from 'tinymce';
 import { EditorOptions } from 'tinymce';
+import { isAxiosError } from 'axios';
+import { isCancel } from 'axios';
 import { Modal } from 'bootstrap';
 import { randomBytes } from '@lyrasoft/ts-toolkit/generic';
 import { randomBytesString } from '@lyrasoft/ts-toolkit/generic';
@@ -52,7 +52,30 @@ declare type AlpinePrepareCallback = (Alpine: Alpine_2) => MaybePromise<any>;
 
 export declare function animateTo(element: HTMLElement, styles: Partial<Record<keyof CSSStyleDeclaration, any>>, options?: number | KeyframeAnimationOptions): Animation;
 
+declare interface ApiReturn<T = any> {
+    success: boolean;
+    message?: string;
+    code: number;
+    status: number;
+    data: T;
+}
+
 declare type AssetTypes = 'root' | 'path';
+
+export declare type AttributeMutationCallback<T extends HTMLElement = HTMLElement> = (el: T, name: string, value: any, oldValue: any) => void;
+
+export declare class AttributeMutationObserver<T extends HTMLElement> {
+    protected element: T;
+    callback?: ((el: T, name: string, value: any, oldValue: any) => void) | undefined;
+    observer: MutationObserver;
+    watches: Record<string, (AttributeWatcher<T>)[]>;
+    constructor(element: T, callback?: ((el: T, name: string, value: any, oldValue: any) => void) | undefined);
+    watch(name: string, callback: AttributeWatcher<T>): () => void;
+    observe(): void;
+    disconnect(): void;
+}
+
+export declare type AttributeWatcher<T extends HTMLElement = HTMLElement> = (el: T, value: any, oldValue: any) => void;
 
 /**
  * Base64 URL decode
@@ -130,6 +153,23 @@ declare type Conditions = Record<string, any>;
 declare type Constructor<T> = new (...args: any[]) => T;
 
 declare function createCallback(type: 'list' | 'single', selector: string, modalSelector: string): ModalSelectCallback;
+
+declare function createHttpClient(config?: CreateAxiosDefaults | AxiosInstance): {
+    axios: AxiosInstance;
+    request: <T = any, D = any>(options: AxiosRequestConfig) => Promise<AxiosResponse<T, D>>;
+    get: <T = any, D = any>(url: string, options?: Partial<AxiosRequestConfig>) => Promise<AxiosResponse<T, D>>;
+    post: <T = any, D = any>(url: string, data?: any, options?: Partial<AxiosRequestConfig>) => Promise<AxiosResponse<T, D>>;
+    put: <T = any, D = any>(url: string, data?: any, options?: Partial<AxiosRequestConfig>) => Promise<AxiosResponse<T, D>>;
+    patch: <T = any, D = any>(url: string, data?: any, options?: Partial<AxiosRequestConfig>) => Promise<AxiosResponse<T, D>>;
+    delete: <T = any, D = any>(url: string, data?: any, options?: Partial<AxiosRequestConfig>) => Promise<AxiosResponse<T, D>>;
+    head: <T = any, D = any>(url: string, options?: Partial<AxiosRequestConfig>) => Promise<AxiosResponse<T, D>>;
+    options: <T = any, D = any>(url: string, options?: Partial<AxiosRequestConfig>) => Promise<AxiosResponse<T, D>>;
+    requestMiddleware: (callback: Parameters<AxiosInstance["interceptors"]["request"]["use"]>[0]) => number;
+    responseMiddleware: (callback: Parameters<AxiosInstance["interceptors"]["response"]["use"]>[0]) => number;
+    isCancel: typeof isCancel;
+    AxiosError: typeof AxiosError;
+    isAxiosError: typeof isAxiosError;
+};
 
 export declare function createQueue(maxRunning?: number): TaskQueue;
 
@@ -576,7 +616,22 @@ declare class S3Uploader extends S3Uploader_base implements EventAwareInterface 
     options: S3UploaderGlobalOptions;
     http?: UnicornHttpClient;
     constructor(name: string, options?: Partial<S3UploaderGlobalOptions>);
-    getHttpClient(): Promise<UnicornHttpClient>;
+    getHttpClient(): Promise<{
+        axios: AxiosInstance;
+        request: <T = any, D = any>(options: AxiosRequestConfig) => Promise<AxiosResponse<T, D>>;
+        get: <T = any, D = any>(url: string, options?: Partial<AxiosRequestConfig>) => Promise<AxiosResponse<T, D>>;
+        post: <T = any, D = any>(url: string, data?: any, options?: Partial<AxiosRequestConfig>) => Promise<AxiosResponse<T, D>>;
+        put: <T = any, D = any>(url: string, data?: any, options?: Partial<AxiosRequestConfig>) => Promise<AxiosResponse<T, D>>;
+        patch: <T = any, D = any>(url: string, data?: any, options?: Partial<AxiosRequestConfig>) => Promise<AxiosResponse<T, D>>;
+        delete: <T = any, D = any>(url: string, data?: any, options?: Partial<AxiosRequestConfig>) => Promise<AxiosResponse<T, D>>;
+        head: <T = any, D = any>(url: string, options?: Partial<AxiosRequestConfig>) => Promise<AxiosResponse<T, D>>;
+        options: <T = any, D = any>(url: string, options?: Partial<AxiosRequestConfig>) => Promise<AxiosResponse<T, D>>;
+        requestMiddleware: (callback: Parameters<AxiosInstance["interceptors"]["request"]["use"]>[0]) => number;
+        responseMiddleware: (callback: Parameters<AxiosInstance["interceptors"]["response"]["use"]>[0]) => number;
+        isCancel: isCancel;
+        AxiosError: AxiosError;
+        isAxiosError: isAxiosError;
+    }>;
     /**
      * Do upload.
      */
@@ -659,7 +714,7 @@ declare class ShowOn {
     input: HTMLInputTypes;
     conditions: Conditions;
     targets: {};
-    readonly: boolean;
+    defaultReadonly: boolean;
     initialDisplay: string;
     constructor(el: HTMLElement, conditions: Conditions);
     init(): void;
@@ -715,7 +770,9 @@ declare class SingleImageDragElement extends HTMLElement {
     checkSize(image: HTMLImageElement): boolean;
     alert(title: string, text?: string, type?: string): Promise<void>;
     saveImage(file: File): Promise<void>;
-    uploadImage(file: File): Promise<AxiosResponse<any, any, {}>>;
+    uploadImage(file: File): Promise<AxiosResponse<ApiReturn<{
+    url: string;
+    }>, any, {}>>;
     storeValue(url: string, preview: string): void;
 }
 
@@ -1054,81 +1111,7 @@ declare class UnicornGridElement {
     getId(suffix?: string): string;
 }
 
-declare class UnicornHttpClient {
-    protected config?: CreateAxiosDefaults | undefined;
-    static axiosStatic?: Promise<AxiosStatic>;
-    axios?: AxiosInstance;
-    constructor(config?: CreateAxiosDefaults | undefined);
-    static importAxios(): Promise<any>;
-    static getAxiosStatic(): Promise<AxiosStatic>;
-    createHttp(): Promise<AxiosInstance>;
-    getAxiosInstance(): Promise<AxiosInstance>;
-    prepareAxios(axios: AxiosInstance): AxiosInstance;
-    requestMiddleware(callback: Parameters<AxiosInstance['interceptors']['request']['use']>[0]): Promise<number>;
-    responseMiddleware(callback: Parameters<AxiosInstance['interceptors']['response']['use']>[0]): Promise<number>;
-    /**
-     * Send a GET request.
-     */
-    get<T = any, D = any>(url: string, options?: Partial<AxiosRequestConfig>): Promise<AxiosResponse<T, D>>;
-    /**
-     * Send a POST request.
-     */
-    post<T = any, D = any>(url: string, data?: any, options?: Partial<AxiosRequestConfig>): Promise<AxiosResponse<T, D>>;
-    /**
-     * Send a PUT request.
-     *
-     * @param {string} url
-     * @param {any} data
-     * @param {AxiosRequestConfig} options
-     *
-     * @returns {Promise<AxiosResponse>}
-     */
-    put<T = any, D = any>(url: string, data?: any, options?: Partial<AxiosRequestConfig>): Promise<AxiosResponse<T, D>>;
-    /**
-     * Send a PATCH request.
-     *
-     * @param {string} url
-     * @param {any} data
-     * @param {AxiosRequestConfig} options
-     *
-     * @returns {Promise<AxiosResponse>}
-     */
-    patch<T = any, D = any>(url: string, data?: any, options?: Partial<AxiosRequestConfig>): Promise<AxiosResponse<T, D>>;
-    /**
-     * Send a DELETE request.
-     *
-     * @param {string} url
-     * @param {any} data
-     * @param {AxiosRequestConfig} options
-     *
-     * @returns {Promise<AxiosResponse>}
-     */
-    delete<T = any, D = any>(url: string, data?: any, options?: Partial<AxiosRequestConfig>): Promise<AxiosResponse<T, D>>;
-    /**
-     * Send a HEAD request.
-     *
-     * @param {string} url
-     * @param {AxiosRequestConfig} options
-     *
-     * @returns {Promise<AxiosResponse>}
-     */
-    head<T = any, D = any>(url: string, options?: Partial<AxiosRequestConfig>): Promise<AxiosResponse<T, D>>;
-    /**
-     * Send a OPTIONS request.
-     *
-     * @param {string} url
-     * @param {AxiosRequestConfig} options
-     *
-     * @returns {Promise<AxiosResponse>}
-     */
-    options<T = any, D = any>(url: string, options?: Partial<AxiosRequestConfig>): Promise<AxiosResponse<T, D>>;
-    isCancel(cancel: any): cancel is CanceledError<any>;
-    /**
-     * Send request.
-     */
-    request<T = any, D = any>(options: AxiosRequestConfig): Promise<AxiosResponse<T, D>>;
-    errorClass(): Promise<typeof AxiosError>;
-}
+declare type UnicornHttpClient = ReturnType<typeof createHttpClient>;
 
 declare class UnicornLang {
     /**
@@ -1291,8 +1274,6 @@ export declare function useListDependent(): Promise<ListDependentModule>;
 
 export declare function useListDependent(element: string | HTMLSelectElement, dependent?: Nullable<string | HTMLSelectElement>, options?: Partial<ListDependentOptions>): Promise<ListDependent>;
 
-export declare function useLoadedHttpClient(config?: CreateAxiosDefaults): Promise<UnicornHttpClient>;
-
 export declare function useMacro(name: string, handler: (...args: any[]) => any): void;
 
 export declare function useQueue(name?: string, maxRunning?: number): TaskQueue;
@@ -1391,12 +1372,22 @@ export declare function wait<T extends readonly unknown[]>(...promisee: {
     [K in keyof T]: PromiseLike<T[K]> | T[K];
 }): Promise<Awaited<T>>;
 
+export declare function watchAttributes<T extends HTMLElement>(el: T, callback?: AttributeMutationCallback<T>): AttributeMutationObserver<T>;
+
 export { }
 
 
 declare global {
     interface Node {
         __unicorn?: any;
+    }
+}
+
+
+declare module '@windwalker-io/unicorn-next' {
+    interface UnicornApp {
+        /** @deprecated Only for code generator use. */
+        $ui: typeof methods;
     }
 }
 
@@ -1408,21 +1399,15 @@ declare global {
     var Mark: any;
 }
 
-
-declare module '@windwalker-io/unicorn-next' {
-    interface UnicornApp {
-        /** @deprecated Only for code generator use. */
-        $ui: typeof methods;
-    }
-}
-
 declare global {
     var S: any;
 }
 
 
 declare global {
-    let axios: AxiosStatic;
+    export interface Window {
+        bootstrap: typeof bootstrap;
+    }
 }
 
 
@@ -1433,13 +1418,6 @@ declare module 'axios' {
         methodSimulateByHeader?: boolean;
     }
     interface CreateAxiosDefaults {
-    }
-}
-
-
-declare global {
-    export interface Window {
-        bootstrap: typeof bootstrap;
     }
 }
 

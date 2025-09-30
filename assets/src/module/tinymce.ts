@@ -172,10 +172,10 @@ export class TinymceController {
     const stack = useStack(this.options.unicorn.stack_name);
     stack.push(true);
 
-    const http = await useHttpClient();
+    const { post, isAxiosError } = await useHttpClient();
 
     try {
-      let res = await http.post(
+      let res = await post(
         this.options.images_upload_url,
         formData,
         {
@@ -189,9 +189,7 @@ export class TinymceController {
 
       return res.data.data.url;
     } catch (err) {
-      const AxiosError = await http.errorClass();
-
-      if (err instanceof AxiosError) {
+      if (isAxiosError(err)) {
         const message = err?.response?.data?.message || err.message;
         console.error(err?.response?.data?.message || err.message, err);
         element.dispatchEvent(new CustomEvent('upload-error', { detail: err }));

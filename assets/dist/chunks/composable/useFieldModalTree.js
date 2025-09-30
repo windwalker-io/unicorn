@@ -1,7 +1,0 @@
-function useFieldModalTree() {
-  import("../module/field-modal-tree.js");
-}
-export {
-  useFieldModalTree as u
-};
-//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoidXNlRmllbGRNb2RhbFRyZWUuanMiLCJzb3VyY2VzIjpbIi4uLy4uLy4uL3NyYy9jb21wb3NhYmxlL3VzZUZpZWxkTW9kYWxUcmVlLnRzIl0sInNvdXJjZXNDb250ZW50IjpbImV4cG9ydCBmdW5jdGlvbiB1c2VGaWVsZE1vZGFsVHJlZSgpIHtcclxuICBpbXBvcnQoJy4uL21vZHVsZS9maWVsZC1tb2RhbC10cmVlJyk7XHJcbn1cclxuIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFPLFNBQVMsb0JBQW9CO0FBQ2xDLFNBQU8sK0JBQTRCO0FBQ3JDOyJ9

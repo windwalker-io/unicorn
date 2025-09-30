@@ -1,7 +1,0 @@
-function useFieldFlatpickr() {
-  return import("../module/field-flatpickr.js");
-}
-export {
-  useFieldFlatpickr as u
-};
-//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoidXNlRmllbGRGbGF0cGlja3IuanMiLCJzb3VyY2VzIjpbIi4uLy4uLy4uL3NyYy9jb21wb3NhYmxlL3VzZUZpZWxkRmxhdHBpY2tyLnRzIl0sInNvdXJjZXNDb250ZW50IjpbImV4cG9ydCBmdW5jdGlvbiB1c2VGaWVsZEZsYXRwaWNrcigpOiBQcm9taXNlPGFueT4ge1xyXG4gIHJldHVybiBpbXBvcnQoJy4uL21vZHVsZS9maWVsZC1mbGF0cGlja3InKTtcclxufVxyXG4iXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQU8sU0FBUyxvQkFBa0M7QUFDaEQsU0FBTyxPQUFPLDhCQUEyQjtBQUMzQzsifQ==
