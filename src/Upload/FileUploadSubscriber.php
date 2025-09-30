@@ -24,7 +24,7 @@ class FileUploadSubscriber
     #[ListenTo(FileUploadedEvent::class)]
     public function fileUploaded(FileUploadedEvent $event): void
     {
-        $result = $event->getResult();
+        $result = $event->result;
 
         $uri = (string) $result->getUri();
 
@@ -34,6 +34,6 @@ class FileUploadSubscriber
             $uri = ltrim(Str::removeLeft($uri, $root), '/');
         }
 
-        $result->setUri(new Uri($uri));
+        $result->uri = new Uri($uri);
     }
 }

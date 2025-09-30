@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Unicorn\Field;
 
-use Windwalker\DOM\DOMElement;
+use Windwalker\DOM\HTMLElement;
 use Windwalker\Form\Field\AbstractField;
 use Windwalker\Form\Field\CompositeFieldInterface;
 use Windwalker\Form\Form;
@@ -38,7 +38,7 @@ class InlineField extends AbstractField implements CompositeFieldInterface
         return '@theme::field.inline';
     }
 
-    public function prepareInput(DOMElement $input): DOMElement
+    public function prepareInput(HTMLElement $input): HTMLElement
     {
         return $input;
     }
@@ -81,7 +81,7 @@ class InlineField extends AbstractField implements CompositeFieldInterface
         return $r;
     }
 
-    public function buildFieldElement(DOMElement $input, array $options = []): string|DOMElement
+    public function compileFieldElement(HTMLElement $input, array $options = []): string|HTMLElement
     {
         return $this->renderLayout(
             $this->getLayout(),

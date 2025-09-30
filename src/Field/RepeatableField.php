@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Unicorn\Field;
 
-use Windwalker\DOM\DOMElement;
+use Windwalker\DOM\HTMLElement;
 use Windwalker\Form\Field\AbstractField;
 use Windwalker\Form\Field\CompositeFieldInterface;
 use Windwalker\Form\Form;
@@ -18,8 +18,8 @@ class RepeatableField extends AbstractField implements CompositeFieldInterface
     use SubformFieldTrait;
     use LayoutFieldTrait;
 
-    public const LAYOUT_TABLE = '@theme::field.repeatable.repeatable-table';
-    public const LAYOUT_FLEX = '@theme::field.repeatable.repeatable-flex';
+    public const string LAYOUT_TABLE = '@theme::field.repeatable.repeatable-table';
+    public const string LAYOUT_FLEX = '@theme::field.repeatable.repeatable-flex';
 
     protected bool $sortable = false;
 
@@ -31,15 +31,43 @@ class RepeatableField extends AbstractField implements CompositeFieldInterface
 
     protected int $max = 0;
 
+    public protected(set) array $colWidths = [];
+
+    public protected(set) array $colClasses = [];
+
     public function getDefaultLayout(): string
     {
         return static::LAYOUT_TABLE;
     }
 
+    public function useFlexLayout(): static
+    {
+        return $this->layout(static::LAYOUT_FLEX);
+    }
+
+    public function useTableLayout(): static
+    {
+        return $this->layout(static::LAYOUT_TABLE);
+    }
+
+    public function colWidths(...$widths): static
+    {
+        $this->colWidths = $widths;
+
+        return $this;
+    }
+
+    public function colClasses(...$classes): static
+    {
+        $this->colClasses = $classes;
+
+        return $this;
+    }
+
     /**
      * @inheritDoc
      */
-    public function prepareInput(DOMElement $input): DOMElement
+    public function prepareInput(HTMLElement $input): HTMLElement
     {
         $input['type'] = 'hidden';
         $input['name'] = $this->getInputName();
@@ -133,7 +161,7 @@ class RepeatableField extends AbstractField implements CompositeFieldInterface
         ];
     }
 
-    public function buildFieldElement(DOMElement $input, array $options = []): string|DOMElement
+    public function compileFieldElement(HTMLElement $input, array $options = []): string|HTMLElement
     {
         return $this->renderLayout(
             $this->getLayout(),

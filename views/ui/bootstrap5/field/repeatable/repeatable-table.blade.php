@@ -16,12 +16,14 @@ namespace App\View;
  * @var $lang      LangService     The language translation service.
  */
 
+use Unicorn\Field\RepeatableField;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Asset\AssetService;
 use Windwalker\Core\DateTime\ChronosService;
 use Windwalker\Core\Language\LangService;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\SystemUri;
+use Windwalker\Form\Field\AbstractField;
 use Windwalker\Form\Field\HiddenField;
 
 /**
@@ -31,7 +33,7 @@ use Windwalker\Form\Field\HiddenField;
 
 $app->service(\Unicorn\Script\FormScript::class)->repeatable();
 
-$inputElement = $field->getPreparedInput();
+$inputElement = $field->compileInput();
 
 $optString = AssetService::getJSObject(
     [
@@ -46,6 +48,34 @@ $optString = AssetService::getJSObject(
 );
 
 $data = AssetService::getJSObject($field->prepareJSData());
+
+$colClass = function (AbstractField $subField, $i) use ($field) {
+    if (array_key_exists($i, $field->colClasses)) {
+        return $field->colClasses[$i];
+    }
+
+    return $subField->get('subfield_class');
+};
+
+$colWidth = function (AbstractField $subField, $i) use ($field) {
+    $width = null;
+
+    if (array_key_exists($i, $field->colWidths)) {
+        if (!is_numeric($field->colWidths[$i])) {
+            $width = $field->colWidths[$i];
+        } else {
+            return '';
+        }
+    }
+
+    $width ??= $subField->get('subfield_width') ?: 'auto';
+
+    if (!$width) {
+        return '';
+    }
+
+    return "width: {$width};";
+};
 ?>
 
 <div id="{{ $field->getId('-wrap') }}" class="c-repeatable-field"
@@ -62,13 +92,14 @@ $data = AssetService::getJSObject($field->prepareJSData());
             <template x-if="options.sortable">
                 <th width="1%">#</th>
             </template>
+            @php($i = 0)
             @foreach ($form->getFields() as $subField)
-                <th class="{{ $subField->get('subfield_class') }}"
-                    width="{{ $subField->get('subfield_width') }}"
-                    style="{{ $subField instanceof HiddenField ? 'display: none;' : '' }}"
+                <th class="{{ $colClass($subField, $i) }}"
+                    style="{{ $subField instanceof HiddenField ? 'display: none;' : '' }}{{ $colWidth($subField, $i) }}"
                 >
                     {{ $subField->getLabelName() }}
                 </th>
+                @php($i++)
             @endforeach
 
             <template x-if="canModify">
@@ -92,13 +123,14 @@ $data = AssetService::getJSObject($field->prepareJSData());
                         </div>
                     </td>
                 </template>
+                @php($i = 0)
                 @foreach ($form->getFields() as $subField)
-                    <td class="{{ $subField->get('subfield_class') }}"
-                        width="{{ $subField->get('subfield_width') }}"
-                        style="{{ $subField instanceof HiddenField ? 'display: none;' : '' }}"
+                    <td class="{{ $colClass($subField, $i) }}"
+                        style="{{ $subField instanceof HiddenField ? 'display: none;' : '' }}{{ $colWidth($subField, $i) }}"
                     >
                         <x-field :field="$subField" :no-label="true"></x-field>
                     </td>
+                    @php($i++)
                 @endforeach
                 <template x-if="canModify">
                     <td class="text-nowrap text-end" width="1%">

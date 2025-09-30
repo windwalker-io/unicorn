@@ -9,9 +9,9 @@ use App\Repository\{% pascal($name) %}Repository;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Attributes\ViewMetadata;
 use Windwalker\Core\Attributes\ViewModel;
+use Windwalker\Core\Attributes\ViewPrepare;
 use Windwalker\Core\Html\HtmlFrame;
 use Windwalker\Core\View\View;
-use Windwalker\Core\View\ViewModelInterface;
 use Windwalker\DI\Attributes\Autowire;
 use Windwalker\ORM\ORM;
 
@@ -19,7 +19,7 @@ use Windwalker\ORM\ORM;
     layout: '{% kebab($name) %}-item',
     js: '{% kebab($name) %}-item.js'
 )]
-class {% pascal($name) %}ItemView implements ViewModelInterface
+class {% pascal($name) %}ItemView
 {
     public function __construct(
         protected ORM $orm,
@@ -28,14 +28,7 @@ class {% pascal($name) %}ItemView implements ViewModelInterface
         //
     }
 
-    /**
-     * Prepare View.
-     *
-     * @param  AppContext  $app   The web app context.
-     * @param  View        $view  The view object.
-     *
-     * @return  mixed
-     */
+    #[ViewPrepare]
     public function prepare(AppContext $app, View $view): array
     {
         $id = $app->input('id');

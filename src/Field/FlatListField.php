@@ -7,10 +7,9 @@ namespace Unicorn\Field;
 use Lyrasoft\Luna\Tree\NodeInterface;
 use Lyrasoft\Luna\Tree\TreeBuilder;
 use Windwalker\Data\Collection;
-use Windwalker\DOM\DOMElement;
+use Windwalker\DOM\HTMLElement;
 use Windwalker\Utilities\Arr;
 
-use function Lyrasoft\ShopGo\Field\str_contains;
 use function Windwalker\DOM\h;
 use function Windwalker\value_compare;
 
@@ -37,7 +36,7 @@ class FlatListField extends SqlListField
         return $this->getTreeBuilder()(Collection::from($items), $this);
     }
 
-    public function buildFieldElement(DOMElement $input, array $options = []): string|DOMElement
+    public function compileFieldElement(HTMLElement $input, array $options = []): string|HTMLElement
     {
         $tree = $this->getTree();
 
@@ -52,7 +51,7 @@ class FlatListField extends SqlListField
         );
     }
 
-    public function createItemOption(object $item): DOMElement
+    public function createItemOption(object $item): HTMLElement
     {
         $textField = $this->getTextField() ?? $this->textField;
         $valueField = $this->getValueField() ?? $this->valueField;

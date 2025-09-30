@@ -25,11 +25,11 @@ use Windwalker\Core\DateTime\ChronosService;
 use Windwalker\Core\Language\LangService;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\SystemUri;
-use Windwalker\DOM\DOMElement;
+use Windwalker\DOM\HTMLElement;
 
 /**
  * @var ModalTreeField $field
- * @var DOMElement     $input
+ * @var HTMLElement     $input
  */
 
 $id = $input->getAttribute('id');

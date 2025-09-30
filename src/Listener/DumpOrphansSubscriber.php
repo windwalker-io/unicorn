@@ -31,7 +31,7 @@ class DumpOrphansSubscriber
     #[ListenTo(AfterRequestEvent::class)]
     public function afterRequest(AfterRequestEvent $event): void
     {
-        $app = $event->getContainer()->get(ApplicationInterface::class);
+        $app = $event->container->get(ApplicationInterface::class);
 
         if (!$app->isDebug()) {
             return;

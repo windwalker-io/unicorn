@@ -9,7 +9,7 @@ use Windwalker\Core\Asset\AssetService;
 use Windwalker\Core\Language\TranslatorTrait;
 use Windwalker\Core\Router\SystemUri;
 use Windwalker\DI\Attributes\Inject;
-use Windwalker\DOM\DOMElement;
+use Windwalker\DOM\HTMLElement;
 use Windwalker\Language\LanguageNormalizer;
 use Windwalker\Uri\UriNormalizer;
 use Windwalker\Utilities\Arr;
@@ -85,11 +85,11 @@ class TinymceEditorField extends AbstractEditorField
         static::$defaultOptions = $defaultOptions;
     }
 
-    public function buildFieldElement(DOMElement $input, array $options = []): string|DOMElement
+    public function compileFieldElement(HTMLElement $input, array $options = []): string|HTMLElement
     {
         $this->prepareEditorScript();
 
-        return parent::buildFieldElement($input, $options);
+        return parent::compileFieldElement($input, $options);
     }
 
     /**
@@ -101,6 +101,7 @@ class TinymceEditorField extends AbstractEditorField
         $defaultOptions = [
             'relative_urls' => true,
             'document_base_url' => UriNormalizer::ensureDir($this->systemUri->root),
+            'base_url' => $this->assetService->handleUri('@vendor/tinymce/'),
         ];
 
         $defaultOptions['plugins'] = [];

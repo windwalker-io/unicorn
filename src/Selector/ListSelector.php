@@ -21,7 +21,7 @@ use Windwalker\ORM\SelectorQuery;
 use Windwalker\Query\Query;
 use Windwalker\Utilities\Arr;
 use Windwalker\Utilities\Cache\InstanceCacheTrait;
-use Windwalker\Utilities\Classes\FlowControlTrait;
+use Windwalker\Utilities\Classes\ChainingTrait;
 use Windwalker\Utilities\Options\OptionAccessTrait;
 use Windwalker\Utilities\Wrapper\RawWrapper;
 
@@ -33,7 +33,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
     use OptionAccessTrait;
     use CoreEventAwareTrait;
     use InstanceCacheTrait;
-    use FlowControlTrait;
+    use ChainingTrait;
     use QueryProxyTrait;
 
     public static int $globalDefaultLimit = 0;
@@ -98,8 +98,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
         $selector = $this;
 
         $this->emit(
-            ConfigureQueryEvent::class,
-            compact('query', 'selector')
+            new ConfigureQueryEvent(query: $query, selector: $selector)
         );
 
         return $query;
@@ -143,11 +142,10 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
         // $this->beforeCompileQuery($query);
 
         $event = $this->emit(
-            BeforeCompileQueryEvent::class,
-            compact('query', 'selector')
+            new BeforeCompileQueryEvent(query: $query, selector: $selector)
         );
 
-        $query = $this->processFilters($event->getQuery());
+        $query = $this->processFilters($event->query);
         $query = $this->processSearches($query);
 
         // ordering
@@ -181,11 +179,10 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
         // $this->afterCompileQuery($query);
 
         $event = $this->emit(
-            AfterCompileQueryEvent::class,
-            compact('query', 'selector')
+            new AfterCompileQueryEvent(query: $query, selector: $selector)
         );
 
-        return $event->getQuery();
+        return $event->query;
     }
 
     public function all(?string $class = null, array $args = []): Collection
@@ -988,5 +985,10 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
         $this->paginate = $paginate;
 
         return $this;
+    }
+
+    public function __clone(): void
+    {
+        $this->query = clone $this->query;
     }
 }

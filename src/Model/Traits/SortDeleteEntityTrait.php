@@ -12,11 +12,25 @@ use Windwalker\ORM\Attributes\Column;
 trait SortDeleteEntityTrait
 {
     #[Column('is_deleted')]
-    protected bool $isDeleted = false;
+    public bool $isDeleted = false {
+        set(bool $value) {
+            $this->isDeleted = $value;
+
+            if ($value) {
+                $this->deletedAt = 'now';
+            } else {
+                $this->deletedAt = null;
+            }
+        }
+    }
 
     #[Column('deleted_at')]
     #[CastNullable(ServerTimeCast::class)]
-    protected ?Chronos $deletedAt = null;
+    public ?Chronos $deletedAt = null {
+        set(\DateTimeInterface|string|null $value) {
+            $this->deletedAt = Chronos::tryWrap($value);
+        }
+    }
 
     public function softDelete(): static
     {
@@ -28,29 +42,47 @@ trait SortDeleteEntityTrait
         return $this->setIsDeleted(false);
     }
 
+    /**
+     * @return  bool
+     *
+     * @deprecated  Use property instead.
+     */
     public function isDeleted(): bool
     {
         return $this->isDeleted;
     }
 
+    /**
+     * @param  bool  $isDeleted
+     *
+     * @return  $this
+     *
+     * @deprecated  Use property instead.
+     */
     public function setIsDeleted(bool $isDeleted): static
     {
         $this->isDeleted = $isDeleted;
 
-        if ($isDeleted) {
-            $this->setDeletedAt('now');
-        } else {
-            $this->setDeletedAt(null);
-        }
-
         return $this;
     }
 
+    /**
+     * @return  Chronos|null
+     *
+     * @deprecated  Use property instead.
+     */
     public function getDeletedAt(): ?Chronos
     {
         return $this->deletedAt;
     }
 
+    /**
+     * @param  \DateTimeInterface|string|int|null  $deletedAt
+     *
+     * @return  $this
+     *
+     * @deprecated  Use property instead.
+     */
     public function setDeletedAt(\DateTimeInterface|string|int|null $deletedAt): static
     {
         $this->deletedAt = Chronos::wrapOrNull($deletedAt);

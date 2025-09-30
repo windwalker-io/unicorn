@@ -25,7 +25,7 @@ use Windwalker\Core\DateTime\ChronosService;
 use Windwalker\Core\Language\LangService;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\SystemUri;
-use Windwalker\DOM\DOMElement;
+use Windwalker\DOM\HTMLElement;
 use Windwalker\Form\Form;
 
 $app->service(FormScript::class)->multiUploader();
@@ -33,7 +33,7 @@ $lang = $app->service(LangService::class);
 
 /**
  * @var MultiUploaderField $field
- * @var DOMElement         $input
+ * @var HTMLElement         $input
  * @var array              $options
  * @var array              $data
  * @var Form               $subForm

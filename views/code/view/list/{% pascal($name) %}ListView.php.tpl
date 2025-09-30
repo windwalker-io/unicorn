@@ -10,6 +10,7 @@ use Unicorn\View\ORMAwareViewModelTrait;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Attributes\ViewMetadata;
 use Windwalker\Core\Attributes\ViewModel;
+use Windwalker\Core\Attributes\ViewPrepare;
 use Windwalker\Core\Html\HtmlFrame;
 use Windwalker\Core\View\View;
 use Windwalker\Core\View\ViewModelInterface;
@@ -19,7 +20,7 @@ use Windwalker\DI\Attributes\Autowire;
     layout: '{% kebab($name) %}-list',
     js: '{% kebab($name) %}-list.js'
 )]
-class {% pascal($name) %}ListView implements ViewModelInterface
+class {% pascal($name) %}ListView
 {
     use ORMAwareViewModelTrait;
 
@@ -30,14 +31,7 @@ class {% pascal($name) %}ListView implements ViewModelInterface
         //
     }
 
-    /**
-     * Prepare View.
-     *
-     * @param  AppContext  $app   The web app context.
-     * @param  View        $view  The view object.
-     *
-     * @return  mixed
-     */
+    #[ViewPrepare]
     public function prepare(AppContext $app, View $view): array
     {
         $page     = $app->input('page');

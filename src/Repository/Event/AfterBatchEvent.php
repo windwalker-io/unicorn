@@ -4,34 +4,32 @@ declare(strict_types=1);
 
 namespace Unicorn\Repository\Event;
 
+use Unicorn\Repository\Actions\BatchAction;
+use Windwalker\ORM\ORM;
+
 /**
  * The AfterBatchEvent class.
  */
 #[\Attribute]
 class AfterBatchEvent extends AbstractBatchEvent
 {
-    /**
-     * @var array<object>
-     */
-    protected array $items = [];
-
-    /**
-     * @return object[]
-     */
-    public function getItems(): array
-    {
-        return $this->items;
-    }
-
-    /**
-     * @param  object[]  $items
-     *
-     * @return  static  Return self to support chaining.
-     */
-    public function setItems(array $items): static
-    {
-        $this->items = $items;
-
-        return $this;
+    public function __construct(
+        ?ORM $orm = null,
+        ?BatchAction $action = null,
+        array $ids = [],
+        string $task = '',
+        array $data = [],
+        /**
+         * @var array<object>
+         */
+        public array $items = [],
+    ) {
+        parent::__construct(
+            orm: $orm,
+            action: $action,
+            ids: $ids,
+            task: $task,
+            data: $data
+        );
     }
 }

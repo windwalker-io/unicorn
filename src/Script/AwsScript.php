@@ -7,8 +7,12 @@ namespace Unicorn\Script;
 use Aws\S3\PostObjectV4;
 use Unicorn\Aws\S3Service;
 use Unicorn\Storage\Adapter\S3Storage;
+use Unicorn\Storage\StorageInterface;
 use Unicorn\Storage\StorageManager;
 use Windwalker\Core\Asset\AbstractScript;
+use Windwalker\DI\Container;
+use Windwalker\DI\Exception\DefinitionNotFoundException;
+use Windwalker\DI\Exception\DependencyResolutionException;
 
 /**
  * The AwsScript class.
@@ -20,20 +24,30 @@ class AwsScript extends AbstractScript
      */
     public function __construct(
         protected UnicornScript $unicornScript,
-        protected StorageManager $storageManager
+        protected Container $container
     ) {
     }
 
+    /**
+     * @param  string  $name
+     * @param  string  $acl
+     * @param  array{
+     *      profile?: string,
+     *      s3Service?: S3Service,
+     *      starts_with?: array<string, string>,
+     *  }   $options
+     *
+     * @return  void
+     *
+     * @throws DefinitionNotFoundException
+     * @throws DependencyResolutionException
+     */
     public function s3BrowserUploader(
         string $name,
         string $acl = S3Service::ACL_PUBLIC_READ,
         array $options = []
     ): void {
-        if ($this->available()) {
-            $this->unicornScript->importMainThen('u.$ui.s3Uploader();');
-        }
-
-        if ($this->available(get_defined_vars())) {
+        if ($this->available($name)) {
             if (!class_exists(PostObjectV4::class)) {
                 throw new \DomainException('Please install aws/aws-sdk-php ^3.0');
             }
@@ -53,7 +67,7 @@ class AwsScript extends AbstractScript
                 $s3 = $options['s3Service'];
             } else {
                 $profile = $options['profile'] ?? 's3';
-                $storage = $this->storageManager->get($profile);
+                $storage = $this->container->get(StorageInterface::class, tag: $profile);
 
                 if (!$storage instanceof S3Storage) {
                     throw new \DomainException("Storage profile \"{$profile}\" must be S3Storage.");
@@ -91,6 +105,7 @@ class AwsScript extends AbstractScript
             );
 
             $formInputs = $postObject->getFormInputs();
+            $formAttributes = $postObject->getFormAttributes();
 
             $viewerHost = rtrim((string) $s3->getViewerHost(), '/');
 
@@ -100,7 +115,8 @@ class AwsScript extends AbstractScript
                     'endpoint',
                     'subfolder',
                     'formInputs',
-                    'viewerHost'
+                    'viewerHost',
+                    'formAttributes',
                 )
             );
 

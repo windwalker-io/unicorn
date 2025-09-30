@@ -7,9 +7,7 @@ namespace Unicorn\Script;
 use Psr\Http\Message\UriInterface;
 use Windwalker\Core\Asset\AbstractScript;
 use Windwalker\Core\Language\TranslatorTrait;
-use Windwalker\DOM\DOMElement;
 use Windwalker\Form\Field\AbstractField;
-use Windwalker\Language\LanguageNormalizer;
 
 /**
  * The FormScript class.
@@ -29,6 +27,10 @@ class FormScript extends AbstractScript
 
     public function choices(?string $selector = null, array $options = []): static
     {
+        if ($this->next) {
+            throw new \LogicException('Choices not supports at unicorn next.');
+        }
+
         if ($selector && $this->available($selector)) {
             $opt = static::getJSObject($options);
             $this->unicornScript->importMainThen("u.\$ui.choices('$selector', $opt)");
@@ -42,7 +44,11 @@ class FormScript extends AbstractScript
     public function cascadeSelect(): static
     {
         if ($this->available()) {
-            $this->js('@unicorn/field/cascade-select.js');
+            if ($this->next) {
+                $this->unicornScript->importMainThen("u.\$ui.cascadeSelect()");
+            } else {
+                $this->js('@unicorn/field/cascade-select.js');
+            }
         }
 
         return $this;
@@ -138,7 +144,11 @@ class FormScript extends AbstractScript
     public function repeatable(): static
     {
         if ($this->available()) {
-            $this->js('@unicorn/field/repeatable.js');
+            if ($this->next) {
+                $this->unicornScript->importMainThen("u.\$ui.repeatable()");
+            } else {
+                $this->js('@unicorn/field/repeatable.js');
+            }
         }
 
         return $this;
@@ -163,13 +173,21 @@ class FormScript extends AbstractScript
         string $callbackName
     ): static {
         if ($this->available($callbackName)) {
-            $this->unicornScript->importMainThen(
-                <<<JS
+            if ($this->next) {
+                $this->unicornScript->importMainThen(
+                    <<<JS
+                u.\$ui.modalField().then(({ createCallback }) => window.$callbackName = createCallback('$type', '$selector', '$modalSelector'));
+                JS
+                );
+            } else {
+                $this->unicornScript->importMainThen(
+                    <<<JS
                 u.\$ui.modalField().then(function () {
                     window.$callbackName = u.\$modalField.createCallback('$type', '$selector', '$modalSelector');
                 });
                 JS
-            );
+                );
+            }
         }
 
         return $this;

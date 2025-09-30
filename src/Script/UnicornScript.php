@@ -6,14 +6,13 @@ namespace Unicorn\Script;
 
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Asset\AbstractScript;
-use Windwalker\Core\Security\CspNonceService;
 use Windwalker\Core\Html\HtmlFrame;
-use Windwalker\Core\Http\Browser;
 use Windwalker\Core\Language\LangService;
 use Windwalker\Core\Router\Navigator;
+use Windwalker\Core\Security\CspNonceService;
 use Windwalker\Core\Security\CsrfService;
 use Windwalker\DI\Exception\DefinitionException;
-use Windwalker\DOM\DOMElement;
+use Windwalker\DOM\HTMLElement;
 use Windwalker\Utilities\Str;
 
 /**
@@ -21,6 +20,10 @@ use Windwalker\Utilities\Str;
  */
 class UnicornScript extends AbstractScript
 {
+    // public bool $next {
+    //     get => $this->app->config('unicorn.modules.next') ?? false;
+    // }
+
     protected array $data = [];
 
     public array $initialise = [];
@@ -32,7 +35,6 @@ class UnicornScript extends AbstractScript
      */
     public function __construct(
         protected AppContext $app,
-        protected Browser $browser,
         protected LangService $langService,
         protected Navigator $nav
     ) {
@@ -48,7 +50,7 @@ class UnicornScript extends AbstractScript
                 'scripts',
                 '@system-onload',
                 [
-                    'body' => 'window.S = System'
+                    'body' => 'window.S = System',
                 ]
             );
             $this->js('@unicorn/system-hooks.js', [], ['data-version' => $version]);
@@ -66,6 +68,38 @@ class UnicornScript extends AbstractScript
      */
     public function init(?string $mainJS = null): static
     {
+        if ($this->next) {
+            if ($mainJS) {
+                $this->asset->importMap(
+                    '@main',
+                    $this->asset->appendVersion(
+                        $this->asset->handleUri($mainJS)
+                    )
+                );
+            }
+
+            $this->asset->importMap(
+                '@windwalker-io/unicorn',
+                $this->asset->appendVersion(
+                    $this->asset->handleUri('vendor/@windwalker-io/unicorn-next/dist/unicorn.js')
+                )
+            );
+
+            $this->asset->importMap(
+                '@windwalker-io/unicorn/',
+                $this->asset->handleUri('vendor/@windwalker-io/unicorn-next/dist/')
+            );
+
+            $this->asset->importMap(
+                '@unicorn/',
+                $this->asset->handleUri('vendor/@windwalker-io/unicorn-next/dist/')
+            );
+
+            $this->main();
+
+            return $this;
+        }
+
         if ($mainJS) {
             $this->asset->importMap('@main', $mainJS);
         }
@@ -104,6 +138,12 @@ class UnicornScript extends AbstractScript
 
     public function importScript(string $uri, bool $afterMain = false): static
     {
+        if ($this->next) {
+            $this->asset->importModule($uri);
+
+            return $this;
+        }
+
         if ($afterMain) {
             $this->importMainThen("u.import('$uri');");
         } else {
@@ -115,6 +155,12 @@ class UnicornScript extends AbstractScript
 
     public function importThen(string $uri, string $code, bool $afterMain = false): static
     {
+        if ($this->next) {
+            $this->asset->importModule($uri, $code);
+
+            return $this;
+        }
+
         $importer = $afterMain ? 'u' : 'System';
 
         $js = <<<JS
@@ -248,7 +294,7 @@ class UnicornScript extends AbstractScript
 
     public function disableTransitionBeforeLoad(
         string $className = 'h-no-transition',
-        DOMElement|HtmlFrame|null $body = null
+        HTMLElement|HtmlFrame|null $body = null
     ): void {
         if ($this->available($className)) {
             $css = <<<CSS
@@ -262,7 +308,7 @@ class UnicornScript extends AbstractScript
 CSS;
 
             $this->internalCSS($css);
-            $this->importMainThen("u.domready(function () { document.body.classList.remove('$className') })");
+            $this->importMainThen("u.domready(() => document.body.classList.remove('$className'))");
 
             $body ??= $this->app->service(HtmlFrame::class);
 

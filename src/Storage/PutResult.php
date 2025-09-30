@@ -6,6 +6,8 @@ namespace Unicorn\Storage;
 
 use Psr\Http\Message\UriInterface;
 
+use Windwalker\Filesystem\Path;
+
 use function Windwalker\uid;
 
 /**
@@ -13,14 +15,25 @@ use function Windwalker\uid;
  */
 class PutResult extends Result implements \Stringable
 {
+    public string $filename {
+        get => Path::getFilename($this->path ?: (string) $this->uri);
+    }
+
+    public string $extension {
+        get => Path::getExtension($this->path ?: (string) $this->uri);
+    }
+
     /**
      * PutResult constructor.
      */
     public function __construct(
-        protected UriInterface $uri,
-        protected \Closure $responseCallback,
-        protected mixed $rawResult = null
+        public UriInterface $uri,
+        \Closure $responseCallback,
+        public ?string $path = null,
+        mixed $rawResult = null,
+        public int $fileSize = 0,
     ) {
+        parent::__construct($responseCallback, $rawResult);
     }
 
     /**
@@ -50,18 +63,6 @@ class PutResult extends Result implements \Stringable
         }
 
         return $uri;
-    }
-
-    /**
-     * @param  UriInterface  $uri
-     *
-     * @return  static  Return self to support chaining.
-     */
-    public function setUri(UriInterface $uri): static
-    {
-        $this->uri = $uri;
-
-        return $this;
     }
 
     public function getUriString(string|bool $suffix = false): string

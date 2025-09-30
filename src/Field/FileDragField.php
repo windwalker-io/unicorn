@@ -8,7 +8,7 @@ use Psr\Http\Message\UriInterface;
 use Windwalker\Core\Application\ApplicationInterface;
 use Windwalker\Data\Collection;
 use Windwalker\DI\Attributes\Inject;
-use Windwalker\DOM\DOMElement;
+use Windwalker\DOM\HTMLElement;
 use Windwalker\Filesystem\Path;
 use Windwalker\Form\Field\FileField;
 use Windwalker\Utilities\Str;
@@ -41,7 +41,7 @@ class FileDragField extends FileField
         return '@theme::field.file-drag';
     }
 
-    public function buildFieldElement(DOMElement $input, array $options = []): string|DOMElement
+    public function compileFieldElement(HTMLElement $input, array $options = []): string|HTMLElement
     {
         // Fix accept
         if (trim((string) $this->getAccept())) {

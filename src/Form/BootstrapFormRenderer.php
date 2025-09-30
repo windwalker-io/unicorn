@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Unicorn\Form;
 
 use Windwalker\Core\Form\FormRenderer;
-use Windwalker\DOM\DOMElement;
+use Windwalker\DOM\HTMLElement;
 use Windwalker\Form\Contract\InputOptionsInterface;
 use Windwalker\Form\Field\AbstractField;
 use Windwalker\Form\Field\SpacerField;
@@ -25,18 +25,18 @@ class BootstrapFormRenderer extends FormRenderer
 
         if ($field instanceof InputOptionsInterface) {
             $field->setOptionWrapperHandler(
-                function (DOMElement $wrapper) {
+                function (HTMLElement $wrapper) {
                     $wrapper->addClass('form-check');
                     $wrapper->setAttribute('data-input-option', true);
                 }
             );
             $field->setOptionHandler(
-                function (DOMElement $wrapper) {
+                function (HTMLElement $wrapper) {
                     $wrapper->addClass('form-check-input');
                 }
             );
             $field->setOptionLabelHandler(
-                function (DOMElement $wrapper) {
+                function (HTMLElement $wrapper) {
                     $wrapper->addClass('form-check-label');
                 }
             );
@@ -44,13 +44,13 @@ class BootstrapFormRenderer extends FormRenderer
         }
     }
 
-    public static function handleInputClasses(AbstractField $field, DOMElement $inputElement): void
+    public static function handleInputClasses(AbstractField $field, HTMLElement $inputElement): void
     {
         $inputElement->addClass(
             match (true) {
                 $inputElement->getAttribute('type') === 'checkbox' => 'form-input-check',
                 $field instanceof InputOptionsInterface => '',
-                $inputElement->getName() === 'select' && !$field->hasAttribute('multiple')
+                strtolower($inputElement->getName()) === 'select' && !$field->hasAttribute('multiple')
                     => 'custom-select form-select',
                 $field instanceof TextField => 'form-control',
                 default => ''

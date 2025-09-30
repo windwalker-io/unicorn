@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace Unicorn\Module\FileUpload;
 
 use Unicorn\Flysystem\Base64DataUri;
-use Unicorn\Upload\FileUploadManager;
+use Unicorn\Upload\FileUploadService;
+use Unicorn\Upload\ResizeConfig;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Attributes\Controller;
 use Windwalker\Core\Http\AppRequest;
@@ -17,13 +18,13 @@ use Windwalker\Http\Helper\UploadedFileHelper;
 #[Controller]
 class FileController
 {
-    public function upload(FileUploadManager $fileUploadManager, AppRequest $request, AppContext $app): array
+    public function upload(AppRequest $request, AppContext $app): array
     {
         [$dir, $path, $resize, $profile] = $request->input('dir', 'path', 'resize', 'profile')
             ->values()
             ->dump();
 
-        $uploadService = $fileUploadManager->get($profile);
+        $uploadService = $app->retrieve(FileUploadService::class, tag: $profile);
 
         if (!$uploadService) {
             throw new \DomainException('Unable to find profile: ' . get_debug_type($profile), 400);
@@ -32,30 +33,26 @@ class FileController
         if ((string) $resize === '1') {
             $size = $request->input('size');
             [$width, $height] = explode('x', (string) $size) + [null, null];
-            $width = $request->input('width') ?: $width;
-            $height = $request->input('height') ?: $height;
+            $width = (int) ($request->input('width') ?: $width);
+            $height = (int) ($request->input('height') ?: $height);
 
             $uploadService->setResizeConfig(
-                [
-                    'enabled' => (bool) $resize,
-                    'width' => $width,
-                    'height' => $height,
-                    'crop' => $request->input('crop'),
-                    'quality' => $request->input('quality'),
-                    'output_format' => $request->input('output_format'),
-                    'orientate' => $request->input('orientate'),
-                ]
+                new ResizeConfig(
+                    enabled: true,
+                    width: $width ?: null,
+                    height: $height ?: null,
+                    quality: ((int) $request->input('quality')) ?: null,
+                    crop: (bool) $request->input('crop'),
+                    outputFormat: $request->input('output_format') ?: null,
+                    orientate: (bool) $request->input('orientate'),
+                )
             );
         } elseif ($resize === '0') {
-            $uploadService->setResizeConfig(
-                [
-                    'enabled' => false,
-                ]
-            );
+            $uploadService->options->resize->enabled = false;
         }
 
         if ($dir) {
-            $uploadService->setOption('dir', $dir);
+            $uploadService->options->dir = $dir;
         }
 
         $data = $request->input('data');

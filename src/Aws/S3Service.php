@@ -26,21 +26,7 @@ use const Windwalker\Stream\READ_ONLY_FROM_BEGIN;
  */
 class S3Service
 {
-    public const ACL_PRIVATE = 'private';
-
-    public const ACL_PUBLIC_READ = 'public-read';
-
-    public const ACL_PUBLIC_READ_WRITE = 'public-read-write';
-
-    public const ACL_AUTHENTICATED_READ = 'authenticated-read';
-
-    public const STORAGE_CLASS_STANDARD = 'STANDARD';
-
-    public const STORAGE_CLASS_RRS = 'REDUCED_REDUNDANCY';
-
-    public const SSE_NONE = '';
-
-    public const SSE_AES256 = 'AES256';
+    use S3ConstantTrait;
 
     /**
      * S3Service constructor.

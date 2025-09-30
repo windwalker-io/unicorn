@@ -9,10 +9,12 @@ use Unicorn\Field\LayoutFieldTrait;
 use Unicorn\Script\UnicornScript;
 use Windwalker\Core\Language\TranslatorTrait;
 use Windwalker\DI\Attributes\Inject;
-use Windwalker\DOM\DOMElement;
+use Windwalker\DOM\HTMLElement;
 use Windwalker\Form\Field\AbstractField;
 use Windwalker\Query\Query;
 use Windwalker\Utilities\Cache\InstanceCacheTrait;
+
+use Windwalker\Utilities\Wrapper\RawWrapper;
 
 use function Windwalker\raw;
 
@@ -50,7 +52,7 @@ class ModalTreeField extends AbstractField
     #[Inject]
     protected UnicornScript $unicornScript;
 
-    public function prepareInput(DOMElement $input): DOMElement
+    public function prepareInput(HTMLElement $input): HTMLElement
     {
         return $input;
     }
@@ -60,11 +62,13 @@ class ModalTreeField extends AbstractField
         return '@theme::field.modal-tree';
     }
 
-    public function buildFieldElement(DOMElement $input, array $options = []): string|DOMElement
+    public function compileFieldElement(HTMLElement $input, array $options = []): string|HTMLElement
     {
         $key = 'field.modal-tree:' . $this->getId();
 
-        $input['source'] = $this->getSource();
+        $source = $this->getSource();
+
+        $input[':source'] = $source instanceof RawWrapper ? $source() : json_encode($source);
         $input['modal-title'] = $this->getModalTitle();
         $input[':branch-selectable'] = $this->isBranchSelectable() ? 'true' : null;
         $input['name'] .= '[]';
@@ -87,7 +91,7 @@ class ModalTreeField extends AbstractField
 
         // $input['value-key'] = $key;
         $input[':items'] = raw(
-            "function () { return \$u.data('$key'); }"
+            "function () { return \$getData('$key'); }"
         );
 
         $input->removeAttribute('value');

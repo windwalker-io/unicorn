@@ -16,7 +16,6 @@ use Windwalker\Database\DatabaseAdapter;
 use Windwalker\Database\Manager\TableManager;
 use Windwalker\Database\Schema\Ddl\Column;
 use Windwalker\Event\EventAwareInterface;
-use Windwalker\Event\EventAwareTrait;
 use Windwalker\Form\Field\HiddenField;
 use Windwalker\Form\Field\NumberField;
 use Windwalker\Form\Field\TextareaField;
@@ -32,9 +31,13 @@ class FormFieldsBuilder extends AbstractAstBuilder implements EventAwareInterfac
     use CoreEventAwareTrait;
 
     protected array $uses = [];
+
     protected array $newUses = [];
+
     protected bool|string|null $langPrefix = null;
+
     protected bool $hasTranslations = false;
+
     protected ?Node\Stmt\ClassMethod $methodFound = null;
 
     /**
@@ -77,10 +80,10 @@ class FormFieldsBuilder extends AbstractAstBuilder implements EventAwareInterfac
         $ref = new \ReflectionClass($this->getClassName());
         $this->langPrefix = $options['use-lang'] ?? null;
 
-        $columns       = $this->table->getColumnNames(true);
+        $columns = $this->table->getColumnNames(true);
         $existsColumns = [];
-        $factory       = $this->createNodeFactory();
-        $fields        = [];
+        $factory = $this->createNodeFactory();
+        $fields = [];
 
         $leaveNode = function (Node $node) use ($ref, $factory, &$existsColumns, $columns, &$fields, &$added) {
             if ($node instanceof Node\Stmt\UseUse) {
@@ -167,6 +170,7 @@ class FormFieldsBuilder extends AbstractAstBuilder implements EventAwareInterfac
         );
 
         $addFields = implode("\n\n", $fields);
+
         return str_replace(
             "        '@replace-line';",
             $addFields,
@@ -206,20 +210,20 @@ class FormFieldsBuilder extends AbstractAstBuilder implements EventAwareInterfac
         }
 
         $event = $this->emit(
-            BuildFormFieldEvent::class,
-            [
-                'column' => $column,
-                'label' => $label,
-                'formFieldsBuilder' => $this
-            ]
+            new BuildFormFieldEvent(
+                column: $column,
+                formFieldsBuilder: $this,
+                label: $label
+            )
         );
 
-        if ($event->getCode() !== null) {
-            return $event->getCode();
+        if ($event->code !== null) {
+            return $event->code;
         }
 
         if ($column->isAutoIncrement()) {
             $this->addUse(HiddenField::class);
+
             return <<<PHP
         \$form->add('$colName', HiddenField::class);
 PHP;

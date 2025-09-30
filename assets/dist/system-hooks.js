@@ -1,1 +1,0 @@
-function hookSystemJS(){System.constructor.prototype.createScript=function(t){const n=window.unicornScriptVersion;return-1!==t.indexOf("?")?t+="&"+n:t+="?"+n,Object.assign(document.createElement("script"),{src:t})}}document.currentScript&&(window.unicornScriptVersion=document.currentScript.dataset.version,hookSystemJS());

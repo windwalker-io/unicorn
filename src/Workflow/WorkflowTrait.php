@@ -60,10 +60,10 @@ trait WorkflowTrait
         $metadata->watchBefore(
             $field,
             function (WatchEvent $event) use ($options, $field) {
-                $workflow = $this->compile($event->getTempEntity(), $field, $options);
+                $workflow = $this->compile($event->tempEntity, $field, $options);
 
-                $to = static::toStrings($event->getValue());
-                $from = static::toStrings($event->getOldValue());
+                $to = static::toStrings($event->value);
+                $from = static::toStrings($event->oldValue);
 
                 $toTitle = $workflow->getState($to)?->getTitle() ?? $to;
                 $fromTitle = $workflow->getState($from)?->getTitle() ?? $from;
@@ -96,10 +96,10 @@ trait WorkflowTrait
         $metadata->watchAfter(
             $field,
             function (WatchEvent $event) use ($options, $field) {
-                $workflow = $this->compile($event->getTempEntity(), $field, $options);
+                $workflow = $this->compile($event->tempEntity, $field, $options);
 
-                $val = static::toStrings($event->getValue());
-                $oldVal = static::toStrings($event->getOldValue());
+                $val = static::toStrings($event->value);
+                $oldVal = static::toStrings($event->oldValue);
 
                 // Do not use transition event since it will call listener twice
                 // Find transition

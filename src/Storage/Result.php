@@ -7,41 +7,40 @@ namespace Unicorn\Storage;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
+use Windwalker\Utilities\Accessible\AccessorBCTrait;
 
 /**
  * The Result class.
  */
+// phpcs:disable
 class Result
 {
-    protected ?ResponseInterface $response = null;
+    use AccessorBCTrait;
+
+    public ?ResponseInterface $response = null {
+        get => $this->response ??= ($this->responseCallback)($this);
+    }
+
+    public StreamInterface $body {
+        get => $this->response->getBody();
+    }
 
     /**
      * PutResult constructor.
      */
     public function __construct(
-        protected \Closure $responseCallback,
-        protected mixed $rawResult = null
+        public \Closure $responseCallback,
+        public mixed $rawResult = null
     ) {
     }
 
     /**
-     * @return ResponseInterface
+     * @return  StreamInterface
+     *
+     * @deprecated  Use props instead.
      */
-    public function getResponse(): ResponseInterface
-    {
-        return $this->response ??= ($this->responseCallback)($this);
-    }
-
-    /**
-     * @return mixed|null
-     */
-    public function getRawResult(): mixed
-    {
-        return $this->rawResult;
-    }
-
     public function getBody(): StreamInterface
     {
-        return $this->getResponse()->getBody();
+        return $this->body;
     }
 }

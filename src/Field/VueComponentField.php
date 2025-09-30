@@ -8,7 +8,7 @@ use Unicorn\Script\FormScript;
 use Unicorn\Script\VueScript;
 use Windwalker\Core\Asset\AssetService;
 use Windwalker\DI\Attributes\Service;
-use Windwalker\DOM\DOMElement;
+use Windwalker\DOM\HTMLElement;
 use Windwalker\Form\Field\AbstractField;
 use Windwalker\Utilities\StrNormalize;
 
@@ -30,18 +30,18 @@ class VueComponentField extends AbstractField
 
     protected ?string $initFunction = null;
 
-    protected \Closure|DOMElement|string|null $storeElement = null;
+    protected \Closure|HTMLElement|string|null $storeElement = null;
 
     protected ?\Closure $slots = null;
 
     protected bool $json = false;
 
-    public function prepareInput(DOMElement $input): DOMElement
+    public function prepareInput(HTMLElement $input): HTMLElement
     {
         return $input;
     }
 
-    public function buildFieldElement(DOMElement $input, array $options = []): string|DOMElement
+    public function compileFieldElement(HTMLElement $input, array $options = []): string|HTMLElement
     {
         $this->formScript->vueComponentField(
             '#' . $this->getId('-wrapper') . ' [data-vue-app]',

@@ -7,7 +7,7 @@ namespace Unicorn\Field;
 use Unicorn\Script\FormScript;
 use Windwalker\Core\Form\FormFactory;
 use Windwalker\DI\Attributes\Inject;
-use Windwalker\DOM\DOMElement;
+use Windwalker\DOM\HTMLElement;
 use Windwalker\Form\Field\AbstractField;
 use Windwalker\Form\Form;
 use Windwalker\Utilities\Str;
@@ -57,22 +57,26 @@ class MultiUploaderField extends AbstractField
 
     public function getDefaultLayout(): string
     {
+        if ($this->formScript->next) {
+            return '@theme::field.multi-uploader-next';
+        }
+
         return '@theme::field.multi-uploader';
     }
 
     /**
      * prepareRenderInput
      *
-     * @param  DOMElement  $input
+     * @param  HTMLElement  $input
      *
-     * @return  DOMElement
+     * @return  HTMLElement
      */
-    public function prepareInput(DOMElement $input): DOMElement
+    public function prepareInput(HTMLElement $input): HTMLElement
     {
         return $input;
     }
 
-    public function buildFieldElement(DOMElement $input, array $options = []): string|DOMElement
+    public function compileFieldElement(HTMLElement $input, array $options = []): string|HTMLElement
     {
         $subForm = $this->prepareSubForm();
         $subForm->appendNamespace('/' . $this->getNamespaceName(true));
@@ -118,6 +122,8 @@ class MultiUploaderField extends AbstractField
             }
         }
 
+        unset($value);
+
         // Prepare default value placeholder
         foreach ($subForm->getFields() as $field) {
             $current[$field->getName()] = $field->get('multiple') ? [] : '';
@@ -135,7 +141,9 @@ class MultiUploaderField extends AbstractField
             'loading' => false,
             'canReplace' => $this->isCanReplace(),
             'fieldName' => $this->getName(),
-            'fieldFullName' => $this->getInputName()
+            'fieldFullName' => $this->getInputName(),
+            'maxConcurrent' => (int) ($this->getMaxConcurrent() ?: 2),
+            'accept' => implode(',', (array) $this->getAccept()) ?: [],
         ];
 
         return $this->renderLayout(
@@ -156,7 +164,13 @@ class MultiUploaderField extends AbstractField
 
         foreach ($form->getFields() as $field) {
             $field->setValue(null);
-            $field->attr('v-model', 'current.' . $field->getName());
+
+            if ($this->formScript->next) {
+                $field->attr('v-model', 'current.data.' . $field->getName());
+            } else {
+                $field->attr('v-model', 'current.' . $field->getName());
+            }
+
             $field->disabled($this->isDisabled());
             $field->readonly($this->isReadonly());
         }

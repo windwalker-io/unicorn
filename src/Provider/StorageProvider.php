@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Unicorn\Provider;
 
-use Unicorn\Aws\S3Service;
 use Unicorn\Flysystem\FlysystemFactory;
 use Unicorn\Storage\StorageFactory;
+use Unicorn\Storage\StorageInterface;
 use Unicorn\Storage\StorageManager;
 use Unicorn\Upload\FileUploadManager;
 use Unicorn\Upload\FileUploadService;
@@ -25,8 +25,14 @@ class StorageProvider implements ServiceProviderInterface
         $container->prepareSharedObject(FlysystemFactory::class);
         $container->bind(
             FileUploadService::class,
-            function (Container $container) {
-                return $container->get(FileUploadManager::class)->get();
+            function (Container $container, ?string $tag = null) {
+                return $container->get(FileUploadManager::class)->get($tag);
+            }
+        );
+        $container->bind(
+            StorageInterface::class,
+            function (Container $container, ?string $tag = null) {
+                return $container->get(StorageManager::class)->get($tag);
             }
         );
     }

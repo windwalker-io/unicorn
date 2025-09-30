@@ -20,7 +20,7 @@ use Windwalker\Utilities\Arr;
 #[EventSubscriber]
 class EmptyArrayFieldSubscriber
 {
-    public function __construct(protected Container $container, protected $emptyValue = '__EMPTY_ARRAY__')
+    public function __construct(protected Container $container, protected string $emptyValue = '__EMPTY_ARRAY__')
     {
     }
 
@@ -28,13 +28,13 @@ class EmptyArrayFieldSubscriber
     public function requestGetValue(RequestGetValueEvent $event): void
     {
         if (
-            $event->getType() !== RequestGetValueEvent::TYPE_BODY
-            && $event->getType() !== RequestGetValueEvent::TYPE_QUERY
+            $event->type !== RequestGetValueEvent::TYPE_BODY
+            && $event->type !== RequestGetValueEvent::TYPE_QUERY
         ) {
             return;
         }
 
-        $values = &$event->getValues();
+        $values = &$event->values;
 
         $values = Arr::mapRecursive(
             $values,

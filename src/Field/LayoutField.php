@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Unicorn\Field;
 
-use Windwalker\DOM\DOMElement;
+use Windwalker\DOM\HTMLElement;
 use Windwalker\DOM\DOMFactory;
 use Windwalker\Form\Field\AbstractField;
 use Windwalker\Utilities\Arr;
@@ -24,17 +24,17 @@ class LayoutField extends AbstractField
     /**
      * @inheritDoc
      */
-    public function prepareInput(DOMElement $input): DOMElement
+    public function prepareInput(HTMLElement $input): HTMLElement
     {
         return DOMFactory::element('div', '');
     }
 
-    public function buildFieldElement(DOMElement $input, array $options = []): string|DOMElement
+    public function compileFieldElement(HTMLElement $input, array $options = []): string|HTMLElement
     {
         return $this->renderLayout(
             $this->getLayout(),
             [
-                'input' => parent::buildFieldElement($input, $options),
+                'input' => parent::compileFieldElement($input, $options),
                 'field' => $this,
                 'options' => $options,
             ]

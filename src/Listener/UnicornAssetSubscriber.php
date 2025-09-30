@@ -33,7 +33,7 @@ class UnicornAssetSubscriber
     #[ListenTo(AssetBeforeRender::class)]
     public function beforeRender(AssetBeforeRender $event): void
     {
-        if ($event->getType() === AssetBeforeRender::TYPE_JS) {
+        if ($event->type === AssetBeforeRender::TYPE_JS) {
             $this->handleJS($event);
         }
     }
@@ -52,9 +52,9 @@ class UnicornAssetSubscriber
         // Todo: Auto push route
 
         $script = $this->app->service(UnicornScript::class);
-        $asset = $event->getAssetService();
-        $scripts = &$event->getLinks();
-        $internalScripts = $asset->getInternalScripts();
+        // $asset = $event->assetService;
+        // $internalScripts = $asset->getInternalScripts();
+        $scripts = &$event->links;
 
         if (WINDWALKER_DEBUG) {
             $script->data('windwalker.debug', true);
@@ -65,7 +65,7 @@ class UnicornAssetSubscriber
 
             array_unshift(
                 $scripts,
-                (new AssetLink())
+                new AssetLink()
                     ->setOption('body', "document.__unicorn = $store;")
             );
         }
@@ -76,14 +76,18 @@ class UnicornAssetSubscriber
                 ->filter('strlen')
                 ->map(fn (string $s) => Str::ensureRight($s, ';'));
 
-            $codes[] = "u.trigger('ready');";
+            if (!$script->next) {
+                $codes[] = "u.trigger('ready');";
+            } else {
+                $codes->unshift("const { u } = module;");
+            }
 
             $script->importThen(
                 '@main',
                 (string) $codes->implode("\n"),
                 false
             );
-        } elseif ($script->importMain) {
+        } elseif ($script->importMain && !$script->next) {
             $script->importScript(
                 '@main',
                 false

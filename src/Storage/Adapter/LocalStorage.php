@@ -11,9 +11,7 @@ use Unicorn\Storage\PutResult;
 use Unicorn\Storage\Result;
 use Unicorn\Storage\StorageInterface;
 use Windwalker\Core\Application\ApplicationInterface;
-use Windwalker\Core\Application\PathResolver;
 use Windwalker\Core\Router\SystemUri;
-use Windwalker\Filesystem\FileObject;
 use Windwalker\Filesystem\Filesystem;
 use Windwalker\Filesystem\Path;
 use Windwalker\Http\Response\Response;
@@ -59,9 +57,11 @@ class LocalStorage implements StorageInterface
         );
 
         return new PutResult(
-            $this->getUri($path),
-            fn () => new Response($file->getStream()),
-            $file
+            uri: $this->getUri($path),
+            responseCallback: fn() => new Response($file->getStream()),
+            path: $path,
+            rawResult: $file,
+            fileSize: (int) $file->getSize(),
         );
     }
 
@@ -73,9 +73,11 @@ class LocalStorage implements StorageInterface
         );
 
         return new PutResult(
-            $this->getUri($path),
-            fn () => new Response($file->getStream()),
-            $file
+            uri: $this->getUri($path),
+            responseCallback: fn() => new Response($file->getStream()),
+            path: $path,
+            rawResult: $file,
+            fileSize: (int) $file->getSize()
         );
     }
 
@@ -87,9 +89,11 @@ class LocalStorage implements StorageInterface
         );
 
         return new PutResult(
-            $this->getUri($path),
-            fn () => new Response($file->getStream()),
-            $file
+            uri: $this->getUri($path),
+            responseCallback: fn() => new Response($file->getStream()),
+            path: $path,
+            rawResult: $file,
+            fileSize: (int) $file->getSize()
         );
     }
 
@@ -101,7 +105,7 @@ class LocalStorage implements StorageInterface
 
         $file = Filesystem::delete($path);
 
-        return new Result(fn () => new Response(), $file);
+        return new Result(fn() => new Response(), $file);
     }
 
     public function getUri(string $path, array $options = []): UriInterface
@@ -147,14 +151,14 @@ class LocalStorage implements StorageInterface
     {
         $file = Filesystem::get($this->getPath($path));
 
-        return (new GetResult(
-            fn () => new Response($file->getStream()),
-            $file
-        ))
-            ->setUri($this->getUri($path))
-            ->setPath($path)
-            ->setLastModified($file->getMTime())
-            ->setFileSize($file->getSize());
+        return new GetResult(
+            responseCallback: fn() => new Response($file->getStream()),
+            path: $path,
+            uri: $this->getUri($path),
+            fileSize: $file->getSize(),
+            lastModified: $file->getMTime(),
+            rawResult: $file
+        );
     }
 
     public function read(string $path, array $options = []): string
@@ -170,14 +174,14 @@ class LocalStorage implements StorageInterface
     public function listContents(string $path, bool $recursive = false): iterable
     {
         foreach (Filesystem::files($this->getPath($path), $recursive) as $k => $file) {
-            yield $k => (new GetResult(
-                fn () => new Response($file->getStream()),
-                $file
-            ))
-                ->setUri($this->getUri($path))
-                ->setPath($path)
-                ->setLastModified($file->getMTime())
-                ->setFileSize($file->getSize());
+            yield $k => new GetResult(
+                responseCallback: fn() => new Response($file->getStream()),
+                path: $path,
+                uri: $this->getUri($path),
+                fileSize: $file->getSize(),
+                lastModified: $file->getMTime(),
+                rawResult: $file
+            );
         }
     }
 

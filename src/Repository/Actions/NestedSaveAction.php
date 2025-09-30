@@ -30,11 +30,10 @@ class NestedSaveAction extends SaveAction
         }
 
         $event = $this->emit(
-            PrepareSaveEvent::class,
-            compact('data', 'source', 'condFields', 'options')
+            new PrepareSaveEvent(data: $data, source: $source, condFields: $condFields, options: $options)
         );
 
-        $data = $event->getData();
+        $data = $event->data;
         $key = $mapper->getMainKey();
 
         $pk = $data[$key] ?? null;
@@ -54,8 +53,8 @@ class NestedSaveAction extends SaveAction
         $entity = $this->getEntityMapper()
             ->saveOne(
                 $mapper->hydrate($data, $entity),
-                $event->getCondFields(),
-                $event->getOptions()
+                $event->condFields,
+                $event->options
             );
 
         if ($mapper->isPathable()) {
