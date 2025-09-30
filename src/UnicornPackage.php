@@ -214,6 +214,7 @@ class UnicornPackage extends AbstractPackage implements
                 '@input-group' => '@theme::components.input-group',
                 '@breadcrumb' => '@theme::components.breadcrumb',
                 '@pagination-stats' => '@theme::components.pagination-stats',
+                '@pagination-jump' => '@theme::components.pagination-jump',
                 '@tabs' => '@theme::components.tabs',
                 '@tab' => '@theme::components.tab',
             ]
@@ -244,6 +245,7 @@ class UnicornPackage extends AbstractPackage implements
                 'input-group' => '@input-group',
                 'breadcrumb' => '@breadcrumb',
                 'pagination-stats' => '@pagination-stats',
+                'pagination-jump' => '@pagination-jump',
                 'tabs' => '@tabs',
                 'tab' => '@tab',
             ]
