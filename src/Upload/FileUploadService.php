@@ -12,12 +12,10 @@ use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use Spatie\ImageOptimizer\OptimizerChainFactory;
 use Symfony\Component\Mime\MimeTypesInterface;
-use Symfony\Component\OptionsResolver\OptionsResolver;
 use Unicorn\Flysystem\Base64DataUri;
 use Unicorn\Image\InterventionImage;
 use Unicorn\Storage\PutResult;
 use Unicorn\Storage\StorageInterface;
-use Unicorn\Storage\StorageManager;
 use Unicorn\Upload\Event\FileUploadedEvent;
 use Unicorn\Upload\Exception\FileUploadException;
 use Windwalker\Core\Event\CoreEventAwareTrait;
@@ -31,14 +29,12 @@ use Windwalker\Http\Helper\UploadedFileHelper;
 use Windwalker\Stream\Stream;
 use Windwalker\Stream\StreamHelper;
 use Windwalker\Stream\StringStream;
-use Windwalker\Utilities\Options\OptionsResolverTrait;
 use Windwalker\Utilities\TypeCast;
 
 use function Windwalker\chronos;
 use function Windwalker\uid;
 
 use const Windwalker\Stream\READ_ONLY_FROM_BEGIN;
-use const Windwalker\Stream\READ_WRITE_FROM_BEGIN;
 use const Windwalker\Stream\READ_WRITE_RESET;
 
 /**
@@ -47,95 +43,56 @@ use const Windwalker\Stream\READ_WRITE_RESET;
 class FileUploadService implements EventAwareInterface
 {
     use CoreEventAwareTrait;
-    use OptionsResolverTrait;
 
-    public const DRIVER_GD = 'gd';
+    /**
+     * @deprecated  Use FileUploadOptions::DRIVER_GD instead.
+     */
+    public const string DRIVER_GD = FileUploadOptions::DRIVER_GD;
 
-    public const DRIVER_IMAGICK = 'imagick';
+    /**
+     * @deprecated  Use FileUploadOptions::DRIVER_IMAGICK instead.
+     */
+    public const string DRIVER_IMAGICK = FileUploadOptions::DRIVER_IMAGICK;
 
     protected array $pathVars = [];
+
+    public FileUploadOptions $options;
 
     /**
      * FileUploadService constructor.
      */
     public function __construct(
-        array $options,
         protected Container $container,
+        FileUploadOptions|array $options = new FileUploadOptions(),
         protected ?MimeTypesInterface $mimeTypes = null
     ) {
-        $this->resolveOptions(
-            $options,
-            [$this, 'configureOptions']
-        );
+        $this->options = FileUploadOptions::wrapWith($options);
     }
 
-    protected function configureOptions(OptionsResolver $resolver): void
+    public function setResizeConfig(array|ResizeConfig $resizeConfig, bool $ignoreNulls = true): static
     {
-        $resolver->define('accept')
-            ->allowedTypes('string', 'null');
-
-        $resolver->define('resize')
-            ->allowedTypes('array', 'null')
-            ->default(
-                function (OptionsResolver $resizeResolver) {
-                    $resizeResolver->setDefaults(
-                        [
-                            'enabled' => true,
-                            'driver' => static::DRIVER_GD,
-                            'strip_exif' => false,
-                            'width' => null,
-                            'height' => null,
-                            'crop' => false,
-                            'quality' => 85,
-                            'output_format' => null,
-                            'orientate' => true,
-                        ]
-                    );
-                }
-            );
-
-        $resolver->define('dir')
-            ->allowedTypes('string', 'null')
-            ->default(null);
-
-        $resolver->define('force_redraw')
-            ->allowedTypes('bool')
-            ->default(false);
-
-        $resolver->define('raw_gif')
-            ->allowedTypes('bool')
-            ->default(false);
-
-        $resolver->define('storage')
-            ->allowedTypes('string', 'null')
-            ->default('local');
-
-        $resolver->define('optimize')
-            ->allowedTypes('bool', 'int', 'array')
-            ->default(false);
-
-        $resolver->define('options')
-            ->allowedTypes('array')
-            ->default([]);
-    }
-
-    public function setResizeConfig(array $resizeConfig): static
-    {
-        $this->options['resize'] = array_merge(
-            $this->options['resize'],
-            $resizeConfig
+        $this->options->resize = $this->options->withMerge(
+            $resizeConfig,
+            true,
+            $ignoreNulls,
         );
 
         return $this;
     }
 
-    public function getStorage(): StorageInterface
+    public function getResizeConfig(): ResizeConfig
     {
-        return $this->container->get(StorageInterface::class, tag: $this->options['storage']);
+        return $this->options->resize;
     }
 
-    public function handleBase64(string $file, ?string $dest = null, array $options = []): PutResult
+    public function getStorage(): StorageInterface
     {
+        return $this->container->get(StorageInterface::class, tag: $this->options->storage);
+    }
+
+    public function handleBase64(string $file, ?string $dest = null, array|FileUploadOptions $options = []): PutResult
+    {
+        $options = $this->getMergeOptions($options);
         $stream = Base64DataUri::toStream($file, $mime);
 
         $ext = $this->getExtensionByMimeType($mime);
@@ -145,10 +102,10 @@ class FileUploadService implements EventAwareInterface
         $destExt = Path::getExtension($dest);
 
         if (str_starts_with($mime, 'image/') && $this->shouldRedraw($ext, $destExt)) {
-            $resizeConfig = $this->getResizeConfig($options);
+            $resizeConfig = $options->resize;
 
             if ($destExt !== '{ext}') {
-                $resizeConfig['output_format'] ??= $destExt;
+                $resizeConfig->outputFormat ??= $destExt;
             }
 
             $stream = $this->resizeImage($stream, $resizeConfig);
@@ -161,7 +118,7 @@ class FileUploadService implements EventAwareInterface
     public function handleFile(
         UploadedFileInterface|\SplFileInfo|string $file,
         ?string $dest = null,
-        array $options = []
+        array|FileUploadOptions $options = []
     ): PutResult {
         if ($file instanceof \SplFileInfo) {
             $file = $file->getPathname();
@@ -190,17 +147,18 @@ class FileUploadService implements EventAwareInterface
         $dest ??= $this->getUploadPath($dest, $srcExt);
 
         $destExt = Path::getExtension($dest);
+        $options = $this->getMergeOptions($options);
 
         if ($this->isImage($file) && ($forceRedraw || $this->shouldRedraw($srcExt, $destExt))) {
-            $resizeConfig = $this->getResizeConfig($options);
+            $resizeConfig = $options->resize;
 
             // Todo: Should refactor total process
-            $dest = $this->replaceVariables($dest, $resizeConfig['output_format'] ?? $srcExt);
+            $dest = $this->replaceVariables($dest, $resizeConfig->outputFormat ?? $srcExt);
 
             if ($destExt !== '{ext}') {
-                $resizeConfig['output_format'] ??= $destExt;
+                $resizeConfig->outputFormat ??= $destExt;
             } elseif ($forceRedraw) {
-                $resizeConfig['output_format'] ??= $srcExt;
+                $resizeConfig->outputFormat ??= $srcExt;
             }
 
             $stream = $this->resizeImage($file, $resizeConfig);
@@ -276,10 +234,10 @@ class FileUploadService implements EventAwareInterface
         $destExt = Path::getExtension($dest);
 
         if (str_starts_with((string) $mime, 'image/') && $this->shouldRedraw($ext, $destExt)) {
-            $resizeConfig = $this->getResizeConfig($options);
+            $resizeConfig = $this->getMergedResizeConfig($options);
 
             if ($destExt !== '{ext}') {
-                $resizeConfig['output_format'] ??= $destExt;
+                $resizeConfig->outputFormat ??= $destExt;
             }
 
             $stream = $this->resizeImage($stream, $resizeConfig);
@@ -295,7 +253,7 @@ class FileUploadService implements EventAwareInterface
             $path = $this->generateFileName() . '.{ext}';
         }
 
-        $dir ??= $this->options['dir'];
+        $dir ??= $this->options->dir;
 
         $path = $dir . '/' . $path;
 
@@ -329,32 +287,22 @@ class FileUploadService implements EventAwareInterface
             return true;
         }
 
-        if ($this->options['raw_gif'] && strtolower($ext) === 'gif') {
+        if ($this->options->rawGif && strtolower($ext) === 'gif') {
             return false;
         }
 
-        return $this->options['resize']['enabled'] || $this->options['force_redraw'];
+        return $this->options->resize->enabled || $this->options->forceRedraw;
     }
 
     /**
      * @param  StreamInterface|\SplFileInfo|string|UploadedFileInterface  $src
-     * @param  array{
-     *     driver: string,
-     *     strip_exif: bool,
-     *     optimize: bool,
-     *     width: ?int,
-     *     height: ?int,
-     *     crop: bool,
-     *     quality: int,
-     *     output_format: string,
-     *     orientate: true,
-     * }                                                                  $resizeConfig
+     * @param  array|ResizeConfig                                         $resizeConfig
      *
      * @return  StreamInterface
      */
     public function resizeImage(
         StreamInterface|\SplFileInfo|string|UploadedFileInterface $src,
-        array $resizeConfig = []
+        array|ResizeConfig $resizeConfig = []
     ): StreamInterface {
         $outputFormat = null;
 
@@ -377,10 +325,7 @@ class FileUploadService implements EventAwareInterface
             $src = $tmp->getPathname();
         }
 
-        $resizeConfig = array_merge(
-            $this->options['resize'],
-            $resizeConfig
-        );
+        $resizeConfig = $this->options->resize->withMerge($resizeConfig, true, true);
 
         $interventionVersion = InterventionImage::version();
 
@@ -390,16 +335,21 @@ class FileUploadService implements EventAwareInterface
     }
 
     /**
-     * @param  StreamInterface  $src
-     * @param  string           $dest
-     * @param  array            $resizeConfig
+     * @param  StreamInterface     $src
+     * @param  string              $dest
+     * @param  ResizeConfig|array  $resizeConfig
      *
      * @return  StreamInterface
      * @throws \Exception
      */
-    public function optimizeImage(StreamInterface $src, string $dest, array $resizeConfig): StreamInterface
-    {
-        $optimize = $resizeConfig['strip_exif'] ?: $this->options['optimize'];
+    public function optimizeImage(
+        StreamInterface $src,
+        string $dest,
+        ResizeConfig|array $resizeConfig
+    ): StreamInterface {
+        $resizeConfig = ResizeConfig::wrapWith($resizeConfig);
+
+        $optimize = $resizeConfig->stripExif ?: $this->options->optimize;
 
         if ($optimize === false) {
             return $src;
@@ -450,27 +400,29 @@ class FileUploadService implements EventAwareInterface
 
     protected function resizeByIntervension3(
         StreamInterface|\SplFileInfo|string|UploadedFileInterface $src,
-        array $resizeConfig,
+        array|ResizeConfig $resizeConfig,
         ?string $outputFormat
     ): StreamInterface {
+        $resizeConfig = ResizeConfig::wrapWith($resizeConfig);
+
         // $optimize = $resizeConfig['strip_exif'] || $this->options['optimize'];
 
-        $image = InterventionImage::read($src, $resizeConfig['driver']);
+        $image = InterventionImage::read($src, $resizeConfig->driver);
 
-        $width = TypeCast::safeInteger($resizeConfig['width']);
-        $height = TypeCast::safeInteger($resizeConfig['height']);
+        $width = TypeCast::safeInteger($resizeConfig->width);
+        $height = TypeCast::safeInteger($resizeConfig->height);
 
-        if (!$resizeConfig['enabled']) {
+        if (!$resizeConfig->enabled) {
             return Stream::wrap(
                 $this->encodeImageByExtension(
                     $image,
-                    $resizeConfig['output_format'] ?? $outputFormat,
-                    TypeCast::safeInteger($resizeConfig['quality'] ?? 85)
+                    $resizeConfig->outputFormat ?? $outputFormat,
+                    TypeCast::safeInteger($resizeConfig->quality ?? 85)
                 ),
             );
         }
 
-        if ($resizeConfig['crop'] && $width !== null && $height !== null) {
+        if ($resizeConfig->crop && $width !== null && $height !== null) {
             $image->coverDown($width, $height);
         } elseif ($width || $height) {
             $image->scaleDown($width, $height);
@@ -484,8 +436,8 @@ class FileUploadService implements EventAwareInterface
 
         $res = $this->encodeImageByExtension(
             $image,
-            $resizeConfig['output_format'] ?? $outputFormat,
-            TypeCast::safeInteger($resizeConfig['quality'] ?? 85)
+            $resizeConfig->outputFormat ?? $outputFormat,
+            TypeCast::safeInteger($resizeConfig->quality ?? 85)
         );
 
         return Stream::wrap($res);
@@ -516,12 +468,14 @@ class FileUploadService implements EventAwareInterface
      */
     protected function resizeByIntervension2(
         StreamInterface|\SplFileInfo|string|UploadedFileInterface $src,
-        array $resizeConfig,
+        array|ResizeConfig $resizeConfig,
         ?string $outputFormat
     ): StreamInterface {
-        $image = InterventionImage::read($src, $driver = $resizeConfig['driver']);
+        $resizeConfig = ResizeConfig::wrapWith($resizeConfig, true, true);
 
-        if ($resizeConfig['orientate']) {
+        $image = InterventionImage::read($src, $driver = $resizeConfig->driver);
+
+        if ($resizeConfig->orientate) {
             try {
                 $image->orientate();
             } catch (NotReadableException $e) {
@@ -529,22 +483,22 @@ class FileUploadService implements EventAwareInterface
             }
         }
 
-        if ($driver === static::DRIVER_IMAGICK && $resizeConfig['strip_exif']) {
+        if ($driver === static::DRIVER_IMAGICK && $resizeConfig->stripExif) {
             $image->getCore()->stripImage();
         }
 
-        $width = $resizeConfig['width'];
-        $height = $resizeConfig['height'];
+        $width = $resizeConfig->width;
+        $height = $resizeConfig->height;
 
-        if (!$resizeConfig['enabled']) {
+        if (!$resizeConfig->enabled) {
             return $image->stream(
-                $resizeConfig['output_format'] ?? $outputFormat,
-                TypeCast::safeInteger($resizeConfig['quality'])
+                $resizeConfig->outputFormat ?? $outputFormat,
+                TypeCast::safeInteger($resizeConfig->quality)
             );
         }
 
         if (!$width || $image->width() >= $width || !$height || $image->height() >= $height) {
-            if ($resizeConfig['crop']) {
+            if ($resizeConfig->crop) {
                 $image->fit($width, $height, function (Constraint $constraint) {
                     // $constraint->upsize();
                 });
@@ -557,17 +511,19 @@ class FileUploadService implements EventAwareInterface
         }
 
         return $image->stream(
-            $resizeConfig['output_format'] ?? $outputFormat,
-            TypeCast::safeInteger($resizeConfig['quality'])
+            $resizeConfig->outputFormat ?? $outputFormat,
+            TypeCast::safeInteger($resizeConfig->quality)
         );
     }
 
-    protected function getResizeConfig(array $options = []): array
+    protected function getMergeOptions(FileUploadOptions|array $options): FileUploadOptions
     {
-        return array_merge(
-            $this->options['resize'],
-            $options['resize'] ?? []
-        );
+        return $this->options->withMerge($options, true, true);
+    }
+
+    protected function getMergedResizeConfig(FileUploadOptions $options): ResizeConfig
+    {
+        return $this->getMergeOptions($options)->resize;
     }
 
     public function getMimeType(UploadedFileInterface|\SplFileInfo|string $src): ?string
@@ -674,27 +630,31 @@ class FileUploadService implements EventAwareInterface
     }
 
     /**
-     * @param  StreamInterface  $stream
-     * @param  mixed            $file
-     * @param  string           $dest
-     * @param  array            $options
+     * @param  StreamInterface          $stream
+     * @param  mixed                    $file
+     * @param  string                   $dest
+     * @param  FileUploadOptions|array  $options
      *
      * @return  PutResult
      */
-    protected function putToStorage(StreamInterface $stream, mixed $file, string $dest, array $options): PutResult
-    {
-        $options = array_merge($this->getOption('options'), $options);
+    protected function putToStorage(
+        StreamInterface $stream,
+        mixed $file,
+        string $dest,
+        FileUploadOptions|array $options
+    ): PutResult {
+        $storageOptions = array_merge($this->options->storageOptions, $options->storageOptions);
 
         $storage = $this->getStorage();
-        $result = $storage->putStream($stream, $dest, $options);
+        $result = $storage->putStream($stream, $dest, $storageOptions);
 
         $event = $this->emit(
             new FileUploadedEvent(
                 file: $file,
                 result: $result,
                 stream: $stream,
-                dest: $dest,
-                options: $options
+                options: $options,
+                dest: $dest
             )
         );
 

@@ -1,18 +1,8 @@
-import type {
-  AxiosError,
-  AxiosInstance,
-  AxiosRequestConfig,
-  AxiosResponse,
-  AxiosStatic,
-  CreateAxiosDefaults
-} from 'axios';
+import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, CreateAxiosDefaults } from 'axios';
+import AxiosStatic, { AxiosError, isAxiosError, isCancel } from 'axios';
 import { parseTemplate } from 'url-template';
 import { data } from '../data';
 import { route } from '../service';
-
-declare global {
-  let axios: AxiosStatic;
-}
 
 export interface ApiReturn<T = any> {
   success: boolean;
@@ -33,105 +23,78 @@ declare module 'axios' {
   }
 }
 
-export class UnicornHttpClient {
-  static axiosStatic?: Promise<AxiosStatic>;
-  axios?: AxiosInstance;
+function prepareAxios(axios: AxiosInstance): AxiosInstance {
+  axios.interceptors.request.use((config) => {
+    config.headers['X-CSRF-Token'] = data('csrf-token');
 
-  constructor(protected config?: CreateAxiosDefaults) {
-  }
-
-  static async importAxios(): Promise<any> {
-    const { default: axios } = await import('axios');
-
-    return axios;
-  }
-
-  static async getAxiosStatic(): Promise<AxiosStatic> {
-    if (!this.axiosStatic) {
-      this.axiosStatic = this.importAxios();
+    if (config.url && config.url.startsWith('@')) {
+      config.url = route(config.url);
     }
 
-    return this.axiosStatic;
-  }
-
-  async createHttp() {
-    const axiosStatic = await UnicornHttpClient.getAxiosStatic();
-
-    return this.axios = axiosStatic.create(this.config || {});
-  }
-
-  async getAxiosInstance() {
-    if (this.axios) {
-      return this.axios;
+    if (config?.vars && config.url) {
+      const tmpl = parseTemplate(config.url);
+      config.url = tmpl.expand(config.vars || {});
     }
 
-    return this.axios = this.prepareAxios(await this.createHttp());
-  }
-
-  prepareAxios(axios: AxiosInstance): AxiosInstance {
-    axios.interceptors.request.use((config) => {
-      config.headers['X-CSRF-Token'] = data('csrf-token');
-
-      if (config.url && config.url.startsWith('@')) {
-        config.url = route(config.url);
-      }
-
-      if (config?.vars && config.url) {
-        const tmpl = parseTemplate(config.url);
-        config.url = tmpl.expand(config.vars || {});
-      }
-
-      // Simulate methods
-      if (config.methodSimulate) {
-        if (config.methodSimulateByHeader) {
-          config.headers['X-HTTP-Method-Override'] = config;
-        } else if (typeof config.data === 'object') {
-          config.data['_method'] = config.method;
-        } else if (typeof config.data === 'string') {
-          if (config.data.includes('?')) {
-            config.data += '&_method=' + config.method;
-          } else {
-            config.data += '?_method=' + config.method;
-          }
-        }
-
-        if (config.method?.toLowerCase() !== 'get') {
-          config.method = 'POST';
+    // Simulate methods
+    if (config.methodSimulate) {
+      if (config.methodSimulateByHeader) {
+        config.headers['X-HTTP-Method-Override'] = config;
+      } else if (typeof config.data === 'object') {
+        config.data['_method'] = config.method;
+      } else if (typeof config.data === 'string') {
+        if (config.data.includes('?')) {
+          config.data += '&_method=' + config.method;
+        } else {
+          config.data += '?_method=' + config.method;
         }
       }
 
-      return config;
-    });
+      if (config.method?.toLowerCase() !== 'get') {
+        config.method = 'POST';
+      }
+    }
 
-    return axios;
+    return config;
+  });
+
+  return axios;
+}
+
+export type UnicornHttpClient = ReturnType<typeof createHttpClient>;
+
+export function createHttpClient(config?: CreateAxiosDefaults | AxiosInstance) {
+  const axios = config && 'interceptors' in config
+    ? config
+    : AxiosStatic.create(config ?? {});
+
+  prepareAxios(axios);
+
+  function requestMiddleware(callback: Parameters<AxiosInstance['interceptors']['request']['use']>[0]) {
+    return axios.interceptors.request.use(callback);
   }
 
-  requestMiddleware(callback: Parameters<AxiosInstance['interceptors']['request']['use']>[0]) {
-    return this.getAxiosInstance().then(axios => axios.interceptors.request.use(callback));
+  function responseMiddleware(callback: Parameters<AxiosInstance['interceptors']['response']['use']>[0]) {
+    return axios.interceptors.response.use(callback);
   }
-
-  responseMiddleware(callback: Parameters<AxiosInstance['interceptors']['response']['use']>[0]) {
-    return this.getAxiosInstance().then(axios => axios.interceptors.response.use(callback));
-  }
-
-  // ready() {
-  //   super.ready();
-  // }
 
   /**
    * Send a GET request.
    */
-  get<T = any, D = any>(url: string, options: Partial<AxiosRequestConfig> = {}): Promise<AxiosResponse<T, D>> {
+  async function get<T = any, D = any>(
+    url: string,
+    options: Partial<AxiosRequestConfig> = {}
+  ): Promise<AxiosResponse<T, D>> {
     options.url = url;
     options.method = 'GET';
 
-    return this.request(options);
+    return request(options);
   }
 
   /**
    * Send a POST request.
    */
-  post<T = any, D = any>(
+  async function post<T = any, D = any>(
     url: string,
     data?: any,
     options: Partial<AxiosRequestConfig> = {}
@@ -140,7 +103,7 @@ export class UnicornHttpClient {
     options.method = 'POST';
     options.data = data;
 
-    return this.request(options);
+    return request(options);
   }
 
   /**
@@ -152,7 +115,7 @@ export class UnicornHttpClient {
    *
    * @returns {Promise<AxiosResponse>}
    */
-  put<T = any, D = any>(
+  async function put<T = any, D = any>(
     url: string,
     data?: any,
     options: Partial<AxiosRequestConfig> = {}
@@ -161,7 +124,7 @@ export class UnicornHttpClient {
     options.method = 'PUT';
     options.data = data;
 
-    return this.request(options);
+    return request(options);
   }
 
   /**
@@ -173,7 +136,7 @@ export class UnicornHttpClient {
    *
    * @returns {Promise<AxiosResponse>}
    */
-  patch<T = any, D = any>(
+  async function patch<T = any, D = any>(
     url: string,
     data?: any,
     options: Partial<AxiosRequestConfig> = {}
@@ -182,7 +145,7 @@ export class UnicornHttpClient {
     options.method = 'PATCH';
     options.data = data;
 
-    return this.request(options);
+    return request(options);
   }
 
   /**
@@ -194,7 +157,7 @@ export class UnicornHttpClient {
    *
    * @returns {Promise<AxiosResponse>}
    */
-  delete<T = any, D = any>(
+  async function deletes<T = any, D = any>(
     url: string,
     data?: any,
     options: Partial<AxiosRequestConfig> = {}
@@ -203,7 +166,7 @@ export class UnicornHttpClient {
     options.method = 'DELETE';
     options.data = data;
 
-    return this.request(options);
+    return request(options);
   }
 
   /**
@@ -214,11 +177,14 @@ export class UnicornHttpClient {
    *
    * @returns {Promise<AxiosResponse>}
    */
-  head<T = any, D = any>(url: string, options: Partial<AxiosRequestConfig> = {}): Promise<AxiosResponse<T, D>> {
+  async function head<T = any, D = any>(
+    url: string,
+    options: Partial<AxiosRequestConfig> = {}
+  ): Promise<AxiosResponse<T, D>> {
     options.url = url;
     options.method = 'HEAD';
 
-    return this.request(options);
+    return request(options);
   }
 
   /**
@@ -229,24 +195,22 @@ export class UnicornHttpClient {
    *
    * @returns {Promise<AxiosResponse>}
    */
-  options<T = any, D = any>(url: string, options: Partial<AxiosRequestConfig> = {}): Promise<AxiosResponse<T, D>> {
+  async function options<T = any, D = any>(
+    url: string,
+    options: Partial<AxiosRequestConfig> = {}
+  ): Promise<AxiosResponse<T, D>> {
     options.url = url;
     options.method = 'OPTIONS';
 
-    return this.request(options);
-  }
-
-  isCancel(cancel: any) {
-    return axios.isCancel(cancel);
+    return request(options);
   }
 
   /**
    * Send request.
    */
-  async request<T = any, D = any>(options: AxiosRequestConfig): Promise<AxiosResponse<T, D>> {
+  async function request<T = any, D = any>(options: AxiosRequestConfig): Promise<AxiosResponse<T, D>> {
     try {
-      let axiosInstance = await this.getAxiosInstance();
-      return await axiosInstance(options);
+      return await axios(options);
     } catch (e) {
       (e as any).originMessage = (e as Error).message;
 
@@ -260,9 +224,20 @@ export class UnicornHttpClient {
     }
   }
 
-  async errorClass() {
-    const axios = await UnicornHttpClient.getAxiosStatic();
-
-    return axios.AxiosError;
-  }
+  return {
+    axios,
+    request,
+    get,
+    post,
+    put,
+    patch,
+    delete: deletes,
+    head,
+    options,
+    requestMiddleware,
+    responseMiddleware,
+    isCancel,
+    AxiosError,
+    isAxiosError,
+  };
 }

@@ -6,6 +6,7 @@ namespace Unicorn\Module\FileUpload;
 
 use Unicorn\Flysystem\Base64DataUri;
 use Unicorn\Upload\FileUploadService;
+use Unicorn\Upload\ResizeConfig;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Attributes\Controller;
 use Windwalker\Core\Http\AppRequest;
@@ -32,30 +33,26 @@ class FileController
         if ((string) $resize === '1') {
             $size = $request->input('size');
             [$width, $height] = explode('x', (string) $size) + [null, null];
-            $width = $request->input('width') ?: $width;
-            $height = $request->input('height') ?: $height;
+            $width = (int) ($request->input('width') ?: $width);
+            $height = (int) ($request->input('height') ?: $height);
 
             $uploadService->setResizeConfig(
-                [
-                    'enabled' => (bool) $resize,
-                    'width' => $width,
-                    'height' => $height,
-                    'crop' => $request->input('crop'),
-                    'quality' => $request->input('quality'),
-                    'output_format' => $request->input('output_format'),
-                    'orientate' => $request->input('orientate'),
-                ]
+                new ResizeConfig(
+                    enabled: true,
+                    width: $width ?: null,
+                    height: $height ?: null,
+                    quality: ((int) $request->input('quality')) ?: null,
+                    crop: (bool) $request->input('crop'),
+                    outputFormat: $request->input('output_format') ?: null,
+                    orientate: (bool) $request->input('orientate'),
+                )
             );
         } elseif ($resize === '0') {
-            $uploadService->setResizeConfig(
-                [
-                    'enabled' => false,
-                ]
-            );
+            $uploadService->options->resize->enabled = false;
         }
 
         if ($dir) {
-            $uploadService->setOption('dir', $dir);
+            $uploadService->options->dir = $dir;
         }
 
         $data = $request->input('data');

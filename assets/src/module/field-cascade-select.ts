@@ -1,9 +1,8 @@
-
-import { useLoadedHttpClient } from '../composable';
-import { loadAlpine, module, uid, prepareAlpineDefer, initAlpineComponent } from '../service';
-import { mergeDeep } from '../utilities';
 import AlpineComponent from '@rubenbimmel/alpine-class-component/dist/alpineComponent';
 import Component from '@rubenbimmel/alpine-class-component/dist/decorators/component';
+import { useHttpClient } from '../composable';
+import { initAlpineComponent, module, prepareAlpineDefer, uid } from '../service';
+import { mergeDeep } from '../utilities';
 
 interface CascadeSelectOptions {
   id: string;
@@ -188,7 +187,7 @@ class FieldCascadeSelect extends AlpineComponent {
   async loadItems(parentId: string | null, i: number) {
     // Ajax
     if (this.ajaxUrl) {
-      const http = await useLoadedHttpClient();
+      const http = await useHttpClient();
 
       let res = await http.get(
         this.ajaxUrl,
@@ -278,13 +277,11 @@ declare global {
   var S: any;
 }
 
-
-
 async function init() {
   await prepareAlpineDefer(() => {
     Alpine.data('CascadeSelect', (options: CascadeSelectOptions) => new FieldCascadeSelect(options));
   });
-  
+
   await initAlpineComponent('data-cascade-select');
 }
 

@@ -8,6 +8,8 @@ use Unicorn\Aws\S3Service;
 use Unicorn\Listener\DumpOrphansSubscriber;
 use Unicorn\Listener\UnicornAssetSubscriber;
 use Unicorn\UnicornPackage;
+use Unicorn\Upload\FileUploadOptions;
+use Unicorn\Upload\ResizeConfig;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Asset\AssetService;
 use Windwalker\Core\Attributes\ConfigModule;
@@ -60,51 +62,51 @@ static fn() => [
          * --------------------------------------------------
          */
         'profiles' => [
-            'default' => [
-                'storage' => env('UPLOAD_STORAGE_DEFAULT') ?: 'local',
-                'accept' => null,
-                'dir' => 'files/{year}/{month}/{day}',
-                'resize' => [
-                    'enabled' => false,
-                    'driver' => env('IMAGE_RESIZE_DRIVER', 'gd'),
-                ],
-            ],
-            'image' => [
-                'storage' => env('UPLOAD_STORAGE_DEFAULT') ?: 'local',
-                'accept' => 'image/*',
-                'dir' => 'images/{year}/{month}/{day}',
-                'raw_gif' => true,
-                'resize' => [
-                    'enabled' => true,
-                    'driver' => env('IMAGE_RESIZE_DRIVER', 'gd'),
-                    'width' => 1200,
-                    'height' => 1200,
-                    'crop' => false,
-                    'quality' => 85,
-                    'output_format' => null,
-                ],
-                'options' => [
+            'default' => fn () => new FileUploadOptions(
+                storage: env('UPLOAD_STORAGE_DEFAULT') ?: 'local',
+                dir: 'files/{year}/{month}/{day}',
+                accept: null,
+                resize: new ResizeConfig(
+                    enabled: false,
+                    driver: env('IMAGE_RESIZE_DRIVER', 'gd'),
+                ),
+            ),
+            'image' => fn () => new FileUploadOptions(
+                storage: env('UPLOAD_STORAGE_DEFAULT') ?: 'local',
+                dir: 'images/{year}/{month}/{day}',
+                accept: 'image/*',
+                rawGif: true,
+                resize: new ResizeConfig(
+                    enabled: true,
+                    driver: env('IMAGE_RESIZE_DRIVER', 'gd'),
+                    width: 1200,
+                    height: 1200,
+                    quality: 85,
+                    crop: false,
+                    outputFormat: null,
+                ),
+                storageOptions: [
                     'ACL' => S3Service::ACL_PUBLIC_READ,
                 ],
-            ],
-            'frontend' => [
-                'storage' => env('UPLOAD_STORAGE_DEFAULT') ?: 'local',
-                'accept' => 'image/*',
-                'dir' => 'files/{year}/{month}/{day}',
-                'force_redraw' => true,
-                'resize' => [
-                    'enabled' => true,
-                    'driver' => env('IMAGE_RESIZE_DRIVER', 'gd'),
-                    'width' => 1200,
-                    'height' => 1200,
-                    'crop' => false,
-                    'quality' => 85,
-                    'output_format' => null,
-                ],
-                'options' => [
+            ),
+            'frontend' => fn () => new FileUploadOptions(
+                storage: env('UPLOAD_STORAGE_DEFAULT') ?: 'local',
+                dir: 'files/{year}/{month}/{day}',
+                accept: 'image/*',
+                forceRedraw: true,
+                resize: new ResizeConfig(
+                    enabled: true,
+                    driver: env('IMAGE_RESIZE_DRIVER', 'gd'),
+                    width: 1200,
+                    height: 1200,
+                    quality: 85,
+                    crop: false,
+                    outputFormat: null,
+                ),
+                storageOptions: [
                     'ACL' => S3Service::ACL_PUBLIC_READ,
                 ],
-            ],
+            ),
         ],
     ],
 ];

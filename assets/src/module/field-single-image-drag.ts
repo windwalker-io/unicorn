@@ -5,6 +5,7 @@ import { mergeDeep } from '../utilities';
 import css from '../../scss/field/single-image-drag.scss?inline';
 import { Modal } from 'bootstrap';
 import type Cropper from 'cropperjs';
+import { ApiReturn } from './http-client';
 
 injectCssToDocument(css);
 
@@ -368,7 +369,9 @@ export class SingleImageDragElement extends HTMLElement {
       loading.style.display = 'flex';
 
       try {
-        await this.uploadImage(file);
+        const res = await this.uploadImage(file);
+
+        this.storeValue(res.data.data.url, res.data.data.url);
       } catch (e) {
         console.error(e);
         simpleAlert((e as Error).message);
@@ -401,7 +404,7 @@ export class SingleImageDragElement extends HTMLElement {
 
     const { post } = await useHttpClient();
 
-    return post(this.options.ajax_url!, formData, {
+    return post<ApiReturn<{ url: string; }>>(this.options.ajax_url!, formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }

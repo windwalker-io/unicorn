@@ -2,26 +2,7 @@ import type { UnicornHttpClient } from '../module/http-client';
 import type { AxiosInstance, CreateAxiosDefaults } from 'axios';
 
 export async function useHttpClient(config?: CreateAxiosDefaults | AxiosInstance): Promise<UnicornHttpClient> {
-  const { UnicornHttpClient } = await import('../module/http-client');
+  const { createHttpClient } = await import('../module/http-client');
 
-  if (config && 'interceptors' in config) {
-    const axios = config as AxiosInstance;
-
-    const http = new UnicornHttpClient();
-
-    http.axios = axios;
-
-    return http;
-  }
-
-  return new UnicornHttpClient(config as CreateAxiosDefaults | undefined);
-}
-
-export async function useLoadedHttpClient(config?: CreateAxiosDefaults): Promise<UnicornHttpClient> {
-  const http = await useHttpClient(config);
-
-  // Load and cache axios
-  await http.getAxiosInstance();
-
-  return http;
+  return createHttpClient(config as CreateAxiosDefaults | undefined);
 }

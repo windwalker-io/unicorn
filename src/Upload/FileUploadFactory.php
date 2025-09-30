@@ -44,6 +44,10 @@ class FileUploadFactory implements ServiceFactoryInterface
             );
         }
 
+        if ($options instanceof \Closure) {
+            $options = $this->container->call($options);
+        }
+
         return $this->container->newInstance(
             FileUploadService::class,
             [
