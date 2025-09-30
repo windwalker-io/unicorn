@@ -6,11 +6,11 @@ import {
   useCheckboxesMultiSelect,
   useFieldValidationSync,
   useForm,
-  useFormInit,
+  useFormAsync,
   useFormValidation,
   useFormValidationSync,
   useGrid,
-  useGridInit,
+  useGridAsync,
   useHttpClient,
   useQueue,
   useStack,
@@ -178,8 +178,8 @@ function handleUI(app: any) {
 }
 
 async function handleFormGrid(app: any) {
-  await useFormInit();
-  await useGridInit();
+  await useFormAsync();
+  await useGridAsync();
 
   app.form = useForm;
   app.grid = useGrid;

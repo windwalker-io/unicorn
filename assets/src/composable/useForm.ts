@@ -3,9 +3,9 @@ import { selectOne, module } from '../service';
 
 let formElement: typeof UnicornFormElement;
 
-export async function useFormInit(): Promise<UnicornFormElement>;
-export async function useFormInit(ele?: string | Element, options?: Record<string, any>): Promise<UnicornFormElement | null>;
-export async function useFormInit(ele?: string | Element, options: Record<string, any> = {}): Promise<UnicornFormElement | null> {
+export async function useFormAsync(): Promise<UnicornFormElement>;
+export async function useFormAsync(ele?: string | Element, options?: Record<string, any>): Promise<UnicornFormElement | null>;
+export async function useFormAsync(ele?: string | Element, options: Record<string, any> = {}): Promise<UnicornFormElement | null> {
   const { UnicornFormElement } = await import('../module/form');
 
   formElement ??= UnicornFormElement;
@@ -35,7 +35,7 @@ export function useForm(ele?: string | Element, options: Record<string, any> = {
 }
 
 export async function useFormComponent(ele?: string | Element, options: Record<string, any> = {}) {
-  const form = await useFormInit(ele, options);
+  const form = await useFormAsync(ele, options);
 
   await form?.initComponent();
 
