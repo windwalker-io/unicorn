@@ -1106,7 +1106,7 @@ function useFieldSingleImageDrag() {
   return import("./field-single-image-drag.js");
 }
 let formElement;
-async function useFormAsync(ele, options = {}) {
+async function useFormInit(ele, options = {}) {
   const { UnicornFormElement } = await import("./form.js");
   formElement ??= UnicornFormElement;
   return useForm(ele, options);
@@ -1127,13 +1127,13 @@ function useForm(ele, options = {}) {
   );
 }
 async function useFormComponent(ele, options = {}) {
-  const form = await useFormAsync(ele, options);
+  const form = await useFormInit(ele, options);
   await form?.initComponent();
   return form;
 }
 let gridElement;
-async function useGridAsync(ele, options = {}) {
-  await useFormAsync();
+async function useGridInit(ele, options = {}) {
+  await useFormInit();
   const { UnicornGridElement } = await import("./grid.js");
   gridElement ??= UnicornGridElement;
   if (!ele) {
@@ -1158,7 +1158,7 @@ function useGrid(ele, options = {}) {
   );
 }
 async function useGridComponent(ele, options = {}) {
-  const grid = await useGridAsync(ele, options);
+  const grid = await useGridInit(ele, options);
   await grid?.initComponent();
   return grid;
 }
@@ -2104,8 +2104,8 @@ export {
   __ as _,
   useUniDirective as a,
   createStack as a$,
-  useFormAsync as a0,
-  useGridAsync as a1,
+  useFormInit as a0,
+  useGridInit as a1,
   useForm as a2,
   useGrid as a3,
   prepareAlpineDefer as a4,

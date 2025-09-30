@@ -1225,11 +1225,11 @@ export declare function useForm(): UnicornFormElement;
 
 export declare function useForm(ele?: string | Element, options?: Record<string, any>): UnicornFormElement | null;
 
-export declare function useFormAsync(): Promise<UnicornFormElement>;
-
-export declare function useFormAsync(ele?: string | Element, options?: Record<string, any>): Promise<UnicornFormElement | null>;
-
 export declare function useFormComponent(ele?: string | Element, options?: Record<string, any>): Promise<UnicornFormElement | null>;
+
+export declare function useFormInit(): Promise<UnicornFormElement>;
+
+export declare function useFormInit(ele?: string | Element, options?: Record<string, any>): Promise<UnicornFormElement | null>;
 
 export declare function useFormValidation(): Promise<ValidationModule>;
 
@@ -1239,9 +1239,9 @@ export declare function useFormValidationSync(selector: string | Element): Unico
 
 export declare function useGrid(ele: string | HTMLElement, options?: Record<string, any> | undefined): UnicornGridElement | null;
 
-export declare function useGridAsync(ele?: string | HTMLElement, options?: Record<string, any> | undefined): Promise<UnicornGridElement | null>;
-
 export declare function useGridComponent(ele: string | HTMLElement, options?: Record<string, any> | undefined): Promise<UnicornGridElement | null>;
+
+export declare function useGridInit(ele?: string | HTMLElement, options?: Record<string, any> | undefined): Promise<UnicornGridElement | null>;
 
 export declare function useHttpClient(config?: CreateAxiosDefaults | AxiosInstance): Promise<UnicornHttpClient>;
 
@@ -1384,19 +1384,19 @@ declare global {
 }
 
 
-declare global {
-    var Alpine: AlpineGlobal;
-    var TomSelect: typeof TomSelectGlobal;
-    var Spectrum: typeof SpectrumGlobal;
-    var Mark: any;
-}
-
-
 declare module '@windwalker-io/unicorn-next' {
     interface UnicornApp {
         /** @deprecated Only for code generator use. */
         $ui: typeof methods;
     }
+}
+
+
+declare global {
+    var Alpine: AlpineGlobal;
+    var TomSelect: typeof TomSelectGlobal;
+    var Spectrum: typeof SpectrumGlobal;
+    var Mark: any;
 }
 
 

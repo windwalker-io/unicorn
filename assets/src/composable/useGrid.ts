@@ -1,14 +1,14 @@
 import type { UnicornGridElement } from '../module/grid';
-import { useForm, useFormAsync } from './useForm';
+import { useForm, useFormInit } from './useForm';
 import { selectOne, module } from '../service';
 
 let gridElement: typeof UnicornGridElement;
 
-export async function useGridAsync(
+export async function useGridInit(
   ele?: string | HTMLElement,
   options: Record<string, any> | undefined = {}
 ): Promise<UnicornGridElement | null> {
-  await useFormAsync();
+  await useFormInit();
 
   const { UnicornGridElement } = await import('../module/grid');
 
@@ -49,7 +49,7 @@ export async function useGridComponent(
   ele: string | HTMLElement,
   options: Record<string, any> | undefined = {}
 ): Promise<UnicornGridElement | null> {
-  const grid = await useGridAsync(ele, options);
+  const grid = await useGridInit(ele, options);
 
   await grid?.initComponent();
 
