@@ -1,9 +1,9 @@
 
+import { Mixin } from 'ts-mixer';
 import { data } from './data';
 import { EventAwareInterface, EventMixin } from './events';
 import { domready } from './service';
 import { Constructor, UnicornPlugin } from './types';
-import { Mixin } from 'ts-mixer';
 
 export type InjectionKey<T = any> = string | symbol | Constructor<T>;
 

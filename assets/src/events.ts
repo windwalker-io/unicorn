@@ -1,5 +1,3 @@
-import { Mixin } from 'ts-mixer';
-
 export abstract class EventMixin implements EventAwareInterface {
   _listeners: Record<string, EventHandler[]> = {};
 
@@ -57,8 +55,8 @@ export abstract class EventMixin implements EventAwareInterface {
   }
 }
 
-export class EventBus extends Mixin(EventMixin) {
-}
+// export class EventBus extends Mixin(EventMixin) {
+// }
 
 export type EventHandler = ((...event: any[]) => void) & { once?: boolean };
 

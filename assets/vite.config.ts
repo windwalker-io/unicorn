@@ -44,9 +44,13 @@ export default defineConfig(({ mode }) => {
           // preserveModulesRoot: 'src/unicorn',
           manualChunks(id) {
             if (!/node_modules/.test(id)) {
-              const chunk = relative(process.cwd() + '/src/', id);
+              const chunk = relative(process.cwd() + '/src/', id).replace(/\\/g, '/');
               if (chunk.startsWith('.')) {
                 return undefined;
+              }
+
+              if (chunk.includes('ts-mixer')) {
+                return 'ts-mixer';
               }
 
               // Remove any extension
@@ -76,7 +80,7 @@ export default defineConfig(({ mode }) => {
       },
       outDir: 'dist',
       emptyOutDir: false,
-      sourcemap: mode === 'development' ? 'inline' : false,
+      sourcemap: 'inline',
       minify: false,
     },
     plugins: [

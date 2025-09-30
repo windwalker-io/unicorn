@@ -181,11 +181,6 @@ export declare interface EventAwareInterface {
     listeners(event: string): EventHandler[];
 }
 
-export declare class EventBus extends EventBus_base {
-}
-
-declare const EventBus_base: Class<any[], EventMixin, typeof EventMixin>;
-
 export declare type EventHandler = ((...event: any[]) => void) & {
     once?: boolean;
 };
@@ -1399,10 +1394,9 @@ export declare function wait<T extends readonly unknown[]>(...promisee: {
 export { }
 
 
-declare module '@windwalker-io/unicorn-next' {
-    interface UnicornApp {
-        /** @deprecated Only for code generator use. */
-        $ui: typeof methods;
+declare global {
+    interface Node {
+        __unicorn?: any;
     }
 }
 
@@ -1415,17 +1409,15 @@ declare global {
 }
 
 
-declare global {
-    interface Node {
-        __unicorn?: any;
+declare module '@windwalker-io/unicorn-next' {
+    interface UnicornApp {
+        /** @deprecated Only for code generator use. */
+        $ui: typeof methods;
     }
 }
 
-
 declare global {
-    export interface Window {
-        bootstrap: typeof bootstrap;
-    }
+    var S: any;
 }
 
 
@@ -1444,8 +1436,11 @@ declare module 'axios' {
     }
 }
 
+
 declare global {
-    var S: any;
+    export interface Window {
+        bootstrap: typeof bootstrap;
+    }
 }
 
 
