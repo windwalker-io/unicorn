@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace {% $ns %};
 
 use App\Entity\{% pascal($name) %};
-use {% $ns %}\Form\EditForm;
 use App\Repository\{% pascal($name) %}Repository;
 use Unicorn\View\FormAwareViewModelTrait;
 use Unicorn\View\ORMAwareViewModelTrait;
@@ -47,13 +46,9 @@ class {% pascal($name) %}EditView
         // Bind item for injection
         $view[{% pascal($name) %}::class] = $item;
 
-        $form = $this->createForm(EditForm::class)
-            ->fill(
-                [
-                    'item' => $this->repository->getState()->getAndForget('edit.data')
-                        ?: $this->orm->extractEntity($item)
-                ]
-            );
+        $form = $this->createForm({% pascal($name) %}EditForm::class)
+            ->fillTo('item', $this->orm->extractEntity($item))
+            ->fillTo('item', $this->repository->getState()->getAndForget('edit.data'));
 
         return compact('form', 'id', 'item');
     }
