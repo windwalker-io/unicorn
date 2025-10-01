@@ -35,6 +35,6 @@ use Windwalker\Core\Router\SystemUri;
 
 @section('content')
     <div class="container my-4">
-        <h2>{% pascal($name) %}Item: {{ $item->getTitle() }}</h2>
+        <h2>{% pascal($name) %}Item: {{ $item->title }}</h2>
     </div>
 @stop

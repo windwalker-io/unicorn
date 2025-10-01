@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace {% $ns %};
 
-use {% $ns %}\Form\EditForm;
 use App\Repository\{% pascal($name) %}Repository;
 use Unicorn\Controller\CrudController;
 use Unicorn\Controller\GridController;
+use Unicorn\Repository\Event\PrepareSaveEvent;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Attributes\Controller;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\DI\Attributes\Autowire;
+use Windwalker\ORM\Event\AfterSaveEvent;
 
 #[Controller()]
 class {% pascal($name) %}Controller
@@ -22,7 +23,19 @@ class {% pascal($name) %}Controller
         Navigator $nav,
         #[Autowire] {% pascal($name) %}Repository $repository,
     ): mixed {
-        $form = $app->make(EditForm::class);
+        $form = $app->make({% pascal($name) %}EditForm::class);
+
+        $controller->prepareSave(
+            function (PrepareSaveEvent $event) {
+                //
+            }
+        );
+
+        $controller->afterSave(
+            function (AfterSaveEvent $event) {
+                //
+            }
+        );
 
         $uri = $app->call($controller->saveWithNamespace(...), compact('repository', 'form'));
 

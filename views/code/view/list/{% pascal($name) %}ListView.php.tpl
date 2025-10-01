@@ -18,7 +18,7 @@ use Windwalker\DI\Attributes\Autowire;
 
 #[ViewModel(
     layout: '{% kebab($name) %}-list',
-    js: '{% kebab($name) %}-list.js'
+    js: '{% kebab($name) %}-list.ts'
 )]
 class {% pascal($name) %}ListView
 {

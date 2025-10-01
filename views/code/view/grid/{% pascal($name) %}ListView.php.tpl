@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace {% $ns %};
 
 use App\Entity\{% pascal($name) %};
-use {% $ns %}\Form\GridForm;
 use App\Repository\{% pascal($name) %}Repository;
 use Unicorn\View\FormAwareViewModelTrait;
 use Unicorn\View\ORMAwareViewModelTrait;
@@ -30,7 +29,7 @@ use Windwalker\DI\Attributes\Autowire;
     ],
     js: '{% kebab($name) %}-list.js'
 )]
-class {% pascal($name) %}ListView implements, FilterAwareViewModelInterface
+class {% pascal($name) %}ListView implements FilterAwareViewModelInterface
 {
     use TranslatorTrait;
     use FilterAwareViewModelTrait;
@@ -69,7 +68,7 @@ class {% pascal($name) %}ListView implements, FilterAwareViewModelInterface
         $pagination = $items->getPagination();
 
         // Prepare Form
-        $form = $this->createForm(GridForm::class)
+        $form = $this->createForm({% pascal($name) %}GridForm::class)
             ->fill(compact('search', 'filter'));
 
         $showFilters = $this->isFiltered($filter);
