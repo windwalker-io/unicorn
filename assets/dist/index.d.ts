@@ -1384,14 +1384,6 @@ declare global {
 }
 
 
-declare global {
-    var Alpine: AlpineGlobal;
-    var TomSelect: typeof TomSelectGlobal;
-    var Spectrum: typeof SpectrumGlobal;
-    var Mark: any;
-}
-
-
 declare module '@windwalker-io/unicorn-next' {
     interface UnicornApp {
         /** @deprecated Only for code generator use. */
@@ -1401,13 +1393,21 @@ declare module '@windwalker-io/unicorn-next' {
 
 
 declare global {
-    export interface Window {
-        bootstrap: typeof bootstrap;
-    }
+    var Alpine: AlpineGlobal;
+    var TomSelect: typeof TomSelectGlobal;
+    var Spectrum: typeof SpectrumGlobal;
+    var Mark: any;
 }
 
 declare global {
     var S: any;
+}
+
+
+declare global {
+    export interface Window {
+        bootstrap: typeof bootstrap;
+    }
 }
 
 
