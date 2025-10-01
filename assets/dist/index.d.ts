@@ -1274,7 +1274,11 @@ export declare function useListDependent(): Promise<ListDependentModule>;
 
 export declare function useListDependent(element: string | HTMLSelectElement, dependent?: Nullable<string | HTMLSelectElement>, options?: Partial<ListDependentOptions>): Promise<ListDependent>;
 
-export declare function useMacro(name: string, handler: (...args: any[]) => any): void;
+export declare function useMacro<T extends Dictionary<(...args: any[]) => any>>(name: T): T;
+
+export declare function useMacro<N extends string, T extends (...args: any[]) => any>(name: N, handler: T): {
+    [K in N]: T;
+};
 
 export declare function useQueue(name?: string, maxRunning?: number): TaskQueue;
 

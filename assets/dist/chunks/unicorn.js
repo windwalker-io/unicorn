@@ -2064,7 +2064,15 @@ function pushUnicornToGlobal(app2) {
   window.u = app2 ?? useUnicorn();
 }
 function useMacro(name, handler) {
-  useUnicorn().macro(name, handler);
+  const app2 = useUnicorn();
+  if (typeof name === "string") {
+    app2.macro(name, handler);
+  } else {
+    for (const k in name) {
+      app2.macro(k, name[k]);
+    }
+  }
+  return app2;
 }
 async function useLegacy(app2) {
   app2 ??= useUnicorn();
