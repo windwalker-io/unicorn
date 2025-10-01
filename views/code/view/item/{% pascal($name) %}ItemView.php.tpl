@@ -17,7 +17,7 @@ use Windwalker\ORM\ORM;
 
 #[ViewModel(
     layout: '{% kebab($name) %}-item',
-    js: '{% kebab($name) %}-item.js'
+    js: '{% kebab($name) %}-item.ts'
 )]
 class {% pascal($name) %}ItemView
 {
