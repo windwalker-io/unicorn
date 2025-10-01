@@ -120,7 +120,7 @@ class MvcSimpleSubCommand extends AbstractGeneratorSubCommand
 
         // Migration
         $this->runProcess(
-            "php windwalker mig:create {$entityName}Init",
+            "php windwalker mig:create {$entityName}Init {$entityName} --no-update",
             $io
         );
 
