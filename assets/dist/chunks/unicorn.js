@@ -157,7 +157,7 @@ function mergeDeep(target, ...sources) {
   }
   return out;
 }
-function getData(element, name = void 0) {
+function getData(element, name) {
   prepareData(element);
   if (name === void 0) {
     return element.__unicorn;
@@ -1824,7 +1824,7 @@ function removeCloak() {
   }
   selectAll("[uni-cloak]", (el) => el.removeAttribute("uni-cloak"));
 }
-function data(ele, name = void 0, value = void 0) {
+function data(ele, name, value) {
   if (!(ele instanceof HTMLElement)) {
     value = name;
     name = ele;
@@ -1834,8 +1834,7 @@ function data(ele, name = void 0, value = void 0) {
     return getData(ele);
   }
   if (value === void 0) {
-    const res = getData(ele, name);
-    return res;
+    return getData(ele, name);
   }
   setData(ele, name, value);
 }

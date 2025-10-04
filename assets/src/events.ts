@@ -1,6 +1,8 @@
 export abstract class EventMixin implements EventAwareInterface {
   _listeners: Record<string, EventHandler[]> = {};
 
+  on<T extends any[]>(event: string, handler: EventHandler<T>): this;
+  on(event: string | string[], handler: EventHandler): this;
   on(event: string | string[], handler: EventHandler): this {
     if (Array.isArray(event)) {
       for (const e of event) {
@@ -16,6 +18,8 @@ export abstract class EventMixin implements EventAwareInterface {
     return this;
   }
 
+  once<T extends any[]>(event: string, handler: EventHandler<T>): this;
+  once(event: string | string[], handler: EventHandler): this;
   once(event: string | string[], handler: EventHandler): this {
     handler.once = true;
     return this.on(event, handler);
@@ -32,6 +36,8 @@ export abstract class EventMixin implements EventAwareInterface {
     return this;
   }
 
+  trigger<T extends any[]>(event: string, ...args: T): this;
+  trigger(event: string[], ...args: any[]): this;
   trigger(event: string | string[], ...args: any[]): this {
     if (Array.isArray(event)) {
       for (const e of event) {
@@ -58,16 +64,19 @@ export abstract class EventMixin implements EventAwareInterface {
 // export class EventBus extends Mixin(EventMixin) {
 // }
 
-export type EventHandler = ((...event: any[]) => void) & { once?: boolean };
+export type EventHandler<T extends any[] = any[]> = ((...event: T) => void) & { once?: boolean };
 
 export interface EventAwareInterface {
+  on<T extends any[]>(event: string, handler: EventHandler<T>): this;
   on(event: string | string[], handler: EventHandler): this;
 
+  once<T extends any[]>(event: string, handler: EventHandler<T>): this;
   once(event: string | string[], handler: EventHandler): this;
 
   off(event: string, handler?: EventHandler): this;
 
-  trigger(event: string | string[], ...args: any[]): this;
+  trigger<T extends any[]>(event: string, ...args: T): this;
+  trigger(event: string[], ...args: any[]): this;
 
   listeners(event: string): EventHandler[];
 }

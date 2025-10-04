@@ -1,10 +1,10 @@
-import { getData, setData, removeData as rmdata } from './utilities';
+import { getData, removeData as rmdata, setData } from './utilities';
 
-export function data(name: string, data: any): any;
-export function data(name: string): any;
-export function data(ele: Element, name: string): any;
-export function data(ele: Element, name: string, data?: any): any;
-export function data(ele: Element | string, name: any = undefined, value: any = undefined) {
+export function data(name: string, data?: any): any;
+export function data<T = void, R = [T] extends [void] ? any : T | undefined>(name: string): R;
+export function data<T = void, R = [T] extends [void] ? any : T | undefined>(ele: Element, name: string): R;
+export function data(ele: Element, name: string, value: any): any;
+export function data(ele: Element | string, name?: any, value?: any) {
   if (!(ele instanceof HTMLElement)) {
     value = name;
     name = ele;
@@ -16,9 +16,7 @@ export function data(ele: Element | string, name: any = undefined, value: any = 
   }
 
   if (value === undefined) {
-    const res = getData(ele, name);
-
-    return res;
+    return getData(ele, name);
   }
 
   setData(ele, name, value);

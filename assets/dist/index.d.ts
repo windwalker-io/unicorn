@@ -52,7 +52,7 @@ declare type AlpinePrepareCallback = (Alpine: Alpine_2) => MaybePromise<any>;
 
 export declare function animateTo(element: HTMLElement, styles: Partial<Record<keyof CSSStyleDeclaration, any>>, options?: number | KeyframeAnimationOptions): Animation;
 
-declare interface ApiReturn<T = any> {
+export declare interface ApiReturn<T = any> {
     success: boolean;
     message?: string;
     code: number;
@@ -179,13 +179,13 @@ export declare function createUnicorn(): UnicornApp;
 
 export declare function createUnicornWithPlugins(): UnicornApp;
 
-export declare function data(name: string, data: any): any;
+export declare function data(name: string, data?: any): any;
 
-export declare function data(name: string): any;
+export declare function data<T = void, R = [T] extends [void] ? any : T | undefined>(name: string): R;
 
-export declare function data(ele: Element, name: string): any;
+export declare function data<T = void, R = [T] extends [void] ? any : T | undefined>(ele: Element, name: string): R;
 
-export declare function data(ele: Element, name: string, data?: any): any;
+export declare function data(ele: Element, name: string, value: any): any;
 
 export declare function debounce<T extends Function = Function>(handler: T, wait?: number): T;
 
@@ -214,23 +214,29 @@ export declare function domready(callback?: ((value: any) => any)): Promise<void
 declare type EndEventHandler = () => void;
 
 export declare interface EventAwareInterface {
+    on<T extends any[]>(event: string, handler: EventHandler<T>): this;
     on(event: string | string[], handler: EventHandler): this;
+    once<T extends any[]>(event: string, handler: EventHandler<T>): this;
     once(event: string | string[], handler: EventHandler): this;
     off(event: string, handler?: EventHandler): this;
-    trigger(event: string | string[], ...args: any[]): this;
+    trigger<T extends any[]>(event: string, ...args: T): this;
+    trigger(event: string[], ...args: any[]): this;
     listeners(event: string): EventHandler[];
 }
 
-export declare type EventHandler = ((...event: any[]) => void) & {
+export declare type EventHandler<T extends any[] = any[]> = ((...event: T) => void) & {
     once?: boolean;
 };
 
 export declare abstract class EventMixin implements EventAwareInterface {
     _listeners: Record<string, EventHandler[]>;
+    on<T extends any[]>(event: string, handler: EventHandler<T>): this;
     on(event: string | string[], handler: EventHandler): this;
+    once<T extends any[]>(event: string, handler: EventHandler<T>): this;
     once(event: string | string[], handler: EventHandler): this;
     off(event: string, handler?: EventHandler): this;
-    trigger(event: string | string[], ...args: any[]): this;
+    trigger<T extends any[]>(event: string, ...args: T): this;
+    trigger(event: string[], ...args: any[]): this;
     listeners(event: string): EventHandler[];
 }
 
@@ -1111,7 +1117,7 @@ declare class UnicornGridElement {
     getId(suffix?: string): string;
 }
 
-declare type UnicornHttpClient = ReturnType<typeof createHttpClient>;
+export declare type UnicornHttpClient = ReturnType<typeof createHttpClient>;
 
 declare class UnicornLang {
     /**
@@ -1388,14 +1394,6 @@ declare global {
 }
 
 
-declare module '@windwalker-io/unicorn-next' {
-    interface UnicornApp {
-        /** @deprecated Only for code generator use. */
-        $ui: typeof methods;
-    }
-}
-
-
 declare global {
     var Alpine: AlpineGlobal;
     var TomSelect: typeof TomSelectGlobal;
@@ -1403,15 +1401,16 @@ declare global {
     var Mark: any;
 }
 
-declare global {
-    var S: any;
+
+declare module '@windwalker-io/unicorn-next' {
+    interface UnicornApp {
+        /** @deprecated Only for code generator use. */
+        $ui: typeof methods;
+    }
 }
 
-
 declare global {
-    export interface Window {
-        bootstrap: typeof bootstrap;
-    }
+    var S: any;
 }
 
 
@@ -1422,6 +1421,13 @@ declare module 'axios' {
         methodSimulateByHeader?: boolean;
     }
     interface CreateAxiosDefaults {
+    }
+}
+
+
+declare global {
+    export interface Window {
+        bootstrap: typeof bootstrap;
     }
 }
 

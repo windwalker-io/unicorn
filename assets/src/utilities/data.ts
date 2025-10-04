@@ -1,5 +1,5 @@
 
-export function getData(element: Element, name: string | undefined = undefined) {
+export function getData(element: Element, name?: string) {
   prepareData(element);
 
   if (name === undefined) {
