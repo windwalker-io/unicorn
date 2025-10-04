@@ -1,6 +1,6 @@
 import type { Editor, EditorOptions, TinyMCE } from 'tinymce';
 import { useHttpClient, useStack } from '../composable';
-import { useImport } from '../service';
+import { useImport, useScriptImport } from '../service';
 import { Dictionary, MaybePromise } from '../types';
 import { mergeDeep } from '../utilities';
 
@@ -15,9 +15,23 @@ export async function get(
   selector: string,
   options: Record<string, any> = {}
 ): Promise<TinymceController> {
-  const tinymce = await loadTinymce();
+  return instances[selector] ??= await create(document.querySelector<HTMLElement>(selector)!, options);
+}
 
-  return instances[selector] ??= new TinymceController(tinymce, document.querySelector(selector)!, options);
+export async function create(
+  selector: string | HTMLElement,
+  options: Record<string, any> = {}
+): Promise<TinymceController> {
+  const tinymce = await loadTinymce();
+  let el: HTMLElement;
+
+  if (typeof selector === 'string') {
+    el = document.querySelector<HTMLElement>(selector)!;
+  } else {
+    el = selector;
+  }
+
+  return new TinymceController(tinymce, el, options);
 }
 
 export function destroy(selector: string): void {
@@ -33,7 +47,7 @@ export function clearHooks() {
 }
 
 async function loadTinymce(): Promise<TinyMCE> {
-  await useImport('@tinymce');
+  await useScriptImport('@tinymce');
 
   if (imported) {
     return tinymce;
@@ -252,6 +266,7 @@ function registerDragPlugin(tinymce: TinyMCE) {
 
 export interface TinymceModule {
   get: typeof get;
+  create: typeof create;
   destroy: typeof destroy;
   addHook: typeof addHook;
   clearHooks: typeof clearHooks;

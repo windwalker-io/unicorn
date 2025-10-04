@@ -3,7 +3,7 @@ import { injectCssToDocument } from './';
 
 export function useScriptImport(src: string, attrs: Record<string, string> = {}): Promise<void> {
   const script = document.createElement('script');
-  script.src = src;
+  script.src = resolveUrl(src);
 
   for (const key in attrs) {
     script.setAttribute(key, attrs[key]);
