@@ -1,5 +1,5 @@
 export interface UIThemeInterface {
-  renderMessage(messages: string | string[], type?: string): void;
+  renderMessage(messages: string | string[], type?: string): () => any;
 
   clearMessages(): void;
 }

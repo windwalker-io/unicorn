@@ -960,7 +960,7 @@ class UnicornLang {
 }
 function useScriptImport(src, attrs = {}) {
   const script = document.createElement("script");
-  script.src = src;
+  script.src = resolveUrl(src);
   for (const key in attrs) {
     script.setAttribute(key, attrs[key]);
   }
@@ -1324,8 +1324,11 @@ AlertAdapter.alert = (title, text = "", type = "info") => {
   window.alert(title);
   return Promise.resolve();
 };
-AlertAdapter.confirm = (message) => {
+AlertAdapter.confirm = (message, text = "", type = "info") => {
   message = message || "Are you sure?";
+  if (text) {
+    message += " | " + text;
+  }
   return new Promise((resolve) => {
     resolve(window.confirm(message));
   });
@@ -1333,6 +1336,12 @@ AlertAdapter.confirm = (message) => {
 AlertAdapter.confirmText = () => "OK";
 AlertAdapter.cancelText = () => "Cancel";
 AlertAdapter.deleteText = () => "Delete";
+function useAlertAdapter(config) {
+  if (config) {
+    Object.assign(AlertAdapter, config);
+  }
+  return AlertAdapter;
+}
 function useUI(instance) {
   if (instance) {
     ui = instance;
@@ -1425,7 +1434,7 @@ function renderMessage(messages, type = "info") {
 function clearMessages() {
   ui.theme.clearMessages();
 }
-function notify(messages, type = "info") {
+function simpleNotify(messages, type = "info") {
   ui.theme.renderMessage(messages, type);
 }
 function clearNotifies() {
@@ -2122,7 +2131,7 @@ export {
   useImport as a8,
   useCssImport as a9,
   useCssIncludes as aA,
-  AlertAdapter as aB,
+  useAlertAdapter as aB,
   useUI as aC,
   UnicornUI as aD,
   useVueComponentField as aE,
@@ -2156,22 +2165,22 @@ export {
   createQueue as af,
   trans as ag,
   useUITheme as ah,
-  sleep as ai,
-  createUnicorn as aj,
-  createUnicornWithPlugins as ak,
-  useUnicorn as al,
-  useInject as am,
-  pushUnicornToGlobal as an,
-  useMacro as ao,
-  useLegacy as ap,
-  removeData as aq,
-  randomBytes as ar,
-  randomBytesString as as,
-  AttributeMutationObserver as at,
-  nextTick as au,
-  wait as av,
-  useLang as aw,
-  useScriptImport as ax,
+  useScriptImport as ai,
+  sleep as aj,
+  createUnicorn as ak,
+  createUnicornWithPlugins as al,
+  useUnicorn as am,
+  useInject as an,
+  pushUnicornToGlobal as ao,
+  useMacro as ap,
+  useLegacy as aq,
+  removeData as ar,
+  randomBytes as as,
+  randomBytesString as at,
+  AttributeMutationObserver as au,
+  nextTick as av,
+  wait as aw,
+  useLang as ax,
   doImport as ay,
   useSeriesImport as az,
   animateTo as b,
@@ -2192,12 +2201,12 @@ export {
   useFormValidationSync as k,
   loadAlpine as l,
   useStack as m,
-  notify as n,
-  useQueue as o,
+  useQueue as n,
+  useSystemUri as o,
   prepareAlpine as p,
-  useSystemUri as q,
+  useAssetUri as q,
   route as r,
-  useAssetUri as s,
+  simpleNotify as s,
   domready as t,
   useHttpClient as u,
   selectOne as v,

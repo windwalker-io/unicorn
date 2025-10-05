@@ -46,7 +46,14 @@ export declare function addRoute(route: string, url: string): void;
 
 export declare function addUriBase(uri: string, type?: string): string;
 
-export { AlertAdapter }
+export declare interface AlertAdapterConfig {
+    alert?: typeof AlertAdapter['alert'];
+    confirm?: typeof AlertAdapter['confirm'];
+    deleteConfirm?: typeof AlertAdapter['deleteConfirm'];
+    confirmText?: typeof AlertAdapter['confirmText'];
+    cancelText?: typeof AlertAdapter['cancelText'];
+    deleteText?: typeof AlertAdapter['deleteText'];
+}
 
 declare type AlpinePrepareCallback = (Alpine: Alpine_2) => MaybePromise<any>;
 
@@ -151,6 +158,8 @@ export declare function clearNotifies(): void;
 declare type Conditions = Record<string, any>;
 
 declare type Constructor<T> = new (...args: any[]) => T;
+
+declare function create(selector: string | HTMLElement, options?: Record<string, any>): Promise<TinymceController>;
 
 declare function createCallback(type: 'list' | 'single', selector: string, modalSelector: string): ModalSelectCallback;
 
@@ -484,11 +493,6 @@ export { module_2 as module }
 
 export declare function nextTick(callback?: () => any): Promise<any>;
 
-/**
- * Show notify.
- */
-export declare function notify(messages: string | string[], type?: string): void;
-
 declare type Nullable<T> = T | null | undefined;
 
 export declare function parseQuery<T = Record<string, any>>(queryString: string): T;
@@ -743,6 +747,11 @@ export { simpleAlert }
 
 export { simpleConfirm }
 
+/**
+ * Show notify.
+ */
+export declare function simpleNotify(messages: string | string[], type?: string): void;
+
 declare class SingleImageDragElement extends HTMLElement {
     static is: string;
     currentImage: string;
@@ -820,6 +829,7 @@ declare class TinymceController {
 
 declare interface TinymceModule {
     get: typeof get;
+    create: typeof create;
     destroy: typeof destroy;
     addHook: typeof addHook;
     clearHooks: typeof clearHooks;
@@ -1181,6 +1191,8 @@ declare type UploadHandlerParams = Parameters<NonNullable<EditorOptions['images_
 declare type UploadProgressEventHandler = (e: AxiosProgressEvent) => void;
 
 declare type UriTypes = 'full' | 'path' | 'root' | 'current' | 'route' | 'script';
+
+export declare function useAlertAdapter(config?: AlertAdapterConfig): typeof AlertAdapter;
 
 export declare function useAssetUri(): UnicornAssetUri;
 

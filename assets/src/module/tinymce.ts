@@ -47,16 +47,17 @@ export function clearHooks() {
 }
 
 async function loadTinymce(): Promise<TinyMCE> {
-  await useScriptImport('@tinymce');
-
   if (imported) {
     return tinymce;
   }
-  imported = true;
+
+  await useScriptImport('@tinymce');
+
   for (const hook of hooks) {
     hook(tinymce);
   }
   await registerDragPlugin(tinymce);
+  imported = true;
   return tinymce;
 }
 
