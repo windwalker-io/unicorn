@@ -7,6 +7,7 @@ import { AxiosRequestConfig } from 'axios';
 import { AxiosResponse } from 'axios';
 import * as bootstrap_2 from 'bootstrap';
 import { Class } from 'ts-mixer/dist/types/types';
+import { clearNotifies } from '@lyrasoft/ts-toolkit/generic';
 import { CreateAxiosDefaults } from 'axios';
 import { default as default_2 } from 'cropperjs';
 import { default as default_3 } from 'web-directive';
@@ -20,6 +21,7 @@ import { randomBytes } from '@lyrasoft/ts-toolkit/generic';
 import { randomBytesString } from '@lyrasoft/ts-toolkit/generic';
 import { simpleAlert } from '@lyrasoft/ts-toolkit/generic';
 import { simpleConfirm } from '@lyrasoft/ts-toolkit/generic';
+import { simpleNotify } from '@lyrasoft/ts-toolkit/generic';
 import { sleep } from '@lyrasoft/ts-toolkit/generic';
 import { SpectrumOptions } from 'spectrum-vanilla/dist/types/types';
 import { Stack } from '@lyrasoft/ts-toolkit/generic';
@@ -53,6 +55,8 @@ export declare interface AlertAdapterConfig {
     confirmText?: typeof AlertAdapter['confirmText'];
     cancelText?: typeof AlertAdapter['cancelText'];
     deleteText?: typeof AlertAdapter['deleteText'];
+    notify?: typeof AlertAdapter['notify'];
+    clearNotifies?: typeof AlertAdapter['clearNotifies'];
 }
 
 declare type AlpinePrepareCallback = (Alpine: Alpine_2) => MaybePromise<any>;
@@ -150,10 +154,7 @@ declare function clearHooks(): void;
  */
 export declare function clearMessages(): void;
 
-/**
- * Clear notifies.
- */
-export declare function clearNotifies(): void;
+export { clearNotifies }
 
 declare type Conditions = Record<string, any>;
 
@@ -484,9 +485,9 @@ declare interface ModalSelectModule {
 
 declare function module_2<T = any, E extends Element = Element>(ele: string, name: string, callback?: ((el: E) => any)): (T | null)[];
 
-declare function module_2<T = any, E extends Element = Element>(ele: NodeListOf<Element>, name: string, callback?: ((el: E) => any)): (T | null)[];
+declare function module_2<T = any, E extends Element = Element>(ele: NodeListOf<E>, name: string, callback?: ((el: E) => any)): (T | null)[];
 
-declare function module_2<T = any, E extends Element = Element>(ele: Element, name: string, callback?: ((el: E) => any)): T | null;
+declare function module_2<T = any, E extends Element = Element>(ele: E, name: string, callback?: ((el: E) => any)): T | null;
 
 declare function module_2<T = any, E extends Element = Element>(ele: string | Element | NodeListOf<Element>, name: string, callback?: ((el: E) => any)): (T | null)[] | T | null;
 export { module_2 as module }
@@ -541,7 +542,7 @@ export declare function removeData(ele: Element, name: string): any;
 /**
  * Render Messages.
  */
-export declare function renderMessage(messages: string | string[], type?: string): void;
+export declare function renderMessage(messages: string | string[], type?: string): (() => any) | undefined;
 
 declare interface RepeatableModule {
     ready: typeof ready_2;
@@ -747,10 +748,7 @@ export { simpleAlert }
 
 export { simpleConfirm }
 
-/**
- * Show notify.
- */
-export declare function simpleNotify(messages: string | string[], type?: string): void;
+export { simpleNotify }
 
 declare class SingleImageDragElement extends HTMLElement {
     static is: string;
@@ -842,7 +840,7 @@ declare class UIBootstrap5 implements UIThemeInterface {
     static instance: UIBootstrap5 | null;
     bootstrap: typeof bootstrap_2;
     static get(): UIBootstrap5;
-    renderMessage(messages: string | string[], type?: string): void;
+    renderMessage(messages: string | string[], type?: string): () => void;
     clearMessages(): void;
     keepTab(): Promise<KeepTabModule>;
     keepTab(selector?: string | HTMLElement, options?: KeepTabOptions): Promise<KeepTab>;
@@ -857,7 +855,7 @@ declare class UIBootstrap5 implements UIThemeInterface {
 export { uid }
 
 declare interface UIThemeInterface {
-    renderMessage(messages: string | string[], type?: string): void;
+    renderMessage(messages: string | string[], type?: string): () => any;
     clearMessages(): void;
 }
 
@@ -881,7 +879,7 @@ export declare class UnicornApp extends UnicornApp_base implements EventAwareInt
     provide<T>(id: InjectionKey<T>, value: any): this;
     wait(callback: Function): Promise<any>;
     completed(): Promise<any[]>;
-    macro(name: string, callback: Function): this;
+    macro(name: string, prop: any): this;
 }
 
 declare const UnicornApp_base: Class<any[], EventMixin, typeof EventMixin>;
@@ -1178,8 +1176,7 @@ export declare class UnicornSystemUri extends URL {
 }
 
 export declare class UnicornUI {
-    theme?: any;
-    aliveHandle?: any;
+    theme?: UIThemeInterface;
     static get defaultOptions(): {
         messageSelector: string;
     };
@@ -1292,9 +1289,9 @@ export declare function useListDependent(): Promise<ListDependentModule>;
 
 export declare function useListDependent(element: string | HTMLSelectElement, dependent?: Nullable<string | HTMLSelectElement>, options?: Partial<ListDependentOptions>): Promise<ListDependent>;
 
-export declare function useMacro<T extends Dictionary<(...args: any[]) => any>>(name: T): T;
+export declare function useMacro<T extends Dictionary>(name: T): T;
 
-export declare function useMacro<N extends string, T extends (...args: any[]) => any>(name: N, handler: T): {
+export declare function useMacro<N extends string, T extends any>(name: N, prop: T): {
     [K in N]: T;
 };
 
@@ -1343,7 +1340,7 @@ export declare function useUI(instance?: UnicornUI): UnicornUI;
 
 export declare function useUIBootstrap5(install?: boolean, pushToGlobal?: boolean): Promise<UIBootstrap5>;
 
-export declare function useUITheme<T extends UIThemeInterface>(theme?: T | Constructor<T>): T;
+export declare function useUITheme<T extends UIThemeInterface>(theme?: T | Constructor<T>): UIThemeInterface;
 
 export declare function useUnicorn(instance?: UnicornApp): UnicornApp;
 
@@ -1406,19 +1403,19 @@ declare global {
 }
 
 
-declare global {
-    var Alpine: AlpineGlobal;
-    var TomSelect: typeof TomSelectGlobal;
-    var Spectrum: typeof SpectrumGlobal;
-    var Mark: any;
-}
-
-
 declare module '@windwalker-io/unicorn-next' {
     interface UnicornApp {
         /** @deprecated Only for code generator use. */
         $ui: typeof methods;
     }
+}
+
+
+declare global {
+    var Alpine: AlpineGlobal;
+    var TomSelect: typeof TomSelectGlobal;
+    var Spectrum: typeof SpectrumGlobal;
+    var Mark: any;
 }
 
 declare global {

@@ -368,17 +368,41 @@ function animateTo(element, styles, options = {}) {
 }
 const _AlertAdapter = class _AlertAdapter {
 };
-_AlertAdapter.alert = async (title) => window.alert(title);
-_AlertAdapter.confirm = async (title) => {
+_AlertAdapter.alert = async (title, text) => {
+  if (text) {
+    title += " | " + text;
+  }
+  return window.alert(title);
+};
+_AlertAdapter.confirm = async (title, text) => {
   return new Promise((resolve) => {
+    if (text) {
+      title += " | " + text;
+    }
     const v = confirm(title);
     resolve(v);
   });
 };
-_AlertAdapter.deleteConfirm = async (title) => _AlertAdapter.confirm(title);
-_AlertAdapter.confirmText = () => "確認";
-_AlertAdapter.cancelText = () => "取消";
-_AlertAdapter.deleteText = () => "刪除";
+_AlertAdapter.deleteConfirm = async (title, text) => _AlertAdapter.confirm(title, text);
+_AlertAdapter.notify = async (title, text, type = "log") => {
+  if (text) {
+    title += " | " + text;
+  }
+  if (type === "error") {
+    console.error(title);
+  } else if (type === "warn") {
+    console.warn(title);
+  } else {
+    console.log(title);
+  }
+  return async () => {
+  };
+};
+_AlertAdapter.clearNotifies = async () => {
+};
+_AlertAdapter.confirmText = () => "OK";
+_AlertAdapter.cancelText = () => "Cancel";
+_AlertAdapter.deleteText = () => "Delete";
 let AlertAdapter = _AlertAdapter;
 async function simpleAlert(title, text = "", icon = "info", extra) {
   return AlertAdapter.alert(title, text, icon, extra);
@@ -388,6 +412,12 @@ async function simpleConfirm(title, text = "", icon = "info", extra) {
 }
 async function deleteConfirm(title, text = "", icon = "info", extra) {
   return AlertAdapter.deleteConfirm(title, text, icon, extra);
+}
+async function simpleNotify(title, text = "", type = "info", extra) {
+  return AlertAdapter.notify(title, text, type, extra);
+}
+async function clearNotifies() {
+  return AlertAdapter.clearNotifies();
 }
 function isNode() {
   return typeof window === "undefined";
@@ -1333,6 +1363,15 @@ AlertAdapter.confirm = (message, text = "", type = "info") => {
     resolve(window.confirm(message));
   });
 };
+AlertAdapter.notify = async (title, text, type = "log") => {
+  if (text) {
+    title += " | " + text;
+  }
+  return ui.theme?.renderMessage(title, type) ?? (() => null);
+};
+AlertAdapter.clearNotifies = async () => {
+  ui.theme?.clearMessages();
+};
 AlertAdapter.confirmText = () => "OK";
 AlertAdapter.cancelText = () => "Cancel";
 AlertAdapter.deleteText = () => "Delete";
@@ -1361,7 +1400,6 @@ function useUITheme(theme) {
 }
 class UnicornUI {
   theme;
-  aliveHandle;
   static get defaultOptions() {
     return {
       messageSelector: ".message-wrap"
@@ -1429,16 +1467,10 @@ async function prepareAlpineDefer(callback) {
   await callback(window.Alpine);
 }
 function renderMessage(messages, type = "info") {
-  ui.theme.renderMessage(messages, type);
+  return ui.theme?.renderMessage(messages, type);
 }
 function clearMessages() {
-  ui.theme.clearMessages();
-}
-function simpleNotify(messages, type = "info") {
-  ui.theme.renderMessage(messages, type);
-}
-function clearNotifies() {
-  ui.theme.clearMessages();
+  ui.theme?.clearMessages();
 }
 async function mark(selector, keyword = "", options = {}) {
   const modules = await useImport("@vendor/mark.js/dist/mark.min.js");
@@ -1969,11 +2001,11 @@ class UnicornApp extends (/* @__PURE__ */ Mixin(EventMixin)) {
     this.waits = [];
     return promise;
   }
-  macro(name, callback) {
+  macro(name, prop) {
     if (this[name]) {
       throw new Error(`Macro: ${name} already exists.`);
     }
-    this[name] = callback;
+    this[name] = prop;
     return this;
   }
 }
@@ -2071,10 +2103,10 @@ const useInject = (id, def) => {
 function pushUnicornToGlobal(app2) {
   window.u = app2 ?? useUnicorn();
 }
-function useMacro(name, handler) {
+function useMacro(name, prop) {
   const app2 = useUnicorn();
   if (typeof name === "string") {
-    app2.macro(name, handler);
+    app2.macro(name, prop);
   } else {
     for (const k in name) {
       app2.macro(k, name[k]);

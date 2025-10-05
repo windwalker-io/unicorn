@@ -1,6 +1,6 @@
 import * as bootstrap from "bootstrap";
 import { Tooltip } from "bootstrap";
-import { B as html, v as selectOne, w as selectAll } from "./unicorn.js";
+import { K as uid, B as html, v as selectOne, w as selectAll } from "./unicorn.js";
 class UIBootstrap5 {
   static instance = null;
   bootstrap = bootstrap;
@@ -12,10 +12,11 @@ class UIBootstrap5 {
       messages = [messages];
     }
     let text = "";
+    const id = "uni-msg-" + uid();
     messages.forEach((msg) => {
       text += `<div class="">${msg}</div>`;
     });
-    const msgHtml = html(`<div class="alert alert-${type} alert-dismissible fade show" role="alert">
+    const msgHtml = html(`<div id="${id}" class="alert alert-${type} alert-dismissible fade show" role="alert">
   ${text}
   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>`);
@@ -23,6 +24,12 @@ class UIBootstrap5 {
     if (container) {
       container.appendChild(msgHtml);
     }
+    return () => {
+      const ele = document.getElementById(id);
+      if (ele) {
+        ele.remove();
+      }
+    };
   }
   clearMessages() {
     const container = selectOne(".c-messages-container");

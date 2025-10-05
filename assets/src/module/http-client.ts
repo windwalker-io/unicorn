@@ -241,3 +241,8 @@ export function createHttpClient(config?: CreateAxiosDefaults | AxiosInstance) {
     isAxiosError,
   };
 }
+
+export interface UnicornHttpModule {
+  UnicornHttpClient: UnicornHttpClient;
+  createHttpClient: typeof createHttpClient;
+}
