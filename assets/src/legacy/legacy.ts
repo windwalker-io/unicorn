@@ -1,7 +1,7 @@
 import { numberFormat } from '@lyrasoft/ts-toolkit/generic';
 import { sprintf, vsprintf } from 'sprintf-js';
 import {
-  addGlobalValidator,
+  addGlobalValidator, useBs5ButtonRadio, useBs5KeepTab,
   useBs5Tooltip,
   useCheckboxesMultiSelect,
   useFieldValidationSync,
@@ -173,7 +173,9 @@ function handleUI(app: any) {
   app.$ui.checkboxesMultiSelect = useCheckboxesMultiSelect;
   app.$ui.keepAlive = useKeepAlive;
   app.$ui.bootstrap = {
-    tooltip: useBs5Tooltip
+    tooltip: useBs5Tooltip,
+    buttonRadio: useBs5ButtonRadio,
+    keepTab: useBs5KeepTab,
   };
 }
 
