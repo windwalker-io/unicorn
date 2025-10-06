@@ -1,4 +1,11 @@
-import { AlertAdapter, deleteConfirm, simpleAlert, simpleConfirm } from '@lyrasoft/ts-toolkit/generic';
+import {
+  AlertAdapter,
+  deleteConfirm,
+  simpleAlert,
+  simpleConfirm,
+  simpleNotify,
+  clearNotifies
+} from '@lyrasoft/ts-toolkit/generic';
 import type { Alpine as AlpineGlobal } from 'alpinejs';
 import type { default as SpectrumGlobal } from 'spectrum-vanilla';
 import type { SpectrumOptions } from 'spectrum-vanilla/dist/types/types';
@@ -23,19 +30,54 @@ AlertAdapter.alert = (title: string, text = '', type = 'info'): Promise<void> =>
   return Promise.resolve();
 };
 
-AlertAdapter.confirm = (message: string): Promise<boolean> => {
+AlertAdapter.confirm = (message: string, text = '', type = 'info'): Promise<boolean> => {
   message = message || 'Are you sure?';
+
+  if (text) {
+    message += ' | ' + text;
+  }
 
   return new Promise((resolve) => {
     resolve(window.confirm(message));
   });
 };
 
+AlertAdapter.notify = async (title: string, text?: string, type: string = 'log'): Promise<() => any> => {
+  if (text) {
+    title += ' | ' + text;
+  }
+
+  return ui.theme?.renderMessage(title, type) ?? (() => null);
+};
+
+AlertAdapter.clearNotifies = async (): Promise<void> => {
+  ui.theme?.clearMessages();
+};
+
 AlertAdapter.confirmText = () => 'OK';
 AlertAdapter.cancelText = () => 'Cancel';
 AlertAdapter.deleteText = () => 'Delete';
 
-export { simpleAlert, simpleConfirm, deleteConfirm, AlertAdapter };
+export { simpleAlert, simpleConfirm, deleteConfirm, simpleNotify, clearNotifies };
+
+export interface AlertAdapterConfig {
+  alert?: typeof AlertAdapter['alert'];
+  confirm?: typeof AlertAdapter['confirm'];
+  deleteConfirm?: typeof AlertAdapter['deleteConfirm'];
+  confirmText?: typeof AlertAdapter['confirmText'];
+  cancelText?: typeof AlertAdapter['cancelText'];
+  deleteText?: typeof AlertAdapter['deleteText'];
+  notify?: typeof AlertAdapter['notify'];
+  clearNotifies?: typeof AlertAdapter['clearNotifies'];
+}
+
+export function useAlertAdapter(config?: AlertAdapterConfig): typeof AlertAdapter {
+  if (config) {
+    Object.assign(AlertAdapter, config);
+  }
+
+  return AlertAdapter;
+}
 
 export function useUI(instance?: UnicornUI): UnicornUI {
   if (instance) {
@@ -45,7 +87,7 @@ export function useUI(instance?: UnicornUI): UnicornUI {
   return ui ??= new UnicornUI();
 }
 
-export function useUITheme<T extends UIThemeInterface>(theme?: T | Constructor<T>): T {
+export function useUITheme<T extends UIThemeInterface>(theme?: T | Constructor<T>): UIThemeInterface {
   const ui = useUI();
 
   if (ui.theme && !theme) {
@@ -58,12 +100,11 @@ export function useUITheme<T extends UIThemeInterface>(theme?: T | Constructor<T
 
   ui.installTheme(theme);
 
-  return ui.theme;
+  return ui.theme!;
 }
 
 export class UnicornUI {
-  theme?: any;
-  aliveHandle?: any;
+  theme?: UIThemeInterface;
 
   static get defaultOptions() {
     return {
@@ -148,6 +189,7 @@ export async function prepareAlpine(callback: AlpinePrepareCallback) {
     prepares.push(callback);
   }
 }
+
 export async function prepareAlpineDefer(callback: AlpinePrepareCallback) {
   const Alpine = await alpineLoaded;
 
@@ -158,28 +200,14 @@ export async function prepareAlpineDefer(callback: AlpinePrepareCallback) {
  * Render Messages.
  */
 export function renderMessage(messages: string | string[], type: string = 'info') {
-  ui.theme.renderMessage(messages, type);
+  return ui.theme?.renderMessage(messages, type);
 }
 
 /**
  * Clear messages.
  */
 export function clearMessages() {
-  ui.theme.clearMessages();
-}
-
-/**
- * Show notify.
- */
-export function notify(messages: string | string[], type: string = 'info') {
-  ui.theme.renderMessage(messages, type);
-}
-
-/**
- * Clear notifies.
- */
-export function clearNotifies() {
-  ui.theme.clearMessages();
+  ui.theme?.clearMessages();
 }
 
 export async function mark(selector?: string | HTMLElement, keyword: string = '', options: Record<string, any> = {}) {

@@ -368,17 +368,41 @@ function animateTo(element, styles, options = {}) {
 }
 const _AlertAdapter = class _AlertAdapter {
 };
-_AlertAdapter.alert = async (title) => window.alert(title);
-_AlertAdapter.confirm = async (title) => {
+_AlertAdapter.alert = async (title, text) => {
+  if (text) {
+    title += " | " + text;
+  }
+  return window.alert(title);
+};
+_AlertAdapter.confirm = async (title, text) => {
   return new Promise((resolve) => {
+    if (text) {
+      title += " | " + text;
+    }
     const v = confirm(title);
     resolve(v);
   });
 };
-_AlertAdapter.deleteConfirm = async (title) => _AlertAdapter.confirm(title);
-_AlertAdapter.confirmText = () => "確認";
-_AlertAdapter.cancelText = () => "取消";
-_AlertAdapter.deleteText = () => "刪除";
+_AlertAdapter.deleteConfirm = async (title, text) => _AlertAdapter.confirm(title, text);
+_AlertAdapter.notify = async (title, text, type = "log") => {
+  if (text) {
+    title += " | " + text;
+  }
+  if (type === "error") {
+    console.error(title);
+  } else if (type === "warn") {
+    console.warn(title);
+  } else {
+    console.log(title);
+  }
+  return async () => {
+  };
+};
+_AlertAdapter.clearNotifies = async () => {
+};
+_AlertAdapter.confirmText = () => "OK";
+_AlertAdapter.cancelText = () => "Cancel";
+_AlertAdapter.deleteText = () => "Delete";
 let AlertAdapter = _AlertAdapter;
 async function simpleAlert(title, text = "", icon = "info", extra) {
   return AlertAdapter.alert(title, text, icon, extra);
@@ -388,6 +412,12 @@ async function simpleConfirm(title, text = "", icon = "info", extra) {
 }
 async function deleteConfirm(title, text = "", icon = "info", extra) {
   return AlertAdapter.deleteConfirm(title, text, icon, extra);
+}
+async function simpleNotify(title, text = "", type = "info", extra) {
+  return AlertAdapter.notify(title, text, type, extra);
+}
+async function clearNotifies() {
+  return AlertAdapter.clearNotifies();
 }
 function isNode() {
   return typeof window === "undefined";
@@ -960,7 +990,7 @@ class UnicornLang {
 }
 function useScriptImport(src, attrs = {}) {
   const script = document.createElement("script");
-  script.src = src;
+  script.src = resolveUrl(src);
   for (const key in attrs) {
     script.setAttribute(key, attrs[key]);
   }
@@ -1324,15 +1354,33 @@ AlertAdapter.alert = (title, text = "", type = "info") => {
   window.alert(title);
   return Promise.resolve();
 };
-AlertAdapter.confirm = (message) => {
+AlertAdapter.confirm = (message, text = "", type = "info") => {
   message = message || "Are you sure?";
+  if (text) {
+    message += " | " + text;
+  }
   return new Promise((resolve) => {
     resolve(window.confirm(message));
   });
 };
+AlertAdapter.notify = async (title, text, type = "log") => {
+  if (text) {
+    title += " | " + text;
+  }
+  return ui.theme?.renderMessage(title, type) ?? (() => null);
+};
+AlertAdapter.clearNotifies = async () => {
+  ui.theme?.clearMessages();
+};
 AlertAdapter.confirmText = () => "OK";
 AlertAdapter.cancelText = () => "Cancel";
 AlertAdapter.deleteText = () => "Delete";
+function useAlertAdapter(config) {
+  if (config) {
+    Object.assign(AlertAdapter, config);
+  }
+  return AlertAdapter;
+}
 function useUI(instance) {
   if (instance) {
     ui = instance;
@@ -1352,7 +1400,6 @@ function useUITheme(theme) {
 }
 class UnicornUI {
   theme;
-  aliveHandle;
   static get defaultOptions() {
     return {
       messageSelector: ".message-wrap"
@@ -1420,16 +1467,10 @@ async function prepareAlpineDefer(callback) {
   await callback(window.Alpine);
 }
 function renderMessage(messages, type = "info") {
-  ui.theme.renderMessage(messages, type);
+  return ui.theme?.renderMessage(messages, type);
 }
 function clearMessages() {
-  ui.theme.clearMessages();
-}
-function notify(messages, type = "info") {
-  ui.theme.renderMessage(messages, type);
-}
-function clearNotifies() {
-  ui.theme.clearMessages();
+  ui.theme?.clearMessages();
 }
 async function mark(selector, keyword = "", options = {}) {
   const modules = await useImport("@vendor/mark.js/dist/mark.min.js");
@@ -1960,11 +2001,11 @@ class UnicornApp extends (/* @__PURE__ */ Mixin(EventMixin)) {
     this.waits = [];
     return promise;
   }
-  macro(name, callback) {
+  macro(name, prop) {
     if (this[name]) {
       throw new Error(`Macro: ${name} already exists.`);
     }
-    this[name] = callback;
+    this[name] = prop;
     return this;
   }
 }
@@ -2062,10 +2103,10 @@ const useInject = (id, def) => {
 function pushUnicornToGlobal(app2) {
   window.u = app2 ?? useUnicorn();
 }
-function useMacro(name, handler) {
+function useMacro(name, prop) {
   const app2 = useUnicorn();
   if (typeof name === "string") {
-    app2.macro(name, handler);
+    app2.macro(name, prop);
   } else {
     for (const k in name) {
       app2.macro(k, name[k]);
@@ -2122,7 +2163,7 @@ export {
   useImport as a8,
   useCssImport as a9,
   useCssIncludes as aA,
-  AlertAdapter as aB,
+  useAlertAdapter as aB,
   useUI as aC,
   UnicornUI as aD,
   useVueComponentField as aE,
@@ -2156,22 +2197,22 @@ export {
   createQueue as af,
   trans as ag,
   useUITheme as ah,
-  sleep as ai,
-  createUnicorn as aj,
-  createUnicornWithPlugins as ak,
-  useUnicorn as al,
-  useInject as am,
-  pushUnicornToGlobal as an,
-  useMacro as ao,
-  useLegacy as ap,
-  removeData as aq,
-  randomBytes as ar,
-  randomBytesString as as,
-  AttributeMutationObserver as at,
-  nextTick as au,
-  wait as av,
-  useLang as aw,
-  useScriptImport as ax,
+  useScriptImport as ai,
+  sleep as aj,
+  createUnicorn as ak,
+  createUnicornWithPlugins as al,
+  useUnicorn as am,
+  useInject as an,
+  pushUnicornToGlobal as ao,
+  useMacro as ap,
+  useLegacy as aq,
+  removeData as ar,
+  randomBytes as as,
+  randomBytesString as at,
+  AttributeMutationObserver as au,
+  nextTick as av,
+  wait as aw,
+  useLang as ax,
   doImport as ay,
   useSeriesImport as az,
   animateTo as b,
@@ -2192,12 +2233,12 @@ export {
   useFormValidationSync as k,
   loadAlpine as l,
   useStack as m,
-  notify as n,
-  useQueue as o,
+  useQueue as n,
+  useSystemUri as o,
   prepareAlpine as p,
-  useSystemUri as q,
+  useAssetUri as q,
   route as r,
-  useAssetUri as s,
+  simpleNotify as s,
   domready as t,
   useHttpClient as u,
   selectOne as v,

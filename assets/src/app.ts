@@ -116,12 +116,12 @@ export class UnicornApp extends Mixin(EventMixin) implements EventAwareInterface
     return promise;
   }
 
-  macro(name: string, callback: Function) {
+  macro(name: string, prop: any) {
     if ((this as any)[name]) {
       throw new Error(`Macro: ${name} already exists.`);
     }
 
-    (this as any)[name] = callback;
+    (this as any)[name] = prop;
 
     return this;
   }

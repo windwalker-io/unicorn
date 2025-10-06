@@ -47,16 +47,16 @@ export function pushUnicornToGlobal(app?: UnicornApp) {
   window.u = app ?? useUnicorn();
 }
 
-export function useMacro<T extends Dictionary<(...args: any[]) => any>>(name: T): T;
-export function useMacro<N extends string, T extends (...args: any[]) => any>(
+export function useMacro<T extends Dictionary>(name: T): T;
+export function useMacro<N extends string, T extends any>(
   name: N,
-  handler: T
+  prop: T
 ): { [K in N]: T };
-export function useMacro(name: string | Dictionary<(...args: any[]) => any>, handler?: (...args: any[]) => any): any {
+export function useMacro(name: string | Dictionary, prop?: any): any {
   const app = useUnicorn();
 
   if (typeof name === 'string') {
-    app.macro(name, handler!);
+    app.macro(name, prop!);
   } else {
     for (const k in name) {
       app.macro(k, name[k]!);

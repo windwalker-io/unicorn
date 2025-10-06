@@ -103,11 +103,11 @@ export function module<T = any, E extends Element = Element>(
   callback?: ((el: E) => any)
 ): (T | null)[];
 export function module<T = any, E extends Element = Element>(
-  ele: NodeListOf<Element>,
+  ele: NodeListOf<E>,
   name: string,
   callback?: ((el: E) => any)): (T | null)[];
 export function module<T = any, E extends Element = Element>(
-  ele: Element,
+  ele: E,
   name: string,
   callback?: ((el: E) => any)
 ): T | null;

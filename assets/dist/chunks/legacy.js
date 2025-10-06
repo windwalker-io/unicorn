@@ -1,4 +1,4 @@
-import { i as isDebug, u as useHttpClient, _ as __, r as route, a as useUniDirective, b as animateTo, c as renderMessage, d as clearMessages, n as notify, e as clearNotifies, l as loadAlpine, f as initAlpineComponent, p as prepareAlpine, g as useFormValidation, h as addGlobalValidator, j as useFieldValidationSync, k as useFormValidationSync, m as useStack, o as useQueue, q as useSystemUri, s as useAssetUri, t as domready, v as selectOne, w as selectAll, x as getBoundedInstance, y as getBoundedInstanceList, z as module, A as h, B as html, C as delegate, D as debounce, E as throttle, F as simpleConfirm, G as simpleAlert, H as sprintfExports, I as base64UrlEncode, J as base64UrlDecode, K as uid, L as tid, M as serial, N as mark, O as useTomSelect, P as slideUp, Q as slideDown, R as slideToggle, S as fadeOut, T as fadeIn, U as highlight, V as useColorPicker, W as useDisableOnSubmit, X as useDisableIfStackNotEmpty, Y as useCheckboxesMultiSelect, Z as useKeepAlive, $ as useBs5Tooltip, a0 as useFormAsync, a1 as useGridAsync, a2 as useForm, a3 as useGrid } from "./unicorn.js";
+import { i as isDebug, u as useHttpClient, _ as __, r as route, a as useUniDirective, b as animateTo, c as renderMessage, d as clearMessages, s as simpleNotify, e as clearNotifies, l as loadAlpine, f as initAlpineComponent, p as prepareAlpine, g as useFormValidation, h as addGlobalValidator, j as useFieldValidationSync, k as useFormValidationSync, m as useStack, n as useQueue, o as useSystemUri, q as useAssetUri, t as domready, v as selectOne, w as selectAll, x as getBoundedInstance, y as getBoundedInstanceList, z as module, A as h, B as html, C as delegate, D as debounce, E as throttle, F as simpleConfirm, G as simpleAlert, H as sprintfExports, I as base64UrlEncode, J as base64UrlDecode, K as uid, L as tid, M as serial, N as mark, O as useTomSelect, P as slideUp, Q as slideDown, R as slideToggle, S as fadeOut, T as fadeIn, U as highlight, V as useColorPicker, W as useDisableOnSubmit, X as useDisableIfStackNotEmpty, Y as useCheckboxesMultiSelect, Z as useKeepAlive, $ as useBs5Tooltip, a0 as useFormAsync, a1 as useGridAsync, a2 as useForm, a3 as useGrid } from "./unicorn.js";
 function numberFormat(number, decimals = 0, decPoint = ".", thousandsSep = ",") {
   number = Number(number);
   const str = number.toFixed(decimals ? decimals : 0).toString().split(".");
@@ -122,7 +122,7 @@ async function useLegacyMethods(app) {
   app.$animation = { to: animateTo };
   app.addMessage = renderMessage;
   app.clearMessages = clearMessages;
-  app.notify = notify;
+  app.notify = simpleNotify;
   app.clearNotifies = clearNotifies;
   app.loadAlpine = loadAlpine;
   app.initAlpine = initAlpineComponent;
@@ -175,7 +175,7 @@ function handleUI(app) {
   app.$ui ??= {};
   app.$ui.addMessage = renderMessage;
   app.$ui.clearMessages = clearMessages;
-  app.$ui.notify = notify;
+  app.$ui.notify = simpleNotify;
   app.$ui.clearNotifies = clearNotifies;
   app.$ui.loadAlpine = loadAlpine;
   app.$ui.initAlpine = initAlpineComponent;

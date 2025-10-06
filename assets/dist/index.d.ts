@@ -7,6 +7,7 @@ import { AxiosRequestConfig } from 'axios';
 import { AxiosResponse } from 'axios';
 import * as bootstrap_2 from 'bootstrap';
 import { Class } from 'ts-mixer/dist/types/types';
+import { clearNotifies } from '@lyrasoft/ts-toolkit/generic';
 import { CreateAxiosDefaults } from 'axios';
 import { default as default_2 } from 'cropperjs';
 import { default as default_3 } from 'web-directive';
@@ -20,6 +21,7 @@ import { randomBytes } from '@lyrasoft/ts-toolkit/generic';
 import { randomBytesString } from '@lyrasoft/ts-toolkit/generic';
 import { simpleAlert } from '@lyrasoft/ts-toolkit/generic';
 import { simpleConfirm } from '@lyrasoft/ts-toolkit/generic';
+import { simpleNotify } from '@lyrasoft/ts-toolkit/generic';
 import { sleep } from '@lyrasoft/ts-toolkit/generic';
 import { SpectrumOptions } from 'spectrum-vanilla/dist/types/types';
 import { Stack } from '@lyrasoft/ts-toolkit/generic';
@@ -46,7 +48,16 @@ export declare function addRoute(route: string, url: string): void;
 
 export declare function addUriBase(uri: string, type?: string): string;
 
-export { AlertAdapter }
+export declare interface AlertAdapterConfig {
+    alert?: typeof AlertAdapter['alert'];
+    confirm?: typeof AlertAdapter['confirm'];
+    deleteConfirm?: typeof AlertAdapter['deleteConfirm'];
+    confirmText?: typeof AlertAdapter['confirmText'];
+    cancelText?: typeof AlertAdapter['cancelText'];
+    deleteText?: typeof AlertAdapter['deleteText'];
+    notify?: typeof AlertAdapter['notify'];
+    clearNotifies?: typeof AlertAdapter['clearNotifies'];
+}
 
 declare type AlpinePrepareCallback = (Alpine: Alpine_2) => MaybePromise<any>;
 
@@ -143,14 +154,13 @@ declare function clearHooks(): void;
  */
 export declare function clearMessages(): void;
 
-/**
- * Clear notifies.
- */
-export declare function clearNotifies(): void;
+export { clearNotifies }
 
 declare type Conditions = Record<string, any>;
 
 declare type Constructor<T> = new (...args: any[]) => T;
+
+declare function create(selector: string | HTMLElement, options?: Record<string, any>): Promise<TinymceController>;
 
 declare function createCallback(type: 'list' | 'single', selector: string, modalSelector: string): ModalSelectCallback;
 
@@ -475,19 +485,14 @@ declare interface ModalSelectModule {
 
 declare function module_2<T = any, E extends Element = Element>(ele: string, name: string, callback?: ((el: E) => any)): (T | null)[];
 
-declare function module_2<T = any, E extends Element = Element>(ele: NodeListOf<Element>, name: string, callback?: ((el: E) => any)): (T | null)[];
+declare function module_2<T = any, E extends Element = Element>(ele: NodeListOf<E>, name: string, callback?: ((el: E) => any)): (T | null)[];
 
-declare function module_2<T = any, E extends Element = Element>(ele: Element, name: string, callback?: ((el: E) => any)): T | null;
+declare function module_2<T = any, E extends Element = Element>(ele: E, name: string, callback?: ((el: E) => any)): T | null;
 
 declare function module_2<T = any, E extends Element = Element>(ele: string | Element | NodeListOf<Element>, name: string, callback?: ((el: E) => any)): (T | null)[] | T | null;
 export { module_2 as module }
 
 export declare function nextTick(callback?: () => any): Promise<any>;
-
-/**
- * Show notify.
- */
-export declare function notify(messages: string | string[], type?: string): void;
 
 declare type Nullable<T> = T | null | undefined;
 
@@ -537,7 +542,7 @@ export declare function removeData(ele: Element, name: string): any;
 /**
  * Render Messages.
  */
-export declare function renderMessage(messages: string | string[], type?: string): void;
+export declare function renderMessage(messages: string | string[], type?: string): (() => any) | undefined;
 
 declare interface RepeatableModule {
     ready: typeof ready_2;
@@ -743,6 +748,8 @@ export { simpleAlert }
 
 export { simpleConfirm }
 
+export { simpleNotify }
+
 declare class SingleImageDragElement extends HTMLElement {
     static is: string;
     currentImage: string;
@@ -820,6 +827,7 @@ declare class TinymceController {
 
 declare interface TinymceModule {
     get: typeof get;
+    create: typeof create;
     destroy: typeof destroy;
     addHook: typeof addHook;
     clearHooks: typeof clearHooks;
@@ -832,7 +840,7 @@ declare class UIBootstrap5 implements UIThemeInterface {
     static instance: UIBootstrap5 | null;
     bootstrap: typeof bootstrap_2;
     static get(): UIBootstrap5;
-    renderMessage(messages: string | string[], type?: string): void;
+    renderMessage(messages: string | string[], type?: string): () => void;
     clearMessages(): void;
     keepTab(): Promise<KeepTabModule>;
     keepTab(selector?: string | HTMLElement, options?: KeepTabOptions): Promise<KeepTab>;
@@ -847,7 +855,7 @@ declare class UIBootstrap5 implements UIThemeInterface {
 export { uid }
 
 declare interface UIThemeInterface {
-    renderMessage(messages: string | string[], type?: string): void;
+    renderMessage(messages: string | string[], type?: string): () => any;
     clearMessages(): void;
 }
 
@@ -871,7 +879,7 @@ export declare class UnicornApp extends UnicornApp_base implements EventAwareInt
     provide<T>(id: InjectionKey<T>, value: any): this;
     wait(callback: Function): Promise<any>;
     completed(): Promise<any[]>;
-    macro(name: string, callback: Function): this;
+    macro(name: string, prop: any): this;
 }
 
 declare const UnicornApp_base: Class<any[], EventMixin, typeof EventMixin>;
@@ -1168,8 +1176,7 @@ export declare class UnicornSystemUri extends URL {
 }
 
 export declare class UnicornUI {
-    theme?: any;
-    aliveHandle?: any;
+    theme?: UIThemeInterface;
     static get defaultOptions(): {
         messageSelector: string;
     };
@@ -1181,6 +1188,8 @@ declare type UploadHandlerParams = Parameters<NonNullable<EditorOptions['images_
 declare type UploadProgressEventHandler = (e: AxiosProgressEvent) => void;
 
 declare type UriTypes = 'full' | 'path' | 'root' | 'current' | 'route' | 'script';
+
+export declare function useAlertAdapter(config?: AlertAdapterConfig): typeof AlertAdapter;
 
 export declare function useAssetUri(): UnicornAssetUri;
 
@@ -1280,9 +1289,9 @@ export declare function useListDependent(): Promise<ListDependentModule>;
 
 export declare function useListDependent(element: string | HTMLSelectElement, dependent?: Nullable<string | HTMLSelectElement>, options?: Partial<ListDependentOptions>): Promise<ListDependent>;
 
-export declare function useMacro<T extends Dictionary<(...args: any[]) => any>>(name: T): T;
+export declare function useMacro<T extends Dictionary>(name: T): T;
 
-export declare function useMacro<N extends string, T extends (...args: any[]) => any>(name: N, handler: T): {
+export declare function useMacro<N extends string, T extends any>(name: N, prop: T): {
     [K in N]: T;
 };
 
@@ -1331,7 +1340,7 @@ export declare function useUI(instance?: UnicornUI): UnicornUI;
 
 export declare function useUIBootstrap5(install?: boolean, pushToGlobal?: boolean): Promise<UIBootstrap5>;
 
-export declare function useUITheme<T extends UIThemeInterface>(theme?: T | Constructor<T>): T;
+export declare function useUITheme<T extends UIThemeInterface>(theme?: T | Constructor<T>): UIThemeInterface;
 
 export declare function useUnicorn(instance?: UnicornApp): UnicornApp;
 
@@ -1394,19 +1403,19 @@ declare global {
 }
 
 
-declare global {
-    var Alpine: AlpineGlobal;
-    var TomSelect: typeof TomSelectGlobal;
-    var Spectrum: typeof SpectrumGlobal;
-    var Mark: any;
-}
-
-
 declare module '@windwalker-io/unicorn-next' {
     interface UnicornApp {
         /** @deprecated Only for code generator use. */
         $ui: typeof methods;
     }
+}
+
+
+declare global {
+    var Alpine: AlpineGlobal;
+    var TomSelect: typeof TomSelectGlobal;
+    var Spectrum: typeof SpectrumGlobal;
+    var Mark: any;
 }
 
 declare global {

@@ -39,7 +39,7 @@ import {
   loadAlpine,
   mark,
   module,
-  notify,
+  simpleNotify,
   prepareAlpine,
   renderMessage,
   route,
@@ -83,7 +83,7 @@ export async function useLegacyMethods(app: any) {
 
   app.addMessage = renderMessage;
   app.clearMessages = clearMessages;
-  app.notify = notify;
+  app.notify = simpleNotify;
   app.clearNotifies = clearNotifies;
 
   app.loadAlpine = loadAlpine;
@@ -151,7 +151,7 @@ function handleUI(app: any) {
   app.$ui ??= {};
   app.$ui.addMessage = renderMessage;
   app.$ui.clearMessages = clearMessages;
-  app.$ui.notify = notify;
+  app.$ui.notify = simpleNotify;
   app.$ui.clearNotifies = clearNotifies;
 
   app.$ui.loadAlpine = loadAlpine;

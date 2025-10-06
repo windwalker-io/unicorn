@@ -2,7 +2,7 @@ import * as bootstrap from 'bootstrap';
 import { Tooltip } from 'bootstrap';
 import type { ButtonRadio, ButtonRadioModule, ButtonRadioOptions } from '../bootstrap/button-radio';
 import type { KeepTab, KeepTabModule, KeepTabOptions } from '../bootstrap/keep-tab';
-import { getBoundedInstanceList, html, selectAll, selectOne } from '../service';
+import { html, selectAll, selectOne, uid } from '../service';
 import type { UIThemeInterface } from '../types';
 
 export class UIBootstrap5 implements UIThemeInterface {
@@ -14,18 +14,19 @@ export class UIBootstrap5 implements UIThemeInterface {
     return this.instance ??= new this();
   }
 
-  renderMessage(messages: string | string[], type: string = 'info') {
+  renderMessage(messages: string | string[], type: string = 'info'): () => void {
     if (!Array.isArray(messages)) {
       messages = [messages];
     }
 
     let text = '';
+    const id = 'uni-msg-' + uid();
 
     messages.forEach((msg) => {
       text += `<div class="">${msg}</div>`;
     });
 
-    const msgHtml = html(`<div class="alert alert-${type} alert-dismissible fade show" role="alert">
+    const msgHtml = html(`<div id="${id}" class="alert alert-${type} alert-dismissible fade show" role="alert">
   ${text}
   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>`);
@@ -34,6 +35,14 @@ export class UIBootstrap5 implements UIThemeInterface {
 
     if (container) {
       container.appendChild(msgHtml);
+    }
+
+    return () => {
+      const ele = document.getElementById(id);
+
+      if (ele) {
+        ele.remove();
+      }
     }
   }
 

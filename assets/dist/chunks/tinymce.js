@@ -1,10 +1,19 @@
-import { a5 as mergeDeep, m as useStack, u as useHttpClient, a8 as useImport } from "./unicorn.js";
+import { a5 as mergeDeep, m as useStack, u as useHttpClient, ai as useScriptImport } from "./unicorn.js";
 const instances = {};
 let hooks = [];
 let imported = false;
 async function get(selector, options = {}) {
+  return instances[selector] ??= await create(document.querySelector(selector), options);
+}
+async function create(selector, options = {}) {
   const tinymce2 = await loadTinymce();
-  return instances[selector] ??= new TinymceController(tinymce2, document.querySelector(selector), options);
+  let el;
+  if (typeof selector === "string") {
+    el = document.querySelector(selector);
+  } else {
+    el = selector;
+  }
+  return new TinymceController(tinymce2, el, options);
 }
 function destroy(selector) {
   delete instances[selector];
@@ -16,15 +25,15 @@ function clearHooks() {
   hooks = [];
 }
 async function loadTinymce() {
-  await useImport("@tinymce");
   if (imported) {
     return tinymce;
   }
-  imported = true;
+  await useScriptImport("@tinymce");
   for (const hook of hooks) {
     hook(tinymce);
   }
   await registerDragPlugin(tinymce);
+  imported = true;
   return tinymce;
 }
 const defaultOptions = {};
@@ -190,6 +199,7 @@ export {
   TinymceController,
   addHook,
   clearHooks,
+  create,
   destroy,
   get
 };
