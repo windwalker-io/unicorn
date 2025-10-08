@@ -161,7 +161,7 @@ export const ready = useUniDirective('modal-link', {
   }
 });
 
-export interface IframeModalModule {
+export interface IFrameModalModule {
   IFrameModalElement: typeof IFrameModalElement;
   ready: typeof ready;
 }

@@ -324,7 +324,7 @@ export declare function html<T extends Element = HTMLElement>(html: string): T;
 
 declare type HTMLInputTypes = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
 
-declare class IFrameModalElement extends HTMLElement {
+export declare class IFrameModalElement extends HTMLElement {
     static is: string;
     options: IFrameModalOptions;
     modalElement: HTMLDivElement;
@@ -1360,6 +1360,17 @@ export declare function useUnicornPhpAdapter(app?: UnicornApp): {
     modalTree: typeof useFieldModalTree;
     multiUploader: typeof useFieldMultiUploader;
     tomSelect: typeof useTomSelect;
+    bootstrap: {
+        tooltip: typeof useBs5Tooltip;
+        buttonRadio: {
+            (): Promise<ButtonRadioModule>;
+            (selector?: string | HTMLElement, options?: ButtonRadioOptions): Promise<ButtonRadio>;
+        };
+        keepTab: {
+            (): Promise<KeepTabModule>;
+            (selector?: string | HTMLElement, options?: KeepTabOptions): Promise<KeepTab>;
+        };
+    };
 };
 
 export declare function useUniDirective<T extends Element = HTMLElement>(name: string, handler: WebDirectiveHandler<T>, wdInstance?: default_3 | string): Promise<void>;
@@ -1396,17 +1407,17 @@ export declare function watchAttributes<T extends HTMLElement>(el: T, callback?:
 export { }
 
 
-declare global {
-    interface Node {
-        __unicorn?: any;
-    }
-}
-
-
 declare module '@windwalker-io/unicorn-next' {
     interface UnicornApp {
         /** @deprecated Only for code generator use. */
         $ui: typeof methods;
+    }
+}
+
+
+declare global {
+    interface Node {
+        __unicorn?: any;
     }
 }
 

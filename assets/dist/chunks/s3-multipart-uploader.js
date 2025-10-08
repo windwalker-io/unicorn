@@ -1,4 +1,4 @@
-import { ad as Mixin, a5 as mergeDeep, af as createQueue, u as useHttpClient, ae as EventMixin } from "./unicorn.js";
+import { af as Mixin, a7 as mergeDeep, ah as createQueue, u as useHttpClient, ag as EventMixin } from "./unicorn.js";
 const defaultOptions = {
   chunkSize: 5 * 1024 * 1024,
   // 5MB
