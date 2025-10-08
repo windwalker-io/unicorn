@@ -1,5 +1,7 @@
 import type { UnicornApp } from '../app';
 import {
+  useBs5ButtonRadio, useBs5KeepTab,
+  useBs5Tooltip,
   useFieldCascadeSelect,
   useFieldFileDrag,
   useFieldFlatpickr,
@@ -52,6 +54,11 @@ const methods = {
   modalTree: useFieldModalTree,
   multiUploader: useFieldMultiUploader,
   tomSelect: useTomSelect,
+  bootstrap: {
+    tooltip: useBs5Tooltip,
+    buttonRadio: useBs5ButtonRadio,
+    keepTab: useBs5KeepTab,
+  }
 };
 
 export class UnicornPhpAdapter {

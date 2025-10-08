@@ -177,7 +177,7 @@ class FileUploadService implements EventAwareInterface
     public function handleFileIfUploaded(
         ?UploadedFileInterface $file,
         ?string $dest = null,
-        array $options = []
+        array|FileUploadOptions $options = []
     ): ?PutResult {
         if (!$file) {
             return null;
@@ -193,14 +193,15 @@ class FileUploadService implements EventAwareInterface
     /**
      * @param  resource|StreamInterface|string  $file
      * @param  string|null                      $dest
-     * @param  array                            $options
+     * @param  array|FileUploadOptions          $options
      *
      * @return  PutResult
+     * @throws \Exception
      */
     public function handleFileData(
         mixed $file,
         ?string $dest = null,
-        array $options = []
+        array|FileUploadOptions $options = []
     ): PutResult {
         if (is_resource($file)) {
             $stream = Stream::wrap($file);

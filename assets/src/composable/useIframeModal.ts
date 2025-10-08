@@ -1,4 +1,5 @@
 import { IframeModalModule } from '../module/iframe-modal';
+export { IFrameModalElement } from '../module/iframe-modal';
 
 export async function useIframeModal(): Promise<IframeModalModule> {
   const module = await import('../module/iframe-modal');
