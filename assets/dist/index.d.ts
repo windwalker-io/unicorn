@@ -341,7 +341,7 @@ export declare class IFrameModalElement extends HTMLElement {
     getModalId(): string;
 }
 
-declare interface IframeModalModule {
+declare interface IFrameModalModule {
     IFrameModalElement: typeof IFrameModalElement;
     ready: typeof ready_3;
 }
@@ -1260,7 +1260,7 @@ export declare function useGridComponent(ele: string | HTMLElement, options?: Re
 
 export declare function useHttpClient(config?: CreateAxiosDefaults | AxiosInstance): Promise<UnicornHttpClient>;
 
-export declare function useIframeModal(): Promise<IframeModalModule>;
+export declare function useIframeModal(): Promise<IFrameModalModule>;
 
 export declare function useImport(...src: any[]): Promise<any>;
 
@@ -1407,17 +1407,17 @@ export declare function watchAttributes<T extends HTMLElement>(el: T, callback?:
 export { }
 
 
-declare module '@windwalker-io/unicorn-next' {
-    interface UnicornApp {
-        /** @deprecated Only for code generator use. */
-        $ui: typeof methods;
+declare global {
+    interface Node {
+        __unicorn?: any;
     }
 }
 
 
-declare global {
-    interface Node {
-        __unicorn?: any;
+declare module '@windwalker-io/unicorn-next' {
+    interface UnicornApp {
+        /** @deprecated Only for code generator use. */
+        $ui: typeof methods;
     }
 }
 

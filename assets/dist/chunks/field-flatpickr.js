@@ -865,7 +865,7 @@ class FlatpickrElement extends HTMLElement {
   }
   async handleLocale(options) {
     if (this.locale) {
-      await useImport(`flatpickr/dist/l10n/${this.locale}.js`);
+      await useImport(`@flatpickr/l10n/${this.locale}.js`);
       options.locale = this.locale.replace(/-/, "_");
     }
     return options;

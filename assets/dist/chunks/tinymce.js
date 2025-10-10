@@ -1,7 +1,7 @@
 import { a7 as mergeDeep, m as useStack, u as useHttpClient, ak as useScriptImport } from "./unicorn.js";
 const instances = {};
 let hooks = [];
-let imported = false;
+let imported;
 async function get(selector, options = {}) {
   return instances[selector] ??= await create(document.querySelector(selector), options);
 }
@@ -25,23 +25,22 @@ function clearHooks() {
   hooks = [];
 }
 async function loadTinymce() {
-  if (imported) {
-    return tinymce;
-  }
-  await useScriptImport("@tinymce");
-  for (const hook of hooks) {
-    hook(tinymce);
-  }
-  await registerDragPlugin(tinymce);
-  imported = true;
-  return tinymce;
+  return imported ??= new Promise((resolve) => {
+    useScriptImport("@tinymce").then(() => {
+      for (const hook of hooks) {
+        hook(tinymce);
+      }
+      registerDragPlugin(tinymce).then(() => {
+        resolve(tinymce);
+      });
+    });
+  });
 }
 const defaultOptions = {};
 class TinymceController {
   constructor(tinymce2, element, options) {
     this.tinymce = tinymce2;
     this.element = element;
-    options.target = element;
     this.options = mergeDeep(
       {
         unicorn: {
@@ -51,7 +50,8 @@ class TinymceController {
       defaultOptions,
       this.prepareOptions(options, tinymce2.majorVersion)
     );
-    tinymce2.EditorManager.init(this.options).then((editor) => {
+    this.options.target = element;
+    tinymce2.init(this.options).then((editor) => {
       this.editor = editor[0];
     });
   }

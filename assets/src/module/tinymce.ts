@@ -6,8 +6,7 @@ import { mergeDeep } from '../utilities';
 
 const instances: Dictionary<TinymceController> = {};
 let hooks: ((tinymce: TinyMCE) => MaybePromise<any>)[] = [];
-
-let imported = false;
+let imported: Promise<TinyMCE>;
 
 declare type UploadHandlerParams = Parameters<NonNullable<EditorOptions['images_upload_handler']>>;
 
@@ -47,18 +46,16 @@ export function clearHooks() {
 }
 
 async function loadTinymce(): Promise<TinyMCE> {
-  if (imported) {
-    return tinymce;
-  }
-
-  await useScriptImport('@tinymce');
-
-  for (const hook of hooks) {
-    hook(tinymce);
-  }
-  await registerDragPlugin(tinymce);
-  imported = true;
-  return tinymce;
+  return imported ??= new Promise((resolve) => {
+    useScriptImport('@tinymce').then(() => {
+      for (const hook of hooks) {
+        hook(tinymce);
+      }
+      registerDragPlugin(tinymce).then(() => {
+        resolve(tinymce);
+      });
+    });
+  });
 }
 
 const defaultOptions: Record<string, any> = {};
@@ -68,8 +65,6 @@ export class TinymceController {
   options: Record<string, any> = {};
 
   constructor(protected tinymce: TinyMCE, public element: HTMLElement, options: Record<string, any>) {
-    options.target = element;
-
     this.options = mergeDeep(
       {
         unicorn: {
@@ -80,7 +75,9 @@ export class TinymceController {
       this.prepareOptions(options, tinymce.majorVersion),
     );
 
-    tinymce.EditorManager.init(this.options).then((editor) => {
+    this.options.target = element;
+
+    tinymce.init(this.options).then((editor) => {
       this.editor = editor[0];
     });
   }

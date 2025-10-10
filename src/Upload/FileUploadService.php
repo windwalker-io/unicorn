@@ -25,6 +25,7 @@ use Windwalker\Event\EventAwareInterface;
 use Windwalker\Filesystem\Filesystem;
 use Windwalker\Filesystem\Path;
 use Windwalker\Filesystem\TempFileObject;
+use Windwalker\Http\FullPathAwareInterface;
 use Windwalker\Http\Helper\UploadedFileHelper;
 use Windwalker\Stream\Stream;
 use Windwalker\Stream\StreamHelper;
@@ -98,7 +99,7 @@ class FileUploadService implements EventAwareInterface
         $ext = $this->getExtensionByMimeType($mime);
 
         $dest ??= $this->getUploadPath($dest, $ext);
-        $dest = $this->replaceVariables($dest, (string) $ext);
+        $dest = $this->replaceVariables($dest, ext: $ext);
         $destExt = Path::getExtension($dest);
 
         if (str_starts_with($mime, 'image/') && $this->shouldRedraw($ext, $destExt)) {
@@ -125,6 +126,7 @@ class FileUploadService implements EventAwareInterface
         }
 
         $forceRedraw = false;
+        $folder = null;
 
         if ($file instanceof UploadedFileInterface) {
             if ($file->getError() !== UPLOAD_ERR_OK) {
@@ -132,6 +134,11 @@ class FileUploadService implements EventAwareInterface
             }
 
             $srcExt = Path::getExtension($file->getClientFilename());
+            $basename = Path::basename($file->getClientFilename(), true);
+
+            if ($file instanceof FullPathAwareInterface && $file->getFullPath()) {
+                $folder = dirname($file->getFullPath());
+            }
 
             // If uploaded file extension not equals to mime type,
             // Use extension as final output format.
@@ -142,6 +149,7 @@ class FileUploadService implements EventAwareInterface
             }
 
             $srcExt = Path::getExtension($file);
+            $basename = Path::basename($file, true);
         }
 
         $dest ??= $this->getUploadPath($dest, $srcExt);
@@ -153,7 +161,12 @@ class FileUploadService implements EventAwareInterface
             $resizeConfig = $options->resize;
 
             // Todo: Should refactor total process
-            $dest = $this->replaceVariables($dest, $resizeConfig->outputFormat ?? $srcExt);
+            $dest = $this->replaceVariables(
+                $dest,
+                folder: $folder,
+                basename: $basename,
+                ext: $resizeConfig->outputFormat ?? $srcExt
+            );
 
             if ($destExt !== '{ext}') {
                 $resizeConfig->outputFormat ??= $destExt;
@@ -164,10 +177,20 @@ class FileUploadService implements EventAwareInterface
             $stream = $this->resizeImage($file, $resizeConfig);
             $stream = $this->optimizeImage($stream, $dest, $resizeConfig);
         } elseif ($file instanceof UploadedFileInterface) {
-            $dest = $this->replaceVariables($dest, $srcExt);
+            $dest = $this->replaceVariables(
+                $dest,
+                folder: $folder,
+                basename: $basename,
+                ext: $srcExt
+            );
             $stream = $file->getStream();
         } else {
-            $dest = $this->replaceVariables($dest, $srcExt);
+            $dest = $this->replaceVariables(
+                $dest,
+                folder: $folder,
+                basename: $basename,
+                ext: $srcExt
+            );
             $stream = new Stream($file, READ_ONLY_FROM_BEGIN);
         }
 
@@ -231,7 +254,7 @@ class FileUploadService implements EventAwareInterface
             );
         }
 
-        $dest = $this->replaceVariables($dest, $ext);
+        $dest = $this->replaceVariables($dest, ext: $ext);
         $destExt = Path::getExtension($dest);
 
         if (str_starts_with((string) $mime, 'image/') && $this->shouldRedraw($ext, $destExt)) {
@@ -580,14 +603,34 @@ class FileUploadService implements EventAwareInterface
         return $ext;
     }
 
-    public function replaceVariables(string $dest, string $ext): string
-    {
+    public function replaceVariables(
+        string $dest,
+        ?string $folder = null,
+        ?string $basename = null,
+        ?string $ext = null,
+    ): string {
         $chronos = chronos();
 
         $vars = array_map(
             static fn(string $var) => "{{$var}}",
             $this->pathVars
         );
+
+        if ($folder !== null) {
+            $vars['{folder}'] = $folder === '.' ? '' : $folder;
+        }
+
+        if ($basename !== null) {
+            $vars['{basename}'] = $basename;
+        }
+
+        if ($ext !== null) {
+            $vars['{ext}'] = $ext;
+        }
+
+        if ($basename !== null && $ext !== null) {
+            $vars['{filename}'] = $basename . '.' . $ext;
+        }
 
         return strtr(
             $dest,
@@ -598,7 +641,7 @@ class FileUploadService implements EventAwareInterface
                 '{hour}' => $chronos->format('H'),
                 '{minute}' => $chronos->format('i'),
                 '{second}' => $chronos->format('s'),
-                '{ext}' => $ext,
+                '{timestamp}' => (string) $chronos->getTimestamp(),
                 ...$vars,
             ],
         );

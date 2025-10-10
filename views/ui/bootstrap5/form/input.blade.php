@@ -57,7 +57,6 @@ if ($inputElement instanceof \Windwalker\DOM\HTMLElement) {
 if ($floating) {
     $inputElement['placeholder'] ??= $field->getLabelName();
 }
-$inputElement->addClass('weqrewr');
 
 $fieldElement = $field->compileFieldElement($inputElement, $options);
 
