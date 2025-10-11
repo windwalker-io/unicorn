@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Unicorn\Field;
 
+use Windwalker\DOM\HTML5Factory;
 use Windwalker\DOM\HTMLElement;
 use Windwalker\DOM\DOMFactory;
 use Windwalker\Form\Field\AbstractField;
@@ -26,7 +27,7 @@ class LayoutField extends AbstractField
      */
     public function prepareInput(HTMLElement $input): HTMLElement
     {
-        return DOMFactory::element('div', '');
+        return HTML5Factory::element('div');
     }
 
     public function compileFieldElement(HTMLElement $input, array $options = []): string|HTMLElement
