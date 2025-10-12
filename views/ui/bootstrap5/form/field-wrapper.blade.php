@@ -131,7 +131,7 @@ $noLabel ??= $options['no_label'] ?? false;
     <div data-input-container uni-field-validate="{{ json_encode($validate) }}"
         class="position-relative {{ $floating ? 'form-floating' : 'col-md-' . ($inputCols ?? 12) }}">
         @if ($desc = $field->getDescription())
-            <div class="small text-muted mb-2">{!! $desc !!}</div>
+            <div class="c-input-help small text-muted mb-2">{!! $desc !!}</div>
         @endif
 
         @if (isset($start))
@@ -157,7 +157,7 @@ $noLabel ??= $options['no_label'] ?? false;
         @endif
 
         @if ($help = $field->get('help'))
-            <div class="small text-muted mt-2">{!! $help !!}</div>
+            <div class="c-input-help small text-muted mt-2">{!! $help !!}</div>
         @endif
 
         @if ($error ?? null)

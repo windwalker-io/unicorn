@@ -1334,9 +1334,9 @@ async function useFormValidation(selector) {
   if (!selector) {
     return module2;
   }
-  return useFormValidationSync(selector);
+  return useFormValidationInstance(selector);
 }
-function useFormValidationSync(selector) {
+function useFormValidationInstance(selector) {
   return getBoundedInstance(selector, "form.validation");
 }
 function useFieldValidationSync(selector) {
@@ -2235,7 +2235,7 @@ export {
   addGlobalValidator as h,
   isDebug as i,
   useFieldValidationSync as j,
-  useFormValidationSync as k,
+  useFormValidationInstance as k,
   loadAlpine as l,
   useStack as m,
   useQueue as n,

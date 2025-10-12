@@ -8,6 +8,8 @@ use Windwalker\Core\Form\FormRenderer;
 use Windwalker\DOM\HTMLElement;
 use Windwalker\Form\Contract\InputOptionsInterface;
 use Windwalker\Form\Field\AbstractField;
+use Windwalker\Form\Field\CheckboxesField;
+use Windwalker\Form\Field\RadioField;
 use Windwalker\Form\Field\SpacerField;
 use Windwalker\Form\Field\TextField;
 
@@ -24,6 +26,14 @@ class BootstrapFormRenderer extends FormRenderer
         }
 
         if ($field instanceof InputOptionsInterface) {
+            if ($field instanceof RadioField) {
+                $field->addClass('c-radio-field');
+                $field->addWrapperClass('c-radio-field-wrapper');
+            } elseif ($field instanceof CheckboxesField) {
+                $field->addClass('c-checkboxes-field');
+                $field->addWrapperClass('c-checkboxes-field-wrapper');
+            }
+
             $field->setOptionWrapperHandler(
                 function (HTMLElement $wrapper) {
                     $wrapper->addClass('form-check');

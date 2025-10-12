@@ -38,6 +38,7 @@ $title ??= $fieldset?->getTitle();
 $floating ??= false;
 $horizon ??= null;
 $star ??= false;
+$gap ??= 4;
 
 $attributes = $attributes->exceptProps(
     [
@@ -48,11 +49,14 @@ $attributes = $attributes->exceptProps(
         'title',
         'is',
         'floating',
-        'star'
+        'star',
+        'gap',
     ]
 );
 
 $attrs = [];
+
+$attributes = $attributes->class('l-form-fieldset');
 ?>
 
 <x-component :is="$is" :="$attributes" :title="$title">
@@ -64,35 +68,37 @@ $attrs = [];
 
     {!! $start ?? '' !!}
 
-    @foreach ($form->getFields($name, $ns) as $field)
-        @php($fieldName = \Windwalker\Utilities\StrNormalize::toKebabCase($field->getNamespaceName()))
-        @php($slotName = $fieldName . 'Slot')
-        @php($startSlot = $fieldName . 'StartSlot')
-        @php($endSlot = $fieldName . 'EndSlot')
+    <div class="l-form-fieldset__body d-flex flex-column {{ $gap ? "gap-$gap" : '' }}">
+        @foreach ($form->getFields($name, $ns) as $field)
+            @php($fieldName = \Windwalker\Utilities\StrNormalize::toKebabCase($field->getNamespaceName()))
+            @php($slotName = $fieldName . 'Slot')
+            @php($startSlot = $fieldName . 'StartSlot')
+            @php($endSlot = $fieldName . 'EndSlot')
 
-        @if ($$startSlot ?? null)
-            {!! $$startSlot(field: $field) !!}
-        @endif
+            @if ($$startSlot ?? null)
+                {!! $$startSlot(field: $field) !!}
+            @endif
 
-        @if ($main ?? null)
-            {!! $main(field: $field) !!}
-        @elseif ($$slotName ?? null)
-            {!! $$slotName(field: $field) !!}
-        @else
-            <x-field :field="$field" class="mb-4" :floating="$floating" :star="$star"
-                :horizon="$horizon"
-                :="$attrs">
-                @if ($fieldSlot ?? null)
-                    @scope($field)
-                    {!! $fieldSlot(field: $field) !!}
-                @endif
-            </x-field>
-        @endif
+            @if ($main ?? null)
+                {!! $main(field: $field) !!}
+            @elseif ($$slotName ?? null)
+                {!! $$slotName(field: $field) !!}
+            @else
+                <x-field :field="$field" class="" :floating="$floating" :star="$star"
+                    :horizon="$horizon"
+                    :="$attrs">
+                    @if ($fieldSlot ?? null)
+                        @scope($field)
+                        {!! $fieldSlot(field: $field) !!}
+                    @endif
+                </x-field>
+            @endif
 
-        @if ($$endSlot ?? null)
-            {!! $$endSlot(field: $field) !!}
-        @endif
-    @endforeach
+            @if ($$endSlot ?? null)
+                {!! $$endSlot(field: $field) !!}
+            @endif
+        @endforeach
+    </div>
 
     {!! $end ?? '' !!}
 </x-component>

@@ -89,7 +89,7 @@ export {
   a2 as useFormAsync,
   aW as useFormComponent,
   g as useFormValidation,
-  k as useFormValidationSync,
+  k as useFormValidationInstance,
   a5 as useGrid,
   a3 as useGridAsync,
   aX as useGridComponent,

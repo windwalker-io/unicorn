@@ -29,6 +29,8 @@ class InlineField extends AbstractField implements CompositeFieldInterface
 
     protected array $widths = [];
 
+    protected int|false $gap = 3;
+
     protected ?string $group = null;
 
     protected ?string $subFieldset = null;
@@ -72,7 +74,7 @@ class InlineField extends AbstractField implements CompositeFieldInterface
             $form = $this->getForm();
 
             foreach ($fields as $name => $field) {
-                $form->addField($field, $this->subFieldset);
+                $form->addField($field, $this->subFieldset, $field->getNamespace());
             }
 
             ReflectAccessor::setValue($form, 'fieldset', $form->getFieldset((string) $this->getFieldset()));
@@ -144,6 +146,18 @@ class InlineField extends AbstractField implements CompositeFieldInterface
     public function getGroup(): ?string
     {
         return $this->group;
+    }
+
+    public function getGap(): int|false
+    {
+        return $this->gap;
+    }
+
+    public function gap(int|false $gap): static
+    {
+        $this->gap = $gap;
+
+        return $this;
     }
 
     protected function castToValidValue(mixed $value): mixed

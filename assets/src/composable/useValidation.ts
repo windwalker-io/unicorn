@@ -17,10 +17,10 @@ export async function useFormValidation(selector?: string | Element): Promise<an
     return module;
   }
 
-  return useFormValidationSync(selector);
+  return useFormValidationInstance(selector);
 }
 
-export function useFormValidationSync(selector: string | Element): UnicornFormValidation | null {
+export function useFormValidationInstance(selector: string | Element): UnicornFormValidation | null {
   return getBoundedInstance<UnicornFormValidation>(selector, 'form.validation');
 }
 

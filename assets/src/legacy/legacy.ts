@@ -8,7 +8,7 @@ import {
   useForm,
   useFormAsync,
   useFormValidation,
-  useFormValidationSync,
+  useFormValidationInstance,
   useGrid,
   useGridAsync,
   useHttpClient,
@@ -97,7 +97,7 @@ export async function useLegacyMethods(app: any) {
 
   app.formValidation = useFormValidation;
   app.$validation = {
-    get: useFormValidationSync,
+    get: useFormValidationInstance,
     getField: useFieldValidationSync,
     addGlobalValidator: addGlobalValidator,
     import: () => useFormValidation()

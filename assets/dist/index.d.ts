@@ -725,7 +725,7 @@ declare class ShowOn {
     input: HTMLInputTypes;
     conditions: Conditions;
     targets: {};
-    defaultReadonly: boolean;
+    defaultReadonly: boolean | null;
     initialDisplay: string;
     constructor(el: HTMLElement, conditions: Conditions);
     init(): void;
@@ -1250,7 +1250,7 @@ export declare function useFormValidation(): Promise<ValidationModule>;
 
 export declare function useFormValidation(selector: string | Element): Promise<UnicornFormValidation | null>;
 
-export declare function useFormValidationSync(selector: string | Element): UnicornFormValidation | null;
+export declare function useFormValidationInstance(selector: string | Element): UnicornFormValidation | null;
 
 export declare function useGrid(ele: string | HTMLElement, options?: Record<string, any> | undefined): UnicornGridElement | null;
 
@@ -1407,13 +1407,6 @@ export declare function watchAttributes<T extends HTMLElement>(el: T, callback?:
 export { }
 
 
-declare global {
-    interface Node {
-        __unicorn?: any;
-    }
-}
-
-
 declare module '@windwalker-io/unicorn-next' {
     interface UnicornApp {
         /** @deprecated Only for code generator use. */
@@ -1429,19 +1422,15 @@ declare global {
     var Mark: any;
 }
 
+
 declare global {
-    var S: any;
+    interface Node {
+        __unicorn?: any;
+    }
 }
 
-
-declare module 'axios' {
-    interface AxiosRequestConfig {
-        vars?: Record<string, any>;
-        methodSimulate?: string;
-        methodSimulateByHeader?: boolean;
-    }
-    interface CreateAxiosDefaults {
-    }
+declare global {
+    var S: any;
 }
 
 
@@ -1454,4 +1443,15 @@ declare global {
 
 declare global {
     var tinymce: TinyMCE;
+}
+
+
+declare module 'axios' {
+    interface AxiosRequestConfig {
+        vars?: Record<string, any>;
+        methodSimulate?: string;
+        methodSimulateByHeader?: boolean;
+    }
+    interface CreateAxiosDefaults {
+    }
 }

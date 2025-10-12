@@ -6,9 +6,7 @@ namespace Unicorn\Field;
 
 use Windwalker\DOM\HTML5Factory;
 use Windwalker\DOM\HTMLElement;
-use Windwalker\DOM\DOMFactory;
 use Windwalker\Form\Field\AbstractField;
-use Windwalker\Utilities\Arr;
 
 /**
  * The LayoutField class.

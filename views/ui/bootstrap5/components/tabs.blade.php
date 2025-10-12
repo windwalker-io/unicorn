@@ -36,7 +36,8 @@ $props = $attributes->props(
     'keepactive',
     'fill',
     'nav-target',
-    'nav-attrs'
+    'nav-attrs',
+    'gap',
 );
 
 $id ??= 'c-tabs-' . uid();
@@ -45,6 +46,7 @@ $fill ??= null;
 $keepactive ??= null;
 $navTarget ??= null;
 $navAttrs ??= '';
+$gap ??= 4;
 
 if ($keepactive !== null) {
     if (!is_string($keepactive)) {
@@ -54,7 +56,12 @@ if ($keepactive !== null) {
     // $app->service(BootstrapScript::class)->keepTab($keepactive);
 }
 
-$attributes = $attributes->class('d-flex flex-column gap-4');
+$attributes = $attributes->class('d-flex flex-column');
+
+if ($gap) {
+    $attributes->addClass("gap-{$gap}");
+}
+
 $attributes['id'] = $id;
 
 $directiveOptions = [

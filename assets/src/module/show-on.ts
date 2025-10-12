@@ -11,7 +11,7 @@ export class ShowOn {
   input!: HTMLInputTypes;
   conditions: Conditions = {};
   targets = {};
-  defaultReadonly = false;
+  defaultReadonly: boolean | null = null;
   initialDisplay!: string;
 
   constructor(el: HTMLElement, conditions: Conditions) {
@@ -63,7 +63,7 @@ export class ShowOn {
       }, duration + 30);
     } else {
       if (this.input) {
-        this.defaultReadonly = this.input.hasAttribute('readonly');
+        this.defaultReadonly ??= this.input.hasAttribute('readonly');
       }
 
       fadeOut(this.el, duration);
@@ -74,6 +74,8 @@ export class ShowOn {
         if (!this.defaultReadonly) {
           this.input.removeAttribute('readonly');
         }
+
+        this.defaultReadonly = null;
       } else {
         this.input.setAttribute('readonly', 'readonly');
       }

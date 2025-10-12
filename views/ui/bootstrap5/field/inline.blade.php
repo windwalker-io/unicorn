@@ -34,8 +34,13 @@ $inputElement = $field->getPreparedInput();
 $showLabel = $field->getShowLabel() ?? false;
 $i = 0;
 $widths = $field->getWidths();
+$gap = $field->getGap();
 
-$inputElement->addClass('c-inline-field d-flex flex-wrap gap-3 w-100');
+$inputElement->addClass('c-inline-field d-flex flex-wrap w-100');
+
+if ($gap) {
+    $inputElement->addClass("gap-$gap");
+}
 
 $labelClass = $showLabel ? '' : 'visually-hidden';
 ?>
