@@ -59,7 +59,7 @@ if ($keepactive !== null) {
 $attributes = $attributes->class('d-flex flex-column');
 
 if ($gap) {
-    $attributes->addClass("gap-{$gap}");
+    $attributes = $attributes->class("gap-{$gap}");
 }
 
 $attributes['id'] = $id;

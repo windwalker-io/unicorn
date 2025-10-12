@@ -19,6 +19,10 @@ class FileUploadOptions extends RecordOptions
 
     public array $storageOptions = [];
 
+    public array $options {
+        set(mixed $value) => $this->storageOptions = [...$this->storageOptions, ...$value];
+    }
+
     public function __construct(
         public string $storage = 'local',
         public ?string $dir = null,

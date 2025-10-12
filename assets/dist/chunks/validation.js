@@ -405,13 +405,15 @@ class UnicornFieldValidation {
     this.prepareWrapper();
     if (this.isInputOptions) {
       const $input = this.$input;
-      $input.validationMessage = "";
-      $input.setCustomValidity = (msg) => {
-        $input.validationMessage = String(msg);
-      };
-      $input.checkValidity = () => {
-        return this.checkInputOptionsValidity();
-      };
+      if (!($input instanceof HTMLInputElement) && !($input instanceof HTMLSelectElement) && !($input instanceof HTMLTextAreaElement)) {
+        $input.validationMessage = "";
+        $input.setCustomValidity = (msg) => {
+          $input.validationMessage = String(msg);
+        };
+        $input.checkValidity = () => {
+          return this.checkInputOptionsValidity();
+        };
+      }
     }
   }
   bindEvents() {

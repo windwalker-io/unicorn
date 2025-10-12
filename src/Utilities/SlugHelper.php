@@ -115,7 +115,7 @@ class SlugHelper
      */
     public static function getDefaultSlug(): string
     {
-        return OutputFilter::stringURLSafe(Chronos::now('Y-m-d-H-i-s'));
+        return OutputFilter::stringURLSafe(Chronos::create()->format('Y-m-d-H-i-s'));
     }
 
     public static function limitWords(string $text, int $defaultLimit): string

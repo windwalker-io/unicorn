@@ -66,9 +66,9 @@ $attributes = $attributes->class('l-form-fieldset');
         </x-slot>
     @endif
 
-    {!! $start ?? '' !!}
-
     <div class="l-form-fieldset__body d-flex flex-column {{ $gap ? "gap-$gap" : '' }}">
+        {!! $start ?? '' !!}
+
         @foreach ($form->getFields($name, $ns) as $field)
             @php($fieldName = \Windwalker\Utilities\StrNormalize::toKebabCase($field->getNamespaceName()))
             @php($slotName = $fieldName . 'Slot')
@@ -98,7 +98,7 @@ $attributes = $attributes->class('l-form-fieldset');
                 {!! $$endSlot(field: $field) !!}
             @endif
         @endforeach
-    </div>
 
-    {!! $end ?? '' !!}
+        {!! $end ?? '' !!}
+    </div>
 </x-component>

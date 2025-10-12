@@ -402,14 +402,21 @@ export class UnicornFieldValidation {
     if (this.isInputOptions) {
       const $input = this.$input as any;
 
-      $input.validationMessage = '';
-      $input.setCustomValidity = (msg: string) => {
-        $input.validationMessage = String(msg);
-      };
+      if (
+        !($input instanceof HTMLInputElement)
+        && !($input instanceof HTMLSelectElement)
+        && !($input instanceof HTMLTextAreaElement)
+      ) {
+        $input.validationMessage = '';
 
-      $input.checkValidity = () => {
-        return this.checkInputOptionsValidity();
-      };
+        $input.setCustomValidity = (msg: string) => {
+          $input.validationMessage = String(msg);
+        };
+
+        $input.checkValidity = () => {
+          return this.checkInputOptionsValidity();
+        };
+      }
     }
   }
 

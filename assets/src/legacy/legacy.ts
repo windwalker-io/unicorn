@@ -1,7 +1,9 @@
 import { numberFormat } from '@lyrasoft/ts-toolkit/generic';
 import { sprintf, vsprintf } from 'sprintf-js';
 import {
-  addGlobalValidator, useBs5ButtonRadio, useBs5KeepTab,
+  addGlobalValidator,
+  useBs5ButtonRadio,
+  useBs5KeepTab,
   useBs5Tooltip,
   useCheckboxesMultiSelect,
   useFieldValidationSync,
@@ -39,7 +41,6 @@ import {
   loadAlpine,
   mark,
   module,
-  simpleNotify,
   prepareAlpine,
   renderMessage,
   route,
@@ -48,6 +49,7 @@ import {
   serial,
   simpleAlert,
   simpleConfirm,
+  simpleNotify,
   slideDown,
   slideToggle,
   slideUp,
