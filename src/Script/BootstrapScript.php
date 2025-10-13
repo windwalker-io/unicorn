@@ -133,7 +133,11 @@ class BootstrapScript extends AbstractScript
     public function multiLevelMenu(): static
     {
         if ($this->available()) {
-            $this->css('@unicorn/bootstrap/multi-level-menu.min.css');
+            if ($this->next) {
+                $this->css('@unicorn/bootstrap/multi-level-menu.css');
+            } else {
+                $this->css('@unicorn/bootstrap/multi-level-menu.min.css');
+            }
         }
 
         return $this;
