@@ -1407,14 +1407,6 @@ export declare function watchAttributes<T extends HTMLElement>(el: T, callback?:
 export { }
 
 
-declare module '@windwalker-io/unicorn-next' {
-    interface UnicornApp {
-        /** @deprecated Only for code generator use. */
-        $ui: typeof methods;
-    }
-}
-
-
 declare global {
     var Alpine: AlpineGlobal;
     var TomSelect: typeof TomSelectGlobal;
@@ -1426,6 +1418,14 @@ declare global {
 declare global {
     interface Node {
         __unicorn?: any;
+    }
+}
+
+
+declare module '@windwalker-io/unicorn-next' {
+    interface UnicornApp {
+        /** @deprecated Only for code generator use. */
+        $ui: typeof methods;
     }
 }
 
@@ -1441,11 +1441,6 @@ declare global {
 }
 
 
-declare global {
-    var tinymce: TinyMCE;
-}
-
-
 declare module 'axios' {
     interface AxiosRequestConfig {
         vars?: Record<string, any>;
@@ -1454,4 +1449,9 @@ declare module 'axios' {
     }
     interface CreateAxiosDefaults {
     }
+}
+
+
+declare global {
+    var tinymce: TinyMCE;
 }
