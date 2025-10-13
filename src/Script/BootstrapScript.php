@@ -134,7 +134,7 @@ class BootstrapScript extends AbstractScript
     {
         if ($this->available()) {
             if ($this->next) {
-                $this->css('@unicorn/bootstrap/multi-level-menu.css');
+                $this->css('@unicorn/multi-level-menu.css');
             } else {
                 $this->css('@unicorn/bootstrap/multi-level-menu.min.css');
             }
