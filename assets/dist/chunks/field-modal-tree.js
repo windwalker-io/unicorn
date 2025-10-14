@@ -1,4 +1,4 @@
-import { ad as forceArray, u as useHttpClient, ab as useCssImport, ac as data } from "./unicorn.js";
+import { ad as forceArray, u as useHttpClient, ac as data, ab as useCssImport } from "./unicorn.js";
 import { defineComponent, ref, computed, h, Transition, withDirectives, mergeProps, vShow, unref, inject, watch, onBeforeUpdate, nextTick, onMounted, createElementBlock, openBlock, normalizeClass, createElementVNode, createBlock, createCommentVNode, normalizeStyle, vModelDynamic, withModifiers, createTextVNode, toDisplayString, withCtx, Fragment, renderList, useTemplateRef, onUnmounted, provide, vModelText, createVNode, TransitionGroup, createApp } from "vue";
 import { Modal } from "bootstrap";
 import { c as cloneDeep } from "./cloneDeep.js";
@@ -405,7 +405,7 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
     }, 8, ["modelValue"])) : createCommentVNode("", true)
   ], 2);
 }
-const TreeItem = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__scopeId", "data-v-897596f4"], ["__file", "TreeItem.vue"]]);
+const TreeItem = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__scopeId", "data-v-8a4ae0be"], ["__file", "TreeItem.vue"]]);
 const _sfc_main$1 = /* @__PURE__ */ defineComponent({
   __name: "TreeModal",
   props: {
@@ -768,8 +768,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     }), null, 16, ["open", "id", "title", "source", "value", "branchSelectable", "disabled", "readonly", "search-text"])
   ]);
 }
-const ModalTreeApp = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-f21c791b"], ["__file", "ModalTreeApp.vue"]]);
-/* @__PURE__ */ useCssImport("@vue-animate");
+const ModalTreeApp = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-22fa7050"], ["__file", "ModalTreeApp.vue"]]);
 const app = /* @__PURE__ */ createApp({
   name: "modal-tree",
   components: {
@@ -786,5 +785,9 @@ class ModalTreeElement extends HTMLElement {
     }
   }
 }
-/* @__PURE__ */ customElements.define(/* @__PURE__ */ (() => ModalTreeElement.is)(), ModalTreeElement);
+async function init() {
+  customElements.define(ModalTreeElement.is, ModalTreeElement);
+  await useCssImport("@vue-animate");
+}
+/* @__PURE__ */ init();
 //# sourceMappingURL=field-modal-tree.js.map

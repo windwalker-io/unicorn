@@ -396,8 +396,12 @@ class ModalListSelectElement extends HTMLElement {
     this.modal?.open(target.href, { size: "modal-xl" });
   }
 }
-/* @__PURE__ */ customElements.define(/* @__PURE__ */ (() => ModalListSelectElement.is)(), ModalListSelectElement);
+async function init() {
+  customElements.define(ModalListSelectElement.is, ModalListSelectElement);
+}
+const ready = /* @__PURE__ */ init();
 export {
-  createCallback
+  createCallback,
+  ready
 };
 //# sourceMappingURL=field-modal-select.js.map

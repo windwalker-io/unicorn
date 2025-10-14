@@ -7,8 +7,6 @@ import { Modal } from 'bootstrap';
 import type Cropper from 'cropperjs';
 import { ApiReturn } from './http-client';
 
-injectCssToDocument(css);
-
 export interface SingleImageDragOptions {
   accept: string | string[];
   ajax_url?: string;
@@ -219,10 +217,10 @@ export class SingleImageDragElement extends HTMLElement {
     const Cropper = await this.getCropper();
 
     Cropper.getCroppedCanvas({
-        width: this.options.width,
-        height: this.options.height,
-        imageSmoothingEnabled: true
-      })
+      width: this.options.width,
+      height: this.options.height,
+      imageSmoothingEnabled: true
+    })
       .toBlob((blob) => {
         const file = new File([ blob! ], this.currentFile!.name, { type: 'image/png' });
         this.saveImage(file);
@@ -440,8 +438,6 @@ export class SingleImageDragElement extends HTMLElement {
 //     document.adoptedStyleSheets = [...document.adoptedStyleSheets, styleSheet];
 //   });
 
-customElements.define(SingleImageDragElement.is, SingleImageDragElement);
-
 function getFileExtension(file: File): string | undefined {
   const parts = file.name.split('.');
   if (parts.length > 1) {
@@ -450,19 +446,30 @@ function getFileExtension(file: File): string | undefined {
   return undefined;
 }
 
+let loadingCropper: Promise<any>;
+
 async function loadCropper(): Promise<typeof Cropper> {
-  const [module] = await Promise.all([
+  loadingCropper ??= Promise.all([
     import('cropperjs'),
     import('cropperjs/dist/cropper.min.css?inline').then(({ default: css }) => {
       injectCssToDocument(css);
     })
   ]);
 
-  return module.default;
+  return (await loadingCropper)[0];
 }
 
-loadCropper();
+async function init() {
+  injectCssToDocument(css);
+
+  customElements.define(SingleImageDragElement.is, SingleImageDragElement);
+
+  await loadCropper();
+}
+
+export const ready = init();
 
 export interface SingleImageDragModule {
   SingleImageDragElement: typeof SingleImageDragElement;
+  ready: typeof ready;
 }

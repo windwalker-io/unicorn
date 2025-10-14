@@ -2,9 +2,7 @@ import { useCssImport, useImport, injectCssToDocument } from '../service';
 import flatpickr from 'flatpickr';
 import css from 'flatpickr/dist/flatpickr.css?inline';
 
-injectCssToDocument(css);
-
-class FlatpickrElement extends HTMLElement {
+export class FlatpickrElement extends HTMLElement {
   static get is() {
     return 'uni-flatpickr';
   }
@@ -124,4 +122,9 @@ class FlatpickrElement extends HTMLElement {
   }
 }
 
-customElements.define(FlatpickrElement.is, FlatpickrElement);
+async function init() {
+  injectCssToDocument(css);
+  customElements.define(FlatpickrElement.is, FlatpickrElement);
+}
+
+export const ready = init();

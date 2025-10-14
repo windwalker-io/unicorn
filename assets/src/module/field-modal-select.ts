@@ -167,8 +167,13 @@ class ModalListSelectElement extends HTMLElement {
   }
 }
 
-customElements.define(ModalListSelectElement.is, ModalListSelectElement);
+async function init() {
+  customElements.define(ModalListSelectElement.is, ModalListSelectElement);
+}
+
+export const ready = init();
 
 export interface ModalSelectModule {
   createCallback: typeof createCallback;
+  ready: typeof ready;
 }

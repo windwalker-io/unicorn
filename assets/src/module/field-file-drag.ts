@@ -3,8 +3,6 @@ import { useUniDirective } from '../composable';
 import { __, html, injectCssToDocument, simpleAlert, uid, watchAttributes } from '../service';
 import { mergeDeep } from '../utilities';
 
-injectCssToDocument(document, css);
-
 export interface FileDragOptions {
   maxFiles: number | undefined;
   maxSize: number | undefined;
@@ -246,46 +244,51 @@ export class FileDragElement extends HTMLElement {
   }
 }
 
-customElements.define(FileDragElement.is, FileDragElement);
+async function init() {
+  injectCssToDocument(document, css);
+  customElements.define(FileDragElement.is, FileDragElement);
 
-export const ready = useUniDirective('file-drag-field', {
-  mounted(el) {
-    const input = el.querySelector<HTMLInputElement>('input[type=file]')!;
-    const placeholderInput = el.querySelector<HTMLInputElement>('[data-role=placeholder]')!;
+ return useUniDirective('file-drag-field', {
+   mounted(el) {
+     const input = el.querySelector<HTMLInputElement>('input[type=file]')!;
+     const placeholderInput = el.querySelector<HTMLInputElement>('[data-role=placeholder]')!;
 
-    const preview = el.querySelector('.c-file-drag-preview');
+     const preview = el.querySelector('.c-file-drag-preview');
 
-    if (preview) {
-      const previewLink = preview.querySelector<HTMLAnchorElement>('.c-file-drag-preview__link')!;
-      const delButton = preview.querySelector<HTMLAnchorElement>('.c-file-drag-preview__delete')!;
-      // let linkTitle = previewLink.textContent;
-      let inputValue = placeholderInput.value;
-      let required = input.required;
+     if (preview) {
+       const previewLink = preview.querySelector<HTMLAnchorElement>('.c-file-drag-preview__link')!;
+       const delButton = preview.querySelector<HTMLAnchorElement>('.c-file-drag-preview__delete')!;
+       // let linkTitle = previewLink.textContent;
+       let inputValue = placeholderInput.value;
+       let required = input.required;
 
-      if (placeholderInput.value) {
-        input.required = false;
-      }
+       if (placeholderInput.value) {
+         input.required = false;
+       }
 
-      delButton.addEventListener('click', () => {
-        if (delButton.classList.contains('active')) {
-          // Restore
-          previewLink.style.textDecoration = '';
-          previewLink.style.setProperty('color', '');
-          placeholderInput.value = inputValue;
-          delButton.classList.remove('active');
-          input.required = false;
-        } else {
-          // Delete
-          previewLink.style.textDecoration = 'line-through';
-          previewLink.style.color = 'var(--fd-delete-color, var(--bs-danger))';
-          placeholderInput.value = '';
-          delButton.classList.add('active');
-          input.required = required;
-        }
-      });
-    }
-  }
-});
+       delButton.addEventListener('click', () => {
+         if (delButton.classList.contains('active')) {
+           // Restore
+           previewLink.style.textDecoration = '';
+           previewLink.style.setProperty('color', '');
+           placeholderInput.value = inputValue;
+           delButton.classList.remove('active');
+           input.required = false;
+         } else {
+           // Delete
+           previewLink.style.textDecoration = 'line-through';
+           previewLink.style.color = 'var(--fd-delete-color, var(--bs-danger))';
+           placeholderInput.value = '';
+           delButton.classList.add('active');
+           input.required = required;
+         }
+       });
+     }
+   }
+ });
+}
+
+export const ready = init();
 
 export interface FileDragModule {
   FileDragElement: typeof FileDragElement;

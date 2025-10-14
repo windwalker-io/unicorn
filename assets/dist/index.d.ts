@@ -114,7 +114,7 @@ declare class ButtonRadio {
 
 declare interface ButtonRadioModule {
     ButtonRadio: typeof ButtonRadio;
-    ready: typeof ready_7;
+    ready: typeof ready_9;
 }
 
 declare interface ButtonRadioOptions {
@@ -343,7 +343,7 @@ export declare class IFrameModalElement extends HTMLElement {
 
 declare interface IFrameModalModule {
     IFrameModalElement: typeof IFrameModalElement;
-    ready: typeof ready_3;
+    ready: typeof ready_5;
 }
 
 declare interface IFrameModalOptions {
@@ -391,7 +391,7 @@ declare class KeepTab {
 
 declare interface KeepTabModule {
     KeepTab: typeof KeepTab;
-    ready: typeof ready_6;
+    ready: typeof ready_8;
 }
 
 declare interface KeepTabOptions {
@@ -445,7 +445,7 @@ declare class ListDependent {
 
 declare type ListDependentModule = {
     ListDependent: typeof ListDependent;
-    ready: typeof ready_4;
+    ready: typeof ready_6;
 };
 
 declare interface ListDependentOptions {
@@ -481,6 +481,7 @@ declare type ModalSelectCallback = (item: any) => void;
 
 declare interface ModalSelectModule {
     createCallback: typeof createCallback;
+    ready: typeof ready_2;
 }
 
 declare function module_2<T = any, E extends Element = Element>(ele: string, name: string, callback?: ((el: E) => any)): (T | null)[];
@@ -535,6 +536,10 @@ declare const ready_6: Promise<void>;
 
 declare const ready_7: Promise<void>;
 
+declare const ready_8: Promise<void>;
+
+declare const ready_9: Promise<void>;
+
 export declare function removeData(name: string): any;
 
 export declare function removeData(ele: Element, name: string): any;
@@ -545,7 +550,7 @@ export declare function removeData(ele: Element, name: string): any;
 export declare function renderMessage(messages: string | string[], type?: string): (() => any) | undefined;
 
 declare interface RepeatableModule {
-    ready: typeof ready_2;
+    ready: typeof ready_3;
 }
 
 declare type RequestHandler = <T = Record<string, any>>(action: RouteActions, data: Record<string, any>) => Promise<T>;
@@ -741,7 +746,7 @@ declare class ShowOn {
 
 declare interface ShowOnModule {
     ShowOn: typeof ShowOn;
-    ready: typeof ready_5;
+    ready: typeof ready_7;
 }
 
 export { simpleAlert }
@@ -791,6 +796,7 @@ declare class SingleImageDragElement extends HTMLElement {
 
 declare interface SingleImageDragModule {
     SingleImageDragElement: typeof SingleImageDragElement;
+    ready: typeof ready_4;
 }
 
 export { sleep }
@@ -1408,14 +1414,6 @@ export { }
 
 
 declare global {
-    var Alpine: AlpineGlobal;
-    var TomSelect: typeof TomSelectGlobal;
-    var Spectrum: typeof SpectrumGlobal;
-    var Mark: any;
-}
-
-
-declare global {
     interface Node {
         __unicorn?: any;
     }
@@ -1429,15 +1427,16 @@ declare module '@windwalker-io/unicorn-next' {
     }
 }
 
+
 declare global {
-    var S: any;
+    var Alpine: AlpineGlobal;
+    var TomSelect: typeof TomSelectGlobal;
+    var Spectrum: typeof SpectrumGlobal;
+    var Mark: any;
 }
 
-
 declare global {
-    export interface Window {
-        bootstrap: typeof bootstrap;
-    }
+    var S: any;
 }
 
 
@@ -1448,6 +1447,13 @@ declare module 'axios' {
         methodSimulateByHeader?: boolean;
     }
     interface CreateAxiosDefaults {
+    }
+}
+
+
+declare global {
+    export interface Window {
+        bootstrap: typeof bootstrap;
     }
 }
 

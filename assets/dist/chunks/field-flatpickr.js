@@ -1,5 +1,5 @@
 import flatpickr from "flatpickr";
-import { a9 as injectCssToDocument, aa as useImport, ab as useCssImport } from "./unicorn.js";
+import { aa as useImport, ab as useCssImport, a8 as injectCssToDocument } from "./unicorn.js";
 const css = `.flatpickr-calendar {
   background: transparent;
   opacity: 0;
@@ -796,7 +796,6 @@ span.flatpickr-weekday {
   }
 }
 `;
-/* @__PURE__ */ injectCssToDocument(css);
 class FlatpickrElement extends HTMLElement {
   static get is() {
     return "uni-flatpickr";
@@ -889,5 +888,13 @@ class FlatpickrElement extends HTMLElement {
     return this.instance;
   }
 }
-/* @__PURE__ */ customElements.define(/* @__PURE__ */ (() => FlatpickrElement.is)(), FlatpickrElement);
+async function init() {
+  injectCssToDocument(css);
+  customElements.define(FlatpickrElement.is, FlatpickrElement);
+}
+const ready = /* @__PURE__ */ init();
+export {
+  FlatpickrElement,
+  ready
+};
 //# sourceMappingURL=field-flatpickr.js.map

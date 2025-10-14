@@ -1132,8 +1132,10 @@ async function useFieldRepeatable() {
   await module2.ready;
   return module2;
 }
-function useFieldSingleImageDrag() {
-  return import("./field-single-image-drag.js");
+async function useFieldSingleImageDrag() {
+  const module2 = await import("./field-single-image-drag.js");
+  await module2.ready;
+  return module2;
 }
 let formElement;
 async function useFormAsync(ele, options = {}) {
@@ -2165,8 +2167,8 @@ export {
   useGrid as a5,
   prepareAlpineDefer as a6,
   mergeDeep as a7,
-  watchAttributes as a8,
-  injectCssToDocument as a9,
+  injectCssToDocument as a8,
+  watchAttributes as a9,
   doImport as aA,
   useSeriesImport as aB,
   useCssIncludes as aC,

@@ -93,30 +93,33 @@ class IFrameModalElement extends HTMLElement {
     return this.options?.id || this.id + "__modal";
   }
 }
-/* @__PURE__ */ customElements.define(/* @__PURE__ */ (() => IFrameModalElement.is)(), IFrameModalElement);
-const ready = /* @__PURE__ */ useUniDirective("modal-link", {
-  mounted(el, binding) {
-    let options = {};
-    options.height = el.dataset.height;
-    options.resize = el.dataset.resize === "1" || el.dataset.resize === "true";
-    options.size = el.dataset.size;
-    const target = binding.value;
-    el.style.pointerEvents = "";
-    el.addEventListener("click", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      const im = document.querySelector(target);
-      if (!im) {
-        return;
-      }
-      if ("src" in el) {
-        im.open(el.src, options);
-      } else if ("href" in el) {
-        im.open(el.href, options);
-      }
-    });
-  }
-});
+async function init() {
+  customElements.define(IFrameModalElement.is, IFrameModalElement);
+  return useUniDirective("modal-link", {
+    mounted(el, binding) {
+      let options = {};
+      options.height = el.dataset.height;
+      options.resize = el.dataset.resize === "1" || el.dataset.resize === "true";
+      options.size = el.dataset.size;
+      const target = binding.value;
+      el.style.pointerEvents = "";
+      el.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const im = document.querySelector(target);
+        if (!im) {
+          return;
+        }
+        if ("src" in el) {
+          im.open(el.src, options);
+        } else if ("href" in el) {
+          im.open(el.href, options);
+        }
+      });
+    }
+  });
+}
+const ready = /* @__PURE__ */ init();
 export {
   IFrameModalElement,
   ready

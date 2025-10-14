@@ -28,8 +28,6 @@ import { data } from '../data';
 import { forceArray, injectCssToDocument } from '../service';
 import { mergeDeep } from '../utilities';
 
-injectCssToDocument(css);
-
 export type UniMultiUploaderOptions = {
   value?: any[];
   uploadUrl: string;
@@ -84,7 +82,11 @@ class MultiUploaderElement extends HTMLElement {
   }
 }
 
-customElements.define(MultiUploaderElement.is, MultiUploaderElement);
+async function init() {
+  injectCssToDocument(css);
+  customElements.define(MultiUploaderElement.is, MultiUploaderElement);
+}
+export const ready = init();
 
 function createAppInstance(opt: UniMultiUploaderOptions, tmpl: string, el: MultiUploaderElement) {
   return defineComponent({

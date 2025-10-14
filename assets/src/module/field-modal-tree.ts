@@ -2,7 +2,6 @@ import { data } from '../data';
 import { useCssImport } from '../service';
 import { createApp } from 'vue';
 import ModalTreeApp from '../vue/components/ModalTree/ModalTreeApp.vue';
-useCssImport('@vue-animate');
 
 const app = createApp({
   name: 'modal-tree',
@@ -24,4 +23,9 @@ class ModalTreeElement extends HTMLElement {
   }
 }
 
-customElements.define(ModalTreeElement.is, ModalTreeElement);
+async function init() {
+  customElements.define(ModalTreeElement.is, ModalTreeElement);
+  await useCssImport('@vue-animate');
+}
+
+export const ready = init();

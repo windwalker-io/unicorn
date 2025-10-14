@@ -1,7 +1,6 @@
 import { Modal } from "bootstrap";
-import { a7 as mergeDeep, w as selectAll, _ as __, G as simpleAlert, u as useHttpClient, a9 as injectCssToDocument } from "./unicorn.js";
+import { a8 as injectCssToDocument, a7 as mergeDeep, w as selectAll, _ as __, G as simpleAlert, u as useHttpClient } from "./unicorn.js";
 const css = ".c-sid-default__left-col {\n  width: 30%;\n  margin-right: 15px;\n  justify-content: center;\n}\n.c-sid-default__left-col img {\n  max-height: 250px;\n}\n.c-sid-default__right-col {\n  overflow: hidden;\n}\n.c-sid-default__dragarea {\n  font-weight: bold;\n  text-align: center;\n  padding: 9% 0;\n  color: #ccc;\n  border: 2px dashed #ccc;\n  border-radius: 7px;\n  cursor: default;\n}\n.c-sid-default__dragarea.hover {\n  color: #333;\n  border-color: #333;\n  background-color: #f9f9f9;\n}\n.c-sid-default__img-loader {\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  width: 100%;\n  height: 180px;\n}\n.c-sid-default__size-info {\n  margin-top: 5px;\n  font-size: 13px;\n}\n.c-sid-default__remove {\n  margin-left: 5px;\n}\n.c-sid-default__modal .btn {\n  position: relative;\n}\n\n.c-sid-modal .modal-body {\n  position: relative;\n}\n.c-sid-modal__content {\n  position: relative;\n  z-index: 3;\n}\n.c-sid-modal__loading {\n  position: absolute;\n  left: 0;\n  right: 0;\n  top: 0;\n  bottom: 0;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  z-index: 1;\n}\n.is-invalid[uni-field-validate] > uni-sid ~ [data-field-error] {\n  display: block;\n}";
-/* @__PURE__ */ injectCssToDocument(css);
 const defaultOptions = {
   accept: [
     "image/jpeg",
@@ -314,7 +313,6 @@ class SingleImageDragElement extends HTMLElement {
     this.valueInput.dispatchEvent(new CustomEvent("input", { bubbles: true }));
   }
 }
-/* @__PURE__ */ customElements.define(/* @__PURE__ */ (() => SingleImageDragElement.is)(), SingleImageDragElement);
 function getFileExtension(file) {
   const parts = file.name.split(".");
   if (parts.length > 1) {
@@ -322,17 +320,24 @@ function getFileExtension(file) {
   }
   return void 0;
 }
+let loadingCropper;
 async function loadCropper() {
-  const [module] = await Promise.all([
+  loadingCropper ??= Promise.all([
     import("cropperjs"),
     import("./cropper.min.js").then(({ default: css2 }) => {
       injectCssToDocument(css2);
     })
   ]);
-  return module.default;
+  return (await loadingCropper)[0];
 }
-/* @__PURE__ */ loadCropper();
+async function init() {
+  injectCssToDocument(css);
+  customElements.define(SingleImageDragElement.is, SingleImageDragElement);
+  await loadCropper();
+}
+const ready = /* @__PURE__ */ init();
 export {
-  SingleImageDragElement
+  SingleImageDragElement,
+  ready
 };
 //# sourceMappingURL=field-single-image-drag.js.map
