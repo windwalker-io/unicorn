@@ -1,3 +1,3 @@
-export function useFieldModalTree() {
-  import('../module/field-modal-tree');
+export function useFieldModalTree(): Promise<any> {
+  return import('../module/field-modal-tree');
 }

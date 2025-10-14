@@ -8,6 +8,7 @@ import { AxiosResponse } from 'axios';
 import * as bootstrap_2 from 'bootstrap';
 import { Class } from 'ts-mixer/dist/types/types';
 import { clearNotifies } from '@lyrasoft/ts-toolkit/generic';
+import { ComponentPublicInstance } from 'vue';
 import { CreateAxiosDefaults } from 'axios';
 import { default as default_2 } from 'cropperjs';
 import { default as default_3 } from 'web-directive';
@@ -493,6 +494,18 @@ declare function module_2<T = any, E extends Element = Element>(ele: E, name: st
 declare function module_2<T = any, E extends Element = Element>(ele: string | Element | NodeListOf<Element>, name: string, callback?: ((el: E) => any)): (T | null)[] | T | null;
 export { module_2 as module }
 
+declare class MultiUploaderElement extends HTMLElement {
+    static is: string;
+    modalElement: HTMLDivElement;
+    vm: ComponentPublicInstance;
+    connectedCallback(): Promise<void>;
+}
+
+declare interface MultiUploaderModule {
+    MultiUploaderElement: typeof MultiUploaderElement;
+    ready: typeof ready_10;
+}
+
 export declare function nextTick(callback?: () => any): Promise<any>;
 
 declare type Nullable<T> = T | null | undefined;
@@ -523,6 +536,8 @@ export { randomBytes }
 export { randomBytesString }
 
 declare const ready: Promise<void>;
+
+declare const ready_10: Promise<void>;
 
 declare const ready_2: Promise<void>;
 
@@ -1232,9 +1247,9 @@ export declare function useFieldFlatpickr(): Promise<any>;
 
 export declare function useFieldModalSelect(): Promise<ModalSelectModule>;
 
-export declare function useFieldModalTree(): void;
+export declare function useFieldModalTree(): Promise<any>;
 
-declare function useFieldMultiUploader(): Promise<void>;
+declare function useFieldMultiUploader(): Promise<MultiUploaderModule>;
 
 export declare function useFieldRepeatable(): Promise<RepeatableModule>;
 
@@ -1420,14 +1435,6 @@ declare global {
 }
 
 
-declare module '@windwalker-io/unicorn-next' {
-    interface UnicornApp {
-        /** @deprecated Only for code generator use. */
-        $ui: typeof methods;
-    }
-}
-
-
 declare global {
     var Alpine: AlpineGlobal;
     var TomSelect: typeof TomSelectGlobal;
@@ -1435,8 +1442,12 @@ declare global {
     var Mark: any;
 }
 
-declare global {
-    var S: any;
+
+declare module '@windwalker-io/unicorn-next' {
+    interface UnicornApp {
+        /** @deprecated Only for code generator use. */
+        $ui: typeof methods;
+    }
 }
 
 
@@ -1448,6 +1459,10 @@ declare module 'axios' {
     }
     interface CreateAxiosDefaults {
     }
+}
+
+declare global {
+    var S: any;
 }
 
 

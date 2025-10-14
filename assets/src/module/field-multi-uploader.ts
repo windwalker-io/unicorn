@@ -54,7 +54,7 @@ const defaultOptions = {
   tmplSelector: '#multi-uploader-field-tmpl',
 };
 
-class MultiUploaderElement extends HTMLElement {
+export class MultiUploaderElement extends HTMLElement {
   static is = 'uni-multi-uploader';
 
   modalElement!: HTMLDivElement;
@@ -87,6 +87,11 @@ async function init() {
   customElements.define(MultiUploaderElement.is, MultiUploaderElement);
 }
 export const ready = init();
+
+export interface MultiUploaderModule {
+  MultiUploaderElement: typeof MultiUploaderElement;
+  ready: typeof ready;
+}
 
 function createAppInstance(opt: UniMultiUploaderOptions, tmpl: string, el: MultiUploaderElement) {
   return defineComponent({

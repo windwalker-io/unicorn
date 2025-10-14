@@ -35,7 +35,7 @@ async function init() {
   injectCssToDocument(css);
   customElements.define(MultiUploaderElement.is, MultiUploaderElement);
 }
-/* @__PURE__ */ init();
+const ready = /* @__PURE__ */ init();
 function createAppInstance(opt, tmpl, el) {
   return defineComponent({
     name: "MultiUploaderFieldApp",
@@ -256,4 +256,8 @@ function createAppInstance(opt, tmpl, el) {
     }
   });
 }
+export {
+  MultiUploaderElement,
+  ready
+};
 //# sourceMappingURL=field-multi-uploader.js.map

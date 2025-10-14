@@ -1125,7 +1125,7 @@ function useFieldModalSelect() {
   return import("./field-modal-select.js");
 }
 function useFieldModalTree() {
-  import("./field-modal-tree.js");
+  return import("./field-modal-tree.js");
 }
 async function useFieldRepeatable() {
   const module2 = await import("./field-repeatable.js");
@@ -2043,7 +2043,9 @@ function polyfill() {
   }
 }
 async function useFieldMultiUploader() {
-  await import("./field-multi-uploader.js");
+  const module2 = await import("./field-multi-uploader.js");
+  await module2.ready;
+  return module2;
 }
 async function useTinymce(selector, options = {}) {
   const module2 = await import("./tinymce.js");

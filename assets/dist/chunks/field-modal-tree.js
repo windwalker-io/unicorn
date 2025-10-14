@@ -1,4 +1,4 @@
-import { ad as forceArray, u as useHttpClient, ac as data, ab as useCssImport } from "./unicorn.js";
+import { ad as forceArray, u as useHttpClient, ab as useCssImport, ac as data } from "./unicorn.js";
 import { defineComponent, ref, computed, h, Transition, withDirectives, mergeProps, vShow, unref, inject, watch, onBeforeUpdate, nextTick, onMounted, createElementBlock, openBlock, normalizeClass, createElementVNode, createBlock, createCommentVNode, normalizeStyle, vModelDynamic, withModifiers, createTextVNode, toDisplayString, withCtx, Fragment, renderList, useTemplateRef, onUnmounted, provide, vModelText, createVNode, TransitionGroup, createApp } from "vue";
 import { Modal } from "bootstrap";
 import { c as cloneDeep } from "./cloneDeep.js";
@@ -789,5 +789,8 @@ async function init() {
   customElements.define(ModalTreeElement.is, ModalTreeElement);
   await useCssImport("@vue-animate");
 }
-/* @__PURE__ */ init();
+const ready = /* @__PURE__ */ init();
+export {
+  ready
+};
 //# sourceMappingURL=field-modal-tree.js.map
