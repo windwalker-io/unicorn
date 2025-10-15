@@ -84,7 +84,7 @@ export {
   aT as useFieldModalTree,
   aU as useFieldRepeatable,
   aV as useFieldSingleImageDrag,
-  j as useFieldValidationSync,
+  j as useFieldValidationInstance,
   a4 as useForm,
   a2 as useFormAsync,
   aW as useFormComponent,

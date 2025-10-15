@@ -1,17 +1,29 @@
+import * as punycode from 'punycode';
 import { useUniDirective } from '../composable';
 import { getBoundedInstance, html, selectAll, selectOne, trans, useUITheme } from '../service';
 import { Nullable } from '../types';
 import { mergeDeep } from '../utilities';
-import * as punycode from 'punycode';
 
-export declare type ValidationHandler = (value: any, input: HTMLElement, options?: Record<string, any>, fv?: UnicornFieldValidation) => any;
+export declare type ValidationHandler<V = any, E = HTMLElement, P = Record<string, any>> = (
+  value: V,
+  input: E,
+  options?: ValidatorOptions<E, P>,
+  fv?: UnicornFieldValidation
+) => any;
 
-export declare type Validator = {
-  handler: ValidationHandler,
-  options?: Record<string, any>;
+export declare type ValidatorNoticeFunction<E = HTMLElement> = (input: E, field: UnicornFieldValidation) => any;
+
+export type ValidatorOptions<E = HTMLElement, P = Record<string, any>> = {
+  notice?: ValidatorNoticeFunction<E> | string;
+  [name: string]: any;
+} & Partial<P>;
+
+export declare type Validator<V = any, E = HTMLElement, P = Record<string, any>> = {
+  handler: ValidationHandler<V, E, P>,
+  options?: ValidatorOptions<E, P>;
 };
 
-const validatorHandlers: Record<string, ValidationHandler> = {};
+const validatorHandlers: Record<string, ValidationHandler<any, any>> = {};
 
 type InputElements = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
 
@@ -60,9 +72,9 @@ const defaultFieldOptions: FieldValidationOptions = {
 export class UnicornFormValidation {
   presetFields: HTMLElement[] = [];
 
-  static globalValidators: Record<string, Validator> = {};
+  static globalValidators: Record<string, Validator<any, any, any>> = {};
 
-  validators: Record<string, Validator> = {};
+  validators: Record<string, Validator<any, any, any>> = {};
   options: FormValidationOptions;
   $form: HTMLElement;
 
@@ -287,7 +299,11 @@ export class UnicornFormValidation {
   /**
    * Add validator handler.
    */
-  addValidator(name: string, handler: ValidationHandler, options: Record<string, any> = {}) {
+  addValidator<T extends any, E extends HTMLElement, P = Record<string, any>>(
+    name: string,
+    handler: ValidationHandler<T, E, P>,
+    options: ValidatorOptions<E, P> = {}
+  ) {
     options = options || {};
 
     this.validators[name] = {
@@ -301,7 +317,11 @@ export class UnicornFormValidation {
   /**
    * Add validator handler.
    */
-  static addGlobalValidator(name: string, handler: ValidationHandler, options: Record<string, any> = {}) {
+  static addGlobalValidator<T extends any, E extends HTMLElement, P = Record<string, any>>(
+    name: string,
+    handler: ValidationHandler<T, E, P>,
+    options: ValidatorOptions<E, P> = {}
+  ) {
     options = options || {};
 
     this.globalValidators[name] = {
@@ -712,7 +732,7 @@ export class UnicornFieldValidation {
       options[match.key] = handleParamValue(match.value);
     }
 
-    return [ validator, options ];
+    return [validator, options];
   }
 
   handleCustomResult(result: boolean | string | undefined, validator?: Nullable<Validator>): boolean {

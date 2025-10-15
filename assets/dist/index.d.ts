@@ -36,7 +36,7 @@ import { WebDirectiveOptions } from 'web-directive/src/types';
 
 export declare function __(id: string, ...args: any[]): string;
 
-export declare function addGlobalValidator(name: string, validator: ValidationHandler, options?: Record<string, any>): Promise<void>;
+export declare function addGlobalValidator<T extends any, E extends HTMLElement, P = Record<string, any>>(name: string, validator: ValidationHandler<T, E, P>, options?: ValidatorOptions<E, P>): Promise<void>;
 
 declare function addHook(handler: ((tinymce: TinyMCE) => MaybePromise<any>)): void;
 
@@ -255,7 +255,7 @@ export declare function fadeIn(selector: string | HTMLElement, duration?: number
 
 export declare function fadeOut(selector: string | HTMLElement, duration?: number): Promise<Animation | void>;
 
-declare interface FieldValidationOptions {
+export declare interface FieldValidationOptions {
     validClass: string;
     errorSelector: string;
     inputOptions: boolean;
@@ -299,7 +299,7 @@ declare interface FileDragOptions {
 
 export declare function forceArray<T>(item: T | T[]): T[];
 
-declare interface FormValidationOptions {
+export declare interface FormValidationOptions {
     scroll: boolean;
     validatedClass: null;
     fieldSelector: null;
@@ -1009,8 +1009,8 @@ declare class UnicornFormElement {
 
 declare class UnicornFormValidation {
     presetFields: HTMLElement[];
-    static globalValidators: Record<string, Validator>;
-    validators: Record<string, Validator>;
+    static globalValidators: Record<string, Validator<any, any, any>>;
+    validators: Record<string, Validator<any, any, any>>;
     options: FormValidationOptions;
     $form: HTMLElement;
     static is: string;
@@ -1036,11 +1036,11 @@ declare class UnicornFormValidation {
     /**
      * Add validator handler.
      */
-    addValidator(name: string, handler: ValidationHandler, options?: Record<string, any>): this;
+    addValidator<T extends any, E extends HTMLElement, P = Record<string, any>>(name: string, handler: ValidationHandler<T, E, P>, options?: ValidatorOptions<E, P>): this;
     /**
      * Add validator handler.
      */
-    static addGlobalValidator(name: string, handler: ValidationHandler, options?: Record<string, any>): typeof UnicornFormValidation;
+    static addGlobalValidator<T extends any, E extends HTMLElement, P = Record<string, any>>(name: string, handler: ValidationHandler<T, E, P>, options?: ValidatorOptions<E, P>): typeof UnicornFormValidation;
 }
 
 declare class UnicornGridElement {
@@ -1255,7 +1255,7 @@ export declare function useFieldRepeatable(): Promise<RepeatableModule>;
 
 export declare function useFieldSingleImageDrag(): Promise<SingleImageDragModule>;
 
-export declare function useFieldValidationSync(selector: string | Element): UnicornFieldValidation | null;
+export declare function useFieldValidationInstance(selector: string | Element): UnicornFieldValidation | null;
 
 export declare function useForm(): UnicornFormElement;
 
@@ -1403,21 +1403,28 @@ export declare function useVueComponentField(selector?: Nullable<string | HTMLEl
 
 export declare function useWebDirective(name?: string, options?: Partial<WebDirectiveOptions>): Promise<default_3>;
 
-declare type ValidationHandler = (value: any, input: HTMLElement, options?: Record<string, any>, fv?: UnicornFieldValidation) => any;
+export declare type ValidationHandler<V = any, E = HTMLElement, P = Record<string, any>> = (value: V, input: E, options?: ValidatorOptions<E, P>, fv?: UnicornFieldValidation) => any;
 
-declare interface ValidationModule {
+export declare interface ValidationModule {
     UnicornFormValidation: typeof UnicornFormValidation;
     UnicornFieldValidation: typeof UnicornFieldValidation;
     ready: Promise<any>;
     validators: typeof validatorHandlers;
 }
 
-declare type Validator = {
-    handler: ValidationHandler;
-    options?: Record<string, any>;
+export declare type Validator<V = any, E = HTMLElement, P = Record<string, any>> = {
+    handler: ValidationHandler<V, E, P>;
+    options?: ValidatorOptions<E, P>;
 };
 
-declare const validatorHandlers: Record<string, ValidationHandler>;
+declare const validatorHandlers: Record<string, ValidationHandler<any, any>>;
+
+export declare type ValidatorNoticeFunction<E = HTMLElement> = (input: E, field: UnicornFieldValidation) => any;
+
+export declare type ValidatorOptions<E = HTMLElement, P = Record<string, any>> = {
+    notice?: ValidatorNoticeFunction<E> | string;
+    [name: string]: any;
+} & Partial<P>;
 
 export declare function wait<T extends readonly unknown[]>(...promisee: {
     [K in keyof T]: PromiseLike<T[K]> | T[K];
@@ -1450,6 +1457,10 @@ declare module '@windwalker-io/unicorn-next' {
     }
 }
 
+declare global {
+    var S: any;
+}
+
 
 declare module 'axios' {
     interface AxiosRequestConfig {
@@ -1459,10 +1470,6 @@ declare module 'axios' {
     }
     interface CreateAxiosDefaults {
     }
-}
-
-declare global {
-    var S: any;
 }
 
 

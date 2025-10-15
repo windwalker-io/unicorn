@@ -1341,7 +1341,7 @@ async function useFormValidation(selector) {
 function useFormValidationInstance(selector) {
   return getBoundedInstance(selector, "form.validation");
 }
-function useFieldValidationSync(selector) {
+function useFieldValidationInstance(selector) {
   return getBoundedInstance(selector, "field.validation");
 }
 async function addGlobalValidator(name, validator, options = {}) {
@@ -2238,7 +2238,7 @@ export {
   useFormValidation as g,
   addGlobalValidator as h,
   isDebug as i,
-  useFieldValidationSync as j,
+  useFieldValidationInstance as j,
   useFormValidationInstance as k,
   loadAlpine as l,
   useStack as m,

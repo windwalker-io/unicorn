@@ -32,6 +32,14 @@ use Windwalker\Form\Form;
  */
 {% $phpClose %}
 
+@push('macro')
+<style data-macro type="text/scss" data-scope=".view-{% kebab($name) %}-edit">
+</style>
+
+<script data-macro="{% dot($stage) %}.{% dot($name) %}.edit" lang="ts" type="module">
+</script>
+@endpush
+
 @extends('admin.global.body-edit')
 
 @section('toolbar-buttons')

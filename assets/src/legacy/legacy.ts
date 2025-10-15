@@ -6,7 +6,7 @@ import {
   useBs5KeepTab,
   useBs5Tooltip,
   useCheckboxesMultiSelect,
-  useFieldValidationSync,
+  useFieldValidationInstance,
   useForm,
   useFormAsync,
   useFormValidation,
@@ -100,7 +100,7 @@ export async function useLegacyMethods(app: any) {
   app.formValidation = useFormValidation;
   app.$validation = {
     get: useFormValidationInstance,
-    getField: useFieldValidationSync,
+    getField: useFieldValidationInstance,
     addGlobalValidator: addGlobalValidator,
     import: () => useFormValidation()
   };

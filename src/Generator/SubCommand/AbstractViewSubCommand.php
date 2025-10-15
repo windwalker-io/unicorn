@@ -62,7 +62,7 @@ abstract class AbstractViewSubCommand extends ViewSubCommand
     {
         $classSuffix = $this->getClassSuffix();
 
-        [, $name] = $this->getNameParts($io, $classSuffix);
+        [, $name, $stage] = $this->getNameParts($io, $classSuffix);
         $force = $io->getOption('force');
 
         if (!$name) {
@@ -77,6 +77,7 @@ abstract class AbstractViewSubCommand extends ViewSubCommand
                 [
                     'name' => Str::removeRight($name, $classSuffix),
                     'ns' => $this->getNamespace($io, $classSuffix),
+                    'stage' => $stage,
                 ],
                 $force
             );

@@ -33,6 +33,14 @@ use {% $ns %}\{% pascal($name) %}ListView;
 $workflow = $app->service(BasicStateWorkflow::class);
 {% $phpClose %}
 
+@push('macro')
+<style data-macro type="text/scss" data-scope=".view-{% kebab($name) %}-list">
+</style>
+
+<script data-macro="{% dot($stage) %}.{% dot($name) %}.list" lang="ts" type="module">
+</script>
+@endpush
+
 @extends('admin.global.body-list')
 
 @section('toolbar-buttons')
