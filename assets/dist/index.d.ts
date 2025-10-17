@@ -1459,8 +1459,11 @@ declare global {
     }
 }
 
+
 declare global {
-    var S: any;
+    export interface Window {
+        bootstrap: typeof bootstrap;
+    }
 }
 
 
@@ -1474,11 +1477,8 @@ declare module 'axios' {
     }
 }
 
-
 declare global {
-    export interface Window {
-        bootstrap: typeof bootstrap;
-    }
+    var S: any;
 }
 
 
