@@ -16,6 +16,7 @@ export * from './useS3Uploader';
 export * from './useShowOn';
 export * from './useStack';
 export * from './useTomSelect';
+export * from './useTinymce';
 export * from './useUIBootstrap5';
 export * from './useUniDirective';
 export * from './useValidation';

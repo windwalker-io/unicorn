@@ -1348,9 +1348,11 @@ export declare function useSystemUri(): UnicornSystemUri;
 
 export declare function useSystemUri(type: UriTypes): string;
 
-declare function useTinymce(): Promise<TinymceModule>;
+export declare function useTinymce(): Promise<TinymceModule>;
 
-declare function useTinymce(selector?: string, options?: Record<string, any>): Promise<TinymceController>;
+export declare function useTinymce(selector?: string, options?: Record<string, any>): Promise<TinymceController>;
+
+export declare function useTinymceHook(handler: ((tinymce: TinyMCE) => MaybePromise<any>)): Promise<void>;
 
 /**
  * @see https://tom-select.js.org/
@@ -1436,13 +1438,6 @@ export { }
 
 
 declare global {
-    interface Node {
-        __unicorn?: any;
-    }
-}
-
-
-declare global {
     var Alpine: AlpineGlobal;
     var TomSelect: typeof TomSelectGlobal;
     var Spectrum: typeof SpectrumGlobal;
@@ -1454,6 +1449,13 @@ declare module '@windwalker-io/unicorn-next' {
     interface UnicornApp {
         /** @deprecated Only for code generator use. */
         $ui: typeof methods;
+    }
+}
+
+
+declare global {
+    interface Node {
+        __unicorn?: any;
     }
 }
 

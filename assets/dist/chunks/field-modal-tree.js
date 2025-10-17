@@ -405,7 +405,7 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
     }, 8, ["modelValue"])) : createCommentVNode("", true)
   ], 2);
 }
-const TreeItem = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__scopeId", "data-v-8a4ae0be"], ["__file", "TreeItem.vue"]]);
+const TreeItem = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__scopeId", "data-v-897596f4"], ["__file", "TreeItem.vue"]]);
 const _sfc_main$1 = /* @__PURE__ */ defineComponent({
   __name: "TreeModal",
   props: {
@@ -768,7 +768,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     }), null, 16, ["open", "id", "title", "source", "value", "branchSelectable", "disabled", "readonly", "search-text"])
   ]);
 }
-const ModalTreeApp = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-22fa7050"], ["__file", "ModalTreeApp.vue"]]);
+const ModalTreeApp = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-f21c791b"], ["__file", "ModalTreeApp.vue"]]);
 const app = /* @__PURE__ */ createApp({
   name: "modal-tree",
   components: {
