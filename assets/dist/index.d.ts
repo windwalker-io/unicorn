@@ -31,8 +31,8 @@ import { tid } from '@lyrasoft/ts-toolkit/generic';
 import { TinyMCE } from 'tinymce';
 import { Tooltip } from 'bootstrap';
 import { uid } from '@lyrasoft/ts-toolkit/generic';
-import { WebDirectiveHandler } from 'web-directive/src/types';
-import { WebDirectiveOptions } from 'web-directive/src/types';
+import { WebDirectiveHandler } from 'web-directive';
+import { WebDirectiveOptions } from 'web-directive';
 
 export declare function __(id: string, ...args: any[]): string;
 
@@ -1396,14 +1396,16 @@ export declare function useUnicornPhpAdapter(app?: UnicornApp): {
     };
 };
 
-export declare function useUniDirective<T extends Element = HTMLElement>(name: string, handler: WebDirectiveHandler<T>, wdInstance?: default_3 | string): Promise<void>;
+export declare function useUniDirective<T extends Element = HTMLElement, M extends Record<string, boolean> = Record<string, boolean>>(name: string, handler: WebDirectiveHandler<T, M>, wdInstance?: default_3 | string): Promise<void>;
 
 /**
  * Vue component field.
  */
 export declare function useVueComponentField(selector?: Nullable<string | HTMLElement>, value?: any, options?: Record<string, any>): Promise<any>;
 
-export declare function useWebDirective(name?: string, options?: Partial<WebDirectiveOptions>): Promise<default_3>;
+export declare function useWebDirective(name: string, options: false): Promise<void>;
+
+export declare function useWebDirective(name: string, options?: Partial<WebDirectiveOptions>): Promise<default_3>;
 
 export declare type ValidationHandler<V = any, E = HTMLElement, P = Record<string, any>> = (value: V, input: E, options?: ValidatorOptions<E, P>, fv?: UnicornFieldValidation) => any;
 
@@ -1445,14 +1447,6 @@ declare global {
 }
 
 
-declare module '@windwalker-io/unicorn-next' {
-    interface UnicornApp {
-        /** @deprecated Only for code generator use. */
-        $ui: typeof methods;
-    }
-}
-
-
 declare global {
     interface Node {
         __unicorn?: any;
@@ -1460,10 +1454,15 @@ declare global {
 }
 
 
-declare global {
-    export interface Window {
-        bootstrap: typeof bootstrap;
+declare module '@windwalker-io/unicorn-next' {
+    interface UnicornApp {
+        /** @deprecated Only for code generator use. */
+        $ui: typeof methods;
     }
+}
+
+declare global {
+    var S: any;
 }
 
 
@@ -1477,8 +1476,11 @@ declare module 'axios' {
     }
 }
 
+
 declare global {
-    var S: any;
+    export interface Window {
+        bootstrap: typeof bootstrap;
+    }
 }
 
 

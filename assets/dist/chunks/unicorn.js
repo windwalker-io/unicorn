@@ -1329,6 +1329,10 @@ const useBs5ButtonRadio = async (selector, options = {}) => {
 };
 let instances = {};
 async function useWebDirective(name = "unicorn", options = {}) {
+  if (options === false) {
+    delete instances[name];
+    return;
+  }
   return instances[name] ??= await createWebDirective(Object.assign({}, options, { prefix: "uni-" }));
 }
 async function useUniDirective(name, handler, wdInstance = "unicorn") {
