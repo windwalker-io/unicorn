@@ -16,7 +16,7 @@ const nnsInputFiles = globSync([
 
 generateDocumentation({
   inputFiles: nnsInputFiles,
-  outputFile: './README.md',
+  outputFile: './docs/functions.md',
   buildOptions: {
     explore: true,
     // repo: {

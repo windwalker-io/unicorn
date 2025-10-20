@@ -105,10 +105,21 @@
 - [useStack](#gear-usestack)
 - [createStack](#gear-createstack)
 - [useTomSelect](#gear-usetomselect)
+- [get](#gear-get)
+- [create](#gear-create)
+- [destroy](#gear-destroy)
+- [addHook](#gear-addhook)
+- [clearHooks](#gear-clearhooks)
+- [useTinymce](#gear-usetinymce)
+- [useTinymce](#gear-usetinymce)
+- [useTinymce](#gear-usetinymce)
+- [useTinymceHook](#gear-usetinymcehook)
 - [useUIBootstrap5](#gear-useuibootstrap5)
 - [useBs5Tooltip](#gear-usebs5tooltip)
 - [useBs5KeepTab](#gear-usebs5keeptab)
 - [useBs5ButtonRadio](#gear-usebs5buttonradio)
+- [useWebDirective](#gear-usewebdirective)
+- [useWebDirective](#gear-usewebdirective)
 - [useWebDirective](#gear-usewebdirective)
 - [useUniDirective](#gear-useunidirective)
 - [useFormValidation](#gear-useformvalidation)
@@ -164,15 +175,6 @@
 - [formRequestSubmit](#gear-formrequestsubmit)
 - [polyfill](#gear-polyfill)
 - [useFieldMultiUploader](#gear-usefieldmultiuploader)
-- [get](#gear-get)
-- [create](#gear-create)
-- [destroy](#gear-destroy)
-- [addHook](#gear-addhook)
-- [clearHooks](#gear-clearhooks)
-- [useTinymce](#gear-usetinymce)
-- [useTinymce](#gear-usetinymce)
-- [useTinymce](#gear-usetinymce)
-- [useTinymceHook](#gear-usetinymcehook)
 - [useUnicornPhpAdapter](#gear-useunicornphpadapter)
 - [useLegacyMethods](#gear-uselegacymethods)
 - [createUnicorn](#gear-createunicorn)
@@ -834,6 +836,60 @@ References:
 * [https://tom-select.js.org/](https://tom-select.js.org/)
 
 
+### :gear: get
+
+| Function | Type |
+| ---------- | ---------- |
+| `get` | `(selector: string, options?: Record<string, any>) => Promise<TinymceController>` |
+
+### :gear: create
+
+| Function | Type |
+| ---------- | ---------- |
+| `create` | `(selector: string or HTMLElement, options?: Record<string, any>) => Promise<TinymceController>` |
+
+### :gear: destroy
+
+| Function | Type |
+| ---------- | ---------- |
+| `destroy` | `(selector: string) => void` |
+
+### :gear: addHook
+
+| Function | Type |
+| ---------- | ---------- |
+| `addHook` | `(handler: (tinymce: TinyMCE) => any) => void` |
+
+### :gear: clearHooks
+
+| Function | Type |
+| ---------- | ---------- |
+| `clearHooks` | `() => void` |
+
+### :gear: useTinymce
+
+| Function | Type |
+| ---------- | ---------- |
+| `useTinymce` | `{ (): Promise<TinymceModule>; (selector?: string or undefined, options?: Record<string, any> or undefined): Promise<TinymceController>; }` |
+
+### :gear: useTinymce
+
+| Function | Type |
+| ---------- | ---------- |
+| `useTinymce` | `{ (): Promise<TinymceModule>; (selector?: string or undefined, options?: Record<string, any> or undefined): Promise<TinymceController>; }` |
+
+### :gear: useTinymce
+
+| Function | Type |
+| ---------- | ---------- |
+| `useTinymce` | `{ (): Promise<TinymceModule>; (selector?: string or undefined, options?: Record<string, any> or undefined): Promise<TinymceController>; }` |
+
+### :gear: useTinymceHook
+
+| Function | Type |
+| ---------- | ---------- |
+| `useTinymceHook` | `(handler: (tinymce: TinyMCE) => any) => Promise<void>` |
+
 ### :gear: useUIBootstrap5
 
 | Function | Type |
@@ -862,13 +918,25 @@ References:
 
 | Function | Type |
 | ---------- | ---------- |
-| `useWebDirective` | `(name?: string, options?: Partial<WebDirectiveOptions>) => Promise<WebDirective>` |
+| `useWebDirective` | `{ (name: string, options: false): Promise<void>; (name: string, options?: any): Promise<WebDirective>; }` |
+
+### :gear: useWebDirective
+
+| Function | Type |
+| ---------- | ---------- |
+| `useWebDirective` | `{ (name: string, options: false): Promise<void>; (name: string, options?: any): Promise<WebDirective>; }` |
+
+### :gear: useWebDirective
+
+| Function | Type |
+| ---------- | ---------- |
+| `useWebDirective` | `{ (name: string, options: false): Promise<void>; (name: string, options?: any): Promise<WebDirective>; }` |
 
 ### :gear: useUniDirective
 
 | Function | Type |
 | ---------- | ---------- |
-| `useUniDirective` | `<T extends Element = HTMLElement>(name: string, handler: WebDirectiveHandler<T>, wdInstance?: string or WebDirective) => Promise<void>` |
+| `useUniDirective` | `<T extends Element = HTMLElement, M extends Record<string, boolean> = Record<string, boolean>>(name: string, handler: WebDirectiveHandler<T, M>, wdInstance?: string or WebDirective) => Promise<...>` |
 
 ### :gear: useFormValidation
 
@@ -1205,60 +1273,6 @@ Get route.
 | Function | Type |
 | ---------- | ---------- |
 | `useFieldMultiUploader` | `() => Promise<MultiUploaderModule>` |
-
-### :gear: get
-
-| Function | Type |
-| ---------- | ---------- |
-| `get` | `(selector: string, options?: Record<string, any>) => Promise<TinymceController>` |
-
-### :gear: create
-
-| Function | Type |
-| ---------- | ---------- |
-| `create` | `(selector: string or HTMLElement, options?: Record<string, any>) => Promise<TinymceController>` |
-
-### :gear: destroy
-
-| Function | Type |
-| ---------- | ---------- |
-| `destroy` | `(selector: string) => void` |
-
-### :gear: addHook
-
-| Function | Type |
-| ---------- | ---------- |
-| `addHook` | `(handler: (tinymce: TinyMCE) => any) => void` |
-
-### :gear: clearHooks
-
-| Function | Type |
-| ---------- | ---------- |
-| `clearHooks` | `() => void` |
-
-### :gear: useTinymce
-
-| Function | Type |
-| ---------- | ---------- |
-| `useTinymce` | `{ (): Promise<TinymceModule>; (selector?: string or undefined, options?: Record<string, any> or undefined): Promise<TinymceController>; }` |
-
-### :gear: useTinymce
-
-| Function | Type |
-| ---------- | ---------- |
-| `useTinymce` | `{ (): Promise<TinymceModule>; (selector?: string or undefined, options?: Record<string, any> or undefined): Promise<TinymceController>; }` |
-
-### :gear: useTinymce
-
-| Function | Type |
-| ---------- | ---------- |
-| `useTinymce` | `{ (): Promise<TinymceModule>; (selector?: string or undefined, options?: Record<string, any> or undefined): Promise<TinymceController>; }` |
-
-### :gear: useTinymceHook
-
-| Function | Type |
-| ---------- | ---------- |
-| `useTinymceHook` | `(handler: (tinymce: TinyMCE) => any) => Promise<void>` |
 
 ### :gear: useUnicornPhpAdapter
 
@@ -2795,6 +2809,56 @@ References:
 | ---------- | ---------- |
 | `initialDisplay` | `string` |
 
+## :factory: TinymceController
+
+### Methods
+
+- [prepareOptions](#gear-prepareoptions)
+- [insert](#gear-insert)
+- [getValue](#gear-getvalue)
+- [setValue](#gear-setvalue)
+
+#### :gear: prepareOptions
+
+| Method | Type |
+| ---------- | ---------- |
+| `prepareOptions` | `(options: Record<string, any>, version?: string) => Record<string, any>` |
+
+#### :gear: insert
+
+| Method | Type |
+| ---------- | ---------- |
+| `insert` | `(text: string) => void` |
+
+#### :gear: getValue
+
+| Method | Type |
+| ---------- | ---------- |
+| `getValue` | `() => string` |
+
+#### :gear: setValue
+
+| Method | Type |
+| ---------- | ---------- |
+| `setValue` | `(text: string) => void` |
+
+### Properties
+
+- [editor](#gear-editor)
+- [options](#gear-options)
+
+#### :gear: editor
+
+| Property | Type |
+| ---------- | ---------- |
+| `editor` | `Editor or undefined` |
+
+#### :gear: options
+
+| Property | Type |
+| ---------- | ---------- |
+| `options` | `Record<string, any>` |
+
 ## :factory: ButtonRadio
 
 ### Static Methods
@@ -3714,56 +3778,6 @@ References:
 | Property | Type |
 | ---------- | ---------- |
 | `vm` | `ComponentPublicInstance` |
-
-## :factory: TinymceController
-
-### Methods
-
-- [prepareOptions](#gear-prepareoptions)
-- [insert](#gear-insert)
-- [getValue](#gear-getvalue)
-- [setValue](#gear-setvalue)
-
-#### :gear: prepareOptions
-
-| Method | Type |
-| ---------- | ---------- |
-| `prepareOptions` | `(options: Record<string, any>, version?: string) => Record<string, any>` |
-
-#### :gear: insert
-
-| Method | Type |
-| ---------- | ---------- |
-| `insert` | `(text: string) => void` |
-
-#### :gear: getValue
-
-| Method | Type |
-| ---------- | ---------- |
-| `getValue` | `() => string` |
-
-#### :gear: setValue
-
-| Method | Type |
-| ---------- | ---------- |
-| `setValue` | `(text: string) => void` |
-
-### Properties
-
-- [editor](#gear-editor)
-- [options](#gear-options)
-
-#### :gear: editor
-
-| Property | Type |
-| ---------- | ---------- |
-| `editor` | `Editor or undefined` |
-
-#### :gear: options
-
-| Property | Type |
-| ---------- | ---------- |
-| `options` | `Record<string, any>` |
 
 ## :factory: UnicornPhpAdapter
 
