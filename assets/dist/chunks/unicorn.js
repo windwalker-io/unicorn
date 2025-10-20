@@ -1293,6 +1293,17 @@ async function useTomSelect(selector, options = {}, theme = "bootstrap5") {
   }
   return m;
 }
+async function useTinymce(selector, options = {}) {
+  const module2 = await import("./tinymce.js");
+  if (selector) {
+    return module2.get(selector, options);
+  }
+  return module2;
+}
+async function useTinymceHook(handler) {
+  const { addHook } = await import("./tinymce.js");
+  return addHook(handler);
+}
 async function useUIBootstrap5(install = false, pushToGlobal = false) {
   const { UIBootstrap5 } = await import("./ui-bootstrap5.js");
   const theme = UIBootstrap5.get();
@@ -1318,6 +1329,10 @@ const useBs5ButtonRadio = async (selector, options = {}) => {
 };
 let instances = {};
 async function useWebDirective(name = "unicorn", options = {}) {
+  if (options === false) {
+    delete instances[name];
+    return;
+  }
   return instances[name] ??= await createWebDirective(Object.assign({}, options, { prefix: "uni-" }));
 }
 async function useUniDirective(name, handler, wdInstance = "unicorn") {
@@ -2047,13 +2062,6 @@ async function useFieldMultiUploader() {
   await module2.ready;
   return module2;
 }
-async function useTinymce(selector, options = {}) {
-  const module2 = await import("./tinymce.js");
-  if (selector) {
-    return module2.get(selector, options);
-  }
-  return module2;
-}
 function useUnicornPhpAdapter(app2) {
   app2 ??= useUnicorn();
   app2.use(UnicornPhpAdapter);
@@ -2206,9 +2214,9 @@ export {
   Mixin as af,
   EventMixin as ag,
   createQueue as ah,
-  trans as ai,
-  useUITheme as aj,
-  useScriptImport as ak,
+  useScriptImport as ai,
+  trans as aj,
+  useUITheme as ak,
   sleep as al,
   createUnicorn as am,
   createUnicornWithPlugins as an,
@@ -2227,10 +2235,12 @@ export {
   animateTo as b,
   useShowOn as b0,
   createStack as b1,
-  useUIBootstrap5 as b2,
-  useWebDirective as b3,
-  useUnicornPhpAdapter as b4,
-  UnicornPhpAdapter as b5,
+  useTinymce as b2,
+  useTinymceHook as b3,
+  useUIBootstrap5 as b4,
+  useWebDirective as b5,
+  useUnicornPhpAdapter as b6,
+  UnicornPhpAdapter as b7,
   renderMessage as c,
   clearMessages as d,
   clearNotifies as e,

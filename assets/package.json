@@ -1,6 +1,6 @@
 {
   "name": "@windwalker-io/unicorn-next",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Unicorn framework js library",
   "type": "module",
   "typings": "dist/index.d.ts",
@@ -99,6 +99,6 @@
     "vue": "^3.5.22",
     "vue-draggable-plus": "^0.6.0",
     "vue-multi-uploader": "^0.1.9",
-    "web-directive": "^0.1.1"
+    "web-directive": "^0.2.0"
   }
 }
