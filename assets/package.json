@@ -1,6 +1,6 @@
 {
   "name": "@windwalker-io/unicorn-next",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Unicorn framework js library",
   "type": "module",
   "typings": "dist/index.d.ts",

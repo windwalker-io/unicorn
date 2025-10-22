@@ -1095,6 +1095,14 @@ declare class UnicornGridElement {
      */
     updateListByTask(task: string, url?: Nullable<string>, data?: Nullable<Record<string, any>>): boolean;
     /**
+     * @deprecated  Use updateListByTask() instead.
+     */
+    batch(task: string, url?: Nullable<string>, data?: Nullable<Record<string, any>>): boolean;
+    /**
+     * @deprecated  Use updateListByTask() instead.
+     */
+    updateByTask(task: string, url?: Nullable<string>, data?: Nullable<Record<string, any>>): boolean;
+    /**
      * Copy a row.
      */
     copyItem(id: string | number, url?: Nullable<string>, data?: Nullable<Record<string, any>>): boolean;
@@ -1440,17 +1448,17 @@ export { }
 
 
 declare global {
-    var Alpine: AlpineGlobal;
-    var TomSelect: typeof TomSelectGlobal;
-    var Spectrum: typeof SpectrumGlobal;
-    var Mark: any;
+    interface Node {
+        __unicorn?: any;
+    }
 }
 
 
 declare global {
-    interface Node {
-        __unicorn?: any;
-    }
+    var Alpine: AlpineGlobal;
+    var TomSelect: typeof TomSelectGlobal;
+    var Spectrum: typeof SpectrumGlobal;
+    var Mark: any;
 }
 
 
@@ -1459,10 +1467,6 @@ declare module '@windwalker-io/unicorn-next' {
         /** @deprecated Only for code generator use. */
         $ui: typeof methods;
     }
-}
-
-declare global {
-    var S: any;
 }
 
 
@@ -1476,14 +1480,18 @@ declare module 'axios' {
     }
 }
 
-
 declare global {
-    export interface Window {
-        bootstrap: typeof bootstrap;
-    }
+    var S: any;
 }
 
 
 declare global {
     var tinymce: TinyMCE;
+}
+
+
+declare global {
+    export interface Window {
+        bootstrap: typeof bootstrap;
+    }
 }

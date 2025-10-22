@@ -328,7 +328,8 @@ async function loadCropper() {
       injectCssToDocument(css2);
     })
   ]);
-  return (await loadingCropper)[0];
+  const module = (await loadingCropper)[0];
+  return module.default;
 }
 async function init() {
   injectCssToDocument(css);

@@ -195,6 +195,18 @@ class UnicornGridElement {
     return this.form.patch(url, data);
   }
   /**
+   * @deprecated  Use updateListByTask() instead.
+   */
+  batch(task, url, data) {
+    return this.updateListByTask(task, url, data);
+  }
+  /**
+   * @deprecated  Use updateListByTask() instead.
+   */
+  updateByTask(task, url, data) {
+    return this.updateListByTask(task, url, data);
+  }
+  /**
    * Copy a row.
    */
   copyItem(id, url, data) {
