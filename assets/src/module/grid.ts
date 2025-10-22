@@ -266,6 +266,20 @@ export class UnicornGridElement {
   }
 
   /**
+   * @deprecated  Use updateListByTask() instead.
+   */
+  batch(task: string, url?: Nullable<string>, data?: Nullable<Record<string, any>>): boolean {
+    return this.updateListByTask(task, url, data);
+  }
+
+  /**
+   * @deprecated  Use updateListByTask() instead.
+   */
+  updateByTask(task: string, url?: Nullable<string>, data?: Nullable<Record<string, any>>): boolean {
+    return this.updateListByTask(task, url, data);
+  }
+
+  /**
    * Copy a row.
    */
   copyItem(id: string | number, url?: Nullable<string>, data?: Nullable<Record<string, any>>): boolean {
