@@ -193,7 +193,7 @@ class MigFromCommand implements CommandInterface
                 if (
                     $node instanceof Node\Stmt\Expression
                     && $node->expr instanceof Node\Expr\MethodCall
-                    && (string) $node->expr->var->name === 'mig'
+                    && (string) $node->expr->var->name === 'this'
                     && (string) $node->expr->name === 'createTable'
                 ) {
                     $tableClass = $node->expr->args[0]->value;
@@ -210,6 +210,28 @@ class MigFromCommand implements CommandInterface
                             return new Node\Stmt\Expression(
                                 new Node\Scalar\String_('@create-' . $tableName)
                             );
+                        }
+                    }
+                }
+
+                if ($node instanceof Node\Stmt\ClassMethod) {
+                    if ($this->hasAttribute($node, 'MigrateUp')) {
+                        foreach ($tables as $tableName => $rows) {
+                            if (!in_array($tableName, $existsTables, true)) {
+                                $node->stmts[] = new Node\Stmt\Expression(
+                                    new Node\Scalar\String_('@create-' . $tableName)
+                                );
+                            }
+                        }
+                    }
+
+                    if ($this->hasAttribute($node, 'MigrateDown')) {
+                        foreach ($tables as $tableName => $rows) {
+                            if (!in_array($tableName, $existsTables, true)) {
+                                $node->stmts[] = new Node\Stmt\Expression(
+                                    new Node\Scalar\String_('@drop-' . $tableName)
+                                );
+                            }
                         }
                     }
                 }
@@ -381,7 +403,7 @@ class MigFromCommand implements CommandInterface
         }
 
         $code = <<<PHP
-\$mig->createTable(
+\$this->createTable(
             {$className}::class,
             function (Schema \$schema) {
                 $declare
@@ -394,7 +416,7 @@ PHP;
 
     protected function buildDropTable(string $className): string
     {
-        return "\$mig->dropTables({$className}::class);";
+        return "\$this->dropTables({$className}::class);";
     }
 
     protected function buildColumn(array $row, ?array &$keys = null): string
@@ -413,6 +435,10 @@ PHP;
         $note = trim($row['Note'] ?? '');
 
         $method = $this->getTypeMethod($key, $type);
+
+        if (!$method) {
+            throw new \RuntimeException("Unknown type '$type' for column '$name'.");
+        }
 
         $col = "\$schema->$method('$name')";
 
@@ -510,5 +536,18 @@ PHP;
         }
 
         return $method;
+    }
+
+    protected function hasAttribute(Node $node, string $name): bool
+    {
+        foreach ($node->attrGroups as $attrGroup) {
+            foreach ($attrGroup->attrs as $attr) {
+                if ($attr->name->toString() === $name) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }
