@@ -29,7 +29,7 @@ class S3MultipartUploader
 
     public int|string|\DateTimeInterface $presignExpires = '+10 minutes';
 
-    public bool $autoUpdateExpires = true;
+    public bool $autoUpdateExpires = false;
 
     public ?int $tempExpireDays = 7;
 
