@@ -2,6 +2,7 @@ import { AxiosProgressEvent, AxiosResponseHeaders } from 'axios';
 import { Mixin } from 'ts-mixer';
 import { createQueue, useHttpClient } from '../composable';
 import { EventHandler, EventMixin } from '../events';
+import { route } from '../service';
 import type { MaybePromise } from '../types';
 import { mergeDeep } from '../utilities';
 import { ApiReturn } from './http-client';
@@ -20,6 +21,7 @@ export interface S3MultipartUploaderOptions {
   profile?: string;
   chunkSize: number;
   concurrency: number;
+  leaveAlert?: boolean;
   routes: RoutingOptions;
   requestHandler?: RequestHandler;
   onProgress?: ProgressEventHandler;
@@ -41,7 +43,7 @@ export interface S3MultipartUploaderRequestOptions {
   filename?: string;
   ContentType?: string;
   ContentDisposition?: string;
-  ACL?: string;
+  ACL?: 'public-read' | 'private' | 'authenticated-read' | 'public-read-write' | string;
   extra?: Record<string, any>;
 }
 
@@ -57,7 +59,7 @@ export class S3MultipartUploader extends Mixin(EventMixin) {
     file: string | File | Blob,
     path: string,
     options: S3MultipartUploaderRequestOptions = {}
-  ): Promise<{ url: string; }> {
+  ): Promise<{ url: string; id: string; path: string; }> {
     const extra: Record<string, any> = { ...(this.options.extra ?? {}), ...(options.extra ?? {}) };
 
     if (typeof file === 'string') {
@@ -90,11 +92,22 @@ export class S3MultipartUploader extends Mixin(EventMixin) {
 
     this.trigger('start', file, initData);
 
-    // @Request sign
+    // Prepare unload
+    const beforeUnloadHandler = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = '';
+    };
+    if (this.options.leaveAlert === true) {
+      window.addEventListener('beforeunload', beforeUnloadHandler);
+    }
+
+    // @Request init
     const { id } = await this.request<{ id: string; }>(
       'init',
       initData
     );
+
+    this.trigger('inited', { id, path });
 
     try {
       const chunkSize = this.options.chunkSize;
@@ -155,13 +168,19 @@ export class S3MultipartUploader extends Mixin(EventMixin) {
         },
       );
 
-      this.trigger('success', url);
+      this.trigger('success', { id, path, url });
 
-      return { url };
+      return { url, id, path };
     } catch (e) {
       await this.abort(id, path);
 
+      this.trigger('failure', { error: e as Error, id, path });
+
       throw e;
+    } finally {
+      if (this.options.leaveAlert === true) {
+        window.removeEventListener('beforeunload', beforeUnloadHandler);
+      }
     }
   }
 
@@ -219,6 +238,15 @@ export class S3MultipartUploader extends Mixin(EventMixin) {
 
     return res.data.data;
   }
+
+  // protected async abortBeacon(id: string, path: string): Promise<void> {
+  //   const data = new FormData();
+  //   data.append('id', id);
+  //   data.append('path', path);
+  //   data.append('profile', this.options.profile || '');
+  //
+  //   await navigator.sendBeacon(route(await this.resolveRoute('abort')), data);
+  // }
 
   async abort(id: string, path: string) {
     await this.request(
@@ -281,8 +309,10 @@ export class S3MultipartUploader extends Mixin(EventMixin) {
     event: 'start',
     handler: (file: File, data: { path: string; extra: Record<string, any>; [name: string]: any; }) => void
   ): this;
-  on(event: 'success', handler: (url: string) => void): this;
+  on(event: 'inited', handler: (event: { id: string; path: string; }) => void): this;
+  on(event: 'success', handler: (event: { url: string; id: string; path: string; }) => void): this;
   on(event: 'progress', handler: (event: ProgressEvent) => void): this;
+  on(event: 'failure', handler: (event: { error: Error; id: string; path: string; }) => void): this;
   on(event: string | string[], handler: EventHandler): this {
     return super.on(event, handler);
   }

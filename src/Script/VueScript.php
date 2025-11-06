@@ -41,7 +41,11 @@ class VueScript extends AbstractScript
     public function animate(): void
     {
         if ($this->available()) {
-            $this->css('@vue2-animate');
+            if ($this->next) {
+                $this->css('@vue-animate');
+            } else {
+                $this->css('@vue2-animate');
+            }
         }
     }
 }

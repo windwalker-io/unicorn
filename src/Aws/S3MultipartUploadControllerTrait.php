@@ -27,12 +27,12 @@ trait S3MultipartUploadControllerTrait
 
         $uploader = new S3MultipartUploader($this->app);
 
-        self::configureUploader($uploader);
+        $this->configureUploader($uploader);
 
         return $uploader;
     }
 
-    abstract protected static function configureUploader(S3MultipartUploader $uploader): void;
+    abstract protected function configureUploader(S3MultipartUploader $uploader): void;
 
     #[Ajax]
     public function init(
@@ -62,7 +62,7 @@ trait S3MultipartUploadControllerTrait
                 'url' => (string) $request->getUri(),
             ];
         } catch (\Throwable $e) {
-            $this->abort($uploader, $id, $path, $profile);
+            $this->abort($id, $path, $profile);
 
             throw $e;
         }

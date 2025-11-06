@@ -48,7 +48,7 @@ class WorkflowController implements EventAwareInterface
             is_a($enum, \UnitEnum::class, true)
             || is_a($enum, Enum::class, true)
         ) {
-            $states = $enum::values();
+            $states = $enum::cases();
         } elseif (is_iterable($enum)) {
             $states = TypeCast::toArray($enum);
         }

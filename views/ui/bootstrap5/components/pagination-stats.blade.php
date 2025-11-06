@@ -55,17 +55,19 @@ $attributes['style'] .= $forceStyle;
         </div>
     </div>
 
-    <div class="l-pagination-stats__item {{ $itemClass }}">
-        <div class="{{ $linkClass }}">
-            共 <strong>{{ $pagination->getPages() }}</strong> 頁
+    @if (!$pagination->isSimple())
+        <div class="l-pagination-stats__item {{ $itemClass }}">
+            <div class="{{ $linkClass }}">
+                共 <strong>{{ $pagination->getPages() }}</strong> 頁
+            </div>
         </div>
-    </div>
 
-    <div class="l-pagination-stats__item {{ $itemClass }}">
-        <div class="{{ $linkClass }}">
-            總數 <strong>{{ $pagination->getTotal() }}</strong>
+        <div class="l-pagination-stats__item {{ $itemClass }}">
+            <div class="{{ $linkClass }}">
+                總數 <strong>{{ $pagination->getTotal() }}</strong>
+            </div>
         </div>
-    </div>
+    @endif
 
     {!! $end ?? '' !!}
 </div>
