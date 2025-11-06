@@ -589,6 +589,8 @@ declare class S3MultipartUploader extends S3MultipartUploader_base {
     constructor(options: Partial<S3MultipartUploaderOptions>);
     upload(file: string | File | Blob, path: string, options?: S3MultipartUploaderRequestOptions): Promise<{
         url: string;
+        id: string;
+        path: string;
     }>;
     protected uploadPart(file: File, payload: {
         id: string;
@@ -612,8 +614,21 @@ declare class S3MultipartUploader extends S3MultipartUploader_base {
         extra: Record<string, any>;
         [name: string]: any;
     }) => void): this;
-    on(event: 'success', handler: (url: string) => void): this;
+    on(event: 'inited', handler: (event: {
+        id: string;
+        path: string;
+    }) => void): this;
+    on(event: 'success', handler: (event: {
+        url: string;
+        id: string;
+        path: string;
+    }) => void): this;
     on(event: 'progress', handler: (event: ProgressEvent_2) => void): this;
+    on(event: 'failure', handler: (event: {
+        error: Error;
+        id: string;
+        path: string;
+    }) => void): this;
 }
 
 declare const S3MultipartUploader_base: Class<any[], EventMixin, typeof EventMixin>;
@@ -626,6 +641,7 @@ declare interface S3MultipartUploaderOptions {
     profile?: string;
     chunkSize: number;
     concurrency: number;
+    leaveAlert?: boolean;
     routes: RoutingOptions;
     requestHandler?: RequestHandler;
     onProgress?: ProgressEventHandler_2;
@@ -638,7 +654,7 @@ declare interface S3MultipartUploaderRequestOptions {
     filename?: string;
     ContentType?: string;
     ContentDisposition?: string;
-    ACL?: string;
+    ACL?: 'public-read' | 'private' | 'authenticated-read' | 'public-read-write' | string;
     extra?: Record<string, any>;
 }
 
@@ -1440,14 +1456,6 @@ export { }
 
 
 declare global {
-    var Alpine: AlpineGlobal;
-    var TomSelect: typeof TomSelectGlobal;
-    var Spectrum: typeof SpectrumGlobal;
-    var Mark: any;
-}
-
-
-declare global {
     interface Node {
         __unicorn?: any;
     }
@@ -1459,6 +1467,14 @@ declare module '@windwalker-io/unicorn-next' {
         /** @deprecated Only for code generator use. */
         $ui: typeof methods;
     }
+}
+
+
+declare global {
+    var Alpine: AlpineGlobal;
+    var TomSelect: typeof TomSelectGlobal;
+    var Spectrum: typeof SpectrumGlobal;
+    var Mark: any;
 }
 
 declare global {
@@ -1478,12 +1494,12 @@ declare module 'axios' {
 
 
 declare global {
-    export interface Window {
-        bootstrap: typeof bootstrap;
-    }
+    var tinymce: TinyMCE;
 }
 
 
 declare global {
-    var tinymce: TinyMCE;
+    export interface Window {
+        bootstrap: typeof bootstrap;
+    }
 }

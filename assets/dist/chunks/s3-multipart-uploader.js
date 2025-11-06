@@ -33,10 +33,18 @@ class S3MultipartUploader extends (/* @__PURE__ */ Mixin(EventMixin)) {
       initData["filename"] = options["filename"];
     }
     this.trigger("start", file, initData);
+    const beforeUnloadHandler = (e) => {
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    if (this.options.leaveAlert === true) {
+      window.addEventListener("beforeunload", beforeUnloadHandler);
+    }
     const { id } = await this.request(
       "init",
       initData
     );
+    this.trigger("inited", { id, path });
     try {
       const chunkSize = this.options.chunkSize;
       const chunks = Math.ceil(file.size / chunkSize);
@@ -80,11 +88,16 @@ class S3MultipartUploader extends (/* @__PURE__ */ Mixin(EventMixin)) {
           profile: this.options.profile
         }
       );
-      this.trigger("success", url);
-      return { url };
+      this.trigger("success", { id, path, url });
+      return { url, id, path };
     } catch (e) {
       await this.abort(id, path);
+      this.trigger("failure", { error: e, id, path });
       throw e;
+    } finally {
+      if (this.options.leaveAlert === true) {
+        window.removeEventListener("beforeunload", beforeUnloadHandler);
+      }
     }
   }
   async uploadPart(file, payload) {
@@ -120,6 +133,14 @@ class S3MultipartUploader extends (/* @__PURE__ */ Mixin(EventMixin)) {
     const res = await http.post(await this.resolveRoute(action), body);
     return res.data.data;
   }
+  // protected async abortBeacon(id: string, path: string): Promise<void> {
+  //   const data = new FormData();
+  //   data.append('id', id);
+  //   data.append('path', path);
+  //   data.append('profile', this.options.profile || '');
+  //
+  //   await navigator.sendBeacon(route(await this.resolveRoute('abort')), data);
+  // }
   async abort(id, path) {
     await this.request(
       "abort",

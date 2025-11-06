@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Unicorn\Aws;
 
+use Aws\Exception\AwsException;
 use Aws\Result;
 use Aws\S3\S3Client;
 use Psr\Http\Message\RequestInterface;
@@ -17,16 +18,20 @@ class S3MultipartUploader
 {
     use S3ConstantTrait;
 
-    public protected(set) array $allowedExtra = [
+    public array $allowedExtra = [
         'ContentDisposition',
         'ContentType',
     ];
 
-    public protected(set) ?string $profile = null;
+    public ?string $profile = null;
 
-    public protected(set) string $acl = self::ACL_AUTHENTICATED_READ;
+    public string $acl = self::ACL_AUTHENTICATED_READ;
 
-    public protected(set) int|string|\DateTimeInterface $presignExpires = '+10 minutes';
+    public int|string|\DateTimeInterface $presignExpires = '+10 minutes';
+
+    public bool $autoUpdateExpires = true;
+
+    public ?int $tempExpireDays = 7;
 
     public function __construct(protected ApplicationInterface $app)
     {
@@ -34,9 +39,23 @@ class S3MultipartUploader
 
     public function init(string $path, array $extra = [], ?string $profile = null): string
     {
+        if ($this->autoUpdateExpires) {
+            $this->updateExpiresRules($profile);
+        }
+
         [$s3Service, $s3Client] = $this->getS3Service($profile);
 
-        $extra = (array) Arr::only($extra, $this->allowedExtra);
+        $except = (array) Arr::except($extra, $this->allowedExtra);
+
+        if ($except !== []) {
+            throw new \InvalidArgumentException(
+                'Extra args not allowed: ' . implode(', ', array_keys($except))
+            );
+        }
+
+        if ($this->acl && empty($extra['ACL'])) {
+            $extra['ACL'] = $this->acl;
+        }
 
         $result = $s3Client->createMultipartUpload(
             [
@@ -101,6 +120,41 @@ class S3MultipartUploader
         ]);
     }
 
+    public function updateExpiresRules(?string $profile = null): Result
+    {
+        [$s3Service, $s3Client] = $this->getS3Service($profile);
+
+        try {
+            $result = $s3Client->getBucketLifecycleConfiguration([
+                'Bucket' => $s3Service->getBucketName(),
+            ]);
+            $rules = $result['Rules'];
+        } catch (AwsException $e) {
+            // If no lifecycle, create new rules
+            $rules = [];
+        }
+
+        $rules = array_filter($rules, fn ($rule) => $rule['ID'] !== 'AbortIncompleteMultipartUpload');
+
+        if ($this->tempExpireDays) {
+            $rules[] = [
+                'ID' => 'AbortIncompleteMultipartUpload',
+                'Status' => 'Enabled',
+                'Filter' => [],
+                'AbortIncompleteMultipartUpload' => [
+                    'DaysAfterInitiation' => $this->tempExpireDays,
+                ],
+            ];
+        }
+
+        return $s3Client->putBucketLifecycleConfiguration(
+            [
+                'Bucket' => $s3Service->getBucketName(),
+                'LifecycleConfiguration' => ['Rules' => array_values($rules)],
+            ]
+        );
+    }
+
     /**
      * @param  string|null  $profile
      *
@@ -125,49 +179,6 @@ class S3MultipartUploader
     public function allowExtra(string ...$args): static
     {
         $this->allowedExtra = [...$this->allowedExtra, ...$args];
-
-        return $this;
-    }
-
-    public function clearAllowExtra(): static
-    {
-        $this->allowedExtra = [];
-
-        return $this;
-    }
-
-    public function getAcl(): string
-    {
-        return $this->acl;
-    }
-
-    public function useACL(string $acl): static
-    {
-        $this->acl = $acl;
-
-        return $this;
-    }
-
-    public function getProfile(): ?string
-    {
-        return $this->profile;
-    }
-
-    public function useProfile(?string $profile): static
-    {
-        $this->profile = $profile;
-
-        return $this;
-    }
-
-    public function getPresignExpires(): \DateTimeInterface|int|string
-    {
-        return $this->presignExpires;
-    }
-
-    public function presignExpires(\DateTimeInterface|int|string $presignExpires): static
-    {
-        $this->presignExpires = $presignExpires;
 
         return $this;
     }
