@@ -1111,6 +1111,14 @@ declare class UnicornGridElement {
      */
     updateListByTask(task: string, url?: Nullable<string>, data?: Nullable<Record<string, any>>): boolean;
     /**
+     * @deprecated  Use updateListByTask() instead.
+     */
+    batch(task: string, url?: Nullable<string>, data?: Nullable<Record<string, any>>): boolean;
+    /**
+     * @deprecated  Use updateListByTask() instead.
+     */
+    updateByTask(task: string, url?: Nullable<string>, data?: Nullable<Record<string, any>>): boolean;
+    /**
      * Copy a row.
      */
     copyItem(id: string | number, url?: Nullable<string>, data?: Nullable<Record<string, any>>): boolean;
@@ -1456,9 +1464,10 @@ export { }
 
 
 declare global {
-    interface Node {
-        __unicorn?: any;
-    }
+    var Alpine: AlpineGlobal;
+    var TomSelect: typeof TomSelectGlobal;
+    var Spectrum: typeof SpectrumGlobal;
+    var Mark: any;
 }
 
 
@@ -1471,10 +1480,9 @@ declare module '@windwalker-io/unicorn-next' {
 
 
 declare global {
-    var Alpine: AlpineGlobal;
-    var TomSelect: typeof TomSelectGlobal;
-    var Spectrum: typeof SpectrumGlobal;
-    var Mark: any;
+    interface Node {
+        __unicorn?: any;
+    }
 }
 
 declare global {
