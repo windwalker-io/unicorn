@@ -83,7 +83,7 @@ $attributes['uni-tabs-autonav'] = json_encode($directiveOptions);
 
 @push('script')
     <script data-macro="unicorn.bs5.tabs" lang="ts" type="module">
-        import { module, useUniDirective, useBs5KeepTab } from '@windwalker-io/unicorn-next';
+        import { module, useUniDirective, useBs5KeepTab, html } from '@windwalker-io/unicorn-next';
 
         useUniDirective<HTMLDivElement>('tabs-autonav', {
             mounted(el, { value }) {
@@ -118,7 +118,7 @@ $attributes['uni-tabs-autonav'] = json_encode($directiveOptions);
                     tabs.forEach((tab) => {
                         hasActive = tab.dataset.active || hasActive;
                         const buttonAttrs = JSON.parse(tab.getAttribute('button-attrs'));
-                        const item = u.html(`<div class="nav-item">
+                        const item = html(`<div class="nav-item">
     <a class="nav-link ${tab.dataset.active ? 'active' : ''}" href="javascript://"
         data-bs-toggle="tab" data-bs-target="#${tab.id}">
         ${tab.dataset.title}
