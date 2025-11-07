@@ -1,3 +1,4 @@
+import { removeData } from '../data';
 import { defData } from '../utilities';
 
 /**
@@ -75,9 +76,11 @@ export function getBoundedInstance<T = any, E extends Element = Element>(
   name: string,
   callback?: ((el: E) => any)
 ): T | null;
-export function getBoundedInstance<T = any, E extends Element = Element>(selector: string | E,
-                                                                         name: string,
-                                                                         callback: ((el: E) => any) = () => null): T | null {
+export function getBoundedInstance<T = any, E extends Element = Element>(
+  selector: string | E,
+  name: string,
+  callback: ((el: E) => any) = () => null
+): T | null {
   const element = typeof selector === 'string' ? document.querySelector<E>(selector) : selector;
 
   if (!element) {
@@ -95,6 +98,14 @@ export function getBoundedInstanceList<T = any, E extends Element = Element>(
   const items = typeof selector === 'string' ? document.querySelectorAll<E>(selector) : selector;
 
   return Array.from(items).map((ele: E) => getBoundedInstance(ele, name, callback));
+}
+
+export function removeBoundedInstance(selector: string | Element, name: string) {
+  const element = typeof selector === 'string' ? document.querySelector<Element>(selector) : selector;
+
+  if (element) {
+    removeData(element, name);
+  }
 }
 
 export function module<T = any, E extends Element = Element>(
@@ -117,10 +128,25 @@ export function module<T = any, E extends Element = Element>(
   callback?: ((el: E) => any)
 ): (T | null)[] | T | null;
 export function module<T = any, E extends Element = Element>(
+  ele: string | Element | NodeListOf<Element>,
+  name: string,
+  callback: false
+): (T | null)[] | T | null;
+export function module<T = any, E extends Element = Element>(
   ele: string | E | NodeListOf<E>,
   name: string,
-  callback: ((el: E) => any) = () => null
+  callback: ((el: E) => any) | false = () => null
 ): (T | null)[] | T | null {
+  if (callback === false) {
+    if (typeof ele === 'string' || ele instanceof Element) {
+      removeBoundedInstance(ele, name);
+      return null;
+    }
+
+    Array.from(ele).forEach((el) => removeBoundedInstance(el, name));
+    return null;
+  }
+
   if (typeof ele === 'string') {
     return getBoundedInstanceList<T, E>(ele, name, callback);
   }
