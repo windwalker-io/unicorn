@@ -46,3 +46,7 @@ export function wait<T extends readonly unknown[]>(
 ): Promise<Awaited<T>> {
   return Promise.all(promisee) as Promise<Awaited<T>>;
 }
+
+export function isError<E = Error>(e: any): e is E {
+  return e instanceof Error;
+}

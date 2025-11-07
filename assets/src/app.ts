@@ -74,7 +74,7 @@ export class UnicornApp extends Mixin(EventMixin) implements EventAwareInterface
         return def;
       }
 
-      throw new Error(`Injectable: ${(id as any).name} not found.`);
+      throw new Error(`Injectable: "${(id as any).name ?? id}" not found.`);
     }
 
     return this.registry.get(id);
