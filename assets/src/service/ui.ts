@@ -386,7 +386,7 @@ export async function useColorPicker(
 
   const m = await useImport('@spectrum');
 
-// Locale
+  // Locale
   if (typeof options.locale === 'string') {
     let ls: any = options.locale.split('-').map((l) => l.toLowerCase());
 
@@ -403,7 +403,7 @@ export async function useColorPicker(
   }
 
   if (selector) {
-    module<any, HTMLElement>(selector, 'spectrum', (ele) => Spectrum.getInstance(ele, options));
+    return module<any, HTMLElement>(selector, 'spectrum', (ele) => Spectrum.getInstance(ele, options));
   }
 
   return m;
