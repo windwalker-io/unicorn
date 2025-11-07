@@ -69,7 +69,7 @@ export class UnicornApp extends Mixin(EventMixin) implements EventAwareInterface
   inject<T>(id: InjectionKey<T>, def: T): T;
   inject<T>(id: InjectionKey<T>, def?: T): T;
   inject<T>(id: InjectionKey<T>, def?: T): T | undefined {
-    if (!typeof this.registry.has(id)) {
+    if (!this.registry.has(id)) {
       if (def !== undefined) {
         return def;
       }
