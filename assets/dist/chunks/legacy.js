@@ -1,4 +1,4 @@
-import { i as isDebug, u as useHttpClient, _ as __, r as route, a as useUniDirective, b as animateTo, c as renderMessage, d as clearMessages, s as simpleNotify, e as clearNotifies, l as loadAlpine, f as initAlpineComponent, p as prepareAlpine, g as useFormValidation, h as addGlobalValidator, j as useFieldValidationInstance, k as useFormValidationInstance, m as useStack, n as useQueue, o as useSystemUri, q as useAssetUri, t as domready, v as selectOne, w as selectAll, x as getBoundedInstance, y as getBoundedInstanceList, z as module, A as h, B as html, C as delegate, D as debounce, E as throttle, F as simpleConfirm, G as simpleAlert, H as sprintfExports, I as base64UrlEncode, J as base64UrlDecode, K as uid, L as tid, M as serial, N as mark, O as useTomSelect, P as slideUp, Q as slideDown, R as slideToggle, S as fadeOut, T as fadeIn, U as highlight, V as useColorPicker, W as useDisableOnSubmit, X as useDisableIfStackNotEmpty, Y as useCheckboxesMultiSelect, Z as useKeepAlive, $ as useBs5KeepTab, a0 as useBs5ButtonRadio, a1 as useBs5Tooltip, a2 as useFormAsync, a3 as useGridAsync, a4 as useForm, a5 as useGrid } from "./unicorn.js";
+import { i as isDebug, u as useHttpClient, _ as __, r as route, a as useUniDirective, b as animateTo, c as renderMessage, d as clearMessages, s as simpleNotify, e as clearNotifies, l as loadAlpine, f as initAlpineComponent, p as prepareAlpine, g as useFormValidation, h as addGlobalValidator, j as useFieldValidationInstance, k as useFormValidationInstance, m as useStack, n as useQueue, o as useSystemUri, q as useAssetUri, t as domready, v as selectOne, w as selectAll, x as getBoundedInstance, y as getBoundedInstanceList, z as module$1, A as h, B as html, C as delegate, D as debounce, E as throttle, F as simpleConfirm, G as simpleAlert, H as sprintfExports, I as base64UrlEncode, J as base64UrlDecode, K as uid, L as tid, M as serial, N as mark, O as useTomSelect, P as slideUp, Q as slideDown, R as slideToggle, S as fadeOut, T as fadeIn, U as highlight, V as useColorPicker, W as useDisableOnSubmit, X as useDisableIfStackNotEmpty, Y as useCheckboxesMultiSelect, Z as useKeepAlive, $ as useBs5KeepTab, a0 as useBs5ButtonRadio, a1 as useBs5Tooltip, a2 as useFormAsync, a3 as useGridAsync, a4 as useForm, a5 as useGrid } from "./unicorn.js";
 function numberFormat(number, decimals = 0, decPoint = ".", thousandsSep = ",") {
   number = Number(number);
   const str = number.toFixed(decimals ? decimals : 0).toString().split(".");
@@ -69,7 +69,7 @@ class LegacyLoader {
     if (!Array.isArray(modules)) {
       modules = [modules];
     }
-    const styles = modules.map((module2) => module2.default);
+    const styles = modules.map((module) => module.default);
     document.adoptedStyleSheets = [...document.adoptedStyleSheets, ...styles];
   }
   minFileName(fileName) {
@@ -158,7 +158,7 @@ function handlerHelper(app) {
   app.each = selectAll;
   app.getBoundedInstance = getBoundedInstance;
   app.getBoundedInstanceList = getBoundedInstanceList;
-  app.module = module;
+  app.module = module$1;
   app.h = h;
   app.html = html;
   app.delegate = delegate;

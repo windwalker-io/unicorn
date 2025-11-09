@@ -1,4 +1,4 @@
-import { a as useUniDirective, z as module, v as selectOne, w as selectAll, T as fadeIn, S as fadeOut } from "./unicorn.js";
+import { a as useUniDirective, z as module$1, v as selectOne, w as selectAll, T as fadeIn, S as fadeOut } from "./unicorn.js";
 import { b as arrayPush, a as MapCache } from "./_arrayPush.js";
 import { S as Symbol$1, a as isArray, k as isArguments, i as isObjectLike, d as isArrayLike } from "./isArguments.js";
 import { b as baseRest } from "./_baseRest.js";
@@ -226,7 +226,7 @@ class ShowOn {
 }
 const ready = /* @__PURE__ */ useUniDirective("show-on", {
   mounted(el, { value }) {
-    module(el, "show.on", (el2) => {
+    module$1(el, "show.on", (el2) => {
       return new ShowOn(el2, JSON.parse(value));
     });
   }

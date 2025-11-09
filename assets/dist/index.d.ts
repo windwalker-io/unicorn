@@ -366,6 +366,8 @@ declare type InputElements = HTMLInputElement | HTMLSelectElement | HTMLTextArea
 
 export declare function isDebug(): boolean;
 
+export declare function isError<E = Error>(e: any): e is E;
+
 declare class KeepTab {
     $element: HTMLElement;
     tabButtons: NodeListOf<HTMLElement>;
@@ -492,6 +494,8 @@ declare function module_2<T = any, E extends Element = Element>(ele: NodeListOf<
 declare function module_2<T = any, E extends Element = Element>(ele: E, name: string, callback?: ((el: E) => any)): T | null;
 
 declare function module_2<T = any, E extends Element = Element>(ele: string | Element | NodeListOf<Element>, name: string, callback?: ((el: E) => any)): (T | null)[] | T | null;
+
+declare function module_2<T = any, E extends Element = Element>(ele: string | Element | NodeListOf<Element>, name: string, callback: false): (T | null)[] | T | null;
 export { module_2 as module }
 
 declare class MultiUploaderElement extends HTMLElement {
@@ -554,6 +558,8 @@ declare const ready_7: Promise<void>;
 declare const ready_8: Promise<void>;
 
 declare const ready_9: Promise<void>;
+
+export declare function removeBoundedInstance(selector: string | Element, name: string): void;
 
 export declare function removeData(name: string): any;
 
@@ -1464,6 +1470,13 @@ export { }
 
 
 declare global {
+    interface Node {
+        __unicorn?: any;
+    }
+}
+
+
+declare global {
     var Alpine: AlpineGlobal;
     var TomSelect: typeof TomSelectGlobal;
     var Spectrum: typeof SpectrumGlobal;
@@ -1479,17 +1492,6 @@ declare module '@windwalker-io/unicorn-next' {
 }
 
 
-declare global {
-    interface Node {
-        __unicorn?: any;
-    }
-}
-
-declare global {
-    var S: any;
-}
-
-
 declare module 'axios' {
     interface AxiosRequestConfig {
         vars?: Record<string, any>;
@@ -1500,9 +1502,8 @@ declare module 'axios' {
     }
 }
 
-
 declare global {
-    var tinymce: TinyMCE;
+    var S: any;
 }
 
 
@@ -1510,4 +1511,9 @@ declare global {
     export interface Window {
         bootstrap: typeof bootstrap;
     }
+}
+
+
+declare global {
+    var tinymce: TinyMCE;
 }

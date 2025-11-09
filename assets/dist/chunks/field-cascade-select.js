@@ -1,5 +1,5 @@
 import { g as getDefaultExportFromCjs } from "./_commonjsHelpers.js";
-import { a6 as prepareAlpineDefer, f as initAlpineComponent, a7 as mergeDeep, K as uid, z as module, u as useHttpClient } from "./unicorn.js";
+import { a6 as prepareAlpineDefer, f as initAlpineComponent, a7 as mergeDeep, K as uid, z as module$1, u as useHttpClient } from "./unicorn.js";
 var alpineComponent = {};
 var hasRequiredAlpineComponent;
 function requireAlpineComponent() {
@@ -115,7 +115,7 @@ let FieldCascadeSelect = class extends AlpineComponent {
       lastValue = v;
     });
     this.el = this.$el;
-    module(this.$el, "cascade.select", () => this);
+    module$1(this.$el, "cascade.select", () => this);
     this.valueInit(this.$el, lastValue, values);
   }
   getLabel(i) {

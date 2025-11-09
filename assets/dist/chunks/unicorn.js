@@ -232,7 +232,21 @@ function getBoundedInstanceList(selector, name, callback = () => null) {
   const items = typeof selector === "string" ? document.querySelectorAll(selector) : selector;
   return Array.from(items).map((ele) => getBoundedInstance(ele, name, callback));
 }
-function module(ele, name, callback = () => null) {
+function removeBoundedInstance(selector, name) {
+  const element = typeof selector === "string" ? document.querySelector(selector) : selector;
+  if (element) {
+    removeData(element, name);
+  }
+}
+function module$1(ele, name, callback = () => null) {
+  if (callback === false) {
+    if (typeof ele === "string" || ele instanceof Element) {
+      removeBoundedInstance(ele, name);
+      return null;
+    }
+    Array.from(ele).forEach((el) => removeBoundedInstance(el, name));
+    return null;
+  }
   if (typeof ele === "string") {
     return getBoundedInstanceList(ele, name, callback);
   }
@@ -704,12 +718,15 @@ function nextTick(callback) {
 function wait(...promisee) {
   return Promise.all(promisee);
 }
+function isError(e) {
+  return e instanceof Error;
+}
 var sprintf = {};
 var hasRequiredSprintf;
 function requireSprintf() {
   if (hasRequiredSprintf) return sprintf;
   hasRequiredSprintf = 1;
-  (function(exports) {
+  (function(exports$1) {
     !(function() {
       var re = {
         not_type: /[^T]/,
@@ -887,8 +904,8 @@ function requireSprintf() {
         return sprintf_cache[fmt] = parse_tree;
       }
       {
-        exports["sprintf"] = sprintf2;
-        exports["vsprintf"] = vsprintf;
+        exports$1["sprintf"] = sprintf2;
+        exports$1["vsprintf"] = vsprintf;
       }
       if (typeof window !== "undefined") {
         window["sprintf"] = sprintf2;
@@ -1061,7 +1078,7 @@ async function useCssImport(...hrefs) {
       return importedSheets[href];
     })
   );
-  const styles = modules.map((module2) => module2.default);
+  const styles = modules.map((module) => module.default);
   return injectCssToDocument(...styles);
 }
 async function simulateCssImport(href) {
@@ -1109,14 +1126,14 @@ async function useCheckboxesMultiSelect(selector, options = {}) {
   return m;
 }
 async function useFieldCascadeSelect() {
-  const module2 = await import("./field-cascade-select.js");
-  await module2.ready;
-  return module2;
+  const module = await import("./field-cascade-select.js");
+  await module.ready;
+  return module;
 }
 async function useFieldFileDrag() {
-  const module2 = await import("./field-file-drag.js");
-  await module2.ready;
-  return module2;
+  const module = await import("./field-file-drag.js");
+  await module.ready;
+  return module;
 }
 function useFieldFlatpickr() {
   return import("./field-flatpickr.js");
@@ -1128,14 +1145,14 @@ function useFieldModalTree() {
   return import("./field-modal-tree.js");
 }
 async function useFieldRepeatable() {
-  const module2 = await import("./field-repeatable.js");
-  await module2.ready;
-  return module2;
+  const module = await import("./field-repeatable.js");
+  await module.ready;
+  return module;
 }
 async function useFieldSingleImageDrag() {
-  const module2 = await import("./field-single-image-drag.js");
-  await module2.ready;
-  return module2;
+  const module = await import("./field-single-image-drag.js");
+  await module.ready;
+  return module;
 }
 let formElement;
 async function useFormAsync(ele, options = {}) {
@@ -1152,7 +1169,7 @@ function useForm(ele, options = {}) {
   if (!el) {
     throw new Error(`Form element of: ${selector} not found.`);
   }
-  return module(
+  return module$1(
     el,
     "unicorn.form",
     () => new formElement(selector, el, options)
@@ -1183,7 +1200,7 @@ function useGrid(ele, options = {}) {
   if (!form) {
     throw new Error("UnicornGrid is depends on UnicornForm");
   }
-  return module(
+  return module$1(
     element,
     "grid.plugin",
     () => new gridElement(selector, element, form, options)
@@ -1199,18 +1216,18 @@ async function useHttpClient(config) {
   return createHttpClient(config);
 }
 async function useIframeModal() {
-  const module2 = await import("./iframe-modal.js");
-  await module2.ready;
-  return module2;
+  const module = await import("./iframe-modal.js");
+  await module.ready;
+  return module;
 }
 async function useListDependent(element, dependent, options = {}) {
-  const module2 = await import("./list-dependent.js");
-  await module2.ready;
+  const module = await import("./list-dependent.js");
+  await module.ready;
   if (element) {
-    const { ListDependent } = module2;
+    const { ListDependent } = module;
     return ListDependent.handle(element, dependent ?? void 0, options);
   }
-  return module2;
+  return module;
 }
 const queues = {};
 function useQueue(name = "default", maxRunning = 1) {
@@ -1220,24 +1237,24 @@ function createQueue(maxRunning = 1) {
   return queue(maxRunning);
 }
 async function useS3Uploader(name, options = {}) {
-  const module2 = await import("./s3-uploader.js");
+  const module = await import("./s3-uploader.js");
   if (!name) {
-    return module2;
+    return module;
   }
-  const { get } = module2;
+  const { get } = module;
   return get(name, options);
 }
 async function useS3MultipartUploader(options) {
-  const module2 = await import("./s3-multipart-uploader.js");
+  const module = await import("./s3-multipart-uploader.js");
   if (options != null) {
-    return new module2.S3MultipartUploader(options);
+    return new module.S3MultipartUploader(options);
   }
-  return module2;
+  return module;
 }
 async function useShowOn() {
-  const module2 = await import("./show-on.js");
-  await module2.ready;
-  return module2;
+  const module = await import("./show-on.js");
+  await module.ready;
+  return module;
 }
 const stacks = {};
 function useStack(name = "default", store = []) {
@@ -1252,7 +1269,7 @@ async function useTomSelect(selector, options = {}, theme = "bootstrap5") {
     useCssImport(`@vendor/tom-select/dist/css/tom-select.${theme}.min.css`)
   );
   if (selector) {
-    module(
+    module$1(
       selector,
       "tom.select",
       (ele) => {
@@ -1294,11 +1311,11 @@ async function useTomSelect(selector, options = {}, theme = "bootstrap5") {
   return m;
 }
 async function useTinymce(selector, options = {}) {
-  const module2 = await import("./tinymce.js");
+  const module = await import("./tinymce.js");
   if (selector) {
-    return module2.get(selector, options);
+    return module.get(selector, options);
   }
-  return module2;
+  return module;
 }
 async function useTinymceHook(handler) {
   const { addHook } = await import("./tinymce.js");
@@ -1346,10 +1363,10 @@ async function createWebDirective(options = {}) {
   return wd;
 }
 async function useFormValidation(selector) {
-  const module2 = await import("./validation.js");
-  await module2.ready;
+  const module = await import("./validation.js");
+  await module.ready;
   if (!selector) {
-    return module2;
+    return module;
   }
   return useFormValidationInstance(selector);
 }
@@ -1610,7 +1627,7 @@ async function useColorPicker(selector, options = {}) {
     }
   }
   if (selector) {
-    module(selector, "spectrum", (ele) => Spectrum.getInstance(ele, options));
+    return module$1(selector, "spectrum", (ele) => Spectrum.getInstance(ele, options));
   }
   return m;
 }
@@ -1984,11 +2001,11 @@ class UnicornApp extends (/* @__PURE__ */ Mixin(EventMixin)) {
     return this;
   }
   inject(id, def) {
-    if (!typeof this.registry.has(id)) {
+    if (!this.registry.has(id)) {
       if (def !== void 0) {
         return def;
       }
-      throw new Error(`Injectable: ${id.name} not found.`);
+      throw new Error(`Injectable: "${id.name ?? id}" not found.`);
     }
     return this.registry.get(id);
   }
@@ -2058,9 +2075,9 @@ function polyfill() {
   }
 }
 async function useFieldMultiUploader() {
-  const module2 = await import("./field-multi-uploader.js");
-  await module2.ready;
-  return module2;
+  const module = await import("./field-multi-uploader.js");
+  await module.ready;
+  return module;
 }
 function useUnicornPhpAdapter(app2) {
   app2 ??= useUnicorn();
@@ -2168,7 +2185,7 @@ export {
   useKeepAlive as Z,
   __ as _,
   useUniDirective as a,
-  useS3MultipartUploader as a$,
+  useListDependent as a$,
   useBs5ButtonRadio as a0,
   useBs5Tooltip as a1,
   useFormAsync as a2,
@@ -2179,33 +2196,33 @@ export {
   mergeDeep as a7,
   injectCssToDocument as a8,
   watchAttributes as a9,
-  doImport as aA,
-  useSeriesImport as aB,
-  useCssIncludes as aC,
-  useAlertAdapter as aD,
-  useUI as aE,
-  UnicornUI as aF,
-  useVueComponentField as aG,
-  addUriBase as aH,
-  UnicornSystemUri as aI,
-  UnicornAssetUri as aJ,
-  addRoute as aK,
-  hasRoute as aL,
-  addQuery as aM,
-  parseQuery as aN,
-  buildQuery as aO,
-  useFieldCascadeSelect as aP,
-  useFieldFileDrag as aQ,
-  useFieldFlatpickr as aR,
-  useFieldModalSelect as aS,
-  useFieldModalTree as aT,
-  useFieldRepeatable as aU,
-  useFieldSingleImageDrag as aV,
-  useFormComponent as aW,
-  useGridComponent as aX,
-  useIframeModal as aY,
-  useListDependent as aZ,
-  useS3Uploader as a_,
+  isError as aA,
+  useLang as aB,
+  doImport as aC,
+  useSeriesImport as aD,
+  useCssIncludes as aE,
+  useAlertAdapter as aF,
+  useUI as aG,
+  UnicornUI as aH,
+  useVueComponentField as aI,
+  addUriBase as aJ,
+  UnicornSystemUri as aK,
+  UnicornAssetUri as aL,
+  addRoute as aM,
+  hasRoute as aN,
+  addQuery as aO,
+  parseQuery as aP,
+  buildQuery as aQ,
+  useFieldCascadeSelect as aR,
+  useFieldFileDrag as aS,
+  useFieldFlatpickr as aT,
+  useFieldModalSelect as aU,
+  useFieldModalTree as aV,
+  useFieldRepeatable as aW,
+  useFieldSingleImageDrag as aX,
+  useFormComponent as aY,
+  useGridComponent as aZ,
+  useIframeModal as a_,
   useImport as aa,
   useCssImport as ab,
   data as ac,
@@ -2228,19 +2245,21 @@ export {
   removeData as at,
   randomBytes as au,
   randomBytesString as av,
-  AttributeMutationObserver as aw,
-  nextTick as ax,
-  wait as ay,
-  useLang as az,
+  removeBoundedInstance as aw,
+  AttributeMutationObserver as ax,
+  nextTick as ay,
+  wait as az,
   animateTo as b,
-  useShowOn as b0,
-  createStack as b1,
-  useTinymce as b2,
-  useTinymceHook as b3,
-  useUIBootstrap5 as b4,
-  useWebDirective as b5,
-  useUnicornPhpAdapter as b6,
-  UnicornPhpAdapter as b7,
+  useS3Uploader as b0,
+  useS3MultipartUploader as b1,
+  useShowOn as b2,
+  createStack as b3,
+  useTinymce as b4,
+  useTinymceHook as b5,
+  useUIBootstrap5 as b6,
+  useWebDirective as b7,
+  useUnicornPhpAdapter as b8,
+  UnicornPhpAdapter as b9,
   renderMessage as c,
   clearMessages as d,
   clearNotifies as e,
@@ -2264,6 +2283,6 @@ export {
   selectAll as w,
   getBoundedInstance as x,
   getBoundedInstanceList as y,
-  module as z
+  module$1 as z
 };
 //# sourceMappingURL=unicorn.js.map
