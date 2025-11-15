@@ -1,4 +1,5 @@
 import { numberFormat } from '@lyrasoft/ts-toolkit/generic';
+import { Modal } from 'bootstrap';
 import { sprintf, vsprintf } from 'sprintf-js';
 import {
   addGlobalValidator,
@@ -178,6 +179,9 @@ function handleUI(app: any) {
     tooltip: useBs5Tooltip,
     buttonRadio: useBs5ButtonRadio,
     keepTab: useBs5KeepTab,
+    modal: (selector: any, config: any) => {
+      return module(selector, 'bs.modal', (el) => Modal.getOrCreateInstance(el, config));
+    }
   };
 }
 
