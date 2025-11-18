@@ -48,7 +48,7 @@ class GridController implements EventAwareInterface
         $state->rememberFromRequest('list_ordering');
         $state->forget('page');
 
-        return $nav->self();
+        return $nav->self()->allowQuery(true);
     }
 
     public function batch(
