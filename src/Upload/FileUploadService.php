@@ -268,6 +268,8 @@ class FileUploadService implements EventAwareInterface
             $stream = $this->optimizeImage($stream, $dest, $resizeConfig);
         }
 
+        $options = $this->getMergeOptions($options);
+
         return $this->putToStorage($stream, $file, $dest, $options);
     }
 
@@ -685,7 +687,7 @@ class FileUploadService implements EventAwareInterface
         StreamInterface $stream,
         mixed $file,
         string $dest,
-        FileUploadOptions|array $options
+        FileUploadOptions $options
     ): PutResult {
         $storageOptions = array_merge($this->options->storageOptions, $options->storageOptions);
 
