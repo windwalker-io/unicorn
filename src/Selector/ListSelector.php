@@ -159,7 +159,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
             $query->loadColumnsFromDb($this->isLoadColumnsFromDb());
 
             if (!$this->isDisableSelectGroup()) {
-                $query->groupByJoins('.');
+                $query->groupByJoins();
             } else {
                 $query->autoSelections('_');
             }
