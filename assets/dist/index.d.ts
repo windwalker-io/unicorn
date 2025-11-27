@@ -1491,6 +1491,10 @@ declare module '@windwalker-io/unicorn-next' {
     }
 }
 
+declare global {
+    var S: any;
+}
+
 
 declare module 'axios' {
     interface AxiosRequestConfig {
@@ -1500,10 +1504,6 @@ declare module 'axios' {
     }
     interface CreateAxiosDefaults {
     }
-}
-
-declare global {
-    var S: any;
 }
 
 

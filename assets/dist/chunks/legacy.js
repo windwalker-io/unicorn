@@ -1,4 +1,5 @@
 import { i as isDebug, u as useHttpClient, _ as __, r as route, a as useUniDirective, b as animateTo, c as renderMessage, d as clearMessages, s as simpleNotify, e as clearNotifies, l as loadAlpine, f as initAlpineComponent, p as prepareAlpine, g as useFormValidation, h as addGlobalValidator, j as useFieldValidationInstance, k as useFormValidationInstance, m as useStack, n as useQueue, o as useSystemUri, q as useAssetUri, t as domready, v as selectOne, w as selectAll, x as getBoundedInstance, y as getBoundedInstanceList, z as module$1, A as h, B as html, C as delegate, D as debounce, E as throttle, F as simpleConfirm, G as simpleAlert, H as sprintfExports, I as base64UrlEncode, J as base64UrlDecode, K as uid, L as tid, M as serial, N as mark, O as useTomSelect, P as slideUp, Q as slideDown, R as slideToggle, S as fadeOut, T as fadeIn, U as highlight, V as useColorPicker, W as useDisableOnSubmit, X as useDisableIfStackNotEmpty, Y as useCheckboxesMultiSelect, Z as useKeepAlive, $ as useBs5KeepTab, a0 as useBs5ButtonRadio, a1 as useBs5Tooltip, a2 as useFormAsync, a3 as useGridAsync, a4 as useForm, a5 as useGrid } from "./unicorn.js";
+import { Modal } from "bootstrap";
 function numberFormat(number, decimals = 0, decPoint = ".", thousandsSep = ",") {
   number = Number(number);
   const str = number.toFixed(decimals ? decimals : 0).toString().split(".");
@@ -197,7 +198,10 @@ function handleUI(app) {
   app.$ui.bootstrap = {
     tooltip: useBs5Tooltip,
     buttonRadio: useBs5ButtonRadio,
-    keepTab: useBs5KeepTab
+    keepTab: useBs5KeepTab,
+    modal: (selector, config) => {
+      return module$1(selector, "bs.modal", (el) => Modal.getOrCreateInstance(el, config));
+    }
   };
 }
 async function handleFormGrid(app) {

@@ -1,6 +1,6 @@
 {
   "name": "@windwalker-io/unicorn-next",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "description": "Unicorn framework js library",
   "type": "module",
   "typings": "dist/index.d.ts",
@@ -11,7 +11,8 @@
     "preview": "vite preview",
     "dev:assets": "vite build --watch --mode development --config vite.assets.config.ts",
     "build:assets": "vite build --config vite.assets.config.ts",
-    "build:prod": "yarn build && yarn build:assets"
+    "build:prod": "yarn build && yarn build:assets",
+    "upgrade": "yarn up '**' -R"
   },
   "sideEffects": false,
   "repository": {
