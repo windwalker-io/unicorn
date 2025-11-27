@@ -93,7 +93,7 @@ class S3Service
                 [
                     'credentials' => $this->client->getCredentials()->wait(),
                     'region' => $this->client->getRegion(),
-                    'version' => 'latest'
+                    'version' => 'latest',
                 ]
             );
 
@@ -103,7 +103,7 @@ class S3Service
                     // Cloudfront expires uses timestamp
                     'expires' => Chronos::wrap($expires)->toUnix(),
                     'private_key' => $this->options['cdn']['private_key'],
-                    'key_pair_id' => $this->options['cdn']['key_pair_id']
+                    'key_pair_id' => $this->options['cdn']['key_pair_id'],
                 ]
             );
 
@@ -489,5 +489,45 @@ class S3Service
         $this->client = $client;
 
         return $this;
+    }
+
+    public function registerStreamWrapper(): void
+    {
+        $this->client->registerStreamWrapper();
+    }
+
+    public function registerStreamWrapperV2(): void
+    {
+        $this->client->registerStreamWrapperV2();
+    }
+
+    /**
+     * @param  string  $key
+     *
+     * @return  resource|false
+     */
+    public function createReadStream(string $key): mixed
+    {
+        $context = stream_context_create(
+            [
+                's3' => [
+                    'seekable' => true,
+                ],
+            ]
+        );
+
+        $bucket = $this->getBucketName();
+
+        return fopen(
+            "s3://{$bucket}/{$key}",
+            READ_ONLY_FROM_BEGIN,
+            false,
+            $context,
+        );
+    }
+
+    public function createPsr7ReadStream(string $key): Stream
+    {
+        return new Stream($this->createReadStream($key));
     }
 }
