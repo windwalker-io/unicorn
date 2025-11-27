@@ -33,8 +33,10 @@ $attributes->props('pagination');
 $attributes = $attributes->class('c-pagination-jump gap-2');
 $self = (string) $nav->self()->var('page', '{page}');
 ?>
-@once
-    <script>
+
+@if ($pagination->getPages() > 1)
+    @once
+        <script>
         document.addEventListener('DOMContentLoaded', () => {
             for (const el of document.querySelectorAll('[data-pagination-jump]')) {
                 el.querySelector('button').addEventListener('click', () => {
@@ -52,18 +54,19 @@ $self = (string) $nav->self()->var('page', '{page}');
             }
         });
     </script>
-@endonce
+    @endonce
 
-<div {!! $attributes !!}>
-    <div class="input-group" data-pagination-jump>
-        <div class="input-group-text">前往</div>
-        <input type="number"
-            name="page"
-            value="{{ $pagination->getCurrent() }}"
-            class="form-control"
-            style="max-width: 100px" />
-        <button type="button" class="btn btn-primary">
-            GO
-        </button>
+    <div {!! $attributes !!}>
+        <div class="input-group" data-pagination-jump>
+            <div class="input-group-text">前往</div>
+            <input type="number"
+                name="page"
+                value="{{ $pagination->getCurrent() }}"
+                class="form-control"
+                style="max-width: 100px" />
+            <button type="button" class="btn btn-primary">
+                GO
+            </button>
+        </div>
     </div>
-</div>
+@endif
