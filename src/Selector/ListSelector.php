@@ -129,6 +129,24 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
         );
     }
 
+    /**
+     * @template T of Collection
+     *
+     * @param  int                   $length
+     * @param  class-string<T>|null  $class
+     * @param  array                 $args
+     *
+     * @return  \Generator<T>
+     */
+    public function iterateChunks(int $length, ?string $class = null, array $args = []): \Generator
+    {
+        return $this->compileQuery()->iterateChunks(
+            $length,
+            $class ?? $this->getDefaultItemClass(),
+            $args,
+        );
+    }
+
     public function getQuery(): SelectorQuery
     {
         return $this->query ??= $this->createQuery();
@@ -204,6 +222,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
     {
         if ($page === null) {
             $this->page = $page;
+
             return $this;
         }
 
@@ -220,6 +239,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
     {
         if ($offset === null) {
             $this->offset = $offset;
+
             return $this;
         }
 
@@ -326,7 +346,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
                     $total = $this->count();
 
                     if ($total && $start > $total - $limit) {
-                        $page  = (int) ceil($total / $limit);
+                        $page = (int) ceil($total / $limit);
                         $start = max(0, ($page - 1) * $limit);
 
                         $this->page($page);
