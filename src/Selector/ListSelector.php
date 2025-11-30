@@ -869,6 +869,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
 
         $helper = $this->getOrderingHelper();
         $orderData = [];
+        $count = count($order);
 
         foreach ($order as $i => $orderItem) {
             if (is_string($orderItem)) {
@@ -880,7 +881,8 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
                     continue;
                 }
 
-                if ($dir !== null) {
+                // Force set direction if is last order
+                if ($dir !== null && ($i + 1) === $count) {
                     $orderDir = $dir;
                 }
 
@@ -892,6 +894,10 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
                 } else {
                     $orderData[$orderFieldOrigin] = [$orderField, $orderDir];
                 }
+            } elseif ($orderItem instanceof RawWrapper) {
+                $orderValue = (string) $orderItem();
+
+                $orderData[$orderValue] = [$orderValue, $dir];
             }
         }
 
