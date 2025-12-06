@@ -170,10 +170,12 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
         return $this->query ??= $this->createQuery();
     }
 
-    public function compileQuery(bool $autoSelection = true): SelectorQuery
+    public function compileQuery(?bool $autoSelection = null): SelectorQuery
     {
         $query = clone $this->getQuery();
         $selector = $this;
+
+        $autoSelection ??= !$this->isDisableAutoSelect();
 
         // $this->beforeCompileQuery($query);
 
@@ -968,10 +970,34 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
      * @param  bool  $disableSelectGroup
      *
      * @return  static  Return self to support chaining.
+     *
+     * @deprecated  This is for B/C only. Use disableAutoSelect() instead.
      */
     public function disableSelectGroup(bool $disableSelectGroup = true): static
     {
         $this->setOption('disable_select_group', $disableSelectGroup);
+
+        return $this;
+    }
+
+    /**
+     * @return  bool
+     *
+     * @deprecated  This is for B/C only. Use isDisableAutoSelect() instead.
+     */
+    public function isDisableAutoSelect(): bool
+    {
+        return (bool) $this->getOption('disable_auto_select');
+    }
+
+    /**
+     * @param  bool  $autoSelect
+     *
+     * @return  static  Return self to support chaining.
+     */
+    public function disableAutoSelect(bool $autoSelect = true): static
+    {
+        $this->setOption('disable_auto_select', $autoSelect);
 
         return $this;
     }
