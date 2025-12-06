@@ -147,6 +147,24 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
         );
     }
 
+    /**
+     * @template T of Collection
+     *
+     * @param  int                   $length
+     * @param  class-string<T>|null  $class
+     * @param  array                 $args
+     *
+     * @return  \Generator<T>
+     */
+    public function iterateWhile(int $length, ?string $class = null, array $args = []): \Generator
+    {
+        return $this->compileQuery()->iterateWhile(
+            $length,
+            $class ?? $this->getDefaultItemClass(),
+            $args,
+        );
+    }
+
     public function getQuery(): SelectorQuery
     {
         return $this->query ??= $this->createQuery();
