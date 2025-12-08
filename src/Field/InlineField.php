@@ -29,7 +29,7 @@ class InlineField extends AbstractField implements CompositeFieldInterface
 
     protected array $widths = [];
 
-    protected int|false $gap = 3;
+    protected string|int|false $gap = 3;
 
     protected ?string $group = null;
 
@@ -96,6 +96,15 @@ class InlineField extends AbstractField implements CompositeFieldInterface
         );
     }
 
+    /**
+     * Accept widths for each sub-field. Can be:
+     * string: ('20px', '50px', '15px') // css width string.
+     * int: (2, 5, 3) // 12 grid columns
+     *
+     * @param ...$widths
+     *
+     * @return  $this
+     */
     public function widths(...$widths): static
     {
         $this->widths = $widths;
@@ -148,12 +157,19 @@ class InlineField extends AbstractField implements CompositeFieldInterface
         return $this->group;
     }
 
-    public function getGap(): int|false
+    public function getGap(): string|int|false
     {
         return $this->gap;
     }
 
-    public function gap(int|false $gap): static
+    /**
+     * Column gap between fields. Can be css width string or 12 grid columns int.
+     *
+     * @param  string|int|false  $gap
+     *
+     * @return  $this
+     */
+    public function gap(string|int|false $gap): static
     {
         $this->gap = $gap;
 

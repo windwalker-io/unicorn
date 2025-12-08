@@ -29,7 +29,8 @@ use Windwalker\Core\Router\SystemUri;
  * @var \Windwalker\Form\Form $form
  */
 
-$fields = $form->getFields();
+$fields = iterator_to_array($form->getFields());
+$countFields = count($fields);
 $inputElement = $field->getPreparedInput();
 $showLabel = $field->getShowLabel() ?? false;
 $i = 0;
@@ -39,7 +40,14 @@ $gap = $field->getGap();
 $inputElement->addClass('c-inline-field d-flex flex-wrap w-100');
 
 if ($gap) {
-    $inputElement->addClass("gap-$gap");
+    if (is_numeric($gap)) {
+        $gap = ($gap * 0.5) . 'rem';
+        $inputElement->style->gap = $gap;
+    } else {
+        $inputElement->style->gap = $gap;
+    }
+} else {
+    $gap = 0;
 }
 
 $labelClass = $showLabel ? '' : 'visually-hidden';
@@ -54,9 +62,9 @@ $labelClass = $showLabel ? '' : 'visually-hidden';
             $style = 'flex: 1 0 0%;';
         } elseif (is_numeric($w)) {
             $w = 100 / 12 * $w;
-            $style = "flex: 0 0 auto; width: calc($w% - .5rem);";
+            $style = "flex: 0 0 auto; width: calc($w% - $gap + ($gap / $countFields));";
         } else {
-            $style = "width: $w;";
+            $style = "width: calc($w - $gap + ($gap / $countFields));";
         }
         ?>
         <div class="c-inline-field__column" style="{{ $style }}">
