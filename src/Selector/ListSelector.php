@@ -138,6 +138,24 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
      *
      * @return  \Generator<T>
      */
+    public function iterateBatched(int $length, ?string $class = null, array $args = []): \Generator
+    {
+        return $this->compileQuery()->iterateBatched(
+            $length,
+            $class ?? $this->getDefaultItemClass(),
+            $args,
+        );
+    }
+
+    /**
+     * @template T of Collection
+     *
+     * @param  int                   $length
+     * @param  class-string<T>|null  $class
+     * @param  array                 $args
+     *
+     * @return  \Generator<Collection<T>>
+     */
     public function iterateChunks(int $length, ?string $class = null, array $args = []): \Generator
     {
         return $this->compileQuery()->iterateChunks(
@@ -159,6 +177,24 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
     public function iterateWhile(int $length, ?string $class = null, array $args = []): \Generator
     {
         return $this->compileQuery()->iterateWhile(
+            $length,
+            $class ?? $this->getDefaultItemClass(),
+            $args,
+        );
+    }
+
+    /**
+     * @template T of Collection
+     *
+     * @param  int                   $length
+     * @param  class-string<T>|null  $class
+     * @param  array                 $args
+     *
+     * @return  \Generator<T>
+     */
+    public function iterateBatchWhile(int $length, ?string $class = null, array $args = []): \Generator
+    {
+        return $this->compileQuery()->iterateBatchWhile(
             $length,
             $class ?? $this->getDefaultItemClass(),
             $args,
