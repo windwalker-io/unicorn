@@ -94,7 +94,7 @@ $attributes['uni-tabs-autonav'] = json_encode($directiveOptions);
                     const tabContent = el.querySelector('.tab-content');
                     const navTarget = options.navTarget;
                     const navAttrs = JSON.parse(options.navAttrs || '{}');
-                    const fill = options.fill ? 'true' : 'false';
+                    const fill = options.fill ? true : false;
 
                     if (options.keepactive) {
                         useBs5KeepTab(options.keepactive);
