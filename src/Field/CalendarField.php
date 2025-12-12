@@ -28,6 +28,8 @@ use Windwalker\Utilities\Arr;
  * @method  mixed  getMonthSelect()
  * @method  mixed  timezone(string $value)
  * @method  mixed  getTimezone()
+ * @method  mixed  noCalendar(bool $value)
+ * @method  mixed  getNoCalendar()
  */
 class CalendarField extends TextField
 {
@@ -54,7 +56,8 @@ class CalendarField extends TextField
             'allowInput' => true,
             'time_24hr' => true,
             'wrap' => true,
-            'monthSelect' => $this->getMonthSelect()
+            'monthSelect' => $this->getMonthSelect(),
+            'noCalendar' => $this->getNoCalendar(),
         ];
     }
 
@@ -66,8 +69,9 @@ class CalendarField extends TextField
         $input = parent::prepareInput($input);
 
         $tz = $this->getTimezone() ?? $this->chronosService->getTimezone();
+        $noCalendar = $this->getNoCalendar();
 
-        if (trim((string) $input->getAttribute('value'))) {
+        if (!$noCalendar && trim((string) $input->getAttribute('value'))) {
             $value = $input->getAttribute('value');
 
             $input['value'] = $this->chronosService->isNullDate($value)
@@ -135,7 +139,8 @@ class CalendarField extends TextField
                 'enableTime',
                 'format',
                 'monthSelect',
-                'timezone'
+                'timezone',
+                'noCalendar',
             ]
         );
     }
