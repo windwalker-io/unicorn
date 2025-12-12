@@ -7,7 +7,9 @@ namespace Unicorn\Script;
 use Psr\Http\Message\UriInterface;
 use Windwalker\Core\Asset\AbstractScript;
 use Windwalker\Core\Language\TranslatorTrait;
+use Windwalker\Core\Router\SystemUri;
 use Windwalker\Form\Field\AbstractField;
+use Windwalker\Uri\Uri;
 
 /**
  * The FormScript class.
@@ -21,6 +23,7 @@ class FormScript extends AbstractScript
      */
     public function __construct(
         protected UnicornScript $unicornScript,
+        protected SystemUri $systemUri,
         protected VueScript $vueScript,
     ) {
     }
@@ -174,9 +177,19 @@ class FormScript extends AbstractScript
     ): static {
         if ($this->available($callbackName)) {
             if ($this->next) {
+                $host = $this->systemUri->toString(Uri::FULL_HOST);
+
                 $this->unicornScript->importMainThen(
                     <<<JS
-                u.\$ui.modalField().then(({ createCallback }) => window.$callbackName = createCallback('$type', '$selector', '$modalSelector'));
+                u.\$ui.modalField().then(({ listenMessages }) => {
+                    listenMessages({
+                        origin: '$host',
+                        instanceId: '$callbackName',
+                        type: '$type',
+                        selector: '$selector', 
+                        modalSelector: '$modalSelector'
+                    });
+                });
                 JS
                 );
             } else {

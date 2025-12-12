@@ -399,9 +399,19 @@ class ModalListSelectElement extends HTMLElement {
 async function init() {
   customElements.define(ModalListSelectElement.is, ModalListSelectElement);
 }
+function listenMessages(options) {
+  const callback = createCallback(options.type, options.selector, options.modalSelector);
+  window.addEventListener("message", (e) => {
+    if (e.origin === options.origin && Array.isArray(e.data) && e.data[0] === options.instanceId) {
+      callback(e.data[1]);
+    }
+  });
+  window[options.instanceId] = callback;
+}
 const ready = /* @__PURE__ */ init();
 export {
   createCallback,
+  listenMessages,
   ready
 };
 //# sourceMappingURL=field-modal-select.js.map

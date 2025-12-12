@@ -171,9 +171,32 @@ async function init() {
   customElements.define(ModalListSelectElement.is, ModalListSelectElement);
 }
 
+export interface ModalListenMessagesOptions {
+  origin: string;
+  instanceId: string;
+  type: 'list' | 'single';
+  selector: string;
+  modalSelector: string;
+}
+
+export function listenMessages(options: ModalListenMessagesOptions) {
+  const callback = createCallback(options.type, options.selector, options.modalSelector);
+
+  window.addEventListener('message', (e) => {
+    if (e.origin === options.origin && Array.isArray(e.data) && e.data[0] === options.instanceId) {
+      callback(e.data[1]);
+    }
+  });
+
+  // Todo: Should remove this after 4.3 or 5.0
+  // @ts-ignore
+  window[options.instanceId] = callback;
+}
+
 export const ready = init();
 
 export interface ModalSelectModule {
   createCallback: typeof createCallback;
+  listenMessages: typeof listenMessages;
   ready: typeof ready;
 }

@@ -470,6 +470,8 @@ declare interface ListDependentOptions {
     };
 }
 
+declare function listenMessages(options: ModalListenMessagesOptions): void;
+
 declare type ListItems = Record<string, any>[];
 
 export declare function loadAlpine(callback?: Nullable<AlpinePrepareCallback>): Promise<Alpine_2>;
@@ -480,10 +482,19 @@ declare type MaybeGroupedListItems = Record<string, ListItems> | ListItems;
 
 declare type MaybePromise<T> = T | Promise<T>;
 
+declare interface ModalListenMessagesOptions {
+    origin: string;
+    instanceId: string;
+    type: 'list' | 'single';
+    selector: string;
+    modalSelector: string;
+}
+
 declare type ModalSelectCallback = (item: any) => void;
 
 declare interface ModalSelectModule {
     createCallback: typeof createCallback;
+    listenMessages: typeof listenMessages;
     ready: typeof ready_2;
 }
 
@@ -1476,19 +1487,19 @@ declare global {
 }
 
 
-declare global {
-    var Alpine: AlpineGlobal;
-    var TomSelect: typeof TomSelectGlobal;
-    var Spectrum: typeof SpectrumGlobal;
-    var Mark: any;
-}
-
-
 declare module '@windwalker-io/unicorn-next' {
     interface UnicornApp {
         /** @deprecated Only for code generator use. */
         $ui: typeof methods;
     }
+}
+
+
+declare global {
+    var Alpine: AlpineGlobal;
+    var TomSelect: typeof TomSelectGlobal;
+    var Spectrum: typeof SpectrumGlobal;
+    var Mark: any;
 }
 
 declare global {
@@ -1508,12 +1519,12 @@ declare module 'axios' {
 
 
 declare global {
-    export interface Window {
-        bootstrap: typeof bootstrap;
-    }
+    var tinymce: TinyMCE;
 }
 
 
 declare global {
-    var tinymce: TinyMCE;
+    export interface Window {
+        bootstrap: typeof bootstrap;
+    }
 }
