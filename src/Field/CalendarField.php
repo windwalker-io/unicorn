@@ -35,9 +35,9 @@ class CalendarField extends TextField
 {
     use LayoutFieldTrait;
 
-    public const FORMAT_DATE = 'Y-m-d';
-    public const FORMAT_DATETIME_FULL = 'Y-m-d H:i:S';
-    public const FORMAT_DATETIME_MINUTE = 'Y-m-d H:i';
+    public const string FORMAT_DATE = 'Y-m-d';
+    public const string FORMAT_DATETIME_FULL = 'Y-m-d H:i:S';
+    public const string FORMAT_DATETIME_MINUTE = 'Y-m-d H:i';
 
     #[Inject]
     protected ChronosService $chronosService;
@@ -68,22 +68,7 @@ class CalendarField extends TextField
     {
         $input = parent::prepareInput($input);
 
-        $tz = $this->getTimezone() ?? $this->chronosService->getTimezone();
-        $noCalendar = $this->getNoCalendar();
-
-        if (!$noCalendar && trim((string) $input->getAttribute('value'))) {
-            $value = $input->getAttribute('value');
-
-            $input['value'] = $this->chronosService->isNullDate($value)
-                ? ''
-                : $this->chronosService->toLocalFormat(
-                    $value,
-                    Chronos::FORMAT_YMD_HIS,
-                    $tz,
-                );
-        }
-
-        return $input;
+        return $this->handleTimezone($input);
     }
 
     public function compileFieldElement(HTMLElement $input, array $options = []): string|HTMLElement
@@ -119,6 +104,31 @@ class CalendarField extends TextField
         $value = parent::prepareStore($value);
 
         return $this->chronosService->toServer($value);
+    }
+
+    /**
+     * @param  HTMLElement  $input
+     *
+     * @return  HTMLElement
+     */
+    public function handleTimezone(HTMLElement $input): HTMLElement
+    {
+        $tz = $this->getTimezone() ?? $this->chronosService->getTimezone();
+        $noCalendar = $this->getNoCalendar();
+
+        if (!$noCalendar && trim((string) $input->getAttribute('value'))) {
+            $value = $input->getAttribute('value');
+
+            $input['value'] = $this->chronosService->isNullDate($value)
+                ? ''
+                : $this->chronosService->toLocalFormat(
+                    $value,
+                    Chronos::FORMAT_YMD_HIS,
+                    $tz,
+                );
+        }
+
+        return $input;
     }
 
     /**
