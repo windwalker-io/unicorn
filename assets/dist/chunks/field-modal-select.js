@@ -325,7 +325,7 @@ class ModalListSelectElement extends HTMLElement {
     return document.querySelector(this.options.modalSelector);
   }
   get items() {
-    return Array.from(this.listContainer.children);
+    return Array.from(this.listContainer.querySelectorAll("[data-value]"));
   }
   connectedCallback() {
     this.options = JSON.parse(this.getAttribute("options") || "{}");
@@ -344,9 +344,7 @@ class ModalListSelectElement extends HTMLElement {
       this.open(e);
     });
     this.querySelector("[data-role=clear]")?.addEventListener("click", () => {
-      this.items.forEach((item) => {
-        item.querySelector("[data-role=remove]")?.click();
-      });
+      this.removeAll();
     });
     selectButton.style.pointerEvents = "";
     this.render();
@@ -359,18 +357,55 @@ class ModalListSelectElement extends HTMLElement {
   }
   appendItem(item, highlights = false) {
     const itemHtml = html(this.itemTemplate({ item }));
-    itemHtml.dataset.value = item.value;
+    itemHtml.dataset.value = String(item.value);
     itemHtml.querySelector("[data-role=remove]")?.addEventListener("click", () => {
-      slideUp(itemHtml).then(() => {
-        itemHtml.remove();
-        this.toggleRequired();
-      });
+      this.removeItem(item);
     });
     this.listContainer.appendChild(itemHtml);
     this.toggleRequired();
     if (highlights) {
       highlight(itemHtml);
     }
+  }
+  appendIfNotExists(item, highlights = false) {
+    if (!this.isExists(item)) {
+      this.appendItem(item, highlights);
+    }
+  }
+  isExists(item) {
+    if (typeof item === "object") {
+      item = item.value;
+    }
+    return this.listContainer.querySelector(`[data-value="${item}"]`) !== null;
+  }
+  getItemElement(item) {
+    if (typeof item === "object") {
+      item = item.value;
+    }
+    return this.listContainer.querySelector(`[data-value="${item}"]`);
+  }
+  getValues() {
+    return this.items.map((item) => item.dataset.value);
+  }
+  removeItem(item) {
+    if (typeof item === "object") {
+      item = item.value;
+    }
+    const element = this.listContainer.querySelector(`[data-value="${item}"]`);
+    if (element) {
+      slideUp(element).then(() => {
+        element.remove();
+        this.toggleRequired();
+      });
+    }
+  }
+  async removeAll() {
+    const promises = [];
+    for (const item of this.items) {
+      promises.push(slideUp(item).then(() => item.remove()));
+    }
+    await Promise.all(promises);
+    this.toggleRequired();
   }
   toggleRequired() {
     const placeholder = this.querySelector("[data-role=validation-placeholder]");

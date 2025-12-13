@@ -57,6 +57,13 @@ interface ModalListOptions {
   max: number;
 }
 
+export interface ReceivedItem {
+  value: string | number;
+  title?: string;
+  image?: string;
+  [key: string]: any;
+}
+
 class ModalListSelectElement extends HTMLElement {
   static is = 'uni-modal-list';
 
@@ -71,8 +78,8 @@ class ModalListSelectElement extends HTMLElement {
     return document.querySelector<IFrameModalElement>(this.options.modalSelector);
   }
 
-  get items(): Element[] {
-    return Array.from(this.listContainer.children);
+  get items(): HTMLElement[] {
+    return Array.from(this.listContainer.querySelectorAll<HTMLElement>('[data-value]'));
   }
 
   connectedCallback() {
@@ -97,9 +104,7 @@ class ModalListSelectElement extends HTMLElement {
     });
 
     this.querySelector('[data-role=clear]')?.addEventListener('click', () => {
-      this.items.forEach((item) => {
-        item.querySelector<HTMLButtonElement>('[data-role=remove]')?.click();
-      });
+      this.removeAll();
     });
 
     selectButton.style.pointerEvents = '';
@@ -108,22 +113,19 @@ class ModalListSelectElement extends HTMLElement {
   }
 
   render() {
-    const items: Record<string, any>[] = data('unicorn.modal-field')[this.options.dataKey] || [];
+    const items: ReceivedItem[] = data('unicorn.modal-field')[this.options.dataKey] || [];
 
     items.forEach((item) => {
       this.appendItem(item);
     });
   }
 
-  appendItem(item: Record<string, any>, highlights = false) {
+  appendItem(item: ReceivedItem, highlights = false) {
     const itemHtml = html(this.itemTemplate({ item }));
 
-    itemHtml.dataset.value = item.value;
+    itemHtml.dataset.value = String(item.value);
     itemHtml.querySelector<HTMLButtonElement>('[data-role=remove]')?.addEventListener('click', () => {
-      slideUp(itemHtml).then(() => {
-        itemHtml.remove();
-        this.toggleRequired();
-      });
+      this.removeItem(item);
     });
 
     this.listContainer.appendChild(itemHtml);
@@ -132,6 +134,59 @@ class ModalListSelectElement extends HTMLElement {
     if (highlights) {
       highlight(itemHtml);
     }
+  }
+
+  appendIfNotExists(item: ReceivedItem, highlights = false) {
+    if (!this.isExists(item)) {
+      this.appendItem(item, highlights);
+    }
+  }
+
+  isExists(item: ReceivedItem | string | number): boolean {
+    if (typeof item === 'object') {
+      item = item.value;
+    }
+
+    return this.listContainer.querySelector(`[data-value="${item}"]`) !== null;
+  }
+
+  getItemElement(item: ReceivedItem | string | number): HTMLElement | null {
+    if (typeof item === 'object') {
+      item = item.value;
+    }
+
+    return this.listContainer.querySelector<HTMLElement>(`[data-value="${item}"]`);
+  }
+
+  getValues() {
+    return this.items.map((item) => item.dataset.value);
+  }
+
+  removeItem(item: ReceivedItem | string | number) {
+    if (typeof item === 'object') {
+      item = item.value;
+    }
+
+    const element = this.listContainer.querySelector<HTMLElement>(`[data-value="${item}"]`);
+
+    if (element) {
+      slideUp(element).then(() => {
+        element.remove();
+        this.toggleRequired();
+      });
+    }
+  }
+
+  async removeAll() {
+    const promises: Promise<any>[] = [];
+
+    for (const item of this.items) {
+      promises.push(slideUp(item).then(() => item.remove()));
+    }
+
+    await Promise.all(promises);
+
+    this.toggleRequired();
   }
 
   toggleRequired() {
