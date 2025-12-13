@@ -1502,10 +1502,6 @@ declare module '@windwalker-io/unicorn-next' {
     }
 }
 
-declare global {
-    var S: any;
-}
-
 
 declare module 'axios' {
     interface AxiosRequestConfig {
@@ -1520,6 +1516,10 @@ declare module 'axios' {
 
 declare global {
     var tinymce: TinyMCE;
+}
+
+declare global {
+    var S: any;
 }
 
 
