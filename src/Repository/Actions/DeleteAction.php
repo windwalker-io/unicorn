@@ -25,6 +25,6 @@ class DeleteAction extends AbstractDatabaseAction
             return;
         }
 
-        $mapper->deleteWhere($conditions);
+        $mapper->deleteBatch($conditions);
     }
 }
