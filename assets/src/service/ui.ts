@@ -4,7 +4,8 @@ import {
   simpleAlert,
   simpleConfirm,
   simpleNotify,
-  clearNotifies
+  clearNotifies,
+  promiseWithResolvers
 } from '@lyrasoft/ts-toolkit/generic';
 import type { Alpine as AlpineGlobal } from 'alpinejs';
 import type { default as SpectrumGlobal } from 'spectrum-vanilla';
@@ -137,7 +138,7 @@ export class UnicornUI {
 
 const prepares: AlpinePrepareCallback[] = [];
 type AlpinePrepareCallback = (Alpine: AlpineGlobal) => MaybePromise<any>;
-const { promise: alpineLoaded, resolve: alpineResolve } = Promise.withResolvers<AlpineGlobal>();
+const { promise: alpineLoaded, resolve: alpineResolve } = promiseWithResolvers<AlpineGlobal>();
 
 export async function loadAlpine(callback?: Nullable<AlpinePrepareCallback>): Promise<AlpineGlobal> {
   if (callback && !window.Alpine) {
