@@ -56,6 +56,7 @@ $uniScript->translate(
 );
 
 $disabled = $field->isReadonly() || $field->isDisabled();
+
 ?>
 
 <uni-modal-list id="{{ $field->getId('-wrap') }}"
@@ -81,7 +82,7 @@ $disabled = $field->isReadonly() || $field->isDisabled();
                         data-role="select"
                         data-size="modal-xl"
                         data-height="{{ $field->getModalHeight() ?: '80vh' }}"
-                        class="btn btn-primary c-modal-field__select"
+                        class="btn btn-primary c-modal-field__select {{ $disabled ? 'disabled' : '' }}"
                         style="pointer-events: none"
                     >
                         {!! $buttonText !!}
@@ -90,6 +91,7 @@ $disabled = $field->isReadonly() || $field->isDisabled();
                         data-bs-toggle="tooltip"
                         title="@lang('unicorn.field.modal.clear.all')"
                         data-role="clear"
+                        @attr('disabled', $disabled)
                     >
                         <span class="fa fa-xmark"></span>
                     </button>
@@ -109,6 +111,8 @@ $disabled = $field->isReadonly() || $field->isDisabled();
                 value=""
                 data-role="validation-placeholder"
                 style="display: none;"
+                @attr('disabled', $field->isDisabled())
+                @attr('readonly', $field->isReadonly())
                 {!! $input->attributesToString() !!} />
         @endif
     </div>
@@ -144,7 +148,9 @@ $disabled = $field->isReadonly() || $field->isDisabled();
             </div>
             <div class="modal-list-item-delete">
                 <button type="button" class="btn btn-outline-secondary btn-sm"
-                    data-role="remove">
+                    data-role="remove"
+                    @attr('disabled', $disabled)
+                >
                     <span class="fa fa-trash"></span>
                 </button>
 
