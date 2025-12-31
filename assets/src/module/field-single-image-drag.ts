@@ -44,9 +44,9 @@ export class SingleImageDragElement extends HTMLElement {
   private options!: SingleImageDragOptions;
   private valueInput!: HTMLInputElement;
   private fileInput!: HTMLInputElement;
-  private selectButton!: HTMLButtonElement;
-  private pasteButton!: HTMLButtonElement;
-  private dragarea!: HTMLDivElement;
+  private selectButton: HTMLButtonElement | null = null;
+  private pasteButton: HTMLButtonElement | null = null;
+  private dragarea: HTMLDivElement | null = null;
   private previewImage!: HTMLImageElement;
   private removeCheckbox!: HTMLInputElement;
   private modalElement!: HTMLDivElement;
@@ -71,7 +71,7 @@ export class SingleImageDragElement extends HTMLElement {
     this.fileInput = this.querySelector<HTMLInputElement>('[data-sid=file]')!;
     this.selectButton = this.querySelector<HTMLButtonElement>('[data-sid=select]')!;
     this.pasteButton = this.querySelector<HTMLButtonElement>('[data-sid=paste]')!;
-    this.dragarea = this.querySelector<HTMLDivElement>('[data-sid=dragarea]')!;
+    this.dragarea = this.querySelector<HTMLDivElement>('[data-sid=dragarea]');
     this.previewImage = this.querySelector<HTMLImageElement>('[data-sid=preview]')!;
     this.removeCheckbox = this.querySelector<HTMLInputElement>('[data-sid=remove]')!;
 
@@ -101,32 +101,34 @@ export class SingleImageDragElement extends HTMLElement {
   }
 
   bindEvents() {
-    this.dragarea.addEventListener('dragover', (event) => {
-      event.stopPropagation();
-      event.preventDefault();
+    if (this.dragarea) {
+      this.dragarea.addEventListener('dragover', (event) => {
+        event.stopPropagation();
+        event.preventDefault();
 
-      this.dragarea.classList.add('hover');
-    });
+        this.dragarea!.classList.add('hover');
+      });
 
-    this.dragarea.addEventListener('dragleave', (event) => {
-      event.stopPropagation();
-      event.preventDefault();
+      this.dragarea.addEventListener('dragleave', (event) => {
+        event.stopPropagation();
+        event.preventDefault();
 
-      this.dragarea.classList.remove('hover');
-    });
+        this.dragarea!.classList.remove('hover');
+      });
 
-    this.dragarea.addEventListener('drop', (event) => {
-      event.stopPropagation();
-      event.preventDefault();
+      this.dragarea.addEventListener('drop', (event) => {
+        event.stopPropagation();
+        event.preventDefault();
 
-      this.dragarea.classList.remove('hover');
+        this.dragarea!.classList.remove('hover');
 
-      const files = (event.target as HTMLInputElement).files || event.dataTransfer?.files || [];
-      this.handleFileSelect(files[0]);
-    });
+        const files = (event.target as HTMLInputElement).files || event.dataTransfer?.files || [];
+        this.handleFileSelect(files[0]);
+      });
+    }
 
     // Select button
-    this.selectButton.addEventListener('click', () => {
+    this.selectButton?.addEventListener('click', () => {
       const input = document.createElement('input');
       input.setAttribute('type', 'file');
       input.setAttribute('accept', this.getInputAccept());
@@ -141,7 +143,7 @@ export class SingleImageDragElement extends HTMLElement {
       input.click();
     });
 
-    this.pasteButton.addEventListener('click', () => {
+    this.pasteButton?.addEventListener('click', () => {
       navigator.clipboard.read().then((items) => {
         let types = items[0].types;
 

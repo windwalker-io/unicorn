@@ -458,6 +458,15 @@ function randomBytes(size = 12) {
   globalThis.crypto.getRandomValues(arr);
   return arr;
 }
+function promiseWithResolvers() {
+  let resolve;
+  let reject;
+  const promise = new Promise((rs, rj) => {
+    resolve = rs;
+    reject = rj;
+  });
+  return { promise, resolve, reject };
+}
 class TaskQueue {
   constructor(maxRunning = 1) {
     this.maxRunning = maxRunning;
@@ -1461,7 +1470,7 @@ class UnicornUI {
   // }
 }
 const prepares = [];
-const { promise: alpineLoaded, resolve: alpineResolve } = /* @__PURE__ */ Promise.withResolvers();
+const { promise: alpineLoaded, resolve: alpineResolve } = /* @__PURE__ */ promiseWithResolvers();
 async function loadAlpine(callback) {
   if (callback && !window.Alpine) {
     prepares.push(callback);
