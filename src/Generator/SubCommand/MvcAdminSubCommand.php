@@ -84,6 +84,8 @@ class MvcAdminSubCommand extends AbstractGeneratorSubCommand
             'Only generate edit',
             null
         );
+
+        $this->addYesAllOption($command);
     }
 
     /**
@@ -99,6 +101,7 @@ class MvcAdminSubCommand extends AbstractGeneratorSubCommand
             '--ns' => $io->getOption('ns'),
             '--dir' => $io->getOption('dir'),
             '--force' => $io->getOption('force') ? '' : null,
+            '-y' => true,
         ];
         $optionString = '';
 
@@ -107,12 +110,16 @@ class MvcAdminSubCommand extends AbstractGeneratorSubCommand
         $all = !$onlyGrid && !$onlyEdit;
 
         foreach ($options as $key => $value) {
-            if ($value !== null) {
+            if ($value === true) {
+                $optionString = $key;
+            } elseif ($value !== null) {
                 $optionString = $key . ' ' . $value;
             }
         }
 
         $name = $io->getArgument('name');
+
+        $this->checkNamespaceHasStage($io, $name);
 
         // Entity
         $entityName = \Windwalker\str($name)

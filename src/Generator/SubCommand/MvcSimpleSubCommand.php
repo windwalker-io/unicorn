@@ -71,6 +71,8 @@ class MvcSimpleSubCommand extends AbstractGeneratorSubCommand
             'Only generate item',
             null
         );
+
+        $this->addYesAllOption($command);
     }
 
     /**
@@ -86,11 +88,14 @@ class MvcSimpleSubCommand extends AbstractGeneratorSubCommand
             '--ns' => $io->getOption('ns'),
             '--dir' => $io->getOption('dir'),
             '--force' => $io->getOption('force') ? '' : null,
+            '-y' => true
         ];
         $optionString = '';
 
         foreach ($options as $key => $value) {
-            if ($value !== null) {
+            if ($value === true) {
+                $optionString = $key;
+            } elseif ($value !== null) {
                 $optionString = $key . ' ' . $value;
             }
         }
@@ -100,6 +105,8 @@ class MvcSimpleSubCommand extends AbstractGeneratorSubCommand
         $all = !$onlyList && !$onlyItem;
 
         $name = $io->getArgument('name');
+
+        $this->checkNamespaceHasStage($io, $name);
 
         // Entity
         $entityName = \Windwalker\str($name)

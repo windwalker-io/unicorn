@@ -22,7 +22,7 @@ use Windwalker\DI\Attributes\Autowire;
  */
 #[ViewModel(
     layout: '{% kebab($name) %}-edit',
-    js: '{% kebab($name) %}-edit.js'
+    js: '{% kebab($name) %}-edit.ts'
 )]
 class {% pascal($name) %}EditView
 {

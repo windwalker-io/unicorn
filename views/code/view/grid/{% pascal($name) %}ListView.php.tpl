@@ -27,7 +27,7 @@ use Windwalker\DI\Attributes\Autowire;
         'default' => '{% kebab($name) %}-list',
         'modal' => '{% kebab($name) %}-modal',
     ],
-    js: '{% kebab($name) %}-list.js'
+    js: '{% kebab($name) %}-list.ts'
 )]
 class {% pascal($name) %}ListView implements FilterAwareViewModelInterface
 {
