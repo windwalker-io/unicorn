@@ -8,6 +8,7 @@ use Symfony\Component\Mime\MimeTypes;
 use Symfony\Component\Mime\MimeTypesInterface;
 use Unicorn\Attributes\StateMachine;
 use Unicorn\Command\MigFromCommand;
+use Unicorn\Component\PaginationComponent;
 use Unicorn\Component\PublishingDropdownComponent;
 use Unicorn\Component\StateButtonComponent;
 use Unicorn\Component\StateDropdownComponent;
@@ -244,6 +245,7 @@ class UnicornPackage extends AbstractPackage implements
                 'div' => '@theme::components.div',
                 'input-group' => '@input-group',
                 'breadcrumb' => '@breadcrumb',
+                'pagination' => PaginationComponent::class,
                 'pagination-stats' => '@pagination-stats',
                 'pagination-jump' => '@pagination-jump',
                 'tabs' => '@tabs',
