@@ -33,6 +33,7 @@ export interface FormValidationOptions {
   fieldSelector: null;
   scrollOffset: number;
   enabled: boolean;
+  fieldDefaults?: Partial<Omit<FieldValidationOptions, 'inputOptions' | 'formSelector'>>;
 }
 
 export interface FieldValidationOptions {
@@ -95,7 +96,7 @@ export class UnicornFormValidation {
       options = {};
     }
 
-    return this.options = mergeDeep({}, defaultOptions, options);
+    return this.options = mergeDeep({}, defaultOptions, this.options, options);
   }
 
   get scrollEnabled() {
@@ -335,25 +336,31 @@ export class UnicornFormValidation {
 
 export class UnicornFieldValidation {
   $input: InputElements | undefined;
-  options: FieldValidationOptions;
+  options: Partial<FieldValidationOptions>;
 
   static is = 'uni-field-validate';
 
   constructor(protected el: HTMLElement, options: Partial<FieldValidationOptions> = {}) {
-    this.options = this.mergeOptions(options);
+    this.setOptions(options);
 
     this.$input = this.selectInput();
 
     this.init();
   }
 
-  mergeOptions(options: Partial<FieldValidationOptions>) {
+  setOptions(options: Partial<FieldValidationOptions>) {
     // Fix PHP empty array to JSON issue.
     if (Array.isArray(options)) {
       options = {};
     }
 
-    return this.options = mergeDeep({}, defaultFieldOptions, options);
+    this.options = options;
+
+    return this;
+  }
+
+  get mergedOptions(): FieldValidationOptions {
+    return mergeDeep({}, defaultFieldOptions, this.globalOptions, this.options);
   }
 
   get $form(): HTMLFormElement {
@@ -361,19 +368,19 @@ export class UnicornFieldValidation {
   }
 
   get errorSelector(): string {
-    return this.options.errorSelector;
+    return this.mergedOptions.errorSelector;
   }
 
   get selector(): string {
-    return this.options.selector;
+    return this.mergedOptions.selector;
   }
 
   get validClass(): string {
-    return this.options.validClass;
+    return this.mergedOptions.validClass;
   }
 
   get invalidClass(): string {
-    return this.options.invalidClass;
+    return this.mergedOptions.invalidClass;
   }
 
   get isVisible(): boolean {
@@ -381,7 +388,7 @@ export class UnicornFieldValidation {
   }
 
   get isInputOptions(): boolean {
-    return Boolean(this.options.inputOptions);
+    return Boolean(this.mergedOptions.inputOptions);
   }
 
   get validationMessage(): string {
@@ -395,8 +402,8 @@ export class UnicornFieldValidation {
   selectInput(): InputElements | undefined {
     let selector = this.selector;
 
-    if (this.options.inputOptions) {
-      selector += ', ' + this.options.inputOptionsWrapperSelector;
+    if (this.mergedOptions.inputOptions) {
+      selector += ', ' + this.mergedOptions.inputOptionsWrapperSelector;
     }
 
     let input = this.el.querySelector<InputElements>(selector);
@@ -448,8 +455,8 @@ export class UnicornFieldValidation {
     this.$input.addEventListener('invalid', (e) => {
       this.showInvalidResponse();
     });
-
-    const events = this.options.events;
+    
+    const events = this.mergedOptions.events;
 
     events.forEach((eventName) => {
       this.$input?.addEventListener(eventName, () => {
@@ -622,7 +629,7 @@ export class UnicornFieldValidation {
     }
 
     const isRequired = this.$input.getAttribute('required') != null;
-    const optionWrappers = this.$input.querySelectorAll(this.options.inputOptionsSelector);
+    const optionWrappers = this.$input.querySelectorAll(this.mergedOptions.inputOptionsSelector);
     let result = true;
 
     if (isRequired) {
@@ -696,6 +703,10 @@ export class UnicornFieldValidation {
 
   getFormValidation(element?: Nullable<HTMLFormElement>): UnicornFormValidation | null {
     return getBoundedInstance(element || this.getForm(), 'form.validation')!;
+  }
+
+  get globalOptions(): Partial<FieldValidationOptions> {
+    return this.getFormValidation()?.options?.fieldDefaults ?? {};
   }
 
   getValidator(name: string): [Validator, Record<string, any>] | null {
@@ -845,7 +856,7 @@ export class UnicornFieldValidation {
   }
 
   createHelpElement() {
-    const className = this.options.errorMessageClass;
+    const className = this.mergedOptions.errorMessageClass;
     const parsed = this.parseSelector(this.errorSelector || '');
 
     const $help = html(`<div class="${className}"></div>`)!;
@@ -1013,7 +1024,7 @@ export const ready = Promise.all([
 
     updated(el, binding) {
       const instance = getBoundedInstance<UnicornFieldValidation>(el, 'field.validation');
-      instance.mergeOptions(JSON.parse(binding.value || '{}') || {});
+      instance.setOptions(JSON.parse(binding.value || '{}') || {});
     }
   })
 ]);

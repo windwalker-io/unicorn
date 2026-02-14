@@ -174,7 +174,7 @@ class UnicornFormValidation {
     if (Array.isArray(options)) {
       options = {};
     }
-    return this.options = mergeDeep({}, defaultOptions, options);
+    return this.options = mergeDeep({}, defaultOptions, this.options, options);
   }
   get scrollEnabled() {
     return this.options.scroll;
@@ -345,39 +345,43 @@ class UnicornFormValidation {
 class UnicornFieldValidation {
   constructor(el, options = {}) {
     this.el = el;
-    this.options = this.mergeOptions(options);
+    this.setOptions(options);
     this.$input = this.selectInput();
     this.init();
   }
   $input;
   options;
   static is = "uni-field-validate";
-  mergeOptions(options) {
+  setOptions(options) {
     if (Array.isArray(options)) {
       options = {};
     }
-    return this.options = mergeDeep({}, defaultFieldOptions, options);
+    this.options = options;
+    return this;
+  }
+  get mergedOptions() {
+    return mergeDeep({}, defaultFieldOptions, this.globalOptions, this.options);
   }
   get $form() {
     return this.getForm();
   }
   get errorSelector() {
-    return this.options.errorSelector;
+    return this.mergedOptions.errorSelector;
   }
   get selector() {
-    return this.options.selector;
+    return this.mergedOptions.selector;
   }
   get validClass() {
-    return this.options.validClass;
+    return this.mergedOptions.validClass;
   }
   get invalidClass() {
-    return this.options.invalidClass;
+    return this.mergedOptions.invalidClass;
   }
   get isVisible() {
     return !!(this.el.offsetWidth || this.el.offsetHeight || this.el.getClientRects().length);
   }
   get isInputOptions() {
-    return Boolean(this.options.inputOptions);
+    return Boolean(this.mergedOptions.inputOptions);
   }
   get validationMessage() {
     return this.$input?.validationMessage || "";
@@ -387,8 +391,8 @@ class UnicornFieldValidation {
   }
   selectInput() {
     let selector = this.selector;
-    if (this.options.inputOptions) {
-      selector += ", " + this.options.inputOptionsWrapperSelector;
+    if (this.mergedOptions.inputOptions) {
+      selector += ", " + this.mergedOptions.inputOptionsWrapperSelector;
     }
     let input = this.el.querySelector(selector);
     if (!input) {
@@ -423,7 +427,7 @@ class UnicornFieldValidation {
     this.$input.addEventListener("invalid", (e) => {
       this.showInvalidResponse();
     });
-    const events = this.options.events;
+    const events = this.mergedOptions.events;
     events.forEach((eventName) => {
       this.$input?.addEventListener(eventName, () => {
         this.checkValidity();
@@ -546,7 +550,7 @@ class UnicornFieldValidation {
       return true;
     }
     const isRequired = this.$input.getAttribute("required") != null;
-    const optionWrappers = this.$input.querySelectorAll(this.options.inputOptionsSelector);
+    const optionWrappers = this.$input.querySelectorAll(this.mergedOptions.inputOptionsSelector);
     let result = true;
     if (isRequired) {
       for (const optionWrapper of optionWrappers) {
@@ -601,6 +605,9 @@ class UnicornFieldValidation {
   }
   getFormValidation(element) {
     return getBoundedInstance(element || this.getForm(), "form.validation");
+  }
+  get globalOptions() {
+    return this.getFormValidation()?.options?.fieldDefaults ?? {};
   }
   getValidator(name) {
     const matches = name.match(/(?<type>[\w\-_]+)(\((?<params>.*)\))*/);
@@ -707,7 +714,7 @@ class UnicornFieldValidation {
     return this.el.querySelector(this.errorSelector);
   }
   createHelpElement() {
-    const className = this.options.errorMessageClass;
+    const className = this.mergedOptions.errorMessageClass;
     const parsed = this.parseSelector(this.errorSelector || "");
     const $help = html(`<div class="${className}"></div>`);
     $help.classList.add(...parsed.classes);
@@ -828,7 +835,7 @@ const ready = /* @__PURE__ */ Promise.all([
     },
     updated(el, binding) {
       const instance = getBoundedInstance(el, "field.validation");
-      instance.mergeOptions(JSON.parse(binding.value || "{}") || {});
+      instance.setOptions(JSON.parse(binding.value || "{}") || {});
     }
   })
 ]);

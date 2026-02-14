@@ -305,6 +305,7 @@ export declare interface FormValidationOptions {
     fieldSelector: null;
     scrollOffset: number;
     enabled: boolean;
+    fieldDefaults?: Partial<Omit<FieldValidationOptions, 'inputOptions' | 'formSelector'>>;
 }
 
 declare function get(selector: string, options?: Record<string, any>): Promise<TinymceController>;
@@ -948,10 +949,11 @@ export declare class UnicornAssetUri {
 declare class UnicornFieldValidation {
     protected el: HTMLElement;
     $input: InputElements | undefined;
-    options: FieldValidationOptions;
+    options: Partial<FieldValidationOptions>;
     static is: string;
     constructor(el: HTMLElement, options?: Partial<FieldValidationOptions>);
-    mergeOptions(options: Partial<FieldValidationOptions>): FieldValidationOptions;
+    setOptions(options: Partial<FieldValidationOptions>): this;
+    get mergedOptions(): FieldValidationOptions;
     get $form(): HTMLFormElement;
     get errorSelector(): string;
     get selector(): string;
@@ -976,6 +978,7 @@ declare class UnicornFieldValidation {
      */
     updateValidClass(valid: Boolean): void;
     getFormValidation(element?: Nullable<HTMLFormElement>): UnicornFormValidation | null;
+    get globalOptions(): Partial<FieldValidationOptions>;
     getValidator(name: string): [Validator, Record<string, any>] | null;
     handleCustomResult(result: boolean | string | undefined, validator?: Nullable<Validator>): boolean;
     handleAsyncCustomResult(result: boolean, validator?: Nullable<Validator>): boolean;
