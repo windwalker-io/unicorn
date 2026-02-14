@@ -76,6 +76,12 @@ class UnicornScript extends AbstractScript
                         $this->asset->handleUri($mainJS)
                     )
                 );
+
+                $cssEntries = $this->asset->vite->resolveUriCssEntries($mainJS);
+
+                foreach ($cssEntries as $css) {
+                    $this->asset->css($css);
+                }
             }
 
             $this->asset->importMap(

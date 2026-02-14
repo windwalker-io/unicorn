@@ -326,19 +326,32 @@ function delegate(wrapper, selector, eventName, callback) {
     }
   };
 }
-function injectCssToDocument(doc, ...css) {
+async function injectCssToDocument(doc, ...css) {
   if (!(doc instanceof Document)) {
     css.push(doc);
     doc = document;
   }
-  const styles = css.map((css2) => {
-    if (typeof css2 === "string") {
-      const style = new CSSStyleSheet();
-      style.replaceSync(css2);
-      return style;
-    }
-    return css2;
-  });
+  const promises = [];
+  for (let cssItem of css) {
+    promises.push(
+      new Promise((resolve, reject) => {
+        if (cssItem instanceof CSSStyleSheet) {
+          resolve(cssItem);
+        } else if (typeof cssItem === "string") {
+          const style = new CSSStyleSheet();
+          style.replace(cssItem).then(() => resolve(style)).catch(reject);
+        } else if (typeof cssItem === "function") {
+          cssItem().then(({ default: result }) => {
+            const style = new CSSStyleSheet();
+            style.replace(result).then(() => resolve(style)).catch(reject);
+          }).catch(reject);
+        } else {
+          reject(new Error("Invalid CSS source"));
+        }
+      })
+    );
+  }
+  const styles = await Promise.all(promises);
   doc.adoptedStyleSheets = [...doc.adoptedStyleSheets, ...styles];
   return styles;
 }
@@ -1014,7 +1027,10 @@ class UnicornLang {
     return data("unicorn.languages") || {};
   }
 }
-function useScriptImport(src, attrs = {}) {
+async function useScriptImport(src, attrs = {}) {
+  if (typeof src === "function") {
+    src = (await src()).default;
+  }
   const script = document.createElement("script");
   script.src = resolveUrl(src);
   for (const key in attrs) {
@@ -1065,14 +1081,16 @@ async function useSeriesImport(...src) {
 }
 async function useCssIncludes(...hrefs) {
   const promises = hrefs.map((href) => {
-    href = resolveUrl(href);
     return new Promise((resolve, reject) => {
-      const link = document.createElement("link");
-      link.rel = "stylesheet";
-      link.href = href;
-      link.onload = () => resolve();
-      link.onerror = (e) => reject(e);
-      document.head.appendChild(link);
+      resolveSource(href).then((href2) => {
+        href2 = resolveUrl(href2);
+        const link = document.createElement("link");
+        link.rel = "stylesheet";
+        link.href = href2;
+        link.onload = () => resolve();
+        link.onerror = (e) => reject(e);
+        document.head.appendChild(link);
+      });
     });
   });
   return Promise.all(promises);
@@ -1081,17 +1099,20 @@ const importedSheets = {};
 async function useCssImport(...hrefs) {
   const modules = await Promise.all(
     hrefs.map((href) => {
-      if (!importedSheets[href]) {
-        importedSheets[href] = simulateCssImport(href);
-      }
-      return importedSheets[href];
+      return new Promise((resolve) => {
+        resolveSource(href).then((href2) => {
+          if (!importedSheets[href2]) {
+            importedSheets[href2] = simulateCssImport(href2);
+          }
+          resolve(importedSheets[href2]);
+        });
+      });
     })
   );
   const styles = modules.map((module) => module.default);
   return injectCssToDocument(...styles);
 }
 async function simulateCssImport(href) {
-  href = resolveUrl(href);
   const response = await fetch(href);
   if (!response.ok) {
     throw new Error(`Failed to load CSS: ${href}`);
@@ -1126,6 +1147,12 @@ function resolveUrl(specifier) {
     }
   }
   return specifier;
+}
+async function resolveSource(src) {
+  if (typeof src === "function") {
+    return (await src()).default;
+  }
+  return src;
 }
 async function useCheckboxesMultiSelect(selector, options = {}) {
   const m = await import("./checkboxes-multi-select.js");

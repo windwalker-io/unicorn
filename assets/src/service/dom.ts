@@ -264,26 +264,44 @@ export function delegate(
   };
 }
 
-export function injectCssToDocument(doc: Document, ...css: (string | CSSStyleSheet)[]): CSSStyleSheet[];
-export function injectCssToDocument(...css: (string | CSSStyleSheet)[]): CSSStyleSheet[];
-export function injectCssToDocument(
-  doc: Document | string | CSSStyleSheet,
-  ...css: (string | CSSStyleSheet)[]
-): CSSStyleSheet[] {
+type CssSource = string | (() => Promise<{ default: string }>);
+
+export function injectCssToDocument(doc: Document, ...css: (CssSource | CSSStyleSheet)[]): Promise<CSSStyleSheet[]>;
+export function injectCssToDocument(...css: (CssSource | CSSStyleSheet)[]): Promise<CSSStyleSheet[]>;
+export async function injectCssToDocument(
+  doc: Document | CssSource | CSSStyleSheet,
+  ...css: (CssSource | CSSStyleSheet)[]
+): Promise<CSSStyleSheet[]> {
   if (!(doc instanceof Document)) {
     css.push(doc);
     doc = document;
   }
 
-  const styles = css.map((css) => {
-    if (typeof css === 'string') {
-      const style = new CSSStyleSheet();
-      style.replaceSync(css);
-      return style;
-    }
+  const promises: Promise<any>[] = [];
 
-    return css;
-  });
+  for (let cssItem of css) {
+    promises.push(
+      new Promise((resolve, reject) => {
+        if (cssItem instanceof CSSStyleSheet) {
+          resolve(cssItem);
+        } else if (typeof cssItem === 'string') {
+          const style = new CSSStyleSheet();
+
+          style.replace(cssItem).then(() => resolve(style)).catch(reject);
+        } else if (typeof cssItem === 'function') {
+          cssItem().then(({ default: result }) => {
+            const style = new CSSStyleSheet();
+
+            style.replace(result).then(() => resolve(style)).catch(reject);
+          }).catch(reject);
+        } else {
+          reject(new Error('Invalid CSS source'));
+        }
+      })
+    );
+  }
+
+  const styles = await Promise.all(promises);
 
   doc.adoptedStyleSheets = [...doc.adoptedStyleSheets, ...styles];
 

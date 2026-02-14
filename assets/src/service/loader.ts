@@ -1,7 +1,13 @@
 import { Dictionary } from '../types';
 import { injectCssToDocument } from './';
 
-export function useScriptImport(src: string, attrs: Record<string, string> = {}): Promise<void> {
+type Source = string | (() => Promise<{ default: string }>);
+
+export async function useScriptImport(src: Source, attrs: Record<string, string> = {}): Promise<void> {
+  if (typeof src === 'function') {
+    src = (await src()).default;
+  }
+
   const script = document.createElement('script');
   script.src = resolveUrl(src);
 
@@ -70,18 +76,20 @@ export async function useSeriesImport(...src: any[]): Promise<any> {
   return modules;
 }
 
-export async function useCssIncludes(...hrefs: string[]): Promise<void[]> {
+export async function useCssIncludes(...hrefs: Source[]): Promise<void[]> {
   const promises = hrefs.map((href) => {
-    href = resolveUrl(href);
-
     return new Promise<void>((resolve, reject) => {
-      const link = document.createElement('link');
-      link.rel = 'stylesheet';
-      link.href = href;
-      link.onload = () => resolve();
-      link.onerror = (e) => reject(e);
+      resolveSource(href).then((href) => {
+        href = resolveUrl(href);
 
-      document.head.appendChild(link);
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = href;
+        link.onload = () => resolve();
+        link.onerror = (e) => reject(e);
+
+        document.head.appendChild(link);
+      });
     });
   });
 
@@ -90,15 +98,19 @@ export async function useCssIncludes(...hrefs: string[]): Promise<void[]> {
 
 const importedSheets: Record<string, Promise<{ default: CSSStyleSheet }>> = {};
 
-export async function useCssImport(...hrefs: string[]): Promise<CSSStyleSheet[]> {
+export async function useCssImport(...hrefs: Source[]): Promise<CSSStyleSheet[]> {
   // Todo: Use `{ assert: { type: "css" }` after all browsers support it.
   const modules = await Promise.all(
     hrefs.map((href) => {
-      if (!importedSheets[href]) {
-        importedSheets[href] = simulateCssImport(href);
-      }
+      return new Promise<{ default: CSSStyleSheet }>((resolve) => {
+        resolveSource(href).then((href) => {
+          if (!importedSheets[href]) {
+            importedSheets[href] = simulateCssImport(href);
+          }
 
-      return importedSheets[href];
+          resolve(importedSheets[href]);
+        });
+      });
     })
   );
   const styles = modules.map(module => module.default);
@@ -107,8 +119,6 @@ export async function useCssImport(...hrefs: string[]): Promise<CSSStyleSheet[]>
 }
 
 async function simulateCssImport(href: string) {
-  href = resolveUrl(href);
-
   const response = await fetch(href);
   if (!response.ok) {
     throw new Error(`Failed to load CSS: ${href}`);
@@ -149,4 +159,12 @@ function resolveUrl(specifier: string) {
     }
   }
   return specifier;
+}
+
+async function resolveSource(src: Source): Promise<string> {
+  if (typeof src === 'function') {
+    return (await src()).default;
+  }
+
+  return src;
 }

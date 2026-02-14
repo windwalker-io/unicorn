@@ -190,6 +190,10 @@ export declare function createUnicorn(): UnicornApp;
 
 export declare function createUnicornWithPlugins(): UnicornApp;
 
+declare type CssSource = string | (() => Promise<{
+    default: string;
+}>);
+
 export declare function data(name: string, data?: any): any;
 
 export declare function data<T = void, R = [T] extends [void] ? any : T | undefined>(name: string): R;
@@ -357,9 +361,9 @@ declare interface IFrameModalOptions {
 
 export declare function initAlpineComponent(directive: string): Promise<void>;
 
-export declare function injectCssToDocument(doc: Document, ...css: (string | CSSStyleSheet)[]): CSSStyleSheet[];
+export declare function injectCssToDocument(doc: Document, ...css: (CssSource | CSSStyleSheet)[]): Promise<CSSStyleSheet[]>;
 
-export declare function injectCssToDocument(...css: (string | CSSStyleSheet)[]): CSSStyleSheet[];
+export declare function injectCssToDocument(...css: (CssSource | CSSStyleSheet)[]): Promise<CSSStyleSheet[]>;
 
 declare type InjectionKey<T = any> = string | symbol | Constructor<T>;
 
@@ -859,6 +863,10 @@ export declare function slideToggle(target: string | HTMLElement, duration?: num
 
 export declare function slideUp(target: string | HTMLElement, duration?: number): Promise<Animation | void>;
 
+declare type Source = string | (() => Promise<{
+    default: string;
+}>);
+
 declare type StartEventHandler = (fileData: FormData) => void;
 
 declare type SuccessEventHandler = (url: string, res: S3UploaderResponse) => void;
@@ -1276,9 +1284,9 @@ export declare function useCheckboxesMultiSelect(selector?: Nullable<string | HT
  */
 export declare function useColorPicker(selector?: Nullable<string | HTMLElement | NodeListOf<HTMLElement>>, options?: Partial<SpectrumOptions>): Promise<any>;
 
-export declare function useCssImport(...hrefs: string[]): Promise<CSSStyleSheet[]>;
+export declare function useCssImport(...hrefs: Source[]): Promise<CSSStyleSheet[]>;
 
-export declare function useCssIncludes(...hrefs: string[]): Promise<void[]>;
+export declare function useCssIncludes(...hrefs: Source[]): Promise<void[]>;
 
 export declare function useDisableIfStackNotEmpty(buttonSelector?: string, stackName?: string): void;
 
@@ -1371,7 +1379,7 @@ export declare function useS3Uploader(): Promise<S3UploaderModule>;
 
 export declare function useS3Uploader(name: string, options?: Partial<S3UploaderGlobalOptions>): Promise<S3Uploader>;
 
-export declare function useScriptImport(src: string, attrs?: Record<string, string>): Promise<void>;
+export declare function useScriptImport(src: Source, attrs?: Record<string, string>): Promise<void>;
 
 export declare function useSeriesImport(...src: any[]): Promise<any>;
 
@@ -1486,17 +1494,17 @@ export { }
 
 
 declare global {
-    var Alpine: AlpineGlobal;
-    var TomSelect: typeof TomSelectGlobal;
-    var Spectrum: typeof SpectrumGlobal;
-    var Mark: any;
+    interface Node {
+        __unicorn?: any;
+    }
 }
 
 
 declare global {
-    interface Node {
-        __unicorn?: any;
-    }
+    var Alpine: AlpineGlobal;
+    var TomSelect: typeof TomSelectGlobal;
+    var Spectrum: typeof SpectrumGlobal;
+    var Mark: any;
 }
 
 
@@ -1505,6 +1513,10 @@ declare module '@windwalker-io/unicorn-next' {
         /** @deprecated Only for code generator use. */
         $ui: typeof methods;
     }
+}
+
+declare global {
+    var S: any;
 }
 
 
@@ -1518,18 +1530,14 @@ declare module 'axios' {
     }
 }
 
-declare global {
-    var S: any;
-}
-
-
-declare global {
-    var tinymce: TinyMCE;
-}
-
 
 declare global {
     export interface Window {
         bootstrap: typeof bootstrap;
     }
+}
+
+
+declare global {
+    var tinymce: TinyMCE;
 }
