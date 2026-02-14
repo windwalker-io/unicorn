@@ -490,7 +490,7 @@ declare interface ModalListenMessagesOptions {
     modalSelector: string;
 }
 
-declare type ModalSelectCallback = (item: any) => void;
+declare type ModalSelectCallback = (item: any, ...args: any[]) => void;
 
 declare interface ModalSelectModule {
     createCallback: typeof createCallback;
@@ -1424,6 +1424,7 @@ export declare function useUnicornPhpAdapter(app?: UnicornApp): {
     modalTree: typeof useFieldModalTree;
     multiUploader: typeof useFieldMultiUploader;
     tomSelect: typeof useTomSelect;
+    listDependent: typeof useListDependent;
     bootstrap: {
         tooltip: typeof useBs5Tooltip;
         buttonRadio: {
@@ -1480,14 +1481,6 @@ export declare function watchAttributes<T extends HTMLElement>(el: T, callback?:
 export { }
 
 
-declare module '@windwalker-io/unicorn-next' {
-    interface UnicornApp {
-        /** @deprecated Only for code generator use. */
-        $ui: typeof methods;
-    }
-}
-
-
 declare global {
     var Alpine: AlpineGlobal;
     var TomSelect: typeof TomSelectGlobal;
@@ -1502,8 +1495,12 @@ declare global {
     }
 }
 
-declare global {
-    var S: any;
+
+declare module '@windwalker-io/unicorn-next' {
+    interface UnicornApp {
+        /** @deprecated Only for code generator use. */
+        $ui: typeof methods;
+    }
 }
 
 
@@ -1515,6 +1512,10 @@ declare module 'axios' {
     }
     interface CreateAxiosDefaults {
     }
+}
+
+declare global {
+    var S: any;
 }
 
 

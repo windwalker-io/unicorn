@@ -2109,6 +2109,7 @@ const methods = {
   modalTree: useFieldModalTree,
   multiUploader: useFieldMultiUploader,
   tomSelect: useTomSelect,
+  listDependent: useListDependent,
   bootstrap: {
     tooltip: useBs5Tooltip,
     buttonRadio: useBs5ButtonRadio,

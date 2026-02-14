@@ -81,6 +81,8 @@ class ModalField extends AbstractField
 
     protected string|RouteUri|null $route = null;
 
+    protected bool $multiCheck = false;
+
     #[Inject]
     protected Navigator $nav;
 
@@ -156,6 +158,10 @@ class ModalField extends AbstractField
 
         $url = Uri::wrap($url);
         $url = $url->withVar('callback', $this->getCallback());
+
+        if ($this->multiCheck) {
+            $url = $url->withVar('multiCheck', '1');
+        }
 
         if ($this->urlHandler) {
             $url = ($this->urlHandler)($url, $this) ?? $url;
@@ -245,13 +251,27 @@ class ModalField extends AbstractField
     }
 
     /**
-     * @param  \Closure|null  $urlHandler
+     * @psalm-type UrlHandler Closure(UriInterface $url, self $field): UriInterface
+     *
+     * @param  UrlHandler|null  $urlHandler
      *
      * @return  static  Return self to support chaining.
      */
     public function configureUrl(?\Closure $urlHandler): static
     {
         $this->urlHandler = $urlHandler;
+
+        return $this;
+    }
+
+    public function isMultiCheck(): bool
+    {
+        return $this->multiCheck;
+    }
+
+    public function multiCheck(bool $multiCheck): static
+    {
+        $this->multiCheck = $multiCheck;
 
         return $this;
     }

@@ -1,4 +1,4 @@
-import { v as selectOne, U as highlight, _ as __, ac as data, B as html, P as slideUp } from "./unicorn.js";
+import { v as selectOne, U as highlight, G as simpleAlert, _ as __, ac as data, B as html, P as slideUp } from "./unicorn.js";
 import { b as baseAssignValue, a as assignValue, i as isIndex, c as isPrototype, d as arrayLikeKeys, g as getPrototype, k as keys } from "./_getPrototype.js";
 import { b as baseRest, a as apply } from "./_baseRest.js";
 import { i as isObjectLike, b as baseGetTag, a as isArray, S as Symbol$1, c as isObject, d as isArrayLike, e as eq } from "./isArguments.js";
@@ -282,18 +282,35 @@ function template(string, options, guard) {
 }
 function createCallback(type, selector, modalSelector) {
   switch (type) {
-    // case 'tag':
-    //   return () => {
-    //
-    //   };
     case "list":
       return (item) => {
         const modalList = document.querySelector(selector);
-        if (!modalList.querySelector(`[data-value="${item.value}"]`)) {
-          modalList.appendItem(item, true);
-          selectOne(modalSelector)?.close();
-        } else {
-          alert(__("unicorn.field.modal.already.selected"));
+        const checked = item.checked;
+        if (checked === void 0) {
+          if (!modalList.querySelector(`[data-value="${item.value}"]`)) {
+            modalList.appendItem(item, true);
+            selectOne(modalSelector)?.close();
+          } else {
+            simpleAlert(__("unicorn.field.modal.already.selected"));
+          }
+        } else if (checked) {
+          try {
+            modalList.appendIfNotExists(item, true);
+          } catch (e) {
+            window.postMessage({
+              task: "remove-row",
+              value: item,
+              id: item.instanceId
+            });
+            simpleAlert(e.message);
+          } finally {
+            modalList.updateSelected();
+          }
+        } else if (!checked) {
+          modalList.removeItem(item).then(() => {
+            console.log(modalList.items);
+            modalList.updateSelected();
+          });
         }
       };
     case "single":
@@ -318,14 +335,21 @@ class ModalListSelectElement extends HTMLElement {
   static is = "uni-modal-list";
   itemTemplate;
   options;
+  isMultiCheck = false;
   get listContainer() {
     return this.querySelector("[data-role=list-container]");
+  }
+  get selectButton() {
+    return this.querySelector("[data-role=select]");
   }
   get modal() {
     return document.querySelector(this.options.modalSelector);
   }
   get items() {
     return Array.from(this.listContainer.querySelectorAll("[data-value]"));
+  }
+  get count() {
+    return this.items.length;
   }
   connectedCallback() {
     this.options = JSON.parse(this.getAttribute("options") || "{}");
@@ -339,15 +363,19 @@ class ModalListSelectElement extends HTMLElement {
         new Sortable(this.listContainer, { handle: ".h-drag-handle", animation: 150 });
       });
     }
-    const selectButton = this.querySelector("[data-role=select]");
-    selectButton.addEventListener("click", (e) => {
-      this.open(e);
+    this.selectButton.addEventListener("click", (e) => {
+      try {
+        this.open(e);
+      } catch (e2) {
+        simpleAlert(e2.message);
+      }
     });
     this.querySelector("[data-role=clear]")?.addEventListener("click", () => {
       this.removeAll();
     });
-    selectButton.style.pointerEvents = "";
+    this.selectButton.style.pointerEvents = "";
     this.render();
+    this.enableMultiCheck(this.options.multiCheck || false);
   }
   render() {
     const items = data("unicorn.modal-field")[this.options.dataKey] || [];
@@ -356,6 +384,10 @@ class ModalListSelectElement extends HTMLElement {
     });
   }
   appendItem(item, highlights = false) {
+    const max = this.options.max;
+    if (max && this.count >= max) {
+      throw new Error(__("unicorn.field.modal.max.selected", max));
+    }
     const itemHtml = html(this.itemTemplate({ item }));
     itemHtml.dataset.value = String(item.value);
     itemHtml.querySelector("[data-role=remove]")?.addEventListener("click", () => {
@@ -365,6 +397,9 @@ class ModalListSelectElement extends HTMLElement {
     this.toggleRequired();
     if (highlights) {
       highlight(itemHtml);
+    }
+    if (this.isMultiCheck) {
+      this.updateSelected();
     }
   }
   appendIfNotExists(item, highlights = false) {
@@ -387,15 +422,18 @@ class ModalListSelectElement extends HTMLElement {
   getValues() {
     return this.items.map((item) => item.dataset.value);
   }
-  removeItem(item) {
+  async removeItem(item) {
     if (typeof item === "object") {
       item = item.value;
     }
     const element = this.listContainer.querySelector(`[data-value="${item}"]`);
     if (element) {
-      slideUp(element).then(() => {
+      return slideUp(element).then(() => {
         element.remove();
         this.toggleRequired();
+        if (this.isMultiCheck) {
+          this.updateSelected();
+        }
       });
     }
   }
@@ -406,6 +444,9 @@ class ModalListSelectElement extends HTMLElement {
     }
     await Promise.all(promises);
     this.toggleRequired();
+    if (this.isMultiCheck) {
+      this.updateSelected();
+    }
   }
   toggleRequired() {
     const placeholder = this.querySelector("[data-role=validation-placeholder]");
@@ -422,13 +463,28 @@ class ModalListSelectElement extends HTMLElement {
       this.modal?.open(target.href, { size: "modal-xl" });
       return;
     }
-    if (this.listContainer.children.length >= max) {
-      alert(
-        __("unicorn.field.modal.max.selected", max)
-      );
-      return;
+    if (this.count >= max) {
+      throw new Error(__("unicorn.field.modal.max.selected", max));
     }
     this.modal?.open(target.href, { size: "modal-xl" });
+  }
+  enableMultiCheck(enable = true) {
+    this.isMultiCheck = enable;
+    if (enable) {
+      this.updateSelected();
+    } else {
+      this.clearSelected();
+    }
+  }
+  updateSelected() {
+    const url = new URL(this.selectButton.href);
+    url.searchParams.set("selected", this.items.map((i) => i.dataset.value).join(","));
+    this.selectButton.href = url.toString();
+  }
+  clearSelected() {
+    const url = new URL(this.selectButton.href);
+    url.searchParams.delete("selected");
+    this.selectButton.href = url.toString();
   }
 }
 async function init() {
@@ -437,8 +493,16 @@ async function init() {
 function listenMessages(options) {
   const callback = createCallback(options.type, options.selector, options.modalSelector);
   window.addEventListener("message", (e) => {
-    if (e.origin === options.origin && Array.isArray(e.data) && e.data[0] === options.instanceId) {
-      callback(e.data[1]);
+    if (e.origin === options.origin) {
+      if (Array.isArray(e.data) && e.data[0] === options.instanceId) {
+        callback(e.data[1]);
+      }
+      if (typeof e.data === "object" && e.data !== null && e.data.id === options.instanceId && e.data.task === "select-row") {
+        const item = e.data.value;
+        item.checked = e.data.checked;
+        item.instanceId = e.data.id;
+        callback(e.data.value);
+      }
     }
   });
   window[options.instanceId] = callback;

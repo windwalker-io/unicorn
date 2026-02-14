@@ -36,7 +36,8 @@ $listOptions = [
     'modalSelector' => '#' . $modalId,
     'itemTemplate' => "#$modalId-tmpl",
     'dataKey' => $field->getId(),
-    'sortable' => $field->isSortable()
+    'sortable' => $field->isSortable(),
+    'multiCheck' => $field->isMultiCheck(),
 ];
 
 $app->service(\Unicorn\Script\BootstrapScript::class)->iframeModal();

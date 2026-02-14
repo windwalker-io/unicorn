@@ -1,26 +1,50 @@
-import type { IFrameModalElement } from './iframe-modal';
-import { data } from '../data';
-import { __, highlight, html, selectOne, slideUp } from '../service';
 import { template } from 'lodash-es';
+import { data } from '../data';
+import { __, highlight, html, selectOne, simpleAlert, slideUp } from '../service';
+import type { IFrameModalElement } from './iframe-modal';
 
-export type ModalSelectCallback = (item: any) => void;
+export type ModalSelectCallback = (item: any, ...args: any[]) => void;
 
-export function createCallback(type: 'list' | 'single', selector: string, modalSelector: string): ModalSelectCallback {
+export function createCallback(
+  type: 'list' | 'single',
+  selector: string,
+  modalSelector: string
+): ModalSelectCallback {
   switch (type) {
-    // case 'tag':
-    //   return () => {
-    //
-    //   };
     case 'list':
       return (item: any) => {
         const modalList = document.querySelector(selector) as any as ModalListSelectElement;
+        const checked = item.checked;
 
-        if (!modalList.querySelector(`[data-value="${item.value}"]`)) {
-          modalList.appendItem(item, true);
+        if (checked === undefined) {
+          // Single selection mode
+          if (!modalList.querySelector(`[data-value="${item.value}"]`)) {
+            modalList.appendItem(item, true);
 
-          selectOne<IFrameModalElement>(modalSelector)?.close();
-        } else {
-          alert(__('unicorn.field.modal.already.selected'));
+            selectOne<IFrameModalElement>(modalSelector)?.close();
+          } else {
+            simpleAlert(__('unicorn.field.modal.already.selected'));
+          }
+        } else if (checked) {
+          // Multiple selection mode - add item
+          try {
+            modalList.appendIfNotExists(item, true);
+          } catch (e) {
+            window.postMessage({
+              task: 'remove-row',
+              value: item,
+              id: item.instanceId
+            });
+            simpleAlert((e as Error).message);
+          } finally {
+            modalList.updateSelected();
+          }
+        } else if (!checked) {
+          // Multiple selection mode - remove item
+          modalList.removeItem(item).then(() => {
+            console.log(modalList.items);
+            modalList.updateSelected();
+          });
         }
       };
 
@@ -55,12 +79,14 @@ interface ModalListOptions {
   sortable: boolean;
   dataKey: string;
   max: number;
+  multiCheck?: boolean;
 }
 
 export interface ReceivedItem {
   value: string | number;
   title?: string;
   image?: string;
+
   [key: string]: any;
 }
 
@@ -69,9 +95,14 @@ class ModalListSelectElement extends HTMLElement {
 
   itemTemplate!: ReturnType<typeof template>;
   options!: ModalListOptions;
+  isMultiCheck = false;
 
   get listContainer() {
     return this.querySelector<HTMLDivElement>('[data-role=list-container]')!;
+  }
+
+  get selectButton() {
+    return this.querySelector<HTMLAnchorElement>('[data-role=select]')!;
   }
 
   get modal() {
@@ -80,6 +111,10 @@ class ModalListSelectElement extends HTMLElement {
 
   get items(): HTMLElement[] {
     return Array.from(this.listContainer.querySelectorAll<HTMLElement>('[data-value]'));
+  }
+
+  get count(): number {
+    return this.items.length;
   }
 
   connectedCallback() {
@@ -98,18 +133,23 @@ class ModalListSelectElement extends HTMLElement {
       });
     }
 
-    const selectButton = this.querySelector<HTMLButtonElement>('[data-role=select]')!;
-    selectButton.addEventListener('click', (e) => {
-      this.open(e);
+    this.selectButton.addEventListener('click', (e) => {
+      try {
+        this.open(e);
+      } catch (e) {
+        simpleAlert((e as Error).message);
+      }
     });
 
     this.querySelector('[data-role=clear]')?.addEventListener('click', () => {
       this.removeAll();
     });
 
-    selectButton.style.pointerEvents = '';
+    this.selectButton.style.pointerEvents = '';
 
     this.render();
+
+    this.enableMultiCheck(this.options.multiCheck || false);
   }
 
   render() {
@@ -121,6 +161,12 @@ class ModalListSelectElement extends HTMLElement {
   }
 
   appendItem(item: ReceivedItem, highlights = false) {
+    const max = this.options.max;
+
+    if (max && this.count >= max) {
+      throw new Error(__('unicorn.field.modal.max.selected', max));
+    }
+
     const itemHtml = html(this.itemTemplate({ item }));
 
     itemHtml.dataset.value = String(item.value);
@@ -133,6 +179,10 @@ class ModalListSelectElement extends HTMLElement {
 
     if (highlights) {
       highlight(itemHtml);
+    }
+
+    if (this.isMultiCheck) {
+      this.updateSelected();
     }
   }
 
@@ -162,7 +212,7 @@ class ModalListSelectElement extends HTMLElement {
     return this.items.map((item) => item.dataset.value);
   }
 
-  removeItem(item: ReceivedItem | string | number) {
+  async removeItem(item: ReceivedItem | string | number) {
     if (typeof item === 'object') {
       item = item.value;
     }
@@ -170,9 +220,13 @@ class ModalListSelectElement extends HTMLElement {
     const element = this.listContainer.querySelector<HTMLElement>(`[data-value="${item}"]`);
 
     if (element) {
-      slideUp(element).then(() => {
+      return slideUp(element).then(() => {
         element.remove();
         this.toggleRequired();
+
+        if (this.isMultiCheck) {
+          this.updateSelected();
+        }
       });
     }
   }
@@ -187,6 +241,10 @@ class ModalListSelectElement extends HTMLElement {
     await Promise.all(promises);
 
     this.toggleRequired();
+
+    if (this.isMultiCheck) {
+      this.updateSelected();
+    }
   }
 
   toggleRequired() {
@@ -210,15 +268,33 @@ class ModalListSelectElement extends HTMLElement {
       return;
     }
 
-    if (this.listContainer.children.length >= max) {
-      alert(
-        __('unicorn.field.modal.max.selected', max)
-      );
-
-      return;
+    if (this.count >= max) {
+      throw new Error(__('unicorn.field.modal.max.selected', max));
     }
 
     this.modal?.open(target.href, { size: 'modal-xl' });
+  }
+
+  enableMultiCheck(enable = true) {
+    this.isMultiCheck = enable;
+
+    if (enable) {
+      this.updateSelected();
+    } else {
+      this.clearSelected();
+    }
+  }
+
+  updateSelected() {
+    const url = new URL(this.selectButton.href);
+    url.searchParams.set('selected', this.items.map((i) => i.dataset.value).join(','));
+    this.selectButton.href = url.toString();
+  }
+
+  clearSelected() {
+    const url = new URL(this.selectButton.href);
+    url.searchParams.delete('selected');
+    this.selectButton.href = url.toString();
   }
 }
 
@@ -238,8 +314,23 @@ export function listenMessages(options: ModalListenMessagesOptions) {
   const callback = createCallback(options.type, options.selector, options.modalSelector);
 
   window.addEventListener('message', (e) => {
-    if (e.origin === options.origin && Array.isArray(e.data) && e.data[0] === options.instanceId) {
-      callback(e.data[1]);
+    if (e.origin === options.origin) {
+      if (Array.isArray(e.data) && e.data[0] === options.instanceId) {
+        callback(e.data[1]);
+      }
+
+      if (
+        typeof e.data === 'object'
+        && e.data !== null
+        && e.data.id === options.instanceId
+        && e.data.task === 'select-row'
+      ) {
+        const item = e.data.value;
+        item.checked = e.data.checked;
+        item.instanceId = e.data.id;
+
+        callback(e.data.value);
+      }
     }
   });
 

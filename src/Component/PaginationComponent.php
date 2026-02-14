@@ -38,7 +38,7 @@ class PaginationComponent extends AbstractComponent
         if ($this->inModal) {
             $pagination->configureNavigator(
                 function (Navigator $nav) {
-                    return $nav->allowQuery(['layout', 'callback']);
+                    return $nav->allowQuery(['layout', 'callback', 'multiCheck', 'selected']);
                 }
             );
         }
