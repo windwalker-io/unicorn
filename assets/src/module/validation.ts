@@ -177,6 +177,20 @@ export class UnicornFormValidation {
       .filter(input => input != null) as HTMLElement[];
   }
 
+  getFieldComponents(containsPresets: boolean = true): UnicornFieldValidation[] {
+    const components: UnicornFieldValidation[] = [];
+
+    for (const field of this.findFields(containsPresets)) {
+      const v = this.getFieldComponent(field);
+
+      if (v) {
+        components.push(v);
+      }
+    }
+
+    return components;
+  }
+
   getFieldComponent(input: HTMLElement): UnicornFieldValidation | null {
     let v = getBoundedInstance(input, 'field.validation');
 

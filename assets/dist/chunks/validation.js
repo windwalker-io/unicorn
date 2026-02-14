@@ -232,6 +232,16 @@ class UnicornFormValidation {
     }
     return inputs.map((input) => this.prepareFieldWrapper(input)).filter((input) => input != null);
   }
+  getFieldComponents(containsPresets = true) {
+    const components = [];
+    for (const field of this.findFields(containsPresets)) {
+      const v = this.getFieldComponent(field);
+      if (v) {
+        components.push(v);
+      }
+    }
+    return components;
+  }
   getFieldComponent(input) {
     let v = getBoundedInstance(input, "field.validation");
     if (!v) {

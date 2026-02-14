@@ -1061,6 +1061,7 @@ declare class UnicornFormValidation {
     prepareFields(inputs: HTMLElement[]): Promise<void>;
     prepareFieldWrapper(input: HTMLElement): HTMLElement | null;
     findFields(containsPresets?: boolean): HTMLElement[];
+    getFieldComponents(containsPresets?: boolean): UnicornFieldValidation[];
     getFieldComponent(input: HTMLElement): UnicornFieldValidation | null;
     validateAll(fields?: Nullable<HTMLElement[]>): boolean;
     validateAllAsync(fields?: Nullable<HTMLElement[]>): Promise<boolean>;
