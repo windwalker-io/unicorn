@@ -25,36 +25,9 @@ use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\SystemUri;
 use Windwalker\Edge\Component\ComponentAttributes;
 
-use function Windwalker\uid;
-
 /**
  * @var $attributes ComponentAttributes
  */
-
-$props = $attributes->props(
-    'active',
-    'title',
-    'name',
-    'id'
-);
-
-$title ??= '';
-$id ??= $name ?? 'c-tab-' . SlugHelper::slugify($title) ?: 'c-tab-' . uid();
-$active = $props->active !== null;
-
-$attributes['id'] = $id;
-$attributes['data-role'] = 'tab-pane';
-$attributes['data-title'] = $title;
-
-if ($active) {
-    $attributes['data-active'] = 1;
-}
-
-$attributes = $attributes->class('tab-pane fade');
-
-if ($active) {
-    $attributes = $attributes->class('show active');
-}
 ?>
 
 <div {!! $attributes !!}>

@@ -12,6 +12,8 @@ use Unicorn\Component\PaginationComponent;
 use Unicorn\Component\PublishingDropdownComponent;
 use Unicorn\Component\StateButtonComponent;
 use Unicorn\Component\StateDropdownComponent;
+use Unicorn\Component\TabComponent;
+use Unicorn\Component\TabsComponent;
 use Unicorn\Controller\CrudController;
 use Unicorn\Controller\GridController;
 use Unicorn\Generator\Command\BuildFormCommand;
@@ -248,8 +250,8 @@ class UnicornPackage extends AbstractPackage implements
                 'pagination' => PaginationComponent::class,
                 'pagination-stats' => '@pagination-stats',
                 'pagination-jump' => '@pagination-jump',
-                'tabs' => '@tabs',
-                'tab' => '@tab',
+                'tabs' => TabsComponent::class,
+                'tab' => TabComponent::class,
             ]
         );
 

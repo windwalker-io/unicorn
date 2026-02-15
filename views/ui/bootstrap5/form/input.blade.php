@@ -28,10 +28,10 @@ use Windwalker\Edge\Component\ComponentAttributes;
 use Windwalker\Form\Field\AbstractField;
 
 /**
- * @var AbstractField              $field
+ * @var AbstractField               $field
  * @var \Windwalker\DOM\HTMLElement $input
- * @var array                      $options
- * @var ComponentAttributes        $attributes
+ * @var array                       $options
+ * @var ComponentAttributes         $attributes
  */
 
 $inputElement ??= $field->compileInput();
@@ -47,7 +47,7 @@ if ($inputElement instanceof \Windwalker\DOM\HTMLElement) {
     if ($attributes ?? null) {
         $attributes = $attributes->exceptProps(['field', 'options']);
 
-        $attributes = $attributes->merge($inputElement->getAttributes(true), false);
+        $attributes = $attributes->withMerge($inputElement->getAttributes(true), false);
         $inputElement->setAttributes($attributes->getAttributes());
     }
 

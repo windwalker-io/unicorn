@@ -88,6 +88,10 @@ export class KeepTab {
     const tabTrigger = this.findTabButtonByHref(href);
 
     if (tabTrigger) {
+      if (tabTrigger?.getAttribute('disabled') != null || tabTrigger.classList.contains('disabled')) {
+        return;
+      }
+
       Tab.getOrCreateInstance(tabTrigger).show();
     }
   }

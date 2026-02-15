@@ -30,49 +30,6 @@ use function Windwalker\uid;
 /**
  * @var $attributes ComponentAttributes
  */
-
-$props = $attributes->props(
-    'variant',
-    'keepactive',
-    'fill',
-    'nav-target',
-    'nav-attrs',
-    'gap',
-);
-
-$id ??= 'c-tabs-' . uid();
-$variant ??= 'tabs';
-$fill ??= null;
-$keepactive ??= null;
-$navTarget ??= null;
-$navAttrs ??= '';
-$gap ??= 4;
-
-if ($keepactive !== null) {
-    if (!is_string($keepactive)) {
-        $keepactive = '#admin-form';
-    }
-
-    // $app->service(BootstrapScript::class)->keepTab($keepactive);
-}
-
-$attributes = $attributes->class('d-flex flex-column');
-
-if ($gap) {
-    $attributes = $attributes->class("gap-{$gap}");
-}
-
-$attributes['id'] = $id;
-
-$directiveOptions = [
-    'variant' => $variant,
-    'fill' => $fill,
-    'navTarget' => $navTarget,
-    'navAttrs' => $navAttrs,
-    'keepactive' => $keepactive,
-];
-
-$attributes['uni-tabs-autonav'] = json_encode($directiveOptions);
 ?>
 
 <div {!! $attributes !!}>
@@ -81,11 +38,11 @@ $attributes['uni-tabs-autonav'] = json_encode($directiveOptions);
     </div>
 </div>
 
-@push('script')
+@push('macro')
     <script data-macro="unicorn.bs5.tabs" lang="ts" type="module">
         import { module, useUniDirective, useBs5KeepTab, html } from '@windwalker-io/unicorn-next';
 
-        useUniDirective<HTMLDivElement>('tabs-autonav', {
+        useUniDirective('tabs-autonav', {
             mounted(el, { value }) {
                 const options = JSON.parse(value || '{}');
 
@@ -95,10 +52,7 @@ $attributes['uni-tabs-autonav'] = json_encode($directiveOptions);
                     const navTarget = options.navTarget;
                     const navAttrs = JSON.parse(options.navAttrs || '{}');
                     const fill = options.fill ? true : false;
-
-                    if (options.keepactive) {
-                        useBs5KeepTab(options.keepactive);
-                    }
+                    const forceDisabled = options.disabled;
 
                     const tabs = tabContent.querySelectorAll('[data-role=tab-pane]');
                     const nav = document.createElement('div');
@@ -113,9 +67,14 @@ $attributes['uni-tabs-autonav'] = json_encode($directiveOptions);
 
                     nav.classList.add('nav', 'nav-' + options.variant);
                     nav.classList.toggle('nav-fill', fill);
+
+                    if (options.gap) {
+                        nav.classList.add('gap-' + options.gap);
+                    }
+
                     let hasActive = false;
 
-                    tabs.forEach((tab) => {
+                    for (const tab of tabs) {
                         hasActive = tab.dataset.active || hasActive;
                         const buttonAttrs = JSON.parse(tab.getAttribute('button-attrs'));
                         const item = html(`<div class="nav-item">
@@ -126,12 +85,19 @@ $attributes['uni-tabs-autonav'] = json_encode($directiveOptions);
 </div>
 `);
 
+                        const anchor = item.querySelector('a');
+
                         for (const p in buttonAttrs) {
                             item.setAttribute(p, buttonAttrs[p]);
                         }
 
+                        if (tab.dataset.disabled === '1' || forceDisabled === true) {
+                            anchor.classList.add('disabled');
+                            anchor.setAttribute('disabled', 'disabled');
+                        }
+
                         nav.appendChild(item);
-                    });
+                    }
 
                     if (!hasActive) {
                         nav.querySelector('[data-bs-toggle=tab]')?.classList?.add('active');
@@ -142,6 +108,10 @@ $attributes['uni-tabs-autonav'] = json_encode($directiveOptions);
                         document.querySelector(navTarget)?.appendChild(nav);
                     } else {
                         tabContent.before(nav);
+                    }
+
+                    if (options.keepactive) {
+                        useBs5KeepTab(options.keepactive);
                     }
 
                     return true;
