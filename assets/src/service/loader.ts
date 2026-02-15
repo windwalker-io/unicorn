@@ -104,6 +104,8 @@ export async function useCssImport(...hrefs: Source[]): Promise<CSSStyleSheet[]>
     hrefs.map((href) => {
       return new Promise<{ default: CSSStyleSheet }>((resolve) => {
         resolveSource(href).then((href) => {
+          href = resolveUrl(href);
+
           if (!importedSheets[href]) {
             importedSheets[href] = simulateCssImport(href);
           }

@@ -1101,6 +1101,7 @@ async function useCssImport(...hrefs) {
     hrefs.map((href) => {
       return new Promise((resolve) => {
         resolveSource(href).then((href2) => {
+          href2 = resolveUrl(href2);
           if (!importedSheets[href2]) {
             importedSheets[href2] = simulateCssImport(href2);
           }
@@ -1590,6 +1591,7 @@ function slideDown(target, duration = 300, display = "block") {
   }
   data(ele, "animation.sliding.down", true);
   ele.style.display = display;
+  ele.style.overflow = "hidden";
   let maxHeight = 0;
   for (const child of Array.from(ele.children)) {
     maxHeight = Math.max(child.offsetHeight, maxHeight);

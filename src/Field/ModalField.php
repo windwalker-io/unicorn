@@ -9,6 +9,7 @@ use Unicorn\Script\UnicornScript;
 use Windwalker\Core\Language\LangService;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\RouteUri;
+use Windwalker\Data\Collection;
 use Windwalker\Database\DatabaseAdapter;
 use Windwalker\DI\Attributes\Inject;
 use Windwalker\DOM\HTMLElement;
@@ -346,14 +347,23 @@ class ModalField extends AbstractField
     }
 
     /**
-     * prepareItems
-     *
-     * @param  iterable  $items
+     * @param  iterable<Collection>  $items
      *
      * @return array
      * @since  1.7.3
      */
     protected function prepareItems(iterable $items): array
+    {
+        $data = [];
+
+        foreach ($items as $i => $item) {
+            $data[$i] = $this->prepareItem($item);
+        }
+
+        return $data;
+    }
+
+    protected function prepareItem(Collection $item): array
     {
         $keyField   = $this->getKeyField();
         $titleField = $this->getTitleField();
@@ -364,13 +374,9 @@ class ModalField extends AbstractField
 
         $data = [];
 
-        foreach ($items as $i => $item) {
-            $datum['title'] = $item->$titleField;
-            $datum['value'] = $item->$keyName;
-            $datum['image'] = $item->$imageField;
-
-            $data[$i] = $datum;
-        }
+        $data['title'] = $item->$titleField;
+        $data['value'] = $item->$keyName;
+        $data['image'] = $item->$imageField;
 
         return $data;
     }
