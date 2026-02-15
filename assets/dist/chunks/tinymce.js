@@ -1,9 +1,10 @@
-import { a7 as mergeDeep, m as useStack, u as useHttpClient, ai as useScriptImport } from "./unicorn.js";
+import { v as selectOne, a7 as mergeDeep, m as useStack, u as useHttpClient, ai as useScriptImport } from "./unicorn.js";
 const instances = {};
 let hooks = [];
 let imported;
 async function get(selector, options = {}) {
-  return instances[selector] ??= await create(document.querySelector(selector), options);
+  const key = typeof selector !== "string" ? "#" + selector.id : selector;
+  return instances[key] ??= await create(selectOne(selector), options);
 }
 async function create(selector, options = {}) {
   const tinymce2 = await loadTinymce();
@@ -16,7 +17,9 @@ async function create(selector, options = {}) {
   return new TinymceController(tinymce2, el, options);
 }
 function destroy(selector) {
-  delete instances[selector];
+  const key = typeof selector !== "string" ? "#" + selector.id : selector;
+  instances[key]?.destroy();
+  delete instances[key];
 }
 function addHook(handler) {
   hooks.push(handler);
@@ -52,6 +55,9 @@ class TinymceController {
     );
     this.options.target = element;
     tinymce2.init(this.options).then((editor) => {
+      if (!editor[0]) {
+        throw new Error("Failed to initialize TinyMCE editor.");
+      }
       this.editor = editor[0];
     });
   }
@@ -161,6 +167,10 @@ class TinymceController {
       element.dispatchEvent(new CustomEvent("upload-complete"));
       stack.pop();
     }
+  }
+  destroy() {
+    this.editor?.destroy();
+    this.editor = void 0;
   }
 }
 function registerDragPlugin(tinymce2) {

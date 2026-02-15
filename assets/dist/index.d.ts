@@ -213,7 +213,7 @@ export declare function delegate(wrapper: Element | string, selector: string, ev
 
 export { deleteConfirm }
 
-declare function destroy(selector: string): void;
+declare function destroy(selector: string | HTMLElement): void;
 
 declare interface Dictionary<T = any> {
     [key: string]: T;
@@ -319,7 +319,7 @@ export declare interface FormValidationOptions {
     fieldDefaults?: Partial<Omit<FieldValidationOptions, 'inputOptions' | 'formSelector'>>;
 }
 
-declare function get(selector: string, options?: Record<string, any>): Promise<TinymceController>;
+declare function get(selector: string | HTMLElement, options?: Record<string, any>): Promise<TinymceController>;
 
 export declare function getBoundedInstance<T = any, E = Element>(selector: E, name: string, callback?: ((el: E) => any)): T;
 
@@ -893,6 +893,7 @@ declare class TinymceController {
     getValue(): string;
     setValue(text: string): void;
     imageUploadHandler(blobInfo: UploadHandlerParams[0], progress: UploadHandlerParams[1]): Promise<any>;
+    destroy(): void;
 }
 
 declare interface TinymceModule {

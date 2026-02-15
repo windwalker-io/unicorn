@@ -1,6 +1,6 @@
 import type { Editor, EditorOptions, TinyMCE } from 'tinymce';
 import { useHttpClient, useStack } from '../composable';
-import { useImport, useScriptImport } from '../service';
+import { selectOne, useImport, useScriptImport } from '../service';
 import { Dictionary, MaybePromise } from '../types';
 import { mergeDeep } from '../utilities';
 
@@ -11,10 +11,12 @@ let imported: Promise<TinyMCE>;
 declare type UploadHandlerParams = Parameters<NonNullable<EditorOptions['images_upload_handler']>>;
 
 export async function get(
-  selector: string,
+  selector: string | HTMLElement,
   options: Record<string, any> = {}
 ): Promise<TinymceController> {
-  return instances[selector] ??= await create(document.querySelector<HTMLElement>(selector)!, options);
+  const key = typeof selector !== 'string' ? '#' + selector.id : selector;
+
+  return instances[key] ??= await create(selectOne(selector)!, options);
 }
 
 export async function create(
@@ -33,8 +35,12 @@ export async function create(
   return new TinymceController(tinymce, el, options);
 }
 
-export function destroy(selector: string): void {
-  delete instances[selector];
+export function destroy(selector: string | HTMLElement): void {
+  const key = typeof selector !== 'string' ? '#' + selector.id : selector;
+
+  instances[key]?.destroy();
+
+  delete instances[key];
 }
 
 export function addHook(handler: ((tinymce: TinyMCE) => MaybePromise<any>)) {
@@ -78,6 +84,10 @@ export class TinymceController {
     this.options.target = element;
 
     tinymce.init(this.options).then((editor) => {
+      if (!editor[0]) {
+        throw new Error('Failed to initialize TinyMCE editor.');
+      }
+
       this.editor = editor[0];
     });
   }
@@ -214,6 +224,11 @@ export class TinymceController {
       element.dispatchEvent(new CustomEvent('upload-complete'));
       stack.pop();
     }
+  }
+
+  destroy() {
+    this.editor?.destroy();
+    this.editor = undefined;
   }
 }
 
