@@ -1576,6 +1576,7 @@ function slideDown(target, duration = 300, display = "block") {
   }
   data(ele, "animation.sliding.down", true);
   ele.style.display = display;
+  ele.style.overflow = "hidden";
   let maxHeight = 0;
   for (const child of Array.from(ele.children)) {
     maxHeight = Math.max(child.offsetHeight, maxHeight);

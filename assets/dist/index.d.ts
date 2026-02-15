@@ -1520,6 +1520,11 @@ declare global {
 }
 
 
+declare global {
+    var tinymce: TinyMCE;
+}
+
+
 declare module 'axios' {
     interface AxiosRequestConfig {
         vars?: Record<string, any>;
@@ -1535,9 +1540,4 @@ declare global {
     export interface Window {
         bootstrap: typeof bootstrap;
     }
-}
-
-
-declare global {
-    var tinymce: TinyMCE;
 }

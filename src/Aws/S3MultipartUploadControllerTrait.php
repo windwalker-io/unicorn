@@ -10,6 +10,11 @@ use Windwalker\Core\Application\ApplicationInterface;
 use Windwalker\Core\Attributes\Request\Input;
 use Windwalker\DI\Attributes\Inject;
 
+use Windwalker\Uri\Uri;
+use Windwalker\Utilities\Str;
+
+use function Windwalker\ds;
+
 trait S3MultipartUploadControllerTrait
 {
     use AjaxControllerTrait;
@@ -78,8 +83,16 @@ trait S3MultipartUploadControllerTrait
         try {
             $result = $this->getS3MultipartUploader()->complete($id, $path, $parts, $profile);
 
+            $url = new Uri($result->get('ObjectURL'));
+
+            if (!$url->getScheme()) {
+                $url = $url->withScheme('https');
+            }
+
             return [
-                'url' => $result['Location'],
+                'url' => (string) $url,
+                'path' => $path,
+                'fullPath' => $result->get('Key'),
             ];
         } catch (\Throwable $e) {
             $this->abort($id, $path, $profile);

@@ -72,7 +72,6 @@ class S3MultipartUploader extends (/* @__PURE__ */ Mixin(EventMixin)) {
             }
           );
           uploadedBytes += blob.size;
-          this.updateProgress(uploadedBytes, file.size, options);
           parts.push({ ETag: etag, PartNumber: partNumber });
         });
         promises.push(p);

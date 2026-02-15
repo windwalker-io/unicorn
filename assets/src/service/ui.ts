@@ -263,6 +263,7 @@ export function slideDown(
   data(ele, 'animation.sliding.down', true);
 
   ele.style.display = display;
+  ele.style.overflow = 'hidden';
 
 // Get height
   let maxHeight = 0;

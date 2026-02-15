@@ -145,7 +145,8 @@ export class S3MultipartUploader extends Mixin(EventMixin) {
 
           uploadedBytes += blob.size;
 
-          this.updateProgress(uploadedBytes, file.size, options);
+          // Use parts progress, ignore the overall progress, which may be inaccurate due to retries or concurrency
+          // this.updateProgress(uploadedBytes, file.size, options);
 
           parts.push({ ETag: etag, PartNumber: partNumber });
         });
