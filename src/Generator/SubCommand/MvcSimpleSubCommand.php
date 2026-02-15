@@ -106,7 +106,7 @@ class MvcSimpleSubCommand extends AbstractGeneratorSubCommand
 
         $name = $io->getArgument('name');
 
-        $this->checkNamespaceHasStage($io, $name);
+        $this->askForStage($io);
 
         // Entity
         $entityName = \Windwalker\str($name)

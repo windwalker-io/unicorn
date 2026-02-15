@@ -71,7 +71,7 @@ abstract class AbstractViewSubCommand extends ViewSubCommand
             return 255;
         }
 
-        $this->checkNamespaceHasStage($io, $name);
+        $this->askForStage($io);
 
         $this->codeGenerator->from($this->getViewPath($this->getTmplPath()))
             ->replaceTo(
