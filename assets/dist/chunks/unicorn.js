@@ -1197,13 +1197,22 @@ async function useFormAsync(ele, options = {}) {
   return useForm(ele, options);
 }
 function useForm(ele, options = {}) {
+  if (!formElement) {
+    throw new Error("Form module is not loaded. Please use useFormAsync() to load the module before using useForm().");
+  }
   if (ele == null) {
     return new formElement(void 0, void 0, options);
   }
-  const selector = typeof ele === "string" ? ele : void 0;
-  const el = selectOne(ele);
+  let selector = void 0;
+  let el = void 0;
+  if (typeof ele === "string") {
+    selector = ele;
+    el = selectOne(ele) ?? void 0;
+  } else {
+    el = ele;
+  }
   if (!el) {
-    throw new Error(`Form element of: ${selector} not found.`);
+    return new formElement(selector, el, options);
   }
   return module$1(
     el,
@@ -1215,6 +1224,11 @@ async function useFormComponent(ele, options = {}) {
   const form = await useFormAsync(ele, options);
   await form?.initComponent();
   return form;
+}
+async function useFormSubmit(options = {}) {
+  const form = await useFormAsync(options.form);
+  const func = options.method?.toLowerCase() || "post";
+  return form[func](options.url, options.data);
 }
 let gridElement;
 async function useGridAsync(ele, options = {}) {
@@ -2222,7 +2236,7 @@ export {
   useKeepAlive as Z,
   __ as _,
   useUniDirective as a,
-  useListDependent as a$,
+  useIframeModal as a$,
   useBs5ButtonRadio as a0,
   useBs5Tooltip as a1,
   useFormAsync as a2,
@@ -2258,8 +2272,8 @@ export {
   useFieldRepeatable as aW,
   useFieldSingleImageDrag as aX,
   useFormComponent as aY,
-  useGridComponent as aZ,
-  useIframeModal as a_,
+  useFormSubmit as aZ,
+  useGridComponent as a_,
   useImport as aa,
   useCssImport as ab,
   data as ac,
@@ -2287,16 +2301,17 @@ export {
   nextTick as ay,
   wait as az,
   animateTo as b,
-  useS3Uploader as b0,
-  useS3MultipartUploader as b1,
-  useShowOn as b2,
-  createStack as b3,
-  useTinymce as b4,
-  useTinymceHook as b5,
-  useUIBootstrap5 as b6,
-  useWebDirective as b7,
-  useUnicornPhpAdapter as b8,
-  UnicornPhpAdapter as b9,
+  useListDependent as b0,
+  useS3Uploader as b1,
+  useS3MultipartUploader as b2,
+  useShowOn as b3,
+  createStack as b4,
+  useTinymce as b5,
+  useTinymceHook as b6,
+  useUIBootstrap5 as b7,
+  useWebDirective as b8,
+  useUnicornPhpAdapter as b9,
+  UnicornPhpAdapter as ba,
   renderMessage as c,
   clearMessages as d,
   clearNotifies as e,

@@ -28,8 +28,8 @@ export class UnicornFormElement {
 
       const csrf = document.createElement('input');
       csrf.setAttribute('type', 'hidden');
-      csrf.setAttribute('name', data('csrf-token'));
-      csrf.setAttribute('value', '1');
+      csrf.setAttribute('name', 'anticsrf');
+      csrf.setAttribute('value', data('csrf-token'));
 
       element.appendChild(csrf);
       document.body.appendChild(element);
@@ -180,6 +180,13 @@ export class UnicornFormElement {
     data?: Nullable<Record<string, any>>,
   ) {
     return this.post(url, data, 'DELETE');
+  }
+
+  destroy() {
+    if (this.element) {
+      this.element.remove();
+      this.element = undefined;
+    }
   }
 
   /**

@@ -303,6 +303,13 @@ declare interface FileDragOptions {
 
 export declare function forceArray<T>(item: T | T[]): T[];
 
+export declare interface FormSubmitOptions {
+    form?: string | Element;
+    method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+    url?: string;
+    data?: Record<string, any>;
+}
+
 export declare interface FormValidationOptions {
     scroll: boolean;
     validatedClass: null;
@@ -1041,6 +1048,7 @@ declare class UnicornFormElement {
      * Make a DELETE request.
      */
     delete(url?: Nullable<string>, data?: Nullable<Record<string, any>>): boolean;
+    destroy(): void;
     /**
      * @see https://stackoverflow.com/a/53739792
      *
@@ -1319,6 +1327,8 @@ export declare function useFormAsync(): Promise<UnicornFormElement>;
 export declare function useFormAsync(ele?: string | Element, options?: Record<string, any>): Promise<UnicornFormElement | null>;
 
 export declare function useFormComponent(ele?: string | Element, options?: Record<string, any>): Promise<UnicornFormElement | null>;
+
+export declare function useFormSubmit(options?: FormSubmitOptions): Promise<boolean>;
 
 export declare function useFormValidation(): Promise<ValidationModule>;
 

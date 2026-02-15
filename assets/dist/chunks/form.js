@@ -16,8 +16,8 @@ class UnicornFormElement {
       element.setAttribute("style", "display: none;");
       const csrf = document.createElement("input");
       csrf.setAttribute("type", "hidden");
-      csrf.setAttribute("name", data("csrf-token"));
-      csrf.setAttribute("value", "1");
+      csrf.setAttribute("name", "anticsrf");
+      csrf.setAttribute("value", data("csrf-token"));
       element.appendChild(csrf);
       document.body.appendChild(element);
     }
@@ -115,6 +115,12 @@ class UnicornFormElement {
    */
   delete(url, data2) {
     return this.post(url, data2, "DELETE");
+  }
+  destroy() {
+    if (this.element) {
+      this.element.remove();
+      this.element = void 0;
+    }
   }
   /**
    * @see https://stackoverflow.com/a/53739792

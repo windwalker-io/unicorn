@@ -1,11 +1,14 @@
 import type { UnicornFormElement } from '../module/form';
-import { selectOne, module } from '../service';
+import { module, selectOne } from '../service';
+import { Nullable } from '../types';
 
 let formElement: typeof UnicornFormElement;
 
 export async function useFormAsync(): Promise<UnicornFormElement>;
-export async function useFormAsync(ele?: string | Element, options?: Record<string, any>): Promise<UnicornFormElement | null>;
-export async function useFormAsync(ele?: string | Element, options: Record<string, any> = {}): Promise<UnicornFormElement | null> {
+export async function useFormAsync(ele?: string | Element,
+                                   options?: Record<string, any>): Promise<UnicornFormElement | null>;
+export async function useFormAsync(ele?: string | Element,
+                                   options: Record<string, any> = {}): Promise<UnicornFormElement | null> {
   const { UnicornFormElement } = await import('../module/form');
 
   formElement ??= UnicornFormElement;
@@ -16,15 +19,26 @@ export async function useFormAsync(ele?: string | Element, options: Record<strin
 export function useForm(): UnicornFormElement;
 export function useForm(ele?: string | Element, options?: Record<string, any>): UnicornFormElement | null;
 export function useForm(ele?: string | Element, options: Record<string, any> = {}): UnicornFormElement | null {
+  if (!formElement) {
+    throw new Error('Form module is not loaded. Please use useFormAsync() to load the module before using useForm().');
+  }
+
   if (ele == null) {
     return new formElement(undefined, undefined, options);
   }
 
-  const selector = typeof ele === 'string' ? ele : undefined;
-  const el = selectOne<HTMLFormElement>(ele as string);
+  let selector: string | undefined = undefined;
+  let el: HTMLFormElement | undefined = undefined;
+
+  if (typeof ele === 'string') {
+    selector = ele;
+    el = selectOne<HTMLFormElement>(ele) ?? undefined;
+  } else {
+    el = ele as HTMLFormElement;
+  }
 
   if (!el) {
-    throw new Error(`Form element of: ${selector} not found.`);
+    return new formElement(selector, el, options);
   }
 
   return module(
@@ -40,4 +54,20 @@ export async function useFormComponent(ele?: string | Element, options: Record<s
   await form?.initComponent();
 
   return form;
+}
+
+export interface FormSubmitOptions {
+  form?: string | Element;
+  method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+  url?: string;
+  data?: Record<string, any>;
+}
+
+export async function useFormSubmit(options: FormSubmitOptions = {}) {
+  const form = (await useFormAsync(options.form)) as UnicornFormElement;
+
+  // fun type should be method of form
+  const func = (options.method?.toLowerCase() || 'post') as 'get' | 'post' | 'put' | 'delete' | 'patch';
+
+  return form[func](options.url, options.data);
 }
