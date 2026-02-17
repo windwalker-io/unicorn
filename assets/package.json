@@ -63,7 +63,7 @@
     ]
   },
   "devDependencies": {
-    "@lyrasoft/ts-toolkit": "^0.2.0",
+    "@lyrasoft/ts-toolkit": "^0.2.4",
     "@rubenbimmel/alpine-class-component": "^0.0.4",
     "@types/alpinejs": "^3",
     "@types/bootstrap": "^5",

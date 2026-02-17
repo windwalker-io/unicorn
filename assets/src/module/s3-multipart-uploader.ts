@@ -1,8 +1,7 @@
-import { AxiosProgressEvent, AxiosResponseHeaders } from 'axios';
+import { AxiosProgressEvent, type AxiosRequestConfig, AxiosResponseHeaders } from 'axios';
 import { Mixin } from 'ts-mixer';
 import { createQueue, useHttpClient } from '../composable';
 import { EventHandler, EventMixin } from '../events';
-import { route } from '../service';
 import type { MaybePromise } from '../types';
 import { mergeDeep } from '../utilities';
 import { ApiReturn } from './http-client';
@@ -45,6 +44,7 @@ export interface S3MultipartUploaderRequestOptions {
   ContentDisposition?: string;
   ACL?: 'public-read' | 'private' | 'authenticated-read' | 'public-read-write' | string;
   extra?: Record<string, any>;
+  abortController?: AbortController;
 }
 
 export class S3MultipartUploader extends Mixin(EventMixin) {
@@ -97,19 +97,32 @@ export class S3MultipartUploader extends Mixin(EventMixin) {
       e.preventDefault();
       e.returnValue = '';
     };
+
     if (this.options.leaveAlert === true) {
       window.addEventListener('beforeunload', beforeUnloadHandler);
     }
 
-    // @Request init
-    const { id } = await this.request<{ id: string; }>(
-      'init',
-      initData
-    );
+    let uploadId: string | null = null;
+    let isCancel = false;
+    let signal = options.abortController?.signal;
 
-    this.trigger('inited', { id, path });
+    if (signal) {
+      signal.addEventListener('abort', (e) => {
+        isCancel = true;
+      });
+    }
 
     try {
+      // @Request init
+      const { id } = await this.request<{ id: string; }>(
+        'init',
+        initData
+      );
+
+      uploadId = id;
+
+      this.trigger('inited', { id, path });
+
       const chunkSize = this.options.chunkSize;
       const chunks = Math.ceil(file.size / chunkSize);
 
@@ -133,6 +146,7 @@ export class S3MultipartUploader extends Mixin(EventMixin) {
               path,
               partNumber,
               chunkSize,
+              abortController: options.abortController,
               onUploadProgress: (e) => {
                 partsUploaded[partNumber] = e.loaded;
 
@@ -158,7 +172,14 @@ export class S3MultipartUploader extends Mixin(EventMixin) {
 
       await Promise.all(promises);
 
-      // @Request sign
+      if (isCancel) {
+        const e = new Error('Upload cancelled');
+        e.name = 'CanceledError';
+
+        throw e;
+      }
+
+      // @Request complete
       const { url } = await this.request<{ url: string }>(
         'complete',
         {
@@ -173,9 +194,11 @@ export class S3MultipartUploader extends Mixin(EventMixin) {
 
       return { url, id, path };
     } catch (e) {
-      await this.abort(id, path);
+      if (uploadId) {
+        await this.abort(uploadId, path);
+      }
 
-      this.trigger('failure', { error: e as Error, id, path });
+      this.trigger('failure', { error: e as Error, uploadId, path });
 
       throw e;
     } finally {
@@ -192,6 +215,7 @@ export class S3MultipartUploader extends Mixin(EventMixin) {
       path: string;
       partNumber: number;
       chunkSize: number;
+      abortController?: AbortController;
       onUploadProgress: (e: AxiosProgressEvent) => void;
     }
   ) {
@@ -211,6 +235,9 @@ export class S3MultipartUploader extends Mixin(EventMixin) {
         path,
         partNumber,
         profile: this.options.profile,
+      },
+      {
+        signal: payload.abortController?.signal,
       }
     );
 
@@ -228,14 +255,18 @@ export class S3MultipartUploader extends Mixin(EventMixin) {
     return { blob, etag };
   }
 
-  protected async request<T = Record<string, any>>(action: RouteActions, body: Record<string, any>): Promise<T> {
+  protected async request<T = Record<string, any>>(
+    action: RouteActions,
+    body: Record<string, any>,
+    config: Partial<AxiosRequestConfig> = {}
+  ): Promise<T> {
     if (this.options.requestHandler) {
       return this.options.requestHandler<T>(action, body);
     }
 
     const http = await useHttpClient();
 
-    const res = await http.post<ApiReturn<T>>(await this.resolveRoute(action), body);
+    const res = await http.post<ApiReturn<T>>(await this.resolveRoute(action), body, config);
 
     return res.data.data;
   }
