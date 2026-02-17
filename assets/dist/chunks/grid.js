@@ -1,4 +1,4 @@
-import { l as loadAlpine, Q as slideDown, P as slideUp, A as h, _ as __, F as simpleConfirm, ae as deleteConfirm, G as simpleAlert } from "./unicorn.js";
+import { l as loadAlpine, Q as slideDown, P as slideUp, A as h, _ as __, F as simpleConfirm, ag as deleteConfirm, G as simpleAlert } from "./unicorn.js";
 class UnicornGridElement {
   constructor(selector, element, form, options = {}) {
     this.element = element;

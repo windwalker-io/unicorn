@@ -1,4 +1,4 @@
-import { a as useUniDirective, x as getBoundedInstance, v as selectOne, u as useHttpClient, B as html, a7 as mergeDeep } from "./unicorn.js";
+import { a as useUniDirective, x as getBoundedInstance, v as selectOne, u as useHttpClient, B as html, a6 as mergeDeep } from "./unicorn.js";
 const nope = () => {
 };
 const defaultOptions = {

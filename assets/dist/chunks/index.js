@@ -1,4 +1,23 @@
 import { g as getDefaultExportFromCjs } from "./_commonjsHelpers.js";
+function _mergeNamespaces(n, m) {
+  for (var i = 0; i < m.length; i++) {
+    const e = m[i];
+    if (typeof e !== "string" && !Array.isArray(e)) {
+      for (const k in e) {
+        if (k !== "default" && !(k in n)) {
+          const d = Object.getOwnPropertyDescriptor(e, k);
+          if (d) {
+            Object.defineProperty(n, k, d.get ? d : {
+              enumerable: true,
+              get: () => e[k]
+            });
+          }
+        }
+      }
+    }
+  }
+  return Object.freeze(Object.defineProperty(n, Symbol.toStringTag, { value: "Module" }));
+}
 var monthSelect$1 = { exports: {} };
 var monthSelect = /* @__PURE__ */ (() => monthSelect$1.exports)();
 var hasRequiredMonthSelect;
@@ -285,10 +304,10 @@ function requireMonthSelect() {
 }
 var monthSelectExports = /* @__PURE__ */ requireMonthSelect();
 const index = /* @__PURE__ */ getDefaultExportFromCjs(monthSelectExports);
-const index$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const index$1 = /* @__PURE__ */ _mergeNamespaces({
   __proto__: null,
   default: index
-}, /* @__PURE__ */ (() => Symbol.toStringTag)(), { value: "Module" }));
+}, [monthSelectExports]);
 export {
   index$1 as i
 };
