@@ -115,6 +115,7 @@ export class S3Uploader extends Mixin(EventMixin) implements EventAwareInterface
         this.options.endpoint || '',
         fileData,
         {
+          signal: options.signal,
           onUploadProgress: (e) => {
             if (options.onUploadProgress) {
               options.onUploadProgress(e);
@@ -222,6 +223,7 @@ export interface S3UploaderRequestOptions {
   'Content-Type'?: string;
   'Content-Disposition'?: string;
   key?: string;
+  signal?: AbortSignal;
 
   [name: string]: any;
 }
