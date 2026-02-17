@@ -77,6 +77,7 @@ class S3Uploader extends (/* @__PURE__ */ Mixin(EventMixin)) {
         this.options.endpoint || "",
         fileData,
         {
+          signal: options.signal,
           onUploadProgress: (e) => {
             if (options.onUploadProgress) {
               options.onUploadProgress(e);

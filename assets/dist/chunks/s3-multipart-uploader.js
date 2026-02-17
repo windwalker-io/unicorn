@@ -40,12 +40,21 @@ class S3MultipartUploader extends (/* @__PURE__ */ Mixin(EventMixin)) {
     if (this.options.leaveAlert === true) {
       window.addEventListener("beforeunload", beforeUnloadHandler);
     }
-    const { id } = await this.request(
-      "init",
-      initData
-    );
-    this.trigger("inited", { id, path });
+    let uploadId = null;
+    let isCancel = false;
+    let signal = options.abortController?.signal;
+    if (signal) {
+      signal.addEventListener("abort", (e) => {
+        isCancel = true;
+      });
+    }
     try {
+      const { id } = await this.request(
+        "init",
+        initData
+      );
+      uploadId = id;
+      this.trigger("inited", { id, path });
       const chunkSize = this.options.chunkSize;
       const chunks = Math.ceil(file.size / chunkSize);
       let uploadedBytes = 0;
@@ -64,6 +73,7 @@ class S3MultipartUploader extends (/* @__PURE__ */ Mixin(EventMixin)) {
               path,
               partNumber,
               chunkSize,
+              abortController: options.abortController,
               onUploadProgress: (e) => {
                 partsUploaded[partNumber] = e.loaded;
                 const uploaded = Object.values(partsUploaded).reduce((sum, a) => sum + a, 0);
@@ -78,6 +88,11 @@ class S3MultipartUploader extends (/* @__PURE__ */ Mixin(EventMixin)) {
         currentPart++;
       }
       await Promise.all(promises);
+      if (isCancel) {
+        const e = new Error("Upload cancelled");
+        e.name = "CanceledError";
+        throw e;
+      }
       const { url } = await this.request(
         "complete",
         {
@@ -90,8 +105,10 @@ class S3MultipartUploader extends (/* @__PURE__ */ Mixin(EventMixin)) {
       this.trigger("success", { id, path, url });
       return { url, id, path };
     } catch (e) {
-      await this.abort(id, path);
-      this.trigger("failure", { error: e, id, path });
+      if (uploadId) {
+        await this.abort(uploadId, path);
+      }
+      this.trigger("failure", { error: e, uploadId, path });
       throw e;
     } finally {
       if (this.options.leaveAlert === true) {
@@ -112,6 +129,9 @@ class S3MultipartUploader extends (/* @__PURE__ */ Mixin(EventMixin)) {
         path,
         partNumber,
         profile: this.options.profile
+      },
+      {
+        signal: payload.abortController?.signal
       }
     );
     const res = await http.put(
@@ -124,12 +144,12 @@ class S3MultipartUploader extends (/* @__PURE__ */ Mixin(EventMixin)) {
     const etag = String(res.headers.get("ETag") || "");
     return { blob, etag };
   }
-  async request(action, body) {
+  async request(action, body, config = {}) {
     if (this.options.requestHandler) {
       return this.options.requestHandler(action, body);
     }
     const http = await useHttpClient();
-    const res = await http.post(await this.resolveRoute(action), body);
+    const res = await http.post(await this.resolveRoute(action), body, config);
     return res.data.data;
   }
   // protected async abortBeacon(id: string, path: string): Promise<void> {

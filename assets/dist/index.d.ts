@@ -626,12 +626,13 @@ declare class S3MultipartUploader extends S3MultipartUploader_base {
         path: string;
         partNumber: number;
         chunkSize: number;
+        abortController?: AbortController;
         onUploadProgress: (e: AxiosProgressEvent) => void;
     }): Promise<{
         blob: Blob;
         etag: string;
     }>;
-    protected request<T = Record<string, any>>(action: RouteActions, body: Record<string, any>): Promise<T>;
+    protected request<T = Record<string, any>>(action: RouteActions, body: Record<string, any>, config?: Partial<AxiosRequestConfig>): Promise<T>;
     abort(id: string, path: string): Promise<void>;
     updateProgress(loaded: number, total: number, options: S3MultipartUploaderRequestOptions): void;
     resolveRoute(action: RouteActions): Promise<string>;
@@ -685,6 +686,7 @@ declare interface S3MultipartUploaderRequestOptions {
     ContentDisposition?: string;
     ACL?: 'public-read' | 'private' | 'authenticated-read' | 'public-read-write' | string;
     extra?: Record<string, any>;
+    abortController?: AbortController;
 }
 
 declare class S3Uploader extends S3Uploader_base implements EventAwareInterface {
@@ -760,6 +762,7 @@ declare interface S3UploaderRequestOptions {
     'Content-Type'?: string;
     'Content-Disposition'?: string;
     key?: string;
+    signal?: AbortSignal;
     [name: string]: any;
 }
 
@@ -1511,14 +1514,6 @@ declare global {
 }
 
 
-declare module '@windwalker-io/unicorn-next' {
-    interface UnicornApp {
-        /** @deprecated Only for code generator use. */
-        $ui: typeof methods;
-    }
-}
-
-
 declare global {
     var Alpine: AlpineGlobal;
     var TomSelect: typeof TomSelectGlobal;
@@ -1526,8 +1521,12 @@ declare global {
     var Mark: any;
 }
 
-declare global {
-    var S: any;
+
+declare module '@windwalker-io/unicorn-next' {
+    interface UnicornApp {
+        /** @deprecated Only for code generator use. */
+        $ui: typeof methods;
+    }
 }
 
 
@@ -1541,9 +1540,8 @@ declare module 'axios' {
     }
 }
 
-
 declare global {
-    var tinymce: TinyMCE;
+    var S: any;
 }
 
 
@@ -1551,4 +1549,9 @@ declare global {
     export interface Window {
         bootstrap: typeof bootstrap;
     }
+}
+
+
+declare global {
+    var tinymce: TinyMCE;
 }
