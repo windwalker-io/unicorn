@@ -1551,17 +1551,17 @@ export { }
 
 
 declare global {
-    var Alpine: AlpineGlobal;
-    var TomSelect: typeof TomSelectGlobal;
-    var Spectrum: typeof SpectrumGlobal;
-    var Mark: any;
+    interface Node {
+        __unicorn?: any;
+    }
 }
 
 
 declare global {
-    interface Node {
-        __unicorn?: any;
-    }
+    var Alpine: AlpineGlobal;
+    var TomSelect: typeof TomSelectGlobal;
+    var Spectrum: typeof SpectrumGlobal;
+    var Mark: any;
 }
 
 
@@ -1577,11 +1577,6 @@ declare global {
 }
 
 
-declare global {
-    var tinymce: TinyMCE;
-}
-
-
 declare module 'axios' {
     interface AxiosRequestConfig {
         vars?: Record<string, any>;
@@ -1590,6 +1585,11 @@ declare module 'axios' {
     }
     interface CreateAxiosDefaults {
     }
+}
+
+
+declare global {
+    var tinymce: TinyMCE;
 }
 
 
