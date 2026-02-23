@@ -433,6 +433,7 @@ export function useDisableOnSubmit(
 
   const event = options.event || 'submit';
   const spinnerClass = options.spinnerClass || 'spinner-border spinner-border-sm';
+  const loadingClass = options.loadingCass || 'is-loading';
 
   selectAll<HTMLElement>(buttonSelector, (button) => {
     button.addEventListener('click', (e) => {
@@ -458,6 +459,7 @@ export function useDisableOnSubmit(
 
         if (button.dataset.clicked) {
           let icon = button.querySelector(iconSelector);
+          button.classList.add(loadingClass);
 
           if (icon) {
             const i = html('<i></i>');
