@@ -96,7 +96,7 @@ export class UnicornFormValidation {
       options = {};
     }
 
-    return this.options = mergeDeep({}, defaultOptions, this.options, options);
+    return this.options = mergeDeep({}, defaultOptions, this.options || {}, options);
   }
 
   get scrollEnabled() {
@@ -119,6 +119,10 @@ export class UnicornFormValidation {
     if (this.$form.tagName === 'FORM') {
       this.$form.setAttribute('novalidate', 'true');
       this.$form.addEventListener('submit', (event) => {
+        event.stopImmediatePropagation(); // Stop following events
+        event.stopPropagation();
+        event.preventDefault();
+
         if (this.options.enabled && !this.validateAll()) {
           event.stopImmediatePropagation(); // Stop following events
           event.stopPropagation();
@@ -350,7 +354,7 @@ export class UnicornFormValidation {
 
 export class UnicornFieldValidation {
   $input: InputElements | undefined;
-  options: Partial<FieldValidationOptions>;
+  options: Partial<FieldValidationOptions> = {};
 
   static is = 'uni-field-validate';
 

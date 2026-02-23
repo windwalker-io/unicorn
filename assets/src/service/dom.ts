@@ -191,7 +191,7 @@ export function html<T extends Element = HTMLElement>(html: string): T {
  * @see https://gist.github.com/iagobruno/4db2ed62dc40fa841bb9a5c7de92f5f8
  */
 export function delegate(
-  wrapper: Element | string,
+  wrapper: Element | Document | string,
   selector: string,
   eventName: string,
   callback: (e: Event) => void
