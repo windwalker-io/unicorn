@@ -1,3 +1,4 @@
+import { Modal } from "bootstrap";
 const copyProps = (dest, src, exclude = []) => {
   const props = Object.getOwnPropertyDescriptors(src);
   for (let prop of exclude)
@@ -1155,6 +1156,212 @@ async function resolveSource(src) {
   }
   return src;
 }
+async function useUIBootstrap5(install = false, pushToGlobal = false) {
+  const { UIBootstrap5 } = await import("./ui-bootstrap5.js");
+  const theme = UIBootstrap5.get();
+  if (install) {
+    useUITheme(theme);
+    if (pushToGlobal) {
+      theme.pushBootstrapToGlobal();
+    }
+  }
+  return theme;
+}
+async function useBs5Tooltip(selector = '[data-bs-toggle="tooltip"]', config = {}) {
+  const bs5 = await useUIBootstrap5();
+  return bs5.tooltip(selector, config);
+}
+const useBs5KeepTab = async (selector, options = {}) => {
+  const bs5 = await useUIBootstrap5();
+  return bs5.keepTab(selector, options);
+};
+const useBs5ButtonRadio = async (selector, options = {}) => {
+  const bs5 = await useUIBootstrap5();
+  return bs5.buttonRadio(selector, options);
+};
+const defaultOptions = {
+  buttons: [
+    "OK"
+  ]
+};
+async function useBsModalAlert(id, options) {
+  await useUIBootstrap5();
+  let modalElement = void 0;
+  if (typeof id !== "string" && !(id instanceof HTMLElement)) {
+    options = id;
+    id = "uni-modal-alert";
+    modalElement = document.getElementById(id);
+  } else {
+    modalElement = typeof id === "string" ? document.getElementById(id) : id;
+  }
+  if (!modalElement) {
+    modalElement = html(`<div id="${id}" class="uni-modal-alert modal fade" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body text-center p-4"></div>
+      <div class="modal-footer"></div>
+    </div>
+  </div>
+</div>`);
+    document.body.appendChild(modalElement);
+  }
+  const modal = Modal.getOrCreateInstance(modalElement, options);
+  return {
+    show: (title, text, icon, options2) => {
+      if (typeof title === "string") {
+        options2 = options2 || {};
+        options2.title = title;
+        options2.text = text;
+        options2.icon = icon;
+      } else {
+        options2 = title;
+      }
+      return new Promise((resolve) => {
+        prepareModalElement(modalElement, resolve, options2);
+        modal.show(options2?.relatedTarget);
+      });
+    },
+    hide: () => {
+      modal.hide();
+    },
+    dispose: () => {
+      modal.dispose();
+    },
+    toggle: (relatedTarget) => {
+      modal.toggle(relatedTarget);
+    },
+    destroy: () => {
+      modal.dispose();
+      modalElement.remove();
+    },
+    instance: modal,
+    el: modalElement
+  };
+}
+async function prepareModalElement(modalElement, handler, options) {
+  options = Object.assign({}, defaultOptions, options || {});
+  let header = options.header;
+  const content = options.content;
+  modalElement.querySelector(".modal-header")?.remove();
+  modalElement.querySelector(".modal-body").innerHTML = "";
+  modalElement.querySelector(".modal-footer").innerHTML = "";
+  const dialog = modalElement.querySelector(".modal-dialog");
+  dialog?.classList.remove("modal-sm", "modal-lg", "modal-xl", "modal-xxl");
+  if (header) {
+    if (typeof header === "string") {
+      header = `<div class="modal-header">
+        <h5 class="modal-title">${header}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>`;
+    }
+    header = await anyToElement(header);
+    modalElement.querySelector(".modal-content").insertAdjacentElement("afterbegin", header);
+  }
+  if (content) {
+    let contentElement = await anyToElement(content);
+    modalElement.querySelector(".modal-body").appendChild(contentElement);
+  } else {
+    const title = options.title;
+    const text = options.text;
+    let icon = options.icon;
+    if (icon) {
+      if (typeof icon === "string") {
+        icon = `<div class="uni-modal-alert__icon text-center mb-4"><span class="${icon}" style="font-size: 48px;"></span></div>`;
+      }
+      icon = await anyToElement(icon);
+      modalElement.querySelector(".modal-body").appendChild(icon);
+    }
+    if (title) {
+      const titleEl = html(`<h4 class="uni-modal-alert__title">${title}</h4>`);
+      modalElement.querySelector(".modal-body").appendChild(titleEl);
+    }
+    if (text) {
+      const textEl = html(`<div class="uni-modal-alert__text">${text}</div>`);
+      modalElement.querySelector(".modal-body").appendChild(textEl);
+    }
+  }
+  const buttons = options.buttons;
+  for (const i in buttons) {
+    const button = buttons[i];
+    const isConfirm = buttons.length === 1 || buttons.length === 2 && Number(i) === 1;
+    const buttonElement = createButton(
+      button,
+      handler,
+      isConfirm
+    );
+    modalElement.querySelector(".modal-footer").appendChild(await buttonElement);
+  }
+  if (options.size) {
+    modalElement.querySelector(".modal-dialog").classList.add(`modal-${options.size}`);
+  }
+  return modalElement;
+}
+async function anyToElement(content) {
+  if (typeof content === "function") {
+    return content();
+  }
+  return typeof content === "string" ? html(content) : content;
+}
+async function createButton(buttonOption, handler, isConfirm) {
+  if (typeof buttonOption === "function") {
+    return await buttonOption();
+  }
+  if (typeof buttonOption === "string") {
+    buttonOption = {
+      text: buttonOption,
+      value: isConfirm ?? false,
+      class: isConfirm ? "btn btn-primary is-confirm" : "btn btn-outline-secondary",
+      styles: isConfirm ? { width: "150px" } : {},
+      dismiss: true
+    };
+  }
+  let button;
+  if (buttonOption instanceof HTMLElement) {
+    button = buttonOption;
+  } else {
+    const {
+      text,
+      class: className = "btn btn-secondary",
+      attrs = {},
+      styles = {},
+      dismiss = true,
+      value,
+      href,
+      target,
+      onClick
+    } = buttonOption;
+    const tag = href ? "a" : "button";
+    const el = document.createElement(tag);
+    if (el instanceof HTMLAnchorElement) {
+      el.href = href;
+      el.target = target || "_self";
+    }
+    if (el instanceof HTMLButtonElement) {
+      el.type = "button";
+    }
+    el.setAttribute("class", className);
+    for (let attr in attrs) {
+      el.setAttribute(attr, attrs[attr]);
+    }
+    for (let style in styles) {
+      el.style[style] = styles[style];
+    }
+    if (dismiss) {
+      el.setAttribute("data-bs-dismiss", "modal");
+    }
+    if (typeof text === "string") {
+      el.textContent = text;
+    } else if (typeof text === "function") {
+      text(el);
+    }
+    el.addEventListener("click", (e) => {
+      onClick?.(value, e);
+      handler(value);
+    });
+    button = el;
+  }
+  return button;
+}
 async function useCheckboxesMultiSelect(selector, options = {}) {
   const m = await import("./checkboxes-multi-select.js");
   if (selector) {
@@ -1372,29 +1579,6 @@ async function useTinymceHook(handler) {
   const { addHook } = await import("./tinymce.js");
   return addHook(handler);
 }
-async function useUIBootstrap5(install = false, pushToGlobal = false) {
-  const { UIBootstrap5 } = await import("./ui-bootstrap5.js");
-  const theme = UIBootstrap5.get();
-  if (install) {
-    useUITheme(theme);
-    if (pushToGlobal) {
-      theme.pushBootstrapToGlobal();
-    }
-  }
-  return theme;
-}
-async function useBs5Tooltip(selector = '[data-bs-toggle="tooltip"]', config = {}) {
-  const bs5 = await useUIBootstrap5();
-  return bs5.tooltip(selector, config);
-}
-const useBs5KeepTab = async (selector, options = {}) => {
-  const bs5 = await useUIBootstrap5();
-  return bs5.keepTab(selector, options);
-};
-const useBs5ButtonRadio = async (selector, options = {}) => {
-  const bs5 = await useUIBootstrap5();
-  return bs5.buttonRadio(selector, options);
-};
 let instances = {};
 async function useWebDirective(name = "unicorn", options = {}) {
   if (options === false) {
@@ -1698,6 +1882,7 @@ function useDisableOnSubmit(formSelector = "#admin-form", buttonSelector = "", o
   ].join(",");
   const event = options.event || "submit";
   const spinnerClass = options.spinnerClass || "spinner-border spinner-border-sm";
+  const loadingClass = options.loadingCass || "is-loading";
   selectAll(buttonSelector, (button) => {
     button.addEventListener("click", (e) => {
       button.dataset.clicked = "1";
@@ -1718,6 +1903,7 @@ function useDisableOnSubmit(formSelector = "#admin-form", buttonSelector = "", o
         button.classList.add("disabled");
         if (button.dataset.clicked) {
           let icon = button.querySelector(iconSelector);
+          button.classList.add(loadingClass);
           if (icon) {
             const i = html("<i></i>");
             icon.parentNode.replaceChild(i, icon);
@@ -2238,7 +2424,7 @@ export {
   useKeepAlive as Z,
   __ as _,
   useUniDirective as a,
-  useS3Uploader as a$,
+  useS3MultipartUploader as a$,
   useBs5ButtonRadio as a0,
   useBs5Tooltip as a1,
   useFormAsync as a2,
@@ -2258,24 +2444,24 @@ export {
   removeBoundedInstance as aG,
   removeData as aH,
   useAlertAdapter as aI,
-  useCssIncludes as aJ,
-  useFieldCascadeSelect as aK,
-  useFieldFileDrag as aL,
-  useFieldFlatpickr as aM,
-  useFieldModalSelect as aN,
-  useFieldModalTree as aO,
-  useFieldRepeatable as aP,
-  useFieldSingleImageDrag as aQ,
-  useFormComponent as aR,
-  useFormSubmit as aS,
-  useGridComponent as aT,
-  useIframeModal as aU,
-  useInject as aV,
-  useLang as aW,
-  useLegacy as aX,
-  useListDependent as aY,
-  useMacro as aZ,
-  useS3MultipartUploader as a_,
+  useBsModalAlert as aJ,
+  useCssIncludes as aK,
+  useFieldCascadeSelect as aL,
+  useFieldFileDrag as aM,
+  useFieldFlatpickr as aN,
+  useFieldModalSelect as aO,
+  useFieldModalTree as aP,
+  useFieldRepeatable as aQ,
+  useFieldSingleImageDrag as aR,
+  useFormComponent as aS,
+  useFormSubmit as aT,
+  useGridComponent as aU,
+  useIframeModal as aV,
+  useInject as aW,
+  useLang as aX,
+  useLegacy as aY,
+  useListDependent as aZ,
+  useMacro as a_,
   watchAttributes as aa,
   injectCssToDocument as ab,
   useImport as ac,
@@ -2303,17 +2489,18 @@ export {
   doImport as ay,
   hasRoute as az,
   animateTo as b,
-  useSeriesImport as b0,
-  useShowOn as b1,
-  useTinymce as b2,
-  useTinymceHook as b3,
-  useUI as b4,
-  useUIBootstrap5 as b5,
-  useUnicorn as b6,
-  useUnicornPhpAdapter as b7,
-  useVueComponentField as b8,
-  useWebDirective as b9,
-  wait as ba,
+  useS3Uploader as b0,
+  useSeriesImport as b1,
+  useShowOn as b2,
+  useTinymce as b3,
+  useTinymceHook as b4,
+  useUI as b5,
+  useUIBootstrap5 as b6,
+  useUnicorn as b7,
+  useUnicornPhpAdapter as b8,
+  useVueComponentField as b9,
+  useWebDirective as ba,
+  wait as bb,
   renderMessage as c,
   clearMessages as d,
   clearNotifies as e,

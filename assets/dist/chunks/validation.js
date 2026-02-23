@@ -174,7 +174,7 @@ class UnicornFormValidation {
     if (Array.isArray(options)) {
       options = {};
     }
-    return this.options = mergeDeep({}, defaultOptions, this.options, options);
+    return this.options = mergeDeep({}, defaultOptions, this.options || {}, options);
   }
   get scrollEnabled() {
     return this.options.scroll;
@@ -192,6 +192,9 @@ class UnicornFormValidation {
     if (this.$form.tagName === "FORM") {
       this.$form.setAttribute("novalidate", "true");
       this.$form.addEventListener("submit", (event) => {
+        event.stopImmediatePropagation();
+        event.stopPropagation();
+        event.preventDefault();
         if (this.options.enabled && !this.validateAll()) {
           event.stopImmediatePropagation();
           event.stopPropagation();
@@ -360,7 +363,7 @@ class UnicornFieldValidation {
     this.init();
   }
   $input;
-  options;
+  options = {};
   static is = "uni-field-validate";
   setOptions(options) {
     if (Array.isArray(options)) {

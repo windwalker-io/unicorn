@@ -1,3 +1,4 @@
+export * from './useBsModalAlert';
 export * from './useCheckboxesMultiSelect';
 export * from './useFieldCascadeSelect';
 export * from './useFieldFileDrag';

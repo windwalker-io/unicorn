@@ -96,6 +96,41 @@ export declare function base64UrlDecode(string: string): string;
 
 export declare function base64UrlEncode(string: string): string;
 
+export declare interface BsModalAlertInstance {
+    show(title: BsModalAlertOptions): Promise<any>;
+    show(title: string, text?: string, icon?: string, options?: BsModalAlertOptions): Promise<any>;
+    show(title: BsModalAlertOptions | string, text?: string, icon?: string, options?: BsModalAlertOptions): Promise<any>;
+    hide: () => void;
+    toggle: (relatedTarget?: HTMLElement) => void;
+    dispose: () => void;
+    destroy: () => void;
+    instance: Modal;
+    el: HTMLElement;
+}
+
+export declare interface BsModalAlertOptions {
+    header?: string | HTMLElement | (() => HTMLElement | Promise<HTMLElement>);
+    title?: string;
+    text?: string;
+    icon?: string | HTMLElement | (() => HTMLElement | Promise<HTMLElement>);
+    content?: string | HTMLElement | (() => HTMLElement | Promise<HTMLElement>);
+    size?: 'sm' | 'lg' | 'xl' | 'xxl';
+    relatedTarget?: HTMLElement;
+    buttons?: BsModalButton[];
+}
+
+export declare type BsModalButton = {
+    text?: string | ((button: HTMLElement) => void);
+    class?: string;
+    attrs?: Record<string, string>;
+    styles?: Record<string, string>;
+    dismiss?: boolean;
+    value?: any;
+    href?: string;
+    target?: string;
+    onClick?: (value?: any, e?: MouseEvent) => any;
+} | string | HTMLElement | (() => HTMLElement | Promise<HTMLElement>);
+
 export declare function buildQuery(query: Record<string, any>): string;
 
 declare class ButtonRadio {
@@ -209,7 +244,7 @@ export declare function debounce<T extends Function = Function>(handler: T, wait
  *
  * @see https://gist.github.com/iagobruno/4db2ed62dc40fa841bb9a5c7de92f5f8
  */
-export declare function delegate(wrapper: Element | string, selector: string, eventName: string, callback: (e: Event) => void): () => void;
+export declare function delegate(wrapper: Element | Document | string, selector: string, eventName: string, callback: (e: Event) => void): () => void;
 
 export { deleteConfirm }
 
@@ -1108,6 +1143,8 @@ declare class UnicornGridElement {
     state: {};
     constructor(selector: string, element: HTMLElement, form: UnicornFormElement, options?: Record<string, any>);
     bindEvents(): void;
+    private bindMustCheckedEvent;
+    preventBSModal(selector?: string | HTMLElement, msg?: string | boolean): void;
     initComponent(store?: string, custom?: Record<string, string>): Promise<Alpine_2>;
     useState(this: any, custom?: Record<string, any>): Partial<Record<string, any>> & Record<string, any>;
     getElement(): HTMLElement;
@@ -1196,7 +1233,9 @@ declare class UnicornGridElement {
     /**
      * Validate there has one or more checked boxes.
      */
-    validateChecked(event?: Event, callback?: (grid: UnicornGridElement) => any, msg?: string): this;
+    validateChecked(event?: Event, callback?: (grid: UnicornGridElement) => any, errorMsg?: string | boolean | null | ((grid: UnicornGridElement) => any)): this;
+    validateCheckedPromise(): Promise<this>;
+    getMustCheckedMessage(): string;
     hasChecked(): boolean;
     /**
      * Reorder all.
@@ -1286,6 +1325,10 @@ export declare const useBs5ButtonRadio: typeof UIBootstrap5.prototype.buttonRadi
 export declare const useBs5KeepTab: typeof UIBootstrap5.prototype.keepTab;
 
 export declare function useBs5Tooltip(selector?: NodeListOf<Element> | Element | string, config?: Partial<Tooltip.Options>): Promise<Tooltip[]>;
+
+export declare function useBsModalAlert(options: Partial<Modal.Options>): Promise<BsModalAlertInstance>;
+
+export declare function useBsModalAlert(id?: string | HTMLElement, options?: Partial<Modal.Options>): Promise<BsModalAlertInstance>;
 
 export declare function useCheckboxesMultiSelect(): Promise<any>;
 
@@ -1508,17 +1551,17 @@ export { }
 
 
 declare global {
-    interface Node {
-        __unicorn?: any;
-    }
-}
-
-
-declare global {
     var Alpine: AlpineGlobal;
     var TomSelect: typeof TomSelectGlobal;
     var Spectrum: typeof SpectrumGlobal;
     var Mark: any;
+}
+
+
+declare global {
+    interface Node {
+        __unicorn?: any;
+    }
 }
 
 
@@ -1534,6 +1577,11 @@ declare global {
 }
 
 
+declare global {
+    var tinymce: TinyMCE;
+}
+
+
 declare module 'axios' {
     interface AxiosRequestConfig {
         vars?: Record<string, any>;
@@ -1542,11 +1590,6 @@ declare module 'axios' {
     }
     interface CreateAxiosDefaults {
     }
-}
-
-
-declare global {
-    var tinymce: TinyMCE;
 }
 
 
