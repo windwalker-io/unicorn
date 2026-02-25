@@ -36,7 +36,7 @@ class TabsComponent extends AbstractComponent
     public mixed $navAttrs = [];
 
     #[Prop]
-    public int $gap = 4;
+    public ?int $gap = null;
 
     #[Prop]
     public ?bool $disabled = null;
