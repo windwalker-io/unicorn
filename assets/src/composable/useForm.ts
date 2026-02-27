@@ -29,22 +29,21 @@ export function useFormAsync(
   const proxy = new Proxy({} as FormProxy, {
     get(target, prop) {
       return (...args: any[]) => {
-        return promise.then((form) => {
-          const func = (form as any)[prop];
+        if (prop === 'then' || prop === 'catch') {
+          return (promise as any)[prop].apply(promise, args);
+        }
 
-          if (typeof func === 'function') {
-            return func.apply(form, args);
+        return promise.then((form) => {
+          const p = (form as any)[prop];
+
+          if (typeof p === 'function') {
+            return p.apply(form, args);
           }
 
-          throw new Error(`Method ${String(prop)} does not exist on form.`);
+          return p;
         });
       };
     },
-  });
-
-  Object.assign(proxy, {
-    then: promise.then.bind(promise),
-    catch: promise.catch.bind(promise),
   });
 
   return proxy as FormProxy & Promise<UnicornFormElement | null>;
