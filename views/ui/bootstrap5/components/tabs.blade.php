@@ -115,7 +115,7 @@ use function Windwalker\uid;
                         tabContent.before(nav);
                     }
 
-                    if (options.options.keepactive) {
+                    if (options.keepactive) {
                         useBs5KeepTab(options.keepactive);
                     }
 
