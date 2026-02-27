@@ -55,7 +55,7 @@ $attributes = $attributes->exceptProps(['states']);
 $color = \Windwalker\Utilities\Str::ensureLeft($state->getColor(), 'text-');
 ?>
 
-@if ($state->isOnlyIcon())
+@if ($readonly || $state->isOnlyIcon())
     <span class="{{ $color }} {{ $state->getIcon() }} c-state-button c-state-button--icon"
         data-bs-toggle="tooltip"
         title="{{ $state->getHelp() }}"
@@ -71,7 +71,7 @@ $color = \Windwalker\Utilities\Str::ensureLeft($state->getColor(), 'text-');
         data-bs-toggle="tooltip"
         title="{{ $state->getHelp() }}"
         {!! $attributes !!}
-        @attr('disabled', $state->isDisabled())
+        @attr('disabled', $disabled || $state->isDisabled())
 
         @if (!empty($state->getOnclick()))
             @if (is_callable($state->getOnclick()))

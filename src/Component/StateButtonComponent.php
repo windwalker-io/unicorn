@@ -38,6 +38,12 @@ class StateButtonComponent extends AbstractComponent
     public string $size = 'sm';
 
     #[Prop]
+    public bool $disabled = false;
+
+    #[Prop]
+    public bool $readonly = false;
+
+    #[Prop]
     public array $options = [];
 
     /**
