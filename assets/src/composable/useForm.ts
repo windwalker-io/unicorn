@@ -1,19 +1,53 @@
 import type { UnicornFormElement } from '../module/form';
 import { module, selectOne } from '../service';
-import { Nullable } from '../types';
 
 let formElement: typeof UnicornFormElement;
 
-export async function useFormAsync(): Promise<UnicornFormElement>;
-export async function useFormAsync(ele?: string | Element,
-                                   options?: Record<string, any>): Promise<UnicornFormElement | null>;
-export async function useFormAsync(ele?: string | Element,
-                                   options: Record<string, any> = {}): Promise<UnicornFormElement | null> {
-  const { UnicornFormElement } = await import('../module/form');
+type FormProxy = {
+  submit: (...args: Parameters<UnicornFormElement['submit']>) => Promise<ReturnType<UnicornFormElement['submit']> | undefined>;
+  get: (...args: Parameters<UnicornFormElement['get']>) => Promise<ReturnType<UnicornFormElement['get']> | undefined>;
+  post: (...args: Parameters<UnicornFormElement['post']>) => Promise<ReturnType<UnicornFormElement['post']> | undefined>;
+  put: (...args: Parameters<UnicornFormElement['put']>) => Promise<ReturnType<UnicornFormElement['put']> | undefined>;
+  patch: (...args: Parameters<UnicornFormElement['patch']>) => Promise<ReturnType<UnicornFormElement['patch']> | undefined>;
+  delete: (...args: Parameters<UnicornFormElement['delete']>) => Promise<ReturnType<UnicornFormElement['delete']> | undefined>;
+};
 
-  formElement ??= UnicornFormElement;
+export function useFormAsync(): Promise<UnicornFormElement>;
+export function useFormAsync(
+  ele?: string | Element,
+  options?: Record<string, any>): Promise<UnicornFormElement | null>;
+export function useFormAsync(
+  ele?: string | Element,
+  options: Record<string, any> = {}
+): Promise<UnicornFormElement | null> {
+  const promise = import('../module/form').then(({ UnicornFormElement }) => {
+    formElement ??= UnicornFormElement;
 
-  return useForm(ele, options);
+    return useForm(ele, options);
+  });
+
+  const proxy = new Proxy({} as FormProxy, {
+    get(target, prop) {
+      return (...args: any[]) => {
+        return promise.then((form) => {
+          const func = (form as any)[prop];
+
+          if (typeof func === 'function') {
+            return func.apply(form, args);
+          }
+
+          throw new Error(`Method ${String(prop)} does not exist on form.`);
+        });
+      };
+    },
+  });
+
+  Object.assign(proxy, {
+    then: promise.then.bind(promise),
+    catch: promise.catch.bind(promise),
+  });
+
+  return proxy as FormProxy & Promise<UnicornFormElement | null>;
 }
 
 export function useForm(): UnicornFormElement;
