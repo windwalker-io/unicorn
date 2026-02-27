@@ -504,6 +504,11 @@ export class UnicornFieldValidation {
       return true;
     }
 
+    if (this.hasChildDirectives()) {
+      // If has child field validation directives, let them handle the validation.
+      return true;
+    }
+
     this.$input.setCustomValidity('');
     let valid = this.$input.checkValidity();
 
@@ -519,7 +524,7 @@ export class UnicornFieldValidation {
     return valid;
   }
 
-  runCustomValidity() {
+  protected runCustomValidity() {
     if (!this.$input) {
       return true;
     }
@@ -572,6 +577,15 @@ export class UnicornFieldValidation {
       return true;
     }
 
+    if (this.$input.hasAttribute('[data-novalidate]')) {
+      return true;
+    }
+
+    if (this.hasChildDirectives()) {
+      // If has child field validation directives, let them handle the validation.
+      return true;
+    }
+
     this.$input.setCustomValidity('');
     let valid = this.$input.checkValidity();
 
@@ -584,7 +598,7 @@ export class UnicornFieldValidation {
     return valid;
   }
 
-  async runCustomValidityAsync(): Promise<boolean> {
+  protected async runCustomValidityAsync(): Promise<boolean> {
     if (!this.$input) {
       return true;
     }
@@ -631,13 +645,13 @@ export class UnicornFieldValidation {
     return true;
   }
 
-  checkCustomDataAttributeValidity(): boolean {
+  protected checkCustomDataAttributeValidity(): boolean {
     const error = this.$input?.dataset.validationFail;
 
     return this.handleCustomResult(error);
   }
 
-  checkInputOptionsValidity(): boolean {
+  protected checkInputOptionsValidity(): boolean {
     if (!this.$input) {
       return true;
     }
@@ -828,6 +842,11 @@ export class UnicornFieldValidation {
   }
 
   showInvalidResponse() {
+    if (this.hasChildDirectives()) {
+      // If has child field validation directives, let them handle the error message display.
+      return;
+    }
+
     /** @type ValidityState */
     const state = this.$input?.validity;
     let message: string = this.$input?.validationMessage || '';
@@ -948,6 +967,10 @@ export class UnicornFieldValidation {
     }
 
     return label;
+  }
+
+  protected hasChildDirectives() {
+    return this.el.querySelector('[uni-field-validate]') != null;
   }
 }
 
