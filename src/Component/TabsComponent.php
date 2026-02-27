@@ -33,10 +33,13 @@ class TabsComponent extends AbstractComponent
     public ?string $navTarget = null;
 
     #[Prop]
+    public string|null $navClass = null;
+
+    #[Prop]
     public mixed $navAttrs = [];
 
     #[Prop]
-    public ?int $gap = null;
+    public ?int $navGap = null;
 
     #[Prop]
     public ?bool $disabled = null;
@@ -51,8 +54,6 @@ class TabsComponent extends AbstractComponent
             $this->keepactive = '#admin-form';
         }
 
-        $this->attributes = $this->attributes->class('sdfsdgf');
-
         // if ($this->gap) {
         //     $this->attributes = $this->attributes->class("gap-{$this->gap}");
         // }
@@ -65,7 +66,8 @@ class TabsComponent extends AbstractComponent
             'fill' => $this->fill,
             'nav-target' => $this->navTarget,
             'nav-attrs' => $this->navAttrs,
-            'gap' => $this->gap,
+            'nav-class' => $this->navClass,
+            'gap' => $this->navGap,
             'disabled' => $this->disabled,
         ];
 

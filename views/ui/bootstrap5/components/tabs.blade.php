@@ -49,8 +49,9 @@ use function Windwalker\uid;
                 module(el, 'tab.auto.nav', () => {
                     const id = el.id;
                     const tabContent = el.querySelector('.tab-content');
-                    const navTarget = options.navTarget;
-                    const navAttrs = JSON.parse(options.navAttrs || '{}');
+                    const navTarget = options['nav-target'];
+                    const navAttrs = options['nav-attrs'] || {};
+                    const navClass = options['nav-class'] || '';
                     const fill = options.fill ? true : false;
                     const forceDisabled = options.disabled;
 
@@ -68,6 +69,10 @@ use function Windwalker\uid;
                     nav.classList.add('nav', 'nav-' + options.variant);
                     nav.classList.toggle('nav-fill', fill);
 
+                    if (navClass) {
+                        nav.classList.add(...navClass.split(' ').filter(i => i !== ''));
+                    }
+
                     if (options.gap) {
                         nav.classList.add('gap-' + options.gap);
                     }
@@ -78,7 +83,7 @@ use function Windwalker\uid;
                         hasActive = tab.dataset.active || hasActive;
                         const buttonAttrs = JSON.parse(tab.getAttribute('button-attrs'));
                         const item = html(`<div class="nav-item">
-    <a class="nav-link ${tab.dataset.active ? 'active' : ''}" href="javascript://"
+    <a class="nav-link ${tab.dataset.active ? 'active' : ''}" href="javascript:void(0)"
         data-bs-toggle="tab" data-bs-target="#${tab.id}">
         ${tab.dataset.title}
     </a>
@@ -110,7 +115,7 @@ use function Windwalker\uid;
                         tabContent.before(nav);
                     }
 
-                    if (options.keepactive) {
+                    if (options.options.keepactive) {
                         useBs5KeepTab(options.keepactive);
                     }
 
