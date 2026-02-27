@@ -206,7 +206,7 @@ export function delegate(
 
   const delegationSelectorsMap: Record<string, Function[]> = {};
 
-  const wrapperElement = selectOne(wrapper);
+  const wrapperElement = selectOne(wrapper as Element | string);
 
   wrapperElement?.addEventListener(eventName, function (event) {
     let element: HTMLElement | null = event.target as HTMLElement;
