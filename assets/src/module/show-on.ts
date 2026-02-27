@@ -60,7 +60,7 @@ export class ShowOn {
     if (matched) {
       setTimeout(() => {
         fadeIn(this.el, duration, this.initialDisplay);
-      }, duration + 30);
+      }, duration);
     } else {
       if (this.input) {
         this.defaultReadonly ??= this.input.hasAttribute('readonly');
