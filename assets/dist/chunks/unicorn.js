@@ -1407,19 +1407,18 @@ function useFormAsync(ele, options = {}) {
   const proxy = new Proxy({}, {
     get(target, prop) {
       return (...args) => {
+        if (prop === "then" || prop === "catch") {
+          return promise[prop].apply(promise, args);
+        }
         return promise.then((form) => {
-          const func = form[prop];
-          if (typeof func === "function") {
-            return func.apply(form, args);
+          const p = form[prop];
+          if (typeof p === "function") {
+            return p.apply(form, args);
           }
-          throw new Error(`Method ${String(prop)} does not exist on form.`);
+          return p;
         });
       };
     }
-  });
-  Object.assign(proxy, {
-    then: promise.then.bind(promise),
-    catch: promise.catch.bind(promise)
   });
   return proxy;
 }

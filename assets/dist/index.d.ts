@@ -1600,13 +1600,6 @@ declare global {
 
 
 declare global {
-    export interface Window {
-        bootstrap: typeof bootstrap;
-    }
-}
-
-
-declare global {
     var tinymce: TinyMCE;
 }
 
@@ -1618,5 +1611,12 @@ declare module 'axios' {
         methodSimulateByHeader?: boolean;
     }
     interface CreateAxiosDefaults {
+    }
+}
+
+
+declare global {
+    export interface Window {
+        bootstrap: typeof bootstrap;
     }
 }
