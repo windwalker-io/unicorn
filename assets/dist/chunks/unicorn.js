@@ -1399,10 +1399,29 @@ async function useFieldSingleImageDrag() {
   return module;
 }
 let formElement;
-async function useFormAsync(ele, options = {}) {
-  const { UnicornFormElement } = await import("./form.js");
-  formElement ??= UnicornFormElement;
-  return useForm(ele, options);
+function useFormAsync(ele, options = {}) {
+  const promise = import("./form.js").then(({ UnicornFormElement }) => {
+    formElement ??= UnicornFormElement;
+    return useForm(ele, options);
+  });
+  const proxy = new Proxy({}, {
+    get(target, prop) {
+      return (...args) => {
+        return promise.then((form) => {
+          const func = form[prop];
+          if (typeof func === "function") {
+            return func.apply(form, args);
+          }
+          throw new Error(`Method ${String(prop)} does not exist on form.`);
+        });
+      };
+    }
+  });
+  Object.assign(proxy, {
+    then: promise.then.bind(promise),
+    catch: promise.catch.bind(promise)
+  });
+  return proxy;
 }
 function useForm(ele, options = {}) {
   if (!formElement) {
@@ -1469,9 +1488,42 @@ async function useGridComponent(ele, options = {}) {
   await grid?.initComponent();
   return grid;
 }
-async function useHttpClient(config) {
-  const { createHttpClient } = await import("./http-client.js");
-  return createHttpClient(config);
+function useHttpClient(config) {
+  const promise = import("./http-client.js").then(({ createHttpClient }) => {
+    return createHttpClient(config);
+  });
+  const data2 = {
+    request: (options) => {
+      return promise.then((client) => client.request(options));
+    },
+    get: (url, options) => {
+      return promise.then((client) => client.get(url, options));
+    },
+    post: (url, data22, options) => {
+      return promise.then((client) => client.post(url, data22, options));
+    },
+    put: (url, data22, options) => {
+      return promise.then((client) => client.put(url, data22, options));
+    },
+    patch: (url, data22, options) => {
+      return promise.then((client) => client.patch(url, data22, options));
+    },
+    delete: (url, data22, options) => {
+      return promise.then((client) => client.delete(url, data22, options));
+    },
+    head: (url, options) => {
+      return promise.then((client) => client.head(url, options));
+    },
+    options: (url, options) => {
+      return promise.then((client) => client.options(url, options));
+    },
+    http: promise
+  };
+  Object.assign(data2, {
+    then: promise.then.bind(promise),
+    catch: promise.catch.bind(promise)
+  });
+  return data2;
 }
 async function useIframeModal() {
   const module = await import("./iframe-modal.js");

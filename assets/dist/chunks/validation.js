@@ -192,9 +192,6 @@ class UnicornFormValidation {
     if (this.$form.tagName === "FORM") {
       this.$form.setAttribute("novalidate", "true");
       this.$form.addEventListener("submit", (event) => {
-        event.stopImmediatePropagation();
-        event.stopPropagation();
-        event.preventDefault();
         if (this.options.enabled && !this.validateAll()) {
           event.stopImmediatePropagation();
           event.stopPropagation();
@@ -467,6 +464,9 @@ class UnicornFieldValidation {
     if (this.$input.closest("[data-novalidate]")) {
       return true;
     }
+    if (this.hasChildDirectives()) {
+      return true;
+    }
     this.$input.setCustomValidity("");
     let valid = this.$input.checkValidity();
     if (valid && this.$form) {
@@ -511,6 +511,12 @@ class UnicornFieldValidation {
       return true;
     }
     if (this.$input.hasAttribute("readonly")) {
+      return true;
+    }
+    if (this.$input.hasAttribute("[data-novalidate]")) {
+      return true;
+    }
+    if (this.hasChildDirectives()) {
       return true;
     }
     this.$input.setCustomValidity("");
@@ -696,6 +702,9 @@ class UnicornFieldValidation {
     }
   }
   showInvalidResponse() {
+    if (this.hasChildDirectives()) {
+      return;
+    }
     const state = this.$input?.validity;
     let message = this.$input?.validationMessage || "";
     for (let key in state) {
@@ -785,6 +794,9 @@ class UnicornFieldValidation {
       label = document.querySelector(`label[for="${id}"]`);
     }
     return label;
+  }
+  hasChildDirectives() {
+    return this.el.querySelector("[uni-field-validate]") != null;
   }
 }
 validatorHandlers.username = function(value, element) {
