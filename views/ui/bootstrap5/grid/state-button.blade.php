@@ -86,7 +86,7 @@ $color = \Windwalker\Utilities\Str::ensureLeft($state->getColor(), 'text-');
                 onclick="location.href = '{{ $state->getHref() }}'"
            @endif
         @elseif ($state->getTask())
-            @if (is_callable($state->getTask()))
+            @if ($state->getTask() instanceof \Closure)
                 @click="{{ $state->getTask()($value, $state, $options) }}"
             @else
                 @if ($row ?? null)
