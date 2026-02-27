@@ -119,10 +119,6 @@ export class UnicornFormValidation {
     if (this.$form.tagName === 'FORM') {
       this.$form.setAttribute('novalidate', 'true');
       this.$form.addEventListener('submit', (event) => {
-        event.stopImmediatePropagation(); // Stop following events
-        event.stopPropagation();
-        event.preventDefault();
-
         if (this.options.enabled && !this.validateAll()) {
           event.stopImmediatePropagation(); // Stop following events
           event.stopPropagation();
