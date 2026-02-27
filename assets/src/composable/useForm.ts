@@ -12,14 +12,14 @@ type FormProxy = {
   delete: (...args: Parameters<UnicornFormElement['delete']>) => Promise<ReturnType<UnicornFormElement['delete']> | undefined>;
 };
 
-export function useFormAsync(): Promise<UnicornFormElement>;
+export function useFormAsync(): FormProxy & Promise<UnicornFormElement>;
 export function useFormAsync(
   ele?: string | Element,
-  options?: Record<string, any>): Promise<UnicornFormElement | null>;
+  options?: Record<string, any>): FormProxy & Promise<UnicornFormElement | null>;
 export function useFormAsync(
   ele?: string | Element,
   options: Record<string, any> = {}
-): Promise<UnicornFormElement | null> {
+): FormProxy & Promise<UnicornFormElement | null> {
   const promise = import('../module/form').then(({ UnicornFormElement }) => {
     formElement ??= UnicornFormElement;
 
