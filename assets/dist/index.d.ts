@@ -97,7 +97,7 @@ export declare function base64UrlDecode(string: string): string;
 export declare function base64UrlEncode(string: string): string;
 
 export declare interface BsModalAlertInstance {
-    show(title: BsModalAlertOptions): Promise<any>;
+    show(options: BsModalAlertOptions): Promise<any>;
     show(title: string, text?: string, icon?: string, options?: BsModalAlertOptions): Promise<any>;
     show(title: BsModalAlertOptions | string, text?: string, icon?: string, options?: BsModalAlertOptions): Promise<any>;
     hide: () => void;
@@ -117,6 +117,7 @@ export declare interface BsModalAlertOptions {
     size?: 'sm' | 'lg' | 'xl' | 'xxl';
     relatedTarget?: HTMLElement;
     buttons?: BsModalButton[];
+    configure?: (el: HTMLElement) => HTMLElement | undefined;
 }
 
 export declare type BsModalButton = {
@@ -1599,11 +1600,6 @@ declare global {
 }
 
 
-declare global {
-    var tinymce: TinyMCE;
-}
-
-
 declare module 'axios' {
     interface AxiosRequestConfig {
         vars?: Record<string, any>;
@@ -1612,6 +1608,11 @@ declare module 'axios' {
     }
     interface CreateAxiosDefaults {
     }
+}
+
+
+declare global {
+    var tinymce: TinyMCE;
 }
 
 

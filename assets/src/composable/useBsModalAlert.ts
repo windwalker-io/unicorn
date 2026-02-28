@@ -11,6 +11,7 @@ export interface BsModalAlertOptions {
   size?: 'sm' | 'lg' | 'xl' | 'xxl';
   relatedTarget?: HTMLElement;
   buttons?: BsModalButton[];
+  configure?: (el: HTMLElement) => HTMLElement | undefined;
 }
 
 export type BsModalButton = {
@@ -26,7 +27,7 @@ export type BsModalButton = {
 } | string | HTMLElement | (() => HTMLElement | Promise<HTMLElement>);
 
 export interface BsModalAlertInstance {
-  show(title: BsModalAlertOptions): Promise<any>;
+  show(options: BsModalAlertOptions): Promise<any>;
 
   show(title: string, text?: string, icon?: string, options?: BsModalAlertOptions): Promise<any>;
 
@@ -71,7 +72,7 @@ export async function useBsModalAlert(
 
   if (!modalElement) {
     modalElement = html<HTMLDivElement>(`<div id="${id}" class="uni-modal-alert modal fade" tabindex="-1" role="dialog">
-  <div class="modal-dialog" role="document">
+  <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-body text-center p-4"></div>
       <div class="modal-footer"></div>
@@ -152,6 +153,9 @@ async function prepareModalElement(
 
     header = await anyToElement(header);
 
+    // Remove existing header if exists
+    modalElement.querySelector('.modal-header')?.remove();
+
     modalElement.querySelector('.modal-content')!.insertAdjacentElement('afterbegin', header);
   }
 
@@ -166,7 +170,7 @@ async function prepareModalElement(
 
     if (icon) {
       if (typeof icon === 'string') {
-        icon = `<div class="uni-modal-alert__icon text-center mb-4"><span class="${icon}" style="font-size: 48px;"></span></div>`;
+        icon = `<div class="uni-modal-alert__icon text-center mb-3"><span class="${icon}" style="font-size: 64px;"></span></div>`;
       }
 
       icon = await anyToElement(icon);
@@ -204,6 +208,10 @@ async function prepareModalElement(
 
   if (options.size) {
     modalElement.querySelector('.modal-dialog')!.classList.add(`modal-${options.size}`);
+  }
+
+  if (options.configure) {
+    modalElement = options.configure(modalElement) ?? modalElement;
   }
 
   return modalElement;

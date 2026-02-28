@@ -1196,7 +1196,7 @@ async function useBsModalAlert(id, options) {
   }
   if (!modalElement) {
     modalElement = html(`<div id="${id}" class="uni-modal-alert modal fade" tabindex="-1" role="dialog">
-  <div class="modal-dialog" role="document">
+  <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-body text-center p-4"></div>
       <div class="modal-footer"></div>
@@ -1255,6 +1255,7 @@ async function prepareModalElement(modalElement, handler, options) {
       </div>`;
     }
     header = await anyToElement(header);
+    modalElement.querySelector(".modal-header")?.remove();
     modalElement.querySelector(".modal-content").insertAdjacentElement("afterbegin", header);
   }
   if (content) {
@@ -1266,7 +1267,7 @@ async function prepareModalElement(modalElement, handler, options) {
     let icon = options.icon;
     if (icon) {
       if (typeof icon === "string") {
-        icon = `<div class="uni-modal-alert__icon text-center mb-4"><span class="${icon}" style="font-size: 48px;"></span></div>`;
+        icon = `<div class="uni-modal-alert__icon text-center mb-3"><span class="${icon}" style="font-size: 64px;"></span></div>`;
       }
       icon = await anyToElement(icon);
       modalElement.querySelector(".modal-body").appendChild(icon);
@@ -1293,6 +1294,9 @@ async function prepareModalElement(modalElement, handler, options) {
   }
   if (options.size) {
     modalElement.querySelector(".modal-dialog").classList.add(`modal-${options.size}`);
+  }
+  if (options.configure) {
+    modalElement = options.configure(modalElement) ?? modalElement;
   }
   return modalElement;
 }
