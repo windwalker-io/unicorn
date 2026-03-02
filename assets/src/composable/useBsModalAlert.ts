@@ -26,6 +26,8 @@ export type BsModalButton = {
   onClick?: (value?: any, e?: MouseEvent) => any;
 } | string | HTMLElement | (() => HTMLElement | Promise<HTMLElement>);
 
+let currentOpenedModals: Record<string, BsModalAlertInstance> = {};
+
 export interface BsModalAlertInstance {
   show(options: BsModalAlertOptions): Promise<any>;
 
@@ -83,10 +85,18 @@ export async function useBsModalAlert(
     document.body.appendChild(modalElement);
   }
 
-  const modal = Modal.getOrCreateInstance(modalElement, options);
+  const bsModal = Modal.getOrCreateInstance(modalElement, options);
 
-  return {
-    show: (
+  modalElement.addEventListener('show.bs.modal', () => {
+    currentOpenedModals[modalElement.id] = instance;
+  });
+
+  modalElement.addEventListener('hidden.bs.modal', () => {
+    delete currentOpenedModals[modalElement.id];
+  });
+
+  const instance = {
+    show: async (
       title: BsModalAlertOptions | string,
       text?: string,
       icon?: string,
@@ -101,28 +111,49 @@ export async function useBsModalAlert(
         options = title;
       }
 
+      await closeCurrentOpened(modalElement);
+
       return new Promise((resolve) => {
         prepareModalElement(modalElement, resolve, options);
 
-        modal.show(options?.relatedTarget);
+        bsModal.show(options?.relatedTarget);
       });
     },
     hide: () => {
-      modal.hide();
+      bsModal.hide();
     },
     dispose: () => {
-      modal.dispose();
+      bsModal.dispose();
     },
     toggle: (relatedTarget?: HTMLElement) => {
-      modal.toggle(relatedTarget);
+      bsModal.toggle(relatedTarget);
     },
     destroy: () => {
-      modal.dispose();
+      bsModal.dispose();
       modalElement.remove();
     },
-    instance: modal,
+    instance: bsModal,
     el: modalElement,
   };
+
+  return instance;
+}
+
+async function closeCurrentOpened(modalElement: HTMLElement) {
+  return new Promise<void>((resolve) => {
+    let currentOpenedModal = currentOpenedModals[modalElement.id];
+
+    if (!currentOpenedModal) {
+      resolve();
+      return;
+    }
+
+    currentOpenedModal.el.addEventListener('hidden.bs.modal', () => {
+      resolve();
+    }, { once: true });
+
+    currentOpenedModal.hide();
+  });
 }
 
 async function prepareModalElement(

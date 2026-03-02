@@ -1600,13 +1600,9 @@ declare global {
 }
 
 
-declare module 'axios' {
-    interface AxiosRequestConfig {
-        vars?: Record<string, any>;
-        methodSimulate?: string;
-        methodSimulateByHeader?: boolean;
-    }
-    interface CreateAxiosDefaults {
+declare global {
+    export interface Window {
+        bootstrap: typeof bootstrap;
     }
 }
 
@@ -1616,8 +1612,12 @@ declare global {
 }
 
 
-declare global {
-    export interface Window {
-        bootstrap: typeof bootstrap;
+declare module 'axios' {
+    interface AxiosRequestConfig {
+        vars?: Record<string, any>;
+        methodSimulate?: string;
+        methodSimulateByHeader?: boolean;
+    }
+    interface CreateAxiosDefaults {
     }
 }

@@ -432,16 +432,16 @@ _AlertAdapter.confirmText = () => "OK";
 _AlertAdapter.cancelText = () => "Cancel";
 _AlertAdapter.deleteText = () => "Delete";
 let AlertAdapter = _AlertAdapter;
-async function simpleAlert(title, text = "", icon = "info", extra) {
+async function simpleAlert(title, text = "", icon, extra) {
   return AlertAdapter.alert(title, text, icon, extra);
 }
-async function simpleConfirm(title, text = "", icon = "info", extra) {
+async function simpleConfirm(title, text = "", icon, extra) {
   return AlertAdapter.confirm(title, text, icon, extra);
 }
-async function deleteConfirm(title, text = "", icon = "info", extra) {
+async function deleteConfirm(title, text = "", icon, extra) {
   return AlertAdapter.deleteConfirm(title, text, icon, extra);
 }
-async function simpleNotify(title, text = "", type = "info", extra) {
+async function simpleNotify(title, text = "", type, extra) {
   return AlertAdapter.notify(title, text, type, extra);
 }
 async function clearNotifies() {
@@ -1179,6 +1179,7 @@ const useBs5ButtonRadio = async (selector, options = {}) => {
   const bs5 = await useUIBootstrap5();
   return bs5.buttonRadio(selector, options);
 };
+let currentOpenedModals = {};
 const defaultOptions = {
   buttons: [
     "OK"
@@ -1205,9 +1206,15 @@ async function useBsModalAlert(id, options) {
 </div>`);
     document.body.appendChild(modalElement);
   }
-  const modal = Modal.getOrCreateInstance(modalElement, options);
-  return {
-    show: (title, text, icon, options2) => {
+  const bsModal = Modal.getOrCreateInstance(modalElement, options);
+  modalElement.addEventListener("show.bs.modal", () => {
+    currentOpenedModals[modalElement.id] = instance;
+  });
+  modalElement.addEventListener("hidden.bs.modal", () => {
+    delete currentOpenedModals[modalElement.id];
+  });
+  const instance = {
+    show: async (title, text, icon, options2) => {
       if (typeof title === "string") {
         options2 = options2 || {};
         options2.title = title;
@@ -1216,27 +1223,42 @@ async function useBsModalAlert(id, options) {
       } else {
         options2 = title;
       }
+      await closeCurrentOpened(modalElement);
       return new Promise((resolve) => {
         prepareModalElement(modalElement, resolve, options2);
-        modal.show(options2?.relatedTarget);
+        bsModal.show(options2?.relatedTarget);
       });
     },
     hide: () => {
-      modal.hide();
+      bsModal.hide();
     },
     dispose: () => {
-      modal.dispose();
+      bsModal.dispose();
     },
     toggle: (relatedTarget) => {
-      modal.toggle(relatedTarget);
+      bsModal.toggle(relatedTarget);
     },
     destroy: () => {
-      modal.dispose();
+      bsModal.dispose();
       modalElement.remove();
     },
-    instance: modal,
+    instance: bsModal,
     el: modalElement
   };
+  return instance;
+}
+async function closeCurrentOpened(modalElement) {
+  return new Promise((resolve) => {
+    let currentOpenedModal = currentOpenedModals[modalElement.id];
+    if (!currentOpenedModal) {
+      resolve();
+      return;
+    }
+    currentOpenedModal.el.addEventListener("hidden.bs.modal", () => {
+      resolve();
+    }, { once: true });
+    currentOpenedModal.hide();
+  });
 }
 async function prepareModalElement(modalElement, handler, options) {
   options = Object.assign({}, defaultOptions, options || {});
