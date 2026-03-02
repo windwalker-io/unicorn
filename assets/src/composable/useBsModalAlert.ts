@@ -41,6 +41,8 @@ export interface BsModalAlertInstance {
   destroy: () => void;
   instance: Modal;
   el: HTMLElement;
+  on: (event: string, handler: (e: Event) => void) => () => void;
+  off: (event: string, handler: (e: Event) => void) => void;
 }
 
 const defaultOptions = {
@@ -134,6 +136,16 @@ export async function useBsModalAlert(
     },
     instance: bsModal,
     el: modalElement,
+    on: (event: string, handler: (e: Event) => void) => {
+      modalElement.addEventListener(event, handler);
+
+      return () => {
+        modalElement.removeEventListener(event, handler);
+      };
+    },
+    off: (event: string, handler: (e: Event) => void) => {
+      modalElement.removeEventListener(event, handler);
+    }
   };
 
   return instance;
