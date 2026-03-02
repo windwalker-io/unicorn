@@ -411,10 +411,17 @@ export async function useColorPicker(
   return m;
 }
 
+export interface DisableOnSubmitOptions {
+  event?: string;
+  spinnerClass?: string;
+  loadingCass?: string;
+  iconSelector?: string;
+}
+
 export function useDisableOnSubmit(
   formSelector: string | HTMLFormElement = '#admin-form',
   buttonSelector: string = '',
-  options: Record<string, any> = {}
+  options: DisableOnSubmitOptions = {}
 ) {
   // Todo: Use object to handle it
   buttonSelector = buttonSelector || [
@@ -433,7 +440,7 @@ export function useDisableOnSubmit(
 
   const event = options.event || 'submit';
   const spinnerClass = options.spinnerClass || 'spinner-border spinner-border-sm';
-  const loadingClass = options.loadingCass || 'is-loading';
+  const loadingClass = options.loadingCass || 'is-uni-loading';
 
   selectAll<HTMLElement>(buttonSelector, (button) => {
     button.addEventListener('click', (e) => {
@@ -446,7 +453,8 @@ export function useDisableOnSubmit(
   });
 
   const form = selectOne<HTMLFormElement>(formSelector);
-  form?.addEventListener(event, (e: SubmitEvent) => {
+
+  form?.addEventListener(event, (e: Event) => {
     setTimeout(() => {
       if (!form.checkValidity()) {
         return;
@@ -458,22 +466,30 @@ export function useDisableOnSubmit(
         button.classList.add('disabled');
 
         if (button.dataset.clicked) {
-          let icon = button.querySelector(iconSelector);
-          button.classList.add(loadingClass);
-
-          if (icon) {
-            const i = html('<i></i>');
-            icon.parentNode.replaceChild(i, icon);
-
-            i.setAttribute('class', spinnerClass);
-            // icon.styles.width = '1em';
-            // icon.styles.height = '1em';
-            // icon.styles.borderWith = '.15em';
-          }
+          makeButtonLoading(button);
         }
       });
+
+      if (e instanceof SubmitEvent && e.submitter) {
+        makeButtonLoading(e.submitter);
+      }
     }, 0);
   });
+
+  function makeButtonLoading(button: HTMLElement) {
+    let icon = button.querySelector(iconSelector);
+    button.classList.add(loadingClass);
+
+    if (icon) {
+      const i = html('<i></i>');
+      icon.parentNode?.replaceChild(i, icon);
+
+      i.setAttribute('class', spinnerClass);
+      // icon.styles.width = '1em';
+      // icon.styles.height = '1em';
+      // icon.styles.borderWith = '.15em';
+    }
+  }
 }
 
 export function useDisableIfStackNotEmpty(buttonSelector: string = '[data-task=save]',
