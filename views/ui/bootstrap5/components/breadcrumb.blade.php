@@ -35,11 +35,13 @@ $attributes ??= null;
 if ($attributes) {
     $attributes = $attributes->except(['breadcrumb', 'items']);
 }
+
+$bodyClass ??= '';
 ?>
 
 <nav aria-label="breadcrumb" {!! $attributes !!}
     itemscope itemtype="https://schema.org/BreadcrumbList">
-    <ol class="breadcrumb mb-0">
+    <ol class="breadcrumb mb-0 {{ $bodyClass }}">
         @foreach ($items as $i => $path)
             <li class="breadcrumb-item {{ $path['active'] ? 'active' : '' }} {{ $itemClass ?? '' }}"
                 @attr('aria-current', $path['active'] ? 'page' : null)
