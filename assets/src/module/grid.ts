@@ -1,4 +1,4 @@
-import { __, deleteConfirm, h, loadAlpine, simpleAlert, simpleConfirm, slideDown, slideUp } from '../service';
+import { __, delegate, deleteConfirm, h, loadAlpine, simpleAlert, simpleConfirm, slideDown, slideUp } from '../service';
 import { Nullable } from '../types';
 import type { UnicornFormElement } from './form';
 
@@ -22,9 +22,11 @@ export class UnicornGridElement {
     const inputs = this.element.querySelectorAll<HTMLInputElement>('input[data-role=grid-checkbox]');
 
     for (const ch of inputs) {
-      ch.addEventListener('click', () => {
-        ch.dispatchEvent(new CustomEvent('change'));
-      });
+      // No-longer need this since browsers will trigger change event when checkbox is checked/unchecked
+      // ch.addEventListener('click', () => {
+      //   ch.dispatchEvent(new CustomEvent('change'));
+      // });
+
       ch.addEventListener('change', () => {
         const event = new CustomEvent('unicorn:checked', {
           detail: { grid: this }
@@ -32,6 +34,66 @@ export class UnicornGridElement {
 
         this.form.element?.dispatchEvent(event);
       });
+    }
+
+    if (this.form.element) {
+      this.bindMustCheckedEvent(this.form.element);
+    }
+  }
+
+  private bindMustCheckedEvent(form: HTMLFormElement) {
+    delegate(document, '[data-must-checked]', 'mousedown', (e) => {
+      const target = e.currentTarget as HTMLElement;
+
+      const selector = target.dataset.mustChecked!;
+
+      if (!selector || !form.matches(selector)) {
+        return;
+      }
+      
+      // Prevent modal
+      const toggle = target.dataset.bsToggle;
+
+      if (toggle === 'modal') {
+        const modalTarget = target.dataset.bsTarget;
+
+        if (modalTarget) {
+          this.preventBSModal(modalTarget, this.getMustCheckedMessage());
+        }
+      }
+    });
+  }
+
+  preventBSModal(selector?: string | HTMLElement, msg?: string | boolean) {
+    let modalElement: HTMLElement | null = null;
+
+    if (typeof selector === 'string') {
+      modalElement = document.querySelector(selector);
+    } else if (selector instanceof HTMLElement) {
+      const modalTarget = selector.dataset.bsTarget;
+
+      if (modalTarget) {
+        modalElement = document.querySelector(modalTarget);
+      } else {
+        modalElement = selector;
+      }
+    }
+
+    if (modalElement) {
+      modalElement?.addEventListener('show.bs.modal', (e) => {
+        if (!this.hasChecked()) {
+          e.preventDefault();
+          e.stopPropagation();
+
+          if (msg) {
+            if (msg === true) {
+              msg = this.getMustCheckedMessage();
+            }
+
+            simpleAlert(msg);
+          }
+        }
+      }, { once: true });
     }
   }
 
@@ -335,10 +397,12 @@ export class UnicornGridElement {
   /**
    * Delete an item by row.
    */
-  async deleteRow(row: number,
-                  msg?: Nullable<string>,
-                  url?: Nullable<string>,
-                  data?: Nullable<Record<string, any>>): Promise<boolean> {
+  async deleteRow(
+    row: number,
+    msg?: Nullable<string>,
+    url?: Nullable<string>,
+    data?: Nullable<Record<string, any>>
+  ): Promise<boolean> {
     const ch = this.getCheckboxByRow(row);
 
     if (!ch) {
@@ -421,17 +485,33 @@ export class UnicornGridElement {
   /**
    * Validate there has one or more checked boxes.
    */
-  validateChecked(event?: Event, callback?: (grid: UnicornGridElement) => any, msg?: string): this {
-    msg = msg || __('unicorn.message.grid.checked');
-
+  validateChecked(
+    event?: Event,
+    callback?: (grid: UnicornGridElement) => any,
+    errorMsg: string | boolean | null | ((grid: UnicornGridElement) => any) = true
+  ): this {
     if (!this.hasChecked()) {
-      if (msg !== '') {
-        simpleAlert(msg);
+      if (errorMsg === true) {
+        errorMsg = this.getMustCheckedMessage();
+      }
+
+      if (typeof errorMsg === 'string' && errorMsg !== '') {
+        simpleAlert(errorMsg);
+      } else if (typeof errorMsg === 'function') {
+        errorMsg(this);
       }
 
       if (event) {
         event.stopPropagation();
         event.preventDefault();
+
+        const target = event.currentTarget as HTMLElement;
+
+        if (target.dataset.bsToggle === 'modal') {
+          if (target.dataset.bsTarget) {
+            this.preventBSModal(target.dataset.bsTarget);
+          }
+        }
       }
 
       return this;
@@ -442,6 +522,18 @@ export class UnicornGridElement {
     }
 
     return this;
+  }
+
+  async validateCheckedPromise() {
+    if (!this.hasChecked()) {
+      throw new Error('No items checked.');
+    }
+
+    return this;
+  }
+
+  getMustCheckedMessage(): string {
+    return __('unicorn.message.grid.checked');
   }
 
   hasChecked(): boolean {
