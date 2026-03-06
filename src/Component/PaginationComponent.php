@@ -10,6 +10,7 @@ use Windwalker\Core\Language\TranslatorTrait;
 use Windwalker\Core\Pagination\Pagination;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\Edge\Component\AbstractComponent;
+use Windwalker\Utilities\Arr;
 use Windwalker\Utilities\Attributes\Prop;
 
 #[EdgeComponent('basic-pagination')]
@@ -21,7 +22,7 @@ class PaginationComponent extends AbstractComponent
     public Pagination $pagination;
 
     #[Prop]
-    public array|bool|null $allowQuery = null;
+    public string|array|bool|null $allowQuery = null;
 
     #[Prop]
     public bool $inModal = false;
@@ -33,7 +34,13 @@ class PaginationComponent extends AbstractComponent
         /** @var Pagination $pagination */
         $pagination = $data['pagination'];
 
-        $pagination->allowQuery($this->allowQuery);
+        $allowQuery = $this->allowQuery;
+
+        if (is_string($allowQuery)) {
+            $allowQuery = Arr::explodeAndClear(',', $allowQuery);
+        }
+
+        $pagination->allowQuery($allowQuery);
 
         if ($this->inModal) {
             $pagination->configureNavigator(
