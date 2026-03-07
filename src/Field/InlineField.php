@@ -100,6 +100,7 @@ class InlineField extends AbstractField implements CompositeFieldInterface
      * Accept widths for each sub-field. Can be:
      * string: ('20px', '50px', '15px') // css width string.
      * int: (2, 5, 3) // 12 grid columns
+     * int: (2, 5, 3, 12) // 12 grid columns, more than 12 will break to new line.
      *
      * @param ...$widths
      *

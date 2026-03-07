@@ -123,7 +123,7 @@ $noLabel ??= $options['no_label'] ?? false;
     @if (!$noLabel && !$floating)
         @if ($label ?? null)
             {!! $label(field: $field, options: $options) !!}
-        @else
+        @elseif (trim($field->getLabelName()))
             <x-label :field="$field" :options="$options" :="$labelAttrs"></x-label>
         @endif
     @endif

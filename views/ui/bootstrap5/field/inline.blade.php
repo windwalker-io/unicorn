@@ -37,12 +37,12 @@ $i = 0;
 $widths = $field->getWidths();
 $gap = $field->getGap();
 
-$inputElement->addClass('c-inline-field d-flex flex-wrap w-100');
+$inputElement->addClass('c-inline-field d-grid w-100');
+$inputElement->style->setProperty('grid-template-columns', "repeat(12, 1fr)");
 
 if ($gap) {
     if (is_numeric($gap)) {
-        $gap = ($gap * 0.5) . 'rem';
-        $inputElement->style->gap = $gap;
+        $inputElement->classList->add("gap-$gap");
     } else {
         $inputElement->style->gap = $gap;
     }
@@ -59,12 +59,12 @@ $labelClass = $showLabel ? '' : 'visually-hidden';
         $w = $widths[$i] ?? null;
 
         if ($w === null) {
-            $style = 'flex: 1 0 0%;';
+            $style = '';
+            // $style = "grid-column: span " . (12 / $countFields) . ";";
         } elseif (is_numeric($w)) {
-            $w = 100 / 12 * $w;
-            $style = "flex: 0 0 auto; width: calc($w% - $gap + ($gap / $countFields));";
+            $style = "grid-column: span $w;";
         } else {
-            $style = "width: calc($w - $gap + ($gap / $countFields));";
+            $style = "width: $w;";
         }
         ?>
         <div class="c-inline-field__column" style="{{ $style }}">
