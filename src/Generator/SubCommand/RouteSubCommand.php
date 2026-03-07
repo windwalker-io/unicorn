@@ -49,6 +49,8 @@ class RouteSubCommand extends \Windwalker\Core\Generator\SubCommand\RouteSubComm
             return 255;
         }
 
+        $this->askForStage($io, 'front|admin');
+
         $src = $type === 'admin' ? 'route-admin/*' : 'route-simple/*';
 
         $this->codeGenerator->from($this->getViewPath($src))
