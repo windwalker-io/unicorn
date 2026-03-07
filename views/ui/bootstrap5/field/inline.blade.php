@@ -38,7 +38,14 @@ $widths = $field->getWidths();
 $gap = $field->getGap();
 
 $inputElement->addClass('c-inline-field d-grid w-100');
-$inputElement->style->setProperty('grid-template-columns', "repeat(12, 1fr)");
+
+if ($widths !== []) {
+    $columnsStyle = "repeat(12, 1fr)";
+} else {
+    $columnsStyle = "repeat($countFields, 1fr)";
+}
+
+$inputElement->style->setProperty('grid-template-columns', $columnsStyle);
 
 if ($gap) {
     if (is_numeric($gap)) {
@@ -58,9 +65,12 @@ $labelClass = $showLabel ? '' : 'visually-hidden';
         <?php
         $w = $widths[$i] ?? null;
 
+        $style = '';
+
         if ($w === null) {
-            $style = '';
-            // $style = "grid-column: span " . (12 / $countFields) . ";";
+            if ($widths !== []) {
+                $style = "grid-column: span " . ceil(12 / $countFields) . ";";
+            }
         } elseif (is_numeric($w)) {
             $style = "grid-column: span $w;";
         } else {

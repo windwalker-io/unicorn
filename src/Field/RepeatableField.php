@@ -21,6 +21,8 @@ class RepeatableField extends AbstractField implements CompositeFieldInterface
     public const string LAYOUT_TABLE = '@theme::field.repeatable.repeatable-table';
     public const string LAYOUT_FLEX = '@theme::field.repeatable.repeatable-flex';
 
+    public const string LAYOUT_GRID = '@theme::field.repeatable.repeatable-grid';
+
     protected bool $sortable = false;
 
     protected bool $ensureFirstRow = false;
@@ -30,6 +32,8 @@ class RepeatableField extends AbstractField implements CompositeFieldInterface
     protected string $placeholder = '';
 
     protected int $max = 0;
+
+    public protected(set) int|string|null $gap = 3;
 
     public protected(set) array $colWidths = [];
 
@@ -43,6 +47,11 @@ class RepeatableField extends AbstractField implements CompositeFieldInterface
     public function useFlexLayout(): static
     {
         return $this->layout(static::LAYOUT_FLEX);
+    }
+
+    public function useGridLayout(): static
+    {
+        return $this->layout(static::LAYOUT_GRID);
     }
 
     public function useTableLayout(): static
@@ -277,5 +286,12 @@ class RepeatableField extends AbstractField implements CompositeFieldInterface
     public function filter(mixed $value, int $formFilterOptions = 0): mixed
     {
         return $this->getSubForm()->filter($value, $formFilterOptions);
+    }
+
+    public function gap(int|string|null $gap): static
+    {
+        $this->gap = $gap;
+
+        return $this;
     }
 }
