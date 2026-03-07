@@ -45,6 +45,10 @@ class TinymceEditorField extends AbstractEditorField
     #[Inject]
     protected AssetService $assetService;
 
+    public protected(set) array $plugins = [];
+
+    public protected(set) ?\Closure $configureOptionsCallback = null;
+
     /**
      * Property defaultOptions.
      *
@@ -111,20 +115,27 @@ class TinymceEditorField extends AbstractEditorField
         $defaultOptions['toolbar_mode'] = 'sliding';
         $defaultOptions['toolbar'] = '';
 
-        if ($toolbar === static::TOOLBAR_FULL) {
-            $defaultOptions['plugins'] = [
-                'advlist', 'autolink', 'lists', 'link', 'image', 'charmap',
-                'preview', 'anchor', 'pagebreak', 'searchreplace', 'wordcount',
-                'visualblocks', 'visualchars', 'code', 'fullscreen', 'insertdatetime',
-                'media', 'nonbreaking', 'save', 'table', 'directionality',
-                'emoticons'
-            ];
+        $defaultOptions['plugins'] = [
+            'advlist', 'autolink', 'lists', 'link', 'image', 'charmap',
+            'preview', 'anchor', 'pagebreak', 'searchreplace', 'wordcount',
+            'visualblocks', 'visualchars', 'code', 'fullscreen', 'insertdatetime',
+            'media', 'nonbreaking', 'save', 'table', 'directionality',
+            'emoticons'
+        ];
 
+        if ($toolbar === static::TOOLBAR_FULL) {
             $defaultOptions['toolbar'] = 'undo redo ' .
                 'bold italic strikethrough forecolor backcolor blockquote removeformat | ' .
                 'blocks fontsize styles styleselect formatselect fontsizeselect | ' .
                 'alignleft aligncenter alignright alignjustify bullist numlist outdent indent | ' .
                 'link image media table code | fullscreen';
+
+            $defaultOptions['image_advtab'] = true;
+        } elseif ($toolbar === static::TOOLBAR_SIMPLE) {
+            $defaultOptions['toolbar'] = 'bold italic strikethrough forecolor backcolor blockquote removeformat | ' .
+                'fontsize | ' .
+                'alignleft aligncenter alignright alignjustify bullist numlist outdent indent | ' .
+                'link image media';
 
             $defaultOptions['image_advtab'] = true;
         }
@@ -175,6 +186,10 @@ class TinymceEditorField extends AbstractEditorField
             'stack_name' => $this->getStackName() ?: 'uploading'
         ];
 
+        if ($this->configureOptionsCallback) {
+            $options = ($this->configureOptionsCallback)($options, $this);
+        }
+
         $this->editorScript->tinymce(
             '#' . $this->getId(),
             $options
@@ -187,6 +202,25 @@ class TinymceEditorField extends AbstractEditorField
             ?? (string) $this->getBuiltInUploadUrl(
                 $this->getUploadProfile() ?: $profile ?? 'image'
             );
+    }
+
+    public function getPlugins(): array
+    {
+        return $this->plugins;
+    }
+
+    public function plugins(array|string $plugins): static
+    {
+        $this->plugins = (array) $plugins;
+
+        return $this;
+    }
+
+    public function configureOptions(?\Closure $configureOptionsCallback): static
+    {
+        $this->configureOptionsCallback = $configureOptionsCallback;
+
+        return $this;
     }
 
     /**
