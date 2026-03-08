@@ -1243,7 +1243,16 @@ async function useBsModalAlert(id, options) {
       modalElement.remove();
     },
     instance: bsModal,
-    el: modalElement
+    el: modalElement,
+    on: (event, handler) => {
+      modalElement.addEventListener(event, handler);
+      return () => {
+        modalElement.removeEventListener(event, handler);
+      };
+    },
+    off: (event, handler) => {
+      modalElement.removeEventListener(event, handler);
+    }
   };
   return instance;
 }
@@ -1959,7 +1968,7 @@ function useDisableOnSubmit(formSelector = "#admin-form", buttonSelector = "", o
   ].join(",");
   const event = options.event || "submit";
   const spinnerClass = options.spinnerClass || "spinner-border spinner-border-sm";
-  const loadingClass = options.loadingCass || "is-loading";
+  const loadingClass = options.loadingCass || "is-uni-loading";
   selectAll(buttonSelector, (button) => {
     button.addEventListener("click", (e) => {
       button.dataset.clicked = "1";
@@ -1979,17 +1988,23 @@ function useDisableOnSubmit(formSelector = "#admin-form", buttonSelector = "", o
         button.setAttribute("disabled", "disabled");
         button.classList.add("disabled");
         if (button.dataset.clicked) {
-          let icon = button.querySelector(iconSelector);
-          button.classList.add(loadingClass);
-          if (icon) {
-            const i = html("<i></i>");
-            icon.parentNode.replaceChild(i, icon);
-            i.setAttribute("class", spinnerClass);
-          }
+          makeButtonLoading(button);
         }
       });
+      if (e instanceof SubmitEvent && e.submitter) {
+        makeButtonLoading(e.submitter);
+      }
     }, 0);
   });
+  function makeButtonLoading(button) {
+    let icon = button.querySelector(iconSelector);
+    button.classList.add(loadingClass);
+    if (icon) {
+      const i = html("<i></i>");
+      icon.parentNode?.replaceChild(i, icon);
+      i.setAttribute("class", spinnerClass);
+    }
+  }
 }
 function useDisableIfStackNotEmpty(buttonSelector = "[data-task=save]", stackName = "uploading") {
   const stack2 = useStack(stackName);

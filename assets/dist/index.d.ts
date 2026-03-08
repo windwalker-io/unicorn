@@ -106,6 +106,8 @@ export declare interface BsModalAlertInstance {
     destroy: () => void;
     instance: Modal;
     el: HTMLElement;
+    on: (event: string, handler: (e: Event) => void) => () => void;
+    off: (event: string, handler: (e: Event) => void) => void;
 }
 
 export declare interface BsModalAlertOptions {
@@ -253,6 +255,13 @@ declare function destroy(selector: string | HTMLElement): void;
 
 declare interface Dictionary<T = any> {
     [key: string]: T;
+}
+
+export declare interface DisableOnSubmitOptions {
+    event?: string;
+    spinnerClass?: string;
+    loadingCass?: string;
+    iconSelector?: string;
 }
 
 export declare function doImport<T = any>(src: string): Promise<T>;
@@ -1368,7 +1377,7 @@ export declare function useCssIncludes(...hrefs: Source[]): Promise<void[]>;
 
 export declare function useDisableIfStackNotEmpty(buttonSelector?: string, stackName?: string): void;
 
-export declare function useDisableOnSubmit(formSelector?: string | HTMLFormElement, buttonSelector?: string, options?: Record<string, any>): void;
+export declare function useDisableOnSubmit(formSelector?: string | HTMLFormElement, buttonSelector?: string, options?: DisableOnSubmitOptions): void;
 
 export declare function useFieldCascadeSelect(): Promise<CascadeSelectModule>;
 
@@ -1600,9 +1609,13 @@ declare global {
 }
 
 
-declare global {
-    export interface Window {
-        bootstrap: typeof bootstrap;
+declare module 'axios' {
+    interface AxiosRequestConfig {
+        vars?: Record<string, any>;
+        methodSimulate?: string;
+        methodSimulateByHeader?: boolean;
+    }
+    interface CreateAxiosDefaults {
     }
 }
 
@@ -1612,12 +1625,8 @@ declare global {
 }
 
 
-declare module 'axios' {
-    interface AxiosRequestConfig {
-        vars?: Record<string, any>;
-        methodSimulate?: string;
-        methodSimulateByHeader?: boolean;
-    }
-    interface CreateAxiosDefaults {
+declare global {
+    export interface Window {
+        bootstrap: typeof bootstrap;
     }
 }
