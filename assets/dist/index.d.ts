@@ -1282,6 +1282,8 @@ declare type UnicornHttpClientProxy = {
     head: UnicornHttpClient['head'];
     options: UnicornHttpClient['options'];
     http: Promise<UnicornHttpClient>;
+    isAxiosError: typeof isAxiosError;
+    isCancel: typeof isCancel;
 };
 
 declare class UnicornLang {
@@ -1609,6 +1611,13 @@ declare global {
 }
 
 
+declare global {
+    export interface Window {
+        bootstrap: typeof bootstrap;
+    }
+}
+
+
 declare module 'axios' {
     interface AxiosRequestConfig {
         vars?: Record<string, any>;
@@ -1622,11 +1631,4 @@ declare module 'axios' {
 
 declare global {
     var tinymce: TinyMCE;
-}
-
-
-declare global {
-    export interface Window {
-        bootstrap: typeof bootstrap;
-    }
 }

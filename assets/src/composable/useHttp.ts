@@ -1,5 +1,5 @@
 import type { UnicornHttpClient } from '../module/http-client';
-import type { AxiosInstance, CreateAxiosDefaults } from 'axios';
+import { AxiosError, AxiosInstance, CanceledError, CreateAxiosDefaults, isAxiosError, isCancel } from 'axios';
 export type { ApiReturn, UnicornHttpClient } from '../module/http-client';
 
 type UnicornHttpClientProxy = {
@@ -12,6 +12,8 @@ type UnicornHttpClientProxy = {
   head: UnicornHttpClient['head'];
   options: UnicornHttpClient['options'];
   http: Promise<UnicornHttpClient>;
+  isAxiosError: typeof isAxiosError;
+  isCancel: typeof isCancel;
 };
 
 export function useHttpClient(config?: CreateAxiosDefaults | AxiosInstance): UnicornHttpClientProxy & Promise<UnicornHttpClient> {
@@ -43,6 +45,16 @@ export function useHttpClient(config?: CreateAxiosDefaults | AxiosInstance): Uni
     },
     options: (url, options) => {
       return promise.then((client) => client.options(url, options));
+    },
+    isAxiosError<T = any, D = any>(payload: any): payload is AxiosError<T, D> {
+      if (payload == null) {
+        return false;
+      }
+
+      return typeof payload === 'object' && payload.isAxiosError === true;
+    },
+    isCancel<T = any>(value: any): value is CanceledError<T> {
+      return !!(value && value.__CANCEL__);
     },
     http: promise,
   };

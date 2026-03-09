@@ -1551,6 +1551,15 @@ function useHttpClient(config) {
     options: (url, options) => {
       return promise.then((client) => client.options(url, options));
     },
+    isAxiosError(payload) {
+      if (payload == null) {
+        return false;
+      }
+      return typeof payload === "object" && payload.isAxiosError === true;
+    },
+    isCancel(value) {
+      return !!(value && value.__CANCEL__);
+    },
     http: promise
   };
   Object.assign(data2, {
