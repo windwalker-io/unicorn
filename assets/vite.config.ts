@@ -81,7 +81,7 @@ export default defineConfig(({ mode }) => {
       },
       outDir: 'dist',
       emptyOutDir: false,
-      sourcemap: 'external',
+      sourcemap: true,
       minify: false,
     },
     plugins: [
