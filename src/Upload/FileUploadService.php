@@ -483,7 +483,7 @@ class FileUploadService implements EventAwareInterface
         if ($extension === FileExtension::PNG) {
             $encoded = $image->encodeByExtension($format);
         } else {
-            $encoded = $image->encodeByExtension($format, $quality);
+            $encoded = $image->encodeByExtension($format, quality: $quality);
         }
 
         return $encoded->toFilePointer();
