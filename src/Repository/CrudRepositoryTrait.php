@@ -24,6 +24,14 @@ trait CrudRepositoryTrait
         return $this->createAction($actionClass, $this);
     }
 
+    /**
+     * @template T or object
+     *
+     * @param  array|T  $item
+     * @param  int      $options
+     *
+     * @return  T
+     */
     public function save(object|array $item, int $options = 0): object
     {
         return $this->createSaveAction()->save($item, null, $options);
