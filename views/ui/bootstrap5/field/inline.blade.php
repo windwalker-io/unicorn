@@ -36,8 +36,9 @@ $showLabel = $field->getShowLabel() ?? false;
 $i = 0;
 $widths = $field->getWidths();
 $gap = $field->getGap();
+$rwdPoint = $field->rwdBreakpoint ?: 'lg';
 
-$inputElement->addClass('c-inline-field d-grid w-100');
+$inputElement->addClass("c-inline-field d-flex flex-column d-{$rwdPoint}-grid w-100");
 
 if ($widths !== []) {
     $columnsStyle = "repeat(12, 1fr)";

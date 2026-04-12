@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Unicorn\Field;
 
+use JetBrains\PhpStorm\ExpectedValues;
 use Windwalker\DOM\HTMLElement;
 use Windwalker\Form\Field\AbstractField;
 use Windwalker\Form\Field\CompositeFieldInterface;
 use Windwalker\Form\Form;
 use Windwalker\Form\ValidateResult;
-use Windwalker\Utilities\Arr;
 use Windwalker\Utilities\Reflection\ReflectAccessor;
 
 use function Windwalker\uid;
@@ -34,6 +34,8 @@ class InlineField extends AbstractField implements CompositeFieldInterface
     protected ?string $group = null;
 
     protected ?string $subFieldset = null;
+
+    public protected(set) string $rwdBreakpoint = 'lg';
 
     public function getDefaultLayout(): string
     {
@@ -91,7 +93,7 @@ class InlineField extends AbstractField implements CompositeFieldInterface
                 'field' => $this,
                 'input' => $input,
                 'options' => $options,
-                'form' => $this->prepareForm()
+                'form' => $this->prepareForm(),
             ]
         );
     }
@@ -173,6 +175,15 @@ class InlineField extends AbstractField implements CompositeFieldInterface
     public function gap(string|int|false $gap): static
     {
         $this->gap = $gap;
+
+        return $this;
+    }
+
+    public function rwdBreakpoint(
+        #[ExpectedValues(['sm', 'md', 'lg', 'xl', 'xxl'])]
+        string $rwdBreakpoint
+    ): static {
+        $this->rwdBreakpoint = $rwdBreakpoint;
 
         return $this;
     }

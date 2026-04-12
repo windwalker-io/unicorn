@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Unicorn\Field;
 
+use JetBrains\PhpStorm\ExpectedValues;
 use Windwalker\DOM\HTMLElement;
 use Windwalker\Form\Field\AbstractField;
 use Windwalker\Form\Field\CompositeFieldInterface;
@@ -19,6 +20,7 @@ class RepeatableField extends AbstractField implements CompositeFieldInterface
     use LayoutFieldTrait;
 
     public const string LAYOUT_TABLE = '@theme::field.repeatable.repeatable-table';
+
     public const string LAYOUT_FLEX = '@theme::field.repeatable.repeatable-flex';
 
     public const string LAYOUT_GRID = '@theme::field.repeatable.repeatable-grid';
@@ -38,6 +40,8 @@ class RepeatableField extends AbstractField implements CompositeFieldInterface
     public protected(set) array $colWidths = [];
 
     public protected(set) array $colClasses = [];
+
+    public protected(set) string $rwdBreakpoint = 'xl';
 
     public function getDefaultLayout(): string
     {
@@ -166,7 +170,7 @@ class RepeatableField extends AbstractField implements CompositeFieldInterface
         return [
             'items' => $prepared,
             'defaultValues' => $defaultValues,
-            'attrs' => $input->getAttributes(true)
+            'attrs' => $input->getAttributes(true),
         ];
     }
 
@@ -178,7 +182,7 @@ class RepeatableField extends AbstractField implements CompositeFieldInterface
                 'field' => $this,
                 'input' => $input,
                 'options' => $options,
-                'form' => $this->prepareForm()
+                'form' => $this->prepareForm(),
             ]
         );
     }
@@ -291,6 +295,15 @@ class RepeatableField extends AbstractField implements CompositeFieldInterface
     public function gap(int|string|null $gap): static
     {
         $this->gap = $gap;
+
+        return $this;
+    }
+
+    public function rwdBreakpoint(
+        #[ExpectedValues(['sm', 'md', 'lg', 'xl', 'xxl'])]
+        string $rwdBreakpoint
+    ): static {
+        $this->rwdBreakpoint = $rwdBreakpoint;
 
         return $this;
     }

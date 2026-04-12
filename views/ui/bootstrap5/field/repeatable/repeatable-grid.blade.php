@@ -84,6 +84,8 @@ if ($gap) {
         $gapStyle = "gap: $gap;";
     }
 }
+
+$rwdPoint = $field->rwdBreakpoint ?: 'lg';
 ?>
 
 <div id="{{ $field->getId('-wrap') }}" class="c-repeatable-field"
@@ -129,7 +131,7 @@ if ($gap) {
                     </td>
                 </template>
                 <td class="">
-                    <div class="d-grid p-2 {{ $gapClass }}" style="{{ $columnsStyle }}{{ $gapStyle }}">
+                    <div class="d-flex flex-column d-{{ $rwdPoint }}-grid p-2 {{ $gapClass }}" style="{{ $columnsStyle }}{{ $gapStyle }}">
                         @php($i = 0)
                         @foreach ($form->getFields() as $subField)
                             <div
