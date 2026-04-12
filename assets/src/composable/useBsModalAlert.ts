@@ -1,6 +1,7 @@
 import { Modal } from 'bootstrap';
 import { html } from '../service';
 import { useUIBootstrap5 } from './useUIBootstrap5';
+import { promiseWithResolvers } from '@lyrasoft/ts-toolkit/generic';
 
 export interface BsModalAlertOptions {
   header?: string | HTMLElement | (() => HTMLElement | Promise<HTMLElement>);
@@ -235,6 +236,7 @@ async function prepareModalElement(
   }
 
   const buttons = options.buttons!;
+  const { resolve: resolveClosed, promise: valueSelected } = promiseWithResolvers();
 
   for (const i in buttons) {
     const button = buttons[i];
@@ -256,6 +258,33 @@ async function prepareModalElement(
   if (options.configure) {
     modalElement = options.configure(modalElement) ?? modalElement;
   }
+
+  let isUserDismiss = false;
+  let clickListener: (e: PointerEvent) => void;
+  let keydownListener: (e: KeyboardEvent) => void;
+
+  modalElement.addEventListener('click', clickListener = (e) => {
+    const target = e.target as HTMLElement;
+
+    if (target.matches('.modal')) {
+      isUserDismiss = true;
+    }
+  }, { capture: true });
+
+  modalElement.addEventListener('keydown', keydownListener = (e) => {
+    if (e.key === 'Escape') {
+      isUserDismiss = true;
+    }
+  }, { capture: true });
+
+  modalElement.addEventListener('hide.bs.modal', (e) => {
+    if (isUserDismiss) {
+      handler(undefined);
+    }
+
+    modalElement.removeEventListener('click', clickListener);
+    modalElement.removeEventListener('keydown', keydownListener);
+  }, { once: true });
 
   return modalElement;
 }
