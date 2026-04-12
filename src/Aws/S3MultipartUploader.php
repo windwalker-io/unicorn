@@ -25,7 +25,7 @@ class S3MultipartUploader
 
     public ?string $profile = null;
 
-    public string $acl = self::ACL_AUTHENTICATED_READ;
+    public ?string $acl = self::ACL_AUTHENTICATED_READ;
 
     public int|string|\DateTimeInterface $presignExpires = '+10 minutes';
 

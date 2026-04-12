@@ -128,6 +128,11 @@ class StorageFactory implements ServiceFactoryInterface
                     return $handler($command, $request)
                         ->then(
                             function (ResultInterface $result) use ($s3, $options, $key, $fullKey) {
+                                if ($key !== null && isset($options['public_host'])) {
+                                    $result['S3URL'] = $result['ObjectURL'];
+                                    $result['ObjectURL'] = $options['public_host'] . '/' . $key;
+                                }
+
                                 if ($key !== null && isset($options['cdn']['root'])) {
                                     $result['S3URL'] = $result['ObjectURL'];
                                     $result['ObjectURL'] = $options['cdn']['root'] . '/' . $key;

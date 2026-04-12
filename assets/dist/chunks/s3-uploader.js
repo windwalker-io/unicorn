@@ -48,7 +48,7 @@ var S3Uploader = class extends Mixin(EventMixin) {
 		const fileData = new FormData();
 		const inputs = mergeDeep({}, this.options.formInputs, options.formInputs || {});
 		if (typeof file === "string") file = new Blob([file], { type: options["Content-Type"] || "text/plain" });
-		if (file instanceof Blob && path.endsWith(".{ext}")) throw new Error("If using Blob or file data string, you must provide a valid file extension in the path.");
+		if (file instanceof Blob && !(file instanceof File) && path.endsWith(".{ext}")) throw new Error("If using Blob or file data string, you must provide a valid file extension in the path.");
 		if (file instanceof Blob || file instanceof File) options["Content-Type"] = options["Content-Type"] || file.type;
 		if (options["filename"]) {
 			const filename = this.replaceExt(options["filename"], file);

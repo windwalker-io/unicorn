@@ -73,7 +73,7 @@ export class S3Uploader extends Mixin(EventMixin) implements EventAwareInterface
       file = new Blob([file], { type: options['Content-Type'] || 'text/plain' });
     }
 
-    if (file instanceof Blob && path.endsWith('.{ext}')) {
+    if (file instanceof Blob && !(file instanceof File) && path.endsWith('.{ext}')) {
       throw new Error('If using Blob or file data string, you must provide a valid file extension in the path.');
     }
 

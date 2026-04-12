@@ -44,6 +44,7 @@ class AwsScript extends AbstractScript
      */
     public function s3BrowserUploader(
         string $name,
+        // todo: Make ACL optional to supports newer S3 services
         string $acl = S3Service::ACL_PUBLIC_READ,
         array $options = []
     ): void {
