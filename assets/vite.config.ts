@@ -66,6 +66,10 @@ export default defineConfig(({ mode }) => {
           'bootstrap',
           'sortablejs',
           '@asika32764/vue-animate',
+          // Seems still not excludes,
+          // Maybe we need to compile @lyrasoft/ts-toolkit to js
+          '@lyrasoft/ts-toolkit',
+          '@lyrasoft/ts-toolkit/*',
           'alpinejs',
           'cropperjs',
           'cropperjs/*',
