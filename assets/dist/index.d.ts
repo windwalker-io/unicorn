@@ -1585,13 +1585,6 @@ export { }
 
 
 declare global {
-    interface Node {
-        __unicorn?: any;
-    }
-}
-
-
-declare global {
     var Alpine: AlpineGlobal;
     var TomSelect: typeof TomSelectGlobal;
     var Spectrum: typeof SpectrumGlobal;
@@ -1607,6 +1600,13 @@ declare module '@windwalker-io/unicorn-next' {
 }
 
 
+declare global {
+    interface Node {
+        __unicorn?: any;
+    }
+}
+
+
 declare module 'axios' {
     interface AxiosRequestConfig {
         vars?: Record<string, any>;
@@ -1615,6 +1615,11 @@ declare module 'axios' {
     }
     interface CreateAxiosDefaults {
     }
+}
+
+
+declare global {
+    var tinymce: TinyMCE;
 }
 
 declare global {
@@ -1626,9 +1631,4 @@ declare global {
     export interface Window {
         bootstrap: typeof bootstrap;
     }
-}
-
-
-declare global {
-    var tinymce: TinyMCE;
 }

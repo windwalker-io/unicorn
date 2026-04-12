@@ -222,7 +222,8 @@ async function prepareModalElement(modalElement, handler, options) {
 	let clickListener;
 	let keydownListener;
 	modalElement.addEventListener("click", clickListener = (e) => {
-		if (e.target.matches(".modal")) isUserDismiss = true;
+		const target = e.target;
+		if (target.matches(".modal") && target.dataset.bsBackdrop !== "static") isUserDismiss = true;
 	}, { capture: true });
 	modalElement.addEventListener("keydown", keydownListener = (e) => {
 		if (e.key === "Escape") isUserDismiss = true;

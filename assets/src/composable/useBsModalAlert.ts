@@ -266,7 +266,7 @@ async function prepareModalElement(
   modalElement.addEventListener('click', clickListener = (e) => {
     const target = e.target as HTMLElement;
 
-    if (target.matches('.modal')) {
+    if (target.matches('.modal') && target.dataset.bsBackdrop !== 'static') {
       isUserDismiss = true;
     }
   }, { capture: true });
