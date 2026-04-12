@@ -1606,17 +1606,6 @@ declare module '@windwalker-io/unicorn-next' {
     }
 }
 
-declare global {
-    var S: any;
-}
-
-
-declare global {
-    export interface Window {
-        bootstrap: typeof bootstrap;
-    }
-}
-
 
 declare module 'axios' {
     interface AxiosRequestConfig {
@@ -1625,6 +1614,17 @@ declare module 'axios' {
         methodSimulateByHeader?: boolean;
     }
     interface CreateAxiosDefaults {
+    }
+}
+
+declare global {
+    var S: any;
+}
+
+
+declare global {
+    export interface Window {
+        bootstrap: typeof bootstrap;
     }
 }
 
