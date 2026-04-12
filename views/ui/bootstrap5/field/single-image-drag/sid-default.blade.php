@@ -67,7 +67,7 @@ $options['modalTarget'] = '#' . $field->getId('__modal');
                         <div class="c-sid-default__upload-actions">
                             <button class="btn btn-success btn-sm btn-xs sid-file-select-button" type="button"
                                 data-sid="select">
-                                <span class="fa fa-picture-o"></span>
+                                <span class="fa fa-image"></span>
                                 @lang('unicorn.field.sid.button.select')
                             </button>
                             <button type="button"
