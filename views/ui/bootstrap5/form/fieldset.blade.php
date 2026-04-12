@@ -59,7 +59,7 @@ $attrs = [];
 $attributes = $attributes->class('l-form-fieldset');
 ?>
 
-<x-component :is="$is" :="$attributes" :title="$title">
+<x-component :is="$is" :title="$title" :attributes="$attributes">
     @if ($header ?? null)
         <x-slot name="header">
             {!! $header(title: $title, fieldset: $fieldset) !!}
