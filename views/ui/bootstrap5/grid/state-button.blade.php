@@ -52,7 +52,7 @@ $size ??= 'sm';
 
 $attributes = $attributes->exceptProps(['states']);
 
-$color = \Windwalker\Utilities\Str::ensureLeft($state->getColor(), 'text-');
+$color = \Windwalker\Utilities\Str::ensureStart($state->getColor(), 'text-');
 ?>
 
 @if ($readonly || $state->isOnlyIcon())

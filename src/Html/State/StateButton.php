@@ -3,6 +3,8 @@
 namespace Unicorn\Html\State;
 
 use MyCLabs\Enum\Enum;
+use Windwalker\Utilities\Contract\LanguageInterface;
+use Windwalker\Utilities\Enum\EnumMetaInterface;
 use Windwalker\Utilities\Options\OptionAccessTrait;
 use Windwalker\Utilities\TypeCast;
 
@@ -38,6 +40,11 @@ class StateButton
         return new static($options);
     }
 
+    public static function fromEnum(string $enumClass, array $options = [], ?LanguageInterface $lang = null): static
+    {
+        return static::create($options)->addStatesByEnum($enumClass, $lang);
+    }
+
     /**
      * StateButton constructor.
      *
@@ -62,18 +69,29 @@ class StateButton
     }
 
     /**
-     * addState
-     *
-     * @param  string  $value
+     * @param  mixed                   $value
+     * @param  LanguageInterface|null  $lang
      *
      * @return StateOption
      */
-    public function addState(mixed $value): StateOption
+    public function addState(mixed $value, ?LanguageInterface $lang = null): StateOption
     {
-        $value = $this->normalizeValue($value);
+        $rawValue = $this->normalizeValue($value);
 
         // Force type to prevent null data
-        return $this->states[$value] = new StateOption($value, $this->options);
+        $state = $this->states[$rawValue] = new StateOption($rawValue, $this->options);
+
+        if ($value instanceof EnumMetaInterface) {
+            if ($icon = $value->getIcon()) {
+                $state->icon($icon);
+            }
+
+            if ($title = $value->getTitle($lang)) {
+                $state->title($title);
+            }
+        }
+
+        return $state;
     }
 
     public function normalizeValue(mixed $value): string
@@ -113,7 +131,13 @@ class StateButton
 
     public function getCompiledState(string $value, array $options = []): StateOption
     {
-        $state = clone $this->getState($value);
+        $state = $this->getState($value);
+
+        if (!$state) {
+            throw new \RuntimeException("State with value '{$value}' not found.");
+        }
+
+        $state = clone $state;
 
         $state->merge($options);
 
@@ -142,6 +166,23 @@ class StateButton
     {
         if (isset($this->states[$value])) {
             unset($this->states[$value]);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param  class-string<\BackedEnum>  $enumClass
+     * @param  LanguageInterface|null     $lang
+     *
+     * @return  static
+     */
+    public function addStatesByEnum(string $enumClass, ?LanguageInterface $lang = null): static
+    {
+        $cases = $enumClass::cases();
+
+        foreach ($cases as $case) {
+            $this->addState($case, $lang);
         }
 
         return $this;
