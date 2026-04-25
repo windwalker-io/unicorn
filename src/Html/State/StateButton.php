@@ -116,7 +116,7 @@ class StateButton
      */
     public function getState(mixed $value): ?StateOption
     {
-        return $this->states[$value] ?? null;
+        return $this->states[$value ?? ''] ?? null;
     }
 
     /**
