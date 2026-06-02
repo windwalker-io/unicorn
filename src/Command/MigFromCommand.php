@@ -295,7 +295,7 @@ class MigFromCommand implements CommandInterface
                         continue;
                     }
 
-                    $cols[] = $this->buildColumn($row, $keys);
+                    $cols[] = $this->buildColumn($row, $keys, $tableName);
                 }
 
                 $newCode = str_replace(
@@ -419,7 +419,7 @@ PHP;
         return "\$this->dropTables({$className}::class);";
     }
 
-    protected function buildColumn(array $row, ?array &$keys = null): string
+    protected function buildColumn(array $row, ?array &$keys = null, ?string $tableName = null): string
     {
         $keys ??= [];
 
@@ -437,7 +437,11 @@ PHP;
         $method = $this->getTypeMethod($key, $type);
 
         if (!$method) {
-            throw new \RuntimeException("Unknown type '$type' for column '$name'.");
+            if ($tableName) {
+                $tableName .= '.';
+            }
+
+            throw new \RuntimeException("Unknown type '$type' for column {$tableName}{$name}.");
         }
 
         $col = "\$schema->$method('$name')";
