@@ -792,9 +792,26 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
 
     public function addAllowFields(string ...$fields): static
     {
-        foreach ($fields as $field) {
-            $this->customAllowFields[] = $field;
+        if (array_is_list($fields)) {
+            foreach ($fields as $field) {
+                $this->customAllowFields[] = $field;
+            }
+        } else {
+            foreach ($fields as $alias => $field) {
+                $this->customAllowFields[] = $alias;
+
+                $this->fieldAlias($alias, $field);
+            }
         }
+
+        return $this;
+    }
+
+    public function allowField(string $field, ?string $as = null): static
+    {
+        $this->addAllowFields($field);
+
+        $this->fieldAlias($field, $as);
 
         return $this;
     }
@@ -848,7 +865,9 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
 
     public function fieldAlias(string $alias, string $field): static
     {
-        $this->fieldAliases[$alias] = $field;
+        if ($alias !== $field) {
+            $this->fieldAliases[$alias] = $field;
+        }
 
         return $this;
     }
@@ -1070,7 +1089,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
         return $this->getQuery();
     }
 
-    public function debug(bool $pre = false, bool $format = true, bool $asString = false): string|static
+    public function debug(bool|\Closure $pre = false, bool $format = true, bool $asString = false): string|static
     {
         $r = $this->compileQuery()->debug($pre, $format, $asString);
 
