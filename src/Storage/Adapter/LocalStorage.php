@@ -129,9 +129,30 @@ class LocalStorage implements StorageInterface
             $path = $base . '/' . $path;
         }
 
-        $url = $su->addUriBase($path, $root);
+        // Workaround before SystemUri::addUriBase() / SystemUri::normalize() support for UTF-8
+        $url = $this->addUriBase($su, $path, $root);
 
-        return new Uri(Str::removeLeft($url, $su->root));
+        return new Uri(Str::removeStart($url, $su->root));
+    }
+
+    /**
+     * @param  SystemUri    $systemUri
+     * @param  string       $uri
+     * @param  string|null  $base
+     *
+     * @return  string
+     *
+     * @deprecated  Workaround before SystemUri::normalize() support for UTF-8
+     */
+    protected function addUriBase(SystemUri $systemUri, string $uri, ?string $base = null): string
+    {
+        if (!$systemUri::isAbsoluteUrl($uri)) {
+            $base ??= $systemUri->path;
+
+            $uri = (string) new Uri($base . '/' . $uri, true);
+        }
+
+        return $uri;
     }
 
     public function getUriBase(): string
