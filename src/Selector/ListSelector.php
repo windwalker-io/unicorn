@@ -353,12 +353,12 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
     /**
      * ordering
      *
-     * @param  array|string|RawWrapper  $order
-     * @param  string|null              $dir
+     * @param  array|string|RawWrapper     $order
+     * @param  \SortDirection|string|null  $dir
      *
      * @return  $this
      */
-    public function ordering(mixed $order, ?string $dir = null): static
+    public function ordering(mixed $order, \SortDirection|string|null $dir = null): static
     {
         if ($order === null) {
             return $this;
@@ -932,7 +932,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
         return $this;
     }
 
-    protected function handleOrdering(Query $query, mixed $order, ?string $dir = null): Query
+    protected function handleOrdering(Query $query, mixed $order, \SortDirection|string|null $dir = null): Query
     {
         if (is_string($order)) {
             $order = Arr::explodeAndClear(',', $order);
