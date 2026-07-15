@@ -1070,7 +1070,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
         return $this->getQuery();
     }
 
-    public function debug(bool $pre = false, bool $format = true, bool $asString = false): string|static
+    public function debug(\Closure|bool $pre = false, bool $format = true, bool $asString = false): string|static
     {
         $r = $this->compileQuery()->debug($pre, $format, $asString);
 
