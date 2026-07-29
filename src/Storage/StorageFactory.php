@@ -82,7 +82,7 @@ class StorageFactory implements ServiceFactoryInterface
 
         $options['credentials'] = $credentials;
         $options['region'] ??= $this->container->getParam('storage.s3.default_region');
-        $options['endpoint'] ??= 'https://s3.amazonaws.com';
+        // $options['endpoint'] ??= 'https://s3.amazonaws.com';
         $options['version'] ??= 'latest';
         $options['http'] ??= [
             'verify' => CaBundle::getBundledCaBundlePath(),
