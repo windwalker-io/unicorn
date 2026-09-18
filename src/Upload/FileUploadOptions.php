@@ -6,6 +6,9 @@ namespace Unicorn\Upload;
 
 use Windwalker\Utilities\Options\RecordOptions;
 
+// Todo: must handle extra `enabled` option issues
+// @see https://github.com/windwalker-io/core/issues/1500
+#[\AllowDynamicProperties]
 class FileUploadOptions extends RecordOptions
 {
     public const string DRIVER_GD = 'gd';
