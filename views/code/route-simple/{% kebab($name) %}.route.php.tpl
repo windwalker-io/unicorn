@@ -14,11 +14,13 @@ use Windwalker\Core\Router\RouteCreator;
 $router->group('{% kebab($name) %}')
     ->register(function (RouteCreator $router) {
         $router->any('{% snake($name) %}_list', '/{% kebab($name) %}/list')
-            ->controller({% pascal($name) %}Controller::class)
-            ->view({% pascal($name) %}ListView::class)
-            ->postHandler('copy')
-            ->putHandler('filter')
-            ->patchHandler('batch');
+            ->controller(
+                {% pascal($name) %}Controller::class,
+                post: 'copy',
+                put: 'filter',
+                patch: 'batch',
+            )
+            ->view({% pascal($name) %}ListView::class);
 
         $router->any('{% snake($name) %}_item', '/{% kebab($name) %}/item[/{id}]')
             ->controller({% pascal($name) %}Controller::class)
