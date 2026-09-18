@@ -34,7 +34,7 @@ $attributes = $attributes->class('c-pagination-jump gap-2');
 $self = (string) $nav->self()->var('page', '{page}');
 ?>
 
-@if ($pagination->getPages() > 1)
+@if ($pagination->getPages() > 1 || $pagination->isSimple())
     @once
         <script>
         document.addEventListener('DOMContentLoaded', () => {

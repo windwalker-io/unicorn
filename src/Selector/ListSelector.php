@@ -721,6 +721,16 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
             ->total($total ?? fn() => $this->count());
     }
 
+    public function getSimplePagination(int|callable|null $total = null, ?int $neighbours = null): Pagination
+    {
+        $this->disableCountTotals();
+
+        $pagination = $this->getPagination($total, $neighbours);
+        $pagination->simple(true);
+
+        return $pagination;
+    }
+
     /**
      * @return FilterHelper
      */
@@ -1053,6 +1063,14 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
     public function disableAutoSelect(bool $autoSelect = true): static
     {
         $this->setOption('disable_auto_select', $autoSelect);
+
+        return $this;
+    }
+
+    public function disableCountTotals(): static
+    {
+        $this->disablePageFix(true);
+        $this->setCountCallback(fn () => 0);
 
         return $this;
     }
