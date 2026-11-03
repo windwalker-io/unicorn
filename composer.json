@@ -20,9 +20,11 @@
         "spatie/image-optimizer": "^1.8"
     },
     "require-dev": {
+        "windwalker/framework": "4.x-dev",
         "aws/aws-sdk-php": "^3.181",
         "league/flysystem": "^2.0||^3.0",
-        "league/flysystem-aws-s3-v3": "^2.0||^3.0"
+        "league/flysystem-aws-s3-v3": "^2.0||^3.0",
+        "phpunit/phpunit": "^13.4"
     },
     "suggest": {
         "league/flysystem": "Install ^2.0 to support flysystem storage",
@@ -34,7 +36,7 @@
         "exclude": [
             ".github",
             "assets",
-            "test"
+            "tests"
         ]
     },
     "autoload": {
