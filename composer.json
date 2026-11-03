@@ -45,6 +45,11 @@
             "src/bootstrap.php"
         ]
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Unicorn\\Test\\": "tests/"
+        }
+    },
     "extra": {
         "windwalker": {
             "packages": [
