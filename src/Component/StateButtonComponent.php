@@ -61,7 +61,7 @@ class StateButtonComponent extends AbstractComponent
             $state = $this->states->getCompiledState($this->value, $this->options);
         } else {
             $state = new StateOption($this->value);
-            $state->merge($states[$this->value] ?? []);
+            $state->merge($this->states[$this->value] ?? []);
             $state->merge($this->options);
         }
 

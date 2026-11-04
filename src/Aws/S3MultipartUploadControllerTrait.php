@@ -30,7 +30,7 @@ trait S3MultipartUploadControllerTrait
 
         $this->configureUploader($uploader);
 
-        return $uploader;
+        return $this->uploader = $uploader;
     }
 
     abstract protected function configureUploader(S3MultipartUploader $uploader): void;

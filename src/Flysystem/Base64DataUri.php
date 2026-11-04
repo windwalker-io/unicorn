@@ -34,7 +34,7 @@ class Base64DataUri
      */
     public static function decode(string $base64, ?string &$mime = null): string
     {
-        preg_match('/data:(\w+\/\w+);base64,(.*)/', $base64, $matches);
+        preg_match('/data:([\w.+-]+\/[\w.+-]+);base64,(.*)/', $base64, $matches);
 
         $mime = $matches[1];
         $code = $matches[2];
@@ -114,7 +114,7 @@ class Base64DataUri
      */
     public static function getMimeType(string $base64): ?string
     {
-        preg_match('/data:(\w+\/\w+);/', $base64, $matches);
+        preg_match('/data:([\w.+-]+\/[\w.+-]+);/', $base64, $matches);
 
         return $matches[1] ?? null;
     }

@@ -110,7 +110,7 @@ class StateDropdownComponent extends AbstractComponent
             }
         }
 
-        $color = $currentState?->getColor();
+        $color = $currentState?->getColor() ?? ($this->batch ? 'secondary' : null);
 
         if ($this->colorOn === 'button') {
             $buttonColor = 'btn-' . $color;
