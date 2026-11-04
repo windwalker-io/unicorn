@@ -102,7 +102,7 @@ class Base64DataUri
             $mime = $mimeType->getMimeTypes(Path::getExtension($file))[0] ?? null;
         }
 
-        return static::encode($image, $mime);
+        return static::encode($image, $mime ?? 'application/octet-stream');
     }
 
     /**

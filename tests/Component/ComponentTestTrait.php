@@ -9,7 +9,6 @@ use Unicorn\Tests\TestApp;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Renderer\RendererService;
 use Windwalker\DI\Container;
-use Windwalker\DI\DIOptions;
 use Windwalker\Edge\Component\AbstractComponent;
 
 /**
@@ -27,6 +26,11 @@ use Windwalker\Edge\Component\AbstractComponent;
  * {@see renderComponent()}, which pushes a configured component instance
  * through the real {@see RendererService}, producing the final HTML string
  * exactly as production code would.
+ *
+ * `tests/bootstrap.app.php` loads the `renderer`/`unicorn` config modules
+ * (view paths, `@alias` layouts, etc.) once for the whole test process, so
+ * this trait does not need to repeat that work - it only has to boot a
+ * fresh request-level context per test class.
  */
 trait ComponentTestTrait
 {
@@ -52,10 +56,7 @@ trait ComponentTestTrait
      */
     protected static function renderComponent(AbstractComponent $component, array $extra = []): string
     {
-        // The test container runs with `lazy = true`; RendererService's own
-        // dependencies (e.g. LayoutPathResolver) don't play well with lazy
-        // proxies here, so resolve it eagerly.
-        $renderer = static::$container->resolve(RendererService::class, options: new DIOptions(lazy: false));
+        $renderer = static::$container->resolve(RendererService::class);
 
         return trim($renderer->render($component->render(), [...$component->data(), ...$extra]));
     }

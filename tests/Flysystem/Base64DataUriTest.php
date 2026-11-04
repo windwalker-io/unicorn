@@ -116,6 +116,18 @@ class Base64DataUriTest extends TestCase
     }
 
     #[Test]
+    public function fromFileFallsBackToOctetStreamForUnknownExtension(): void
+    {
+        $path = $this->tmpDir . '/sample.unknownext123';
+        file_put_contents($path, 'Unknown');
+
+        $uri = Base64DataUri::fromFile($path);
+
+        $this->assertStringStartsWith('data:application/octet-stream;base64,', $uri);
+        $this->assertSame('Unknown', Base64DataUri::decode($uri));
+    }
+
+    #[Test]
     public function fromFileThrowsWhenFileNotFound(): void
     {
         $this->expectException(\RuntimeException::class);

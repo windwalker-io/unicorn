@@ -33,7 +33,7 @@ final class TabComponentTest extends TestCase
         self::assertStringContainsString('data-role="tab-pane"', $html);
         self::assertStringContainsString('data-title="Details"', $html);
         self::assertStringContainsString('data-active="1"', $html);
-        self::assertStringContainsString('class="tab-pane fade show active"', $html);
+        self::assertStringContainsString('class="show active tab-pane fade"', $html);
         self::assertStringContainsString('<p>Tab Body</p>', $html);
     }
 
@@ -56,27 +56,5 @@ final class TabComponentTest extends TestCase
     public function resolvesTheTabView(): void
     {
         self::assertSame('@tab', new TabComponent()->render());
-    }
-
-    #[Test]
-    public function debugDump(): void
-    {
-        $container = static::$container;
-
-        try {
-            $resolver = $container->resolve(
-                \Windwalker\Core\Renderer\RendererService::class,
-                options: new \Windwalker\DI\DIOptions(lazy: false),
-            );
-            var_dump($resolver);
-        } catch (\Throwable $e) {
-            while ($e) {
-                fwrite(STDERR, get_class($e) . ': ' . $e->getMessage() . "\n");
-                fwrite(STDERR, $e->getFile() . ':' . $e->getLine() . "\n---\n");
-                $e = $e->getPrevious();
-            }
-        }
-
-        self::assertTrue(true);
     }
 }
