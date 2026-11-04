@@ -33,9 +33,7 @@ class S3MultipartUploader
 
     public ?int $tempExpireDays = 7;
 
-    public function __construct(protected ApplicationInterface $app)
-    {
-    }
+    public function __construct(protected ApplicationInterface $app) {}
 
     public function init(string $path, array $extra = [], ?string $profile = null): string
     {
@@ -134,7 +132,7 @@ class S3MultipartUploader
             $rules = [];
         }
 
-        $rules = array_filter($rules, fn ($rule) => $rule['ID'] !== 'AbortIncompleteMultipartUpload');
+        $rules = array_filter($rules, fn($rule) => $rule['ID'] !== 'AbortIncompleteMultipartUpload');
 
         if ($this->tempExpireDays) {
             $rules[] = [

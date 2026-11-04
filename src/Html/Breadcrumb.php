@@ -15,7 +15,7 @@ class Breadcrumb
     /**
      * Property items.
      *
-     * @var array
+     * @var  array
      */
     protected array $items = [];
 
@@ -72,7 +72,7 @@ class Breadcrumb
      *
      * @param  string|int  $key
      *
-     * @return array|null
+     * @return  array|null
      * @since  3.3
      */
     public function get(mixed $key): ?array
@@ -173,7 +173,7 @@ class Breadcrumb
     /**
      * Retrieve an external iterator
      *
-     * @return \Traversable
+     * @return  \Traversable
      */
     public function getIterator(): \Traversable
     {

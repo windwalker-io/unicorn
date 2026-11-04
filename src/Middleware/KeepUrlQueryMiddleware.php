@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Unicorn\Middleware;
 
 use Psr\Http\Message\ResponseInterface;
@@ -16,8 +18,6 @@ use Windwalker\DI\Definition\DefinitionFactory;
 use Windwalker\DI\Definition\DefinitionInterface;
 use Windwalker\DI\DICreateTrait;
 use Windwalker\Utilities\Options\OptionsResolverTrait;
-
-use function Windwalker\nope;
 
 /**
  * The KeepUrlQueryMiddleware class.
@@ -37,8 +37,8 @@ class KeepUrlQueryMiddleware implements MiddlewareInterface
         protected string $uid = '',
         protected mixed $default = '',
         protected \Closure|bool|null $routeEnabled = true,
-        protected \Closure|null $afterHook = null,
-        protected \Closure|null $viewHook = null,
+        protected ?\Closure $afterHook = null,
+        protected ?\Closure $viewHook = null,
         /**
          * @deprecated  Use constructor arguments instead.
          */
@@ -86,7 +86,7 @@ class KeepUrlQueryMiddleware implements MiddlewareInterface
      * @param  ServerRequestInterface   $request
      * @param  RequestHandlerInterface  $handler
      *
-     * @return ResponseInterface
+     * @return  ResponseInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
@@ -151,11 +151,11 @@ class KeepUrlQueryMiddleware implements MiddlewareInterface
     /**
      * isSame
      *
-     * @param string|DefinitionInterface|object $middleware
+     * @param  string|DefinitionInterface|object  $middleware
      *
      * @return  bool
      *
-     * @throws \ReflectionException
+     * @throws  \ReflectionException
      *
      * @since  1.8.39
      */

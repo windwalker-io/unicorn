@@ -78,7 +78,7 @@ class ModalField extends AbstractField
      *
      * @var  string|UriInterface
      */
-    protected string|null|UriInterface $url = null;
+    protected string|UriInterface|null $url = null;
 
     protected string|RouteUri|null $route = null;
 
@@ -203,7 +203,7 @@ class ModalField extends AbstractField
      *
      * @return  string
      *
-     * @throws \Psr\Cache\InvalidArgumentException
+     * @throws  \Psr\Cache\InvalidArgumentException
      *
      * @since  1.7.3
      */
@@ -215,7 +215,7 @@ class ModalField extends AbstractField
     }
 
     /**
-     * @return string|RouteUri|null
+     * @return  string|RouteUri|null
      */
     public function getRoute(): string|RouteUri|null
     {
@@ -277,9 +277,7 @@ class ModalField extends AbstractField
         return $this;
     }
 
-    protected function prepareQuery(Query $query): void
-    {
-    }
+    protected function prepareQuery(Query $query): void {}
 
     protected function getItem(): ?array
     {
@@ -349,7 +347,7 @@ class ModalField extends AbstractField
     /**
      * @param  iterable<Collection>  $items
      *
-     * @return array
+     * @return  array
      * @since  1.7.3
      */
     protected function prepareItems(iterable $items): array
@@ -393,7 +391,7 @@ class ModalField extends AbstractField
     }
 
     /**
-     * @return string
+     * @return  string
      */
     public function getTable(): ?string
     {
@@ -413,7 +411,7 @@ class ModalField extends AbstractField
     }
 
     /**
-     * @return string
+     * @return  string
      */
     public function getTitleField(): string
     {
@@ -433,7 +431,7 @@ class ModalField extends AbstractField
     }
 
     /**
-     * @return string
+     * @return  string
      */
     public function getKeyField(): string
     {
@@ -453,7 +451,7 @@ class ModalField extends AbstractField
     }
 
     /**
-     * @return string
+     * @return  string
      */
     public function getImageField(): string
     {
@@ -473,7 +471,7 @@ class ModalField extends AbstractField
     }
 
     /**
-     * @return UriInterface|string
+     * @return  UriInterface|string
      */
     public function getUrl(): UriInterface|string
     {

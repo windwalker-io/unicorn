@@ -7,6 +7,4 @@ namespace Unicorn\Selector\Event;
 /**
  * The ConfigureQueryEvent class.
  */
-class ConfigureQueryEvent extends AbstractSelectorEvent
-{
-}
+class ConfigureQueryEvent extends AbstractSelectorEvent {}

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Unicorn\Repository;
 
-use Unicorn\Model\Contract\SoftDeleteEntityInterface;
 use Unicorn\Repository\Actions\DeleteAction;
 use Unicorn\Repository\Actions\SaveAction;
 use Windwalker\Core\Router\Exception\RouteNotFoundException;

@@ -23,10 +23,10 @@ class BatchAction extends AbstractDatabaseAction
     /**
      * update
      *
-     * @param  array  $ids
-     * @param  array  $data
+     * @param  array       $ids
+     * @param  array       $data
      * @param  mixed|null  $form
-     * @param  array  $args
+     * @param  array       $args
      *
      * @return  array<object>
      */
@@ -196,7 +196,7 @@ class BatchAction extends AbstractDatabaseAction
     }
 
     /**
-     * @return Symbol
+     * @return  Symbol
      */
     public function getEmptySymbol(): Symbol
     {

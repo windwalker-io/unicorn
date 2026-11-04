@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Unicorn\Selector\Filter;
 
 use Windwalker\Query\Query;
@@ -25,17 +27,17 @@ interface FilterHelperInterface
      * @param  string         $name     The handler name.
      * @param  callable|bool  $handler  Handler callback.
      *
-     * @return  FilterHelperInterface Return self to support chaining.
+     * @return  FilterHelperInterface  Return self to support chaining.
      */
     public function addHandler(string $name, callable|bool $handler): static;
 
     /**
      * Execute the filter and add in query object.
      *
-     * @param Query $query Db query object.
-     * @param array $data  The data from request.
+     * @param  Query  $query  Db query object.
+     * @param  array  $data   The data from request.
      *
-     * @return  Query Return the query object.
+     * @return  Query  Return the query object.
      */
     public function process(Query $query, array $data = []): Query;
 }

@@ -7,6 +7,4 @@ namespace Unicorn\Storage;
 /**
  * The StorageAdapter class.
  */
-abstract class AbstractStorage
-{
-}
+abstract class AbstractStorage {}

@@ -31,7 +31,7 @@ class CategoryFlatListField extends FlatListField
     }
 
     /**
-     * @return string
+     * @return  string
      */
     public function getCategoryType(): string
     {
@@ -51,7 +51,7 @@ class CategoryFlatListField extends FlatListField
     }
 
     /**
-     * @return int|null
+     * @return  int|null
      */
     public function getMaxLevel(): ?int
     {

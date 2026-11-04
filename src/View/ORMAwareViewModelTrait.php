@@ -19,7 +19,7 @@ trait ORMAwareViewModelTrait
      * @param  array|null       $data
      *
      * @return  T|null
-     * @throws \ReflectionException
+     * @throws  \ReflectionException
      */
     public function tryEntity(string $entityClass, mixed $data): ?object
     {
@@ -36,7 +36,7 @@ trait ORMAwareViewModelTrait
      * @param  array|null       $data
      *
      * @return  T
-     * @throws \ReflectionException
+     * @throws  \ReflectionException
      */
     public function toEntity(string $entityClass, mixed $data): object
     {

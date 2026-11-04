@@ -56,7 +56,7 @@ class WorkflowSubCommand extends AbstractGeneratorSubCommand
      *
      * @param  IOInterface  $io
      *
-     * @return  int Return 0 is success, 1-255 is failure.
+     * @return  int  Return 0 is success, 1-255 is failure.
      */
     public function execute(IOInterface $io): int
     {

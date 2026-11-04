@@ -25,8 +25,7 @@ class FormScript extends AbstractScript
         protected UnicornScript $unicornScript,
         protected SystemUri $systemUri,
         protected VueScript $vueScript,
-    ) {
-    }
+    ) {}
 
     public function choices(?string $selector = null, array $options = []): static
     {
@@ -38,7 +37,7 @@ class FormScript extends AbstractScript
             $opt = static::getJSObject($options);
             $this->unicornScript->importMainThen("u.\$ui.choices('$selector', $opt)");
         } elseif ($this->available()) {
-            $this->unicornScript->importMainThen("u.\$ui.choices()");
+            $this->unicornScript->importMainThen('u.$ui.choices()');
         }
 
         return $this;
@@ -48,7 +47,7 @@ class FormScript extends AbstractScript
     {
         if ($this->available()) {
             if ($this->next) {
-                $this->unicornScript->importMainThen("u.\$ui.cascadeSelect()");
+                $this->unicornScript->importMainThen('u.$ui.cascadeSelect()');
             } else {
                 $this->js('@unicorn/field/cascade-select.js');
             }
@@ -60,7 +59,7 @@ class FormScript extends AbstractScript
     public function flatpickr(): static
     {
         if ($this->available()) {
-            $this->unicornScript->importMainThen("u.\$ui.flatpickr()");
+            $this->unicornScript->importMainThen('u.$ui.flatpickr()');
         }
 
         return $this;
@@ -102,7 +101,7 @@ class FormScript extends AbstractScript
         if ($this->available()) {
             $this->unicornScript->translate('unicorn.field.sid.*');
 
-            $this->unicornScript->importMainThen("u.\$ui.sid()");
+            $this->unicornScript->importMainThen('u.$ui.sid()');
         }
 
         return $this;
@@ -111,7 +110,7 @@ class FormScript extends AbstractScript
     public function iframeModal(): static
     {
         if ($this->available()) {
-            $this->unicornScript->importMainThen("u.\$ui.iframeModal()");
+            $this->unicornScript->importMainThen('u.$ui.iframeModal()');
         }
 
         return $this;
@@ -123,7 +122,7 @@ class FormScript extends AbstractScript
             $this->unicornScript->translate('unicorn.field.file.drag.*');
 
             $this->unicornScript->importMainThen(
-                "u.\$ui.fileDrag()"
+                'u.$ui.fileDrag()'
             );
         }
 
@@ -137,7 +136,7 @@ class FormScript extends AbstractScript
             $this->unicornScript->translate('unicorn.field.multi.uploader.*');
             $this->unicornScript->translate('unicorn.field.file.drag.*');
             $this->unicornScript->importMainThen(
-                "u.\$ui.multiUploader()"
+                'u.$ui.multiUploader()'
             );
         }
 
@@ -148,7 +147,7 @@ class FormScript extends AbstractScript
     {
         if ($this->available()) {
             if ($this->next) {
-                $this->unicornScript->importMainThen("u.\$ui.repeatable()");
+                $this->unicornScript->importMainThen('u.$ui.repeatable()');
             } else {
                 $this->js('@unicorn/field/repeatable.js');
             }
@@ -163,7 +162,7 @@ class FormScript extends AbstractScript
             $optString = static::getJSObject($options);
             $this->unicornScript->importMainThen("u.\$ui.colorPicker('$selector', $optString)");
         } elseif ($this->available($selector)) {
-            $this->unicornScript->importMainThen("u.\$ui.colorPicker()");
+            $this->unicornScript->importMainThen('u.$ui.colorPicker()');
         }
 
         return $this;

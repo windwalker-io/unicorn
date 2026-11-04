@@ -130,7 +130,7 @@ class StateDropdownComponent extends AbstractComponent
         $onclick = $this->onclick;
 
         if (is_string($onclick)) {
-            $onclick = static fn () => $onclick;
+            $onclick = static fn() => $onclick;
         }
 
         return array_merge(

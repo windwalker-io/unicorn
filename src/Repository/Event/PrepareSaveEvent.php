@@ -20,11 +20,10 @@ class PrepareSaveEvent extends BaseEvent
         public array|object $source = [],
         public array|string|null $condFields = null,
         public int $options = 0
-    ) {
-    }
+    ) {}
 
     /**
-     * @return array|object
+     * @return  array|object
      *
      * @deprecated  Use property instead.
      */
@@ -34,7 +33,7 @@ class PrepareSaveEvent extends BaseEvent
     }
 
     /**
-     * @return array
+     * @return  array
      *
      * @deprecated  Use property instead.
      */

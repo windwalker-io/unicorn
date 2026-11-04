@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Unicorn\Field;
 
-use Unicorn\Field\DatabaseAwareTrait;
-use Unicorn\Field\LayoutFieldTrait;
 use Unicorn\Script\UnicornScript;
 use Windwalker\Core\Language\TranslatorTrait;
 use Windwalker\DI\Attributes\Inject;
@@ -13,7 +11,6 @@ use Windwalker\DOM\HTMLElement;
 use Windwalker\Form\Field\AbstractField;
 use Windwalker\Query\Query;
 use Windwalker\Utilities\Cache\InstanceCacheTrait;
-
 use Windwalker\Utilities\Wrapper\RawWrapper;
 
 use function Windwalker\raw;
@@ -21,26 +18,26 @@ use function Windwalker\raw;
 /**
  * The BoxSelectorField class.
  *
- * @method $this source(mixed $value)
- * @method mixed getSource()
- * @method $this modalTitle(string $value)
- * @method string getModalTitle()
- * @method $this branchSelectable(bool $value)
- * @method bool isBranchSelectable()
- * @method $this valueField(string $value)
- * @method string getValueField()
- * @method $this titleField(string $value)
- * @method string getTitleField()
- * @method $this multiple(bool $value)
- * @method bool isMultiple()
- * @method $this vertical(bool $value)
- * @method bool isVertical()
- * @method $this itemClass(string $value)
- * @method string getItemClass()
- * @method $this buttonText(string $value)
- * @method string getButtonText()
- * @method $this searchText(string $value)
- * @method string getSearchText()
+ * @method  $this   source(mixed $value)
+ * @method  mixed   getSource()
+ * @method  $this   modalTitle(string $value)
+ * @method  string  getModalTitle()
+ * @method  $this   branchSelectable(bool $value)
+ * @method  bool    isBranchSelectable()
+ * @method  $this   valueField(string $value)
+ * @method  string  getValueField()
+ * @method  $this   titleField(string $value)
+ * @method  string  getTitleField()
+ * @method  $this   multiple(bool $value)
+ * @method  bool    isMultiple()
+ * @method  $this   vertical(bool $value)
+ * @method  bool    isVertical()
+ * @method  $this   itemClass(string $value)
+ * @method  string  getItemClass()
+ * @method  $this   buttonText(string $value)
+ * @method  string  getButtonText()
+ * @method  $this   searchText(string $value)
+ * @method  string  getSearchText()
  */
 class ModalTreeField extends AbstractField
 {

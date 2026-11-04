@@ -24,7 +24,7 @@ trait FileUploadFieldTrait
     }
 
     /**
-     * @return string|null
+     * @return  string|null
      */
     public function getUploadProfile(): ?string
     {

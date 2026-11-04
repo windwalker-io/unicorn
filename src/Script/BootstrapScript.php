@@ -14,9 +14,7 @@ class BootstrapScript extends AbstractScript
     /**
      * FormScript constructor.
      */
-    public function __construct(protected UnicornScript $unicornScript)
-    {
-    }
+    public function __construct(protected UnicornScript $unicornScript) {}
 
     public function popover(string $selector = '[data-bs-toggle=popover]', array $options = []): static
     {
@@ -123,7 +121,7 @@ class BootstrapScript extends AbstractScript
     {
         if ($this->available()) {
             $this->unicornScript->importMainThen(
-                "u.\$ui.iframeModal()"
+                'u.$ui.iframeModal()'
             );
         }
 

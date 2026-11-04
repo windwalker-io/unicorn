@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Unicorn\Script;
 
-use Windwalker\Core\Application\ApplicationInterface;
 use Windwalker\Core\Asset\AbstractScript;
 
 /**

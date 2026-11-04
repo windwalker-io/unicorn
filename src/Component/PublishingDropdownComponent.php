@@ -4,22 +4,15 @@ declare(strict_types=1);
 
 namespace Unicorn\Component;
 
-use Closure;
-use Unicorn\Html\State\StateButton;
 use Unicorn\Workflow\State;
-use Unicorn\Workflow\WorkflowController;
-use Unicorn\Workflow\WorkflowInterface;
 use Windwalker\Core\DateTime\ChronosService;
 use Windwalker\Core\Edge\Attribute\EdgeComponent;
 use Windwalker\Core\Language\TranslatorTrait;
 use Windwalker\DI\Attributes\Inject;
-use Windwalker\Edge\Component\AbstractComponent;
 use Windwalker\Edge\Component\ComponentAttributes;
 use Windwalker\Utilities\Attributes\Prop;
-use Windwalker\Utilities\Cache\InstanceCacheTrait;
 
 use function Windwalker\try_chronos;
-use function Windwalker\value;
 
 #[EdgeComponent('publishing-dropdown')]
 class PublishingDropdownComponent extends StateDropdownComponent

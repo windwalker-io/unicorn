@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Unicorn\Selector\Filter;
 
 /**
@@ -44,7 +46,7 @@ abstract class AbstractFilterHelper implements FilterHelperInterface
      * @param  string         $name     The handler name.
      * @param  callable|bool  $handler  Handler callback.
      *
-     * @return  AbstractFilterHelper Return self to support chaining.
+     * @return  AbstractFilterHelper  Return self to support chaining.
      */
     public function addHandler(string $name, callable|bool $handler): static
     {
@@ -56,14 +58,14 @@ abstract class AbstractFilterHelper implements FilterHelperInterface
     /**
      * Register the default handler.
      *
-     * @return  callable The handler callback.
+     * @return  callable  The handler callback.
      */
     abstract protected function getDefaultHandler(): callable;
 
     /**
      * Set default handler.
      *
-     * @param   callable $defaultHandler The default handler.
+     * @param  callable  $defaultHandler  The default handler.
      *
      * @return  static  Return self to support chaining.
      */

@@ -21,6 +21,5 @@ class BuildFormFieldEvent extends BaseEvent
         public FormFieldsBuilder $formFieldsBuilder,
         public string $label = '',
         public ?string $code = null,
-    ) {
-    }
+    ) {}
 }

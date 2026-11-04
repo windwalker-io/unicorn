@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace Unicorn\Storage;
 
-use Aws\AwsClient;
 use Aws\CloudFront\CloudFrontClient;
 use Aws\CloudFront\Exception\CloudFrontException;
 use Aws\CommandInterface;
 use Aws\Credentials\Credentials;
-use Aws\Middleware;
 use Aws\ResultInterface;
 use Aws\S3\S3Client;
 use Composer\CaBundle\CaBundle;
@@ -26,7 +24,6 @@ use Windwalker\Core\Console\ConsoleApplication;
 use Windwalker\Core\DI\ServiceFactoryInterface;
 use Windwalker\Core\DI\ServiceFactoryTrait;
 use Windwalker\DI\Attributes\Isolation;
-use Windwalker\DI\Container;
 use Windwalker\Uri\UriNormalizer;
 
 use function Windwalker\tid;

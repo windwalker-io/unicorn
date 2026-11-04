@@ -5,18 +5,13 @@ declare(strict_types=1);
 namespace Unicorn\Repository;
 
 use Unicorn\Attributes\Repository;
-use Unicorn\Selector\ListSelector;
 use Windwalker\Attributes\AttributesAccessor;
-use Windwalker\Core\Factory\DatabaseServiceFactory;
 use Windwalker\Core\Form\FormFactory;
-use Windwalker\Core\Manager\DatabaseManager;
-use Windwalker\Core\Pagination\PaginationFactory;
 use Windwalker\Database\DatabaseAdapter;
 use Windwalker\DI\Attributes\Inject;
 use Windwalker\DI\Container;
 use Windwalker\ORM\EntityMapper;
 use Windwalker\ORM\ORM;
-use Windwalker\ORM\SelectorQuery;
 
 /**
  * Trait DatabaseRepositoryTrait
@@ -73,7 +68,7 @@ trait DatabaseRepositoryTrait
     }
 
     /**
-     * @return DatabaseAdapter
+     * @return  DatabaseAdapter
      */
     public function getDb(): DatabaseAdapter
     {

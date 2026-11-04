@@ -56,8 +56,8 @@ class Base64DataUri
     /**
      * encode
      *
-     * @param string  $data
-     * @param string  $mime
+     * @param  string  $data
+     * @param  string  $mime
      *
      * @return  string
      */
@@ -72,7 +72,7 @@ class Base64DataUri
      * @param  string  $base64
      * @param  string  $dest
      *
-     * @return FileObject
+     * @return  FileObject
      */
     public static function toFile(string $base64, string $dest): FileObject
     {
@@ -110,7 +110,7 @@ class Base64DataUri
      *
      * @param  string  $base64
      *
-     * @return string|null
+     * @return  string|null
      */
     public static function getMimeType(string $base64): ?string
     {

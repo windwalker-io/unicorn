@@ -6,21 +6,20 @@ namespace Unicorn\Field;
 
 use Windwalker\DOM\HTMLElement;
 use Windwalker\Form\Field\CheckboxField;
-use Windwalker\Utilities\Arr;
 
 /**
  * The SwitchField class.
  *
- * @method $this size(?string $value = null)
- * @method string getSize(string $value = null)
- * @method $this shape(?string $value = null)
- * @method string getShape(string $value = null)
- * @method $this color(string $value = null)
- * @method string getColor(string $value = null)
- * @method $this checkedValue(string $value = null)
- * @method string getCheckedValue(string $value = null)
- * @method $this uncheckedValue(string $value = null)
- * @method string getUncheckedValue(string $value = null)
+ * @method  $this   size(?string $value = null)
+ * @method  string  getSize(string $value = null)
+ * @method  $this   shape(?string $value = null)
+ * @method  string  getShape(string $value = null)
+ * @method  $this   color(string $value = null)
+ * @method  string  getColor(string $value = null)
+ * @method  $this   checkedValue(string $value = null)
+ * @method  string  getCheckedValue(string $value = null)
+ * @method  $this   uncheckedValue(string $value = null)
+ * @method  string  getUncheckedValue(string $value = null)
  */
 class SwitcherField extends CheckboxField
 {

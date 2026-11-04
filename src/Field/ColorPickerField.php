@@ -33,7 +33,7 @@ class ColorPickerField extends AbstractHtml5Field
     }
 
     /**
-     * @return array
+     * @return  array
      */
     public function getPickerOptions(): array
     {

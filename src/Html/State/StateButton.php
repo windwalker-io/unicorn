@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Unicorn\Html\State;
 
-use MyCLabs\Enum\Enum;
 use Windwalker\Utilities\Contract\LanguageInterface;
 use Windwalker\Utilities\Enum\EnumMetaInterface;
 use Windwalker\Utilities\Options\OptionAccessTrait;
@@ -31,9 +32,9 @@ class StateButton
     /**
      * create
      *
-     * @param array $options
+     * @param  array  $options
      *
-     * @return static
+     * @return  static
      */
     public static function create(array $options = []): static
     {
@@ -48,7 +49,7 @@ class StateButton
     /**
      * StateButton constructor.
      *
-     * @param  array            $options
+     * @param  array  $options
      *
      */
     public function __construct(array $options = [])
@@ -72,7 +73,7 @@ class StateButton
      * @param  mixed                   $value
      * @param  LanguageInterface|null  $lang
      *
-     * @return StateOption
+     * @return  StateOption
      */
     public function addState(mixed $value, ?LanguageInterface $lang = null): StateOption
     {
@@ -112,7 +113,7 @@ class StateButton
      *
      * @param  string  $value
      *
-     * @return StateOption|null
+     * @return  StateOption|null
      */
     public function getState(mixed $value): ?StateOption
     {

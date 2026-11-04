@@ -19,6 +19,5 @@ abstract class AbstractSelectorEvent extends BaseEvent
     public function __construct(
         public SelectorQuery $query,
         public ListSelector $selector
-    ) {
-    }
+    ) {}
 }

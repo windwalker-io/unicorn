@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Unicorn\Workflow\Exception;
 
 use Throwable;
-use Unicorn\Workflow\AbstractWorkflow;
 use Unicorn\Workflow\WorkflowInterface;
 use Windwalker\Core\Form\Exception\ValidateFailException;
 
@@ -26,7 +25,7 @@ class TransitionDisallowException extends ValidateFailException
     }
 
     /**
-     * @return string
+     * @return  string
      */
     public function getForm(): string
     {
@@ -46,7 +45,7 @@ class TransitionDisallowException extends ValidateFailException
     }
 
     /**
-     * @return string
+     * @return  string
      */
     public function getTo(): string
     {
@@ -66,7 +65,7 @@ class TransitionDisallowException extends ValidateFailException
     }
 
     /**
-     * @return WorkflowInterface
+     * @return  WorkflowInterface
      */
     public function getWorkflow(): WorkflowInterface
     {

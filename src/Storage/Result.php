@@ -6,7 +6,6 @@ namespace Unicorn\Storage;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
-use Psr\Http\Message\UriInterface;
 use Windwalker\Utilities\Accessible\AccessorBCTrait;
 
 /**
@@ -31,8 +30,7 @@ class Result
     public function __construct(
         public \Closure $responseCallback,
         public mixed $rawResult = null
-    ) {
-    }
+    ) {}
 
     /**
      * @return  StreamInterface

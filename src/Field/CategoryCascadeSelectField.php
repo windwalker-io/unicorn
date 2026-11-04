@@ -33,7 +33,7 @@ class CategoryCascadeSelectField extends CascadeSelectField
     }
 
     /**
-     * @return string
+     * @return  string
      */
     public function getCategoryType(): string
     {
@@ -69,7 +69,5 @@ class CategoryCascadeSelectField extends CascadeSelectField
             ->dump();
     }
 
-    protected function prepareQuery(Query $query): void
-    {
-    }
+    protected function prepareQuery(Query $query): void {}
 }

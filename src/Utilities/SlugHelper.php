@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Unicorn\Utilities;
 
 use THL\Pinyin;
@@ -24,7 +26,7 @@ class SlugHelper
      * @param  int          $defaultLimit
      *
      * @return  string
-     * @throws \Exception
+     * @throws  \Exception
      */
     public static function safe(
         string $alias,
@@ -109,7 +111,7 @@ class SlugHelper
      *
      * @return  string
      *
-     * @throws \Exception
+     * @throws  \Exception
      *
      * @since  1.8.13
      */

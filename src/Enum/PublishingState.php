@@ -10,8 +10,8 @@ use Windwalker\Utilities\Enum\EnumTranslatableTrait;
 /**
  * The State class.
  *
- * @method static static ARCHIVED()
- * @method static static TRASHED()
+ * @method  static  static  ARCHIVED()
+ * @method  static  static  TRASHED()
  */
 enum PublishingState: int
 {

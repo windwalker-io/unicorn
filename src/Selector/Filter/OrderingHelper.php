@@ -1,9 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Unicorn\Selector\Filter;
 
 use Windwalker\Query\Query;
-
 use Windwalker\Utilities\Str;
 
 use function Windwalker\raw;
@@ -14,8 +15,8 @@ class OrderingHelper extends AbstractFilterHelper
     /**
      * Execute the filter and add in query object.
      *
-     * @param   Query  $query  Db query object.
-     * @param   array  $data   The data from request.
+     * @param  Query  $query  Db query object.
+     * @param  array  $data   The data from request.
      *
      * @return  Query  Return the query object.
      */
@@ -43,16 +44,16 @@ class OrderingHelper extends AbstractFilterHelper
     /**
      * Register the default handler.
      *
-     * @return  callable The handler callback.
+     * @return  callable  The handler callback.
      */
     protected function getDefaultHandler(): callable
     {
         /**
          * Default handler closure.
          *
-         * @param   Query  $query The query object.
-         * @param   string $field The field name.
-         * @param   mixed  $value The filter value.
+         * @param  Query   $query  The query object.
+         * @param  string  $field  The field name.
+         * @param  mixed   $value  The filter value.
          *
          * @return  Query
          */

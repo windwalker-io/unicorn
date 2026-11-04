@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Unicorn\Legacy\Html;
 
-use Webmozart\Glob\Glob;
 use Windwalker\Core\Http\AppRequest;
 use Windwalker\Core\Router\Route;
 use Windwalker\Data\Collection;
@@ -43,8 +44,8 @@ class MenuHelper
     /**
      * isActive
      *
-     * @param bool        $result
-     * @param string|null $activeString
+     * @param  bool         $result
+     * @param  string|null  $activeString
      *
      * @return  string
      *
@@ -64,7 +65,7 @@ class MenuHelper
      * @param  array|false   $query
      * @param  string        $menu
      *
-     * @return bool
+     * @return  bool
      */
     public function is(string|array $path, array|false $query = false, string $menu = 'mainmenu'): bool
     {
@@ -79,7 +80,7 @@ class MenuHelper
         }
 
         $matched = $this->getMatchedRoute();
-        
+
         if (!$matched) {
             return false;
         }
@@ -133,8 +134,8 @@ class MenuHelper
     /**
      * inGroup
      *
-     * @param string|array $groups
-     * @param array        $query
+     * @param  string|array  $groups
+     * @param  array         $query
      *
      * @return  bool
      *
@@ -145,20 +146,20 @@ class MenuHelper
         $groups = TypeCast::toArray($groups);
 
         $matched = $this->getMatchedRoute();
-        
+
         $currentGroups = array_keys($matched->getExtraValue('groups') ?? []);
-        
+
         $active = array_intersect($groups, $currentGroups) !== [];
-        
+
         return $active && $this->matchRequest($query);
     }
 
     /**
      * active
      *
-     * @param string|array $path
-     * @param array        $query
-     * @param string       $menu
+     * @param  string|array  $path
+     * @param  array         $query
+     * @param  string        $menu
      *
      * @return  string
      *
@@ -189,14 +190,14 @@ class MenuHelper
                 $request = implode('/', $request);
             }
         }
-        
+
         return !empty(Arr::query([$requests], $query));
     }
 
     /**
      * getMatchedRoute
      *
-     * @return Route|null
+     * @return  Route|null
      *
      * @since  1.8
      */
@@ -220,7 +221,7 @@ class MenuHelper
     /**
      * Method to set property activeString
      *
-     * @param   string $activeString
+     * @param  string  $activeString
      *
      * @return  static  Return self to support chaining.
      *
@@ -236,7 +237,7 @@ class MenuHelper
     /**
      * addPathVar
      *
-     * @param string|array $path
+     * @param  string|array  $path
      *
      * @return  static
      *
@@ -254,7 +255,7 @@ class MenuHelper
     /**
      * setPathVars
      *
-     * @param array $paths
+     * @param  array  $paths
      *
      * @return  static
      *

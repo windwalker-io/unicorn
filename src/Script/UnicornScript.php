@@ -37,8 +37,7 @@ class UnicornScript extends AbstractScript
         protected AppContext $app,
         protected LangService $langService,
         protected Navigator $nav
-    ) {
-    }
+    ) {}
 
     public function systemJS(): static
     {
@@ -64,7 +63,7 @@ class UnicornScript extends AbstractScript
      *
      * @return  static
      *
-     * @throws DefinitionException
+     * @throws  DefinitionException
      */
     public function init(?string $mainJS = null): static
     {
@@ -119,7 +118,7 @@ class UnicornScript extends AbstractScript
     /**
      * @return  static
      *
-     * @throws DefinitionException
+     * @throws  DefinitionException
      */
     public function main(): static
     {
@@ -216,7 +215,7 @@ class UnicornScript extends AbstractScript
     }
 
     /**
-     * @return array
+     * @return  array
      */
     public function getData(): array
     {
@@ -292,7 +291,7 @@ class UnicornScript extends AbstractScript
             $opt = static::getJSObject($options);
             $this->importMainThen("u.\$ui.mark('$selector', '$keyword', $opt)");
         } elseif ($this->available()) {
-            $this->importMainThen("u.\$ui.mark()");
+            $this->importMainThen('u.$ui.mark()');
         }
 
         return $this;
@@ -331,7 +330,7 @@ CSS;
      *
      * @return  void
      *
-     * @throws DefinitionException
+     * @throws  DefinitionException
      */
     public function exposeCsrfToken(string $keyName = 'csrf-token'): void
     {
@@ -343,7 +342,7 @@ CSS;
      *
      * @return  void
      *
-     * @throws DefinitionException
+     * @throws  DefinitionException
      */
     public function exposeCspNonce(string $keyName = 'csp-nonce'): void
     {

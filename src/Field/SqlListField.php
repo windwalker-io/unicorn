@@ -4,24 +4,19 @@ declare(strict_types=1);
 
 namespace Unicorn\Field;
 
-use Windwalker\Core\Manager\DatabaseManager;
-use Windwalker\Data\Collection;
-use Windwalker\Database\DatabaseAdapter;
-use Windwalker\DI\Attributes\Inject;
 use Windwalker\DOM\HTMLElement;
 use Windwalker\Form\Field\ListField;
-use Windwalker\ORM\SelectorQuery;
 use Windwalker\Query\Query;
 
 /**
  * The SqlListField class.
  *
- * @method $this textField(mixed $value = null)
- * @method string getTextField()
- * @method $this valueField(mixed $value = null)
- * @method string getValueField()
- * @method $this optionAttrs(array $value = null)
- * @method array getOptionAttrs()
+ * @method  $this   textField(mixed $value = null)
+ * @method  string  getTextField()
+ * @method  $this   valueField(mixed $value = null)
+ * @method  string  getValueField()
+ * @method  $this   optionAttrs(array $value = null)
+ * @method  array   getOptionAttrs()
  */
 class SqlListField extends ListField
 {
@@ -35,9 +30,7 @@ class SqlListField extends ListField
 
     protected string $indentByField = 'level';
 
-    protected function prepareQuery(Query $query): void
-    {
-    }
+    protected function prepareQuery(Query $query): void {}
 
     public function getItems(): iterable
     {

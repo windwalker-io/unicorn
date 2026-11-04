@@ -5,14 +5,11 @@ declare(strict_types=1);
 namespace Unicorn\Generator\SubCommand;
 
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Unicorn\UnicornPackage;
 use Windwalker\Console\CommandWrapper;
-use Windwalker\Console\IO;
 use Windwalker\Console\IOInterface;
-use Windwalker\Core\Generator\Command\GenerateCommand;
 use Windwalker\Utilities\Str;
 
 /**
@@ -69,8 +66,8 @@ class ControllerSubCommand extends \Windwalker\Core\Generator\SubCommand\Control
      *
      * @param  IOInterface  $io
      *
-     * @return  int Return 0 is success, 1-255 is failure.
-     * @throws \Exception
+     * @return  int         Return 0 is success, 1-255 is failure.
+     * @throws  \Exception
      */
     public function execute(IOInterface $io): int
     {

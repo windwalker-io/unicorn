@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Unicorn\Aws;
 
 use Aws\CloudFront\CloudFrontClient;
@@ -37,8 +39,7 @@ class S3Service
     public function __construct(
         protected S3Client $client,
         protected array $options = []
-    ) {
-    }
+    ) {}
 
     /**
      * getObject
@@ -400,7 +401,7 @@ class S3Service
      * @param  bool  $subfolder
      * @param  bool  $pathStyle
      *
-     * @return UriInterface
+     * @return  UriInterface
      */
     public function getHost(bool $subfolder = true, bool $pathStyle = false): UriInterface
     {
@@ -410,7 +411,7 @@ class S3Service
 
         $host = $uri->getHost();
 
-        $isIP = (new IPAddress())->test($host);
+        $isIP = new IPAddress()->test($host);
 
         if ($isIP) {
             $pathStyle = true;

@@ -18,9 +18,7 @@ class ActionsFactory
     /**
      * ActionsFactory constructor.
      */
-    public function __construct(protected Container $container)
-    {
-    }
+    public function __construct(protected Container $container) {}
 
     /**
      * create

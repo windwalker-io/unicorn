@@ -62,7 +62,7 @@ static fn() => [
          * --------------------------------------------------
          */
         'profiles' => [
-            'default' => fn () => new FileUploadOptions(
+            'default' => fn() => new FileUploadOptions(
                 storage: env('UPLOAD_STORAGE_DEFAULT') ?: 'local',
                 dir: 'files/{year}/{month}/{day}',
                 accept: null,
@@ -71,7 +71,7 @@ static fn() => [
                     driver: env('IMAGE_RESIZE_DRIVER', 'gd'),
                 ),
             ),
-            'image' => fn () => new FileUploadOptions(
+            'image' => fn() => new FileUploadOptions(
                 storage: env('UPLOAD_STORAGE_DEFAULT') ?: 'local',
                 dir: 'images/{year}/{month}/{day}',
                 accept: 'image/*',
@@ -89,7 +89,7 @@ static fn() => [
                     'ACL' => S3Service::ACL_PUBLIC_READ,
                 ],
             ),
-            'frontend' => fn () => new FileUploadOptions(
+            'frontend' => fn() => new FileUploadOptions(
                 storage: env('UPLOAD_STORAGE_DEFAULT') ?: 'local',
                 dir: 'files/{year}/{month}/{day}',
                 accept: 'image/*',

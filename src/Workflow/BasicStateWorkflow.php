@@ -6,7 +6,6 @@ namespace Unicorn\Workflow;
 
 use Unicorn\Attributes\StateMachine;
 use Unicorn\Enum\BasicState;
-use Unicorn\Enum\PublishingState;
 use Windwalker\Core\Language\TranslatorTrait;
 
 /**

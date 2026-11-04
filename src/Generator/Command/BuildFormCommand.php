@@ -44,17 +44,17 @@ class BuildFormCommand implements CommandInterface, InteractInterface, Completio
      * BuildEntityCommand constructor.
      */
     public function __construct(
-        #[Autowire] protected ClassFinder $classFinder,
+        #[Autowire]
+        protected ClassFinder $classFinder,
         protected ConsoleApplication $app,
-    ) {
-    }
+    ) {}
 
     /**
      * configure
      *
      * @param  Command  $command
      *
-     * @return    void
+     * @return  void
      */
     public function configure(Command $command): void
     {
@@ -119,7 +119,7 @@ class BuildFormCommand implements CommandInterface, InteractInterface, Completio
      *
      * @param  IOInterface  $io
      *
-     * @return    int Return 0 is success, 1-255 is failure.
+     * @return  int  Return 0 is success, 1-255 is failure.
      */
     public function execute(IOInterface $io): int
     {

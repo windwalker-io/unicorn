@@ -5,12 +5,10 @@ declare(strict_types=1);
 namespace Unicorn\Repository\Nested;
 
 use Unicorn\Attributes\ConfigureAction;
-use Unicorn\Repository\Actions\BatchAction;
 use Unicorn\Repository\Actions\NestedReorderAction;
 use Unicorn\Repository\Actions\NestedSaveAction;
 use Unicorn\Repository\Actions\ReorderAction;
 use Unicorn\Repository\Event\AfterBatchEvent;
-use Unicorn\Repository\Event\AfterBatchItemEvent;
 use Unicorn\Repository\ManageRepositoryTrait;
 use Windwalker\ORM\NestedSetMapper;
 

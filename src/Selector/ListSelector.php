@@ -82,9 +82,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
      * @param  DatabaseAdapter     $db
      * @param  ?PaginationFactory  $paginationFactory
      */
-    public function __construct(protected DatabaseAdapter $db, protected ?PaginationFactory $paginationFactory = null)
-    {
-    }
+    public function __construct(protected DatabaseAdapter $db, protected ?PaginationFactory $paginationFactory = null) {}
 
     /**
      * @return  SelectorQuery
@@ -118,7 +116,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
      * @param  array        $args
      * @param  int|null     $paginate
      *
-     * @return \Traversable
+     * @return  \Traversable
      */
     public function getIterator(?string $class = null, array $args = [], ?int $paginate = null): \Traversable
     {
@@ -701,7 +699,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
      * @param  int|callable|null  $total
      * @param  int|null           $neighbours
      *
-     * @return Pagination
+     * @return  Pagination
      */
     public function getPagination(int|callable|null $total = null, ?int $neighbours = null): Pagination
     {
@@ -732,7 +730,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
     }
 
     /**
-     * @return FilterHelper
+     * @return  FilterHelper
      */
     public function getFilterHelper(): FilterHelper
     {
@@ -752,7 +750,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
     }
 
     /**
-     * @return SearchHelper
+     * @return  SearchHelper
      */
     public function getSearchHelper(): SearchHelper
     {
@@ -854,7 +852,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
     }
 
     /**
-     * @return array
+     * @return  array
      */
     public function getFieldAliases(): array
     {
@@ -883,7 +881,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
     }
 
     /**
-     * @return string|null
+     * @return  string|null
      */
     public function getDefaultOrdering(): ?string
     {
@@ -903,7 +901,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
     }
 
     /**
-     * @return int|null
+     * @return  int|null
      */
     public function getDefaultLimit(): ?int
     {
@@ -923,7 +921,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
     }
 
     /**
-     * @return array
+     * @return  array
      */
     public function getSearchFields(): array
     {
@@ -992,7 +990,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
     }
 
     /**
-     * @return int|null
+     * @return  int|null
      */
     public function getLimit(): ?int
     {
@@ -1024,7 +1022,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
     }
 
     /**
-     * @return bool
+     * @return  bool
      */
     public function isDisableSelectGroup(): bool
     {
@@ -1070,7 +1068,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
     public function disableCountTotals(): static
     {
         $this->disablePageFix(true);
-        $this->setCountCallback(fn () => 0);
+        $this->setCountCallback(fn() => 0);
 
         return $this;
     }
@@ -1083,7 +1081,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
     }
 
     /**
-     * @return string|null
+     * @return  string|null
      */
     public function getDefaultItemClass(): ?string
     {

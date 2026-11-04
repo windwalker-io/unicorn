@@ -36,7 +36,7 @@ abstract class AbstractDatabaseAction extends AbstractAction
     }
 
     /**
-     * @return string|null
+     * @return  string|null
      */
     public function getEntityClass(): ?string
     {

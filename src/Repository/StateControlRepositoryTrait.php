@@ -7,7 +7,6 @@ namespace Unicorn\Repository;
 use Windwalker\Core\State\AppState;
 use Windwalker\DI\Attributes\Inject;
 use Windwalker\Utilities\Str;
-use Windwalker\Utilities\StrNormalize;
 
 /**
  * Trait StateControlRepositoryTrait
@@ -25,7 +24,7 @@ trait StateControlRepositoryTrait
     }
 
     /**
-     * @return string
+     * @return  string
      */
     public function getModuleNamespaceBase(): string
     {

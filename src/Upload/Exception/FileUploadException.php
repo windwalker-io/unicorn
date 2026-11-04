@@ -24,7 +24,7 @@ class FileUploadException extends \RuntimeException
     }
 
     /**
-     * @return UploadedFileInterface|null
+     * @return  UploadedFileInterface|null
      */
     public function getUploadedFile(): ?UploadedFileInterface
     {

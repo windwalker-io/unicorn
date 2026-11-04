@@ -23,11 +23,10 @@ class Transition
         protected string|array $froms,
         protected string $to,
         protected $enabled = true
-    ) {
-    }
+    ) {}
 
     /**
-     * @return string
+     * @return  string
      */
     public function getName(): string
     {
@@ -47,7 +46,7 @@ class Transition
     }
 
     /**
-     * @return array|string
+     * @return  array|string
      */
     public function getFroms(): array|string
     {
@@ -67,7 +66,7 @@ class Transition
     }
 
     /**
-     * @return bool
+     * @return  bool
      */
     public function isEnabled(): bool
     {
@@ -87,7 +86,7 @@ class Transition
     }
 
     /**
-     * @return string
+     * @return  string
      */
     public function getIcon(): string
     {
@@ -107,7 +106,7 @@ class Transition
     }
 
     /**
-     * @return string
+     * @return  string
      */
     public function getTitle(): string
     {
@@ -127,7 +126,7 @@ class Transition
     }
 
     /**
-     * @return string
+     * @return  string
      */
     public function getDescription(): string
     {
@@ -154,7 +153,7 @@ class Transition
     }
 
     /**
-     * @return string
+     * @return  string
      */
     public function getTo(): string
     {

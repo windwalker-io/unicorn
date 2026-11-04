@@ -78,7 +78,7 @@ trait DatabaseAwareTrait
     }
 
     /**
-     * @return SelectorQuery
+     * @return  SelectorQuery
      */
     public function getQuery(): SelectorQuery
     {
@@ -105,7 +105,7 @@ trait DatabaseAwareTrait
     abstract protected function prepareQuery(Query $query): void;
 
     /**
-     * @return string|null
+     * @return  string|null
      */
     public function getTable(): ?string
     {
@@ -125,7 +125,7 @@ trait DatabaseAwareTrait
     }
 
     /**
-     * @return false|string
+     * @return  false|string
      */
     public function getAutoSelections(): bool|string
     {

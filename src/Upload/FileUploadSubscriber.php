@@ -17,9 +17,7 @@ use Windwalker\Utilities\Str;
 #[EventSubscriber]
 class FileUploadSubscriber
 {
-    public function __construct(protected SystemUri $systemUri)
-    {
-    }
+    public function __construct(protected SystemUri $systemUri) {}
 
     #[ListenTo(FileUploadedEvent::class)]
     public function fileUploaded(FileUploadedEvent $event): void

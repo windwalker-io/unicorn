@@ -24,12 +24,13 @@
         "aws/aws-sdk-php": "^3.181",
         "league/flysystem": "^2.0||^3.0",
         "league/flysystem-aws-s3-v3": "^2.0||^3.0",
-        "phpunit/phpunit": "^13.4"
+        "phpunit/phpunit": "^13.4",
+        "friendsofphp/php-cs-fixer": "^3.95"
     },
     "scripts": {
         "test": "phpunit",
-        "cs-check": "bash bin/php-cs-fixer check --diff",
-        "cs-fix": "bash bin/php-cs-fixer fix",
+        "cs-check": "php-cs-fixer check --diff",
+        "cs-fix": "php-cs-fixer fix",
         "prepare-hooks": "git config core.hooksPath .githooks",
         "remove-hooks": "git config --local --unset core.hooksPath"
     },

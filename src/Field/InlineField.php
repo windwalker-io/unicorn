@@ -17,8 +17,8 @@ use function Windwalker\uid;
 /**
  * The InlineField class.
  *
- * @method $this showLabel(bool $value)
- * @method bool getShowLabel()
+ * @method  $this  showLabel(bool $value)
+ * @method  bool   getShowLabel()
  */
 class InlineField extends AbstractField implements CompositeFieldInterface
 {
@@ -104,7 +104,7 @@ class InlineField extends AbstractField implements CompositeFieldInterface
      * int: (2, 5, 3) // 12 grid columns
      * int: (2, 5, 3, 12) // 12 grid columns, more than 12 will break to new line.
      *
-     * @param ...$widths
+     * @param   ...$widths
      *
      * @return  $this
      */
@@ -132,7 +132,7 @@ class InlineField extends AbstractField implements CompositeFieldInterface
     }
 
     /**
-     * @return array
+     * @return  array
      */
     public function getWidths(): array
     {
@@ -153,7 +153,7 @@ class InlineField extends AbstractField implements CompositeFieldInterface
     }
 
     /**
-     * @return string|null
+     * @return  string|null
      */
     public function getGroup(): ?string
     {

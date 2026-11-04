@@ -5,37 +5,35 @@ declare(strict_types=1);
 namespace Unicorn\Field;
 
 use Lyrasoft\Luna\Tree\Node;
-use Unicorn\Field\LayoutFieldTrait;
 use Windwalker\DOM\HTMLElement;
 use Windwalker\Form\Field\AbstractField;
 use Windwalker\Utilities\Arr;
 use Windwalker\Utilities\Assert\TypeAssert;
 use Windwalker\Utilities\Cache\InstanceCacheTrait;
-use Windwalker\Utilities\Wrapper\RawWrapper;
 
 /**
  * The AbstractCascadeSelectField class.
  *
- * @method $this placeholder(mixed $value)
- * @method mixed getPlaceholder()
- * @method $this ajaxUrl(mixed $url)
- * @method mixed getAjaxUrl()
- * @method $this ajaxValueField(string $value)
- * @method mixed getAjaxValueField()
- * @method $this labels(array $value)
- * @method mixed getLabels()
- * @method $this labelWidth(string $value)
- * @method mixed getLabelWidth()
- * @method $this fieldWidth(string $value)
- * @method mixed getFieldWidth()
- * @method $this horizontal(bool $value)
- * @method mixed getHorizontal()
- * @method $this horizontalColWidth(mixed $value)
- * @method mixed getHorizontalColWidth()
- * @method $this source(mixed $value)
- * @method mixed getSource()
- * @method $this cascadeSelectOptions(array $value)
- * @method mixed getCascadeSelectOptions()
+ * @method  $this  placeholder(mixed $value)
+ * @method  mixed  getPlaceholder()
+ * @method  $this  ajaxUrl(mixed $url)
+ * @method  mixed  getAjaxUrl()
+ * @method  $this  ajaxValueField(string $value)
+ * @method  mixed  getAjaxValueField()
+ * @method  $this  labels(array $value)
+ * @method  mixed  getLabels()
+ * @method  $this  labelWidth(string $value)
+ * @method  mixed  getLabelWidth()
+ * @method  $this  fieldWidth(string $value)
+ * @method  mixed  getFieldWidth()
+ * @method  $this  horizontal(bool $value)
+ * @method  mixed  getHorizontal()
+ * @method  $this  horizontalColWidth(mixed $value)
+ * @method  mixed  getHorizontalColWidth()
+ * @method  $this  source(mixed $value)
+ * @method  mixed  getSource()
+ * @method  $this  cascadeSelectOptions(array $value)
+ * @method  mixed  getCascadeSelectOptions()
  */
 class CascadeSelectField extends AbstractField
 {
@@ -43,7 +41,7 @@ class CascadeSelectField extends AbstractField
     use InstanceCacheTrait;
 
     /**
-     * @var callable
+     * @var  callable
      */
     protected $pathHandler;
 
@@ -101,7 +99,7 @@ class CascadeSelectField extends AbstractField
     }
 
     /**
-     * @return array
+     * @return  array
      */
     public function getPlaceholders(): array
     {
@@ -164,7 +162,7 @@ class CascadeSelectField extends AbstractField
     }
 
     /**
-     * @return callable
+     * @return  callable
      */
     public function getPathHandler(): callable
     {
@@ -184,7 +182,7 @@ class CascadeSelectField extends AbstractField
     }
 
     /**
-     * @return bool|mixed
+     * @return  bool|mixed
      */
     public function getIgnoreSelfValue(): mixed
     {
@@ -204,7 +202,7 @@ class CascadeSelectField extends AbstractField
     }
 
     /**
-     * @return string
+     * @return  string
      */
     public function getValueField(): string
     {
@@ -224,7 +222,7 @@ class CascadeSelectField extends AbstractField
     }
 
     /**
-     * @return string
+     * @return  string
      */
     public function getTextField(): string
     {

@@ -54,7 +54,7 @@ class StateOption
     }
 
     /**
-     * @return string
+     * @return  string
      */
     public function getValue(): string
     {
@@ -74,7 +74,7 @@ class StateOption
     }
 
     /**
-     * @return string|\Closure
+     * @return  string|\Closure
      */
     public function getTask(): string|\Closure
     {
@@ -94,7 +94,7 @@ class StateOption
     }
 
     /**
-     * @return string|\Closure
+     * @return  string|\Closure
      */
     public function getHref(): string|\Closure
     {
@@ -114,7 +114,7 @@ class StateOption
     }
 
     /**
-     * @return string
+     * @return  string
      */
     public function getIcon(): string
     {
@@ -134,7 +134,7 @@ class StateOption
     }
 
     /**
-     * @return string
+     * @return  string
      */
     public function getTitle(): string
     {
@@ -154,7 +154,7 @@ class StateOption
     }
 
     /**
-     * @return string
+     * @return  string
      */
     public function getDescription(): string
     {
@@ -185,7 +185,7 @@ class StateOption
     }
 
     /**
-     * @return bool
+     * @return  bool
      */
     public function isOnlyIcon(): bool
     {
@@ -205,7 +205,7 @@ class StateOption
     }
 
     /**
-     * @return bool
+     * @return  bool
      */
     public function isDisabled(): bool
     {
@@ -225,7 +225,7 @@ class StateOption
     }
 
     /**
-     * @return string
+     * @return  string
      */
     public function getButtonClass(): string
     {
@@ -245,7 +245,7 @@ class StateOption
     }
 
     /**
-     * @return string
+     * @return  string
      */
     public function getText(): string
     {
@@ -265,7 +265,7 @@ class StateOption
     }
 
     /**
-     * @return string
+     * @return  string
      */
     public function getTextColor(): string
     {
@@ -306,7 +306,7 @@ class StateOption
     }
 
     /**
-     * @return string|\Closure
+     * @return  string|\Closure
      */
     public function getOnclick(): string|\Closure
     {
@@ -326,7 +326,7 @@ class StateOption
     }
 
     /**
-     * @return string
+     * @return  string
      */
     public function getColor(): string
     {

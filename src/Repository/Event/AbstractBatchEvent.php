@@ -44,7 +44,7 @@ abstract class AbstractBatchEvent extends BaseEvent
     }
 
     /**
-     * @return array
+     * @return  array
      *
      * @deprecated  Use property instead.
      */
@@ -54,7 +54,7 @@ abstract class AbstractBatchEvent extends BaseEvent
     }
 
     /**
-     * @return array
+     * @return  array
      *
      * @deprecated  Use property instead.
      */

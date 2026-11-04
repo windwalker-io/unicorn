@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Unicorn\Legacy\Html\State;
 
 use Unicorn\Html\State\StateButton;

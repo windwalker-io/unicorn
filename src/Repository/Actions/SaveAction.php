@@ -82,7 +82,7 @@ class SaveAction extends AbstractDatabaseAction
      * @param  int                $options
      *
      * @return  object
-     * @throws \ReflectionException
+     * @throws  \ReflectionException
      */
     public function save(
         array|object $data,

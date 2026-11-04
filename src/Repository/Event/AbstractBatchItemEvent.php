@@ -30,11 +30,10 @@ abstract class AbstractBatchItemEvent extends BaseEvent
         public mixed $id,
         public string $task = '',
         public array $data = [],
-    ) {
-    }
+    ) {}
 
     /**
-     * @return array
+     * @return  array
      *
      * @deprecated  Use property instead.
      */

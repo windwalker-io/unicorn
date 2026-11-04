@@ -18,7 +18,7 @@ class TabsComponent extends AbstractComponent
     public ?string $id = null;
 
     /**
-     * @var 'tabs'|'pills'
+     * @var  'tabs'|'pills'
      */
     #[Prop]
     public string $variant = 'tabs';
@@ -33,7 +33,7 @@ class TabsComponent extends AbstractComponent
     public ?string $navTarget = null;
 
     #[Prop]
-    public string|null $navClass = null;
+    public ?string $navClass = null;
 
     #[Prop]
     public mixed $navAttrs = [];

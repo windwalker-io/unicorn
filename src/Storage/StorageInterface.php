@@ -6,7 +6,6 @@ namespace Unicorn\Storage;
 
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
-use Windwalker\Filesystem\FileObject;
 
 /**
  * Interface StorageInterface

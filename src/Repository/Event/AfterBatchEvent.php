@@ -20,7 +20,7 @@ class AfterBatchEvent extends AbstractBatchEvent
         string $task = '',
         array $data = [],
         /**
-         * @var array<object>
+         * @var  array<object>
          */
         public array $items = [],
     ) {

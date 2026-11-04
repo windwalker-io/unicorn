@@ -18,6 +18,5 @@ class ResizeConfig extends RecordOptions
         public bool $crop = false,
         public ?string $outputFormat = null,
         public bool $orientate = true,
-    ) {
-    }
+    ) {}
 }

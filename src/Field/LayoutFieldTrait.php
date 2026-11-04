@@ -25,7 +25,7 @@ trait LayoutFieldTrait
     abstract public function getDefaultLayout(): string;
 
     /**
-     * @return string
+     * @return  string
      */
     public function getLayout(): string
     {

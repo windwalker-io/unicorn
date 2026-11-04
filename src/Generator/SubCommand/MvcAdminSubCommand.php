@@ -7,18 +7,13 @@ namespace Unicorn\Generator\SubCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Process\Process;
 use Unicorn\UnicornPackage;
 use Windwalker\Console\CommandWrapper;
 use Windwalker\Console\IOInterface;
 use Windwalker\Core\Generator\SubCommand\AbstractGeneratorSubCommand;
 use Windwalker\Data\Collection;
-use Windwalker\Utilities\Str;
 use Windwalker\Utilities\StrNormalize;
-
-use function Windwalker\collect;
 
 /**
  * The ModelSubCommand class.
@@ -93,7 +88,7 @@ class MvcAdminSubCommand extends AbstractGeneratorSubCommand
      *
      * @param  IOInterface  $io
      *
-     * @return  int Return 0 is success, 1-255 is failure.
+     * @return  int  Return 0 is success, 1-255 is failure.
      */
     public function execute(IOInterface $io): int
     {

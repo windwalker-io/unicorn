@@ -9,11 +9,7 @@ use Unicorn\Controller\AjaxControllerTrait;
 use Windwalker\Core\Application\ApplicationInterface;
 use Windwalker\Core\Attributes\Request\Input;
 use Windwalker\DI\Attributes\Inject;
-
 use Windwalker\Uri\Uri;
-use Windwalker\Utilities\Str;
-
-use function Windwalker\ds;
 
 trait S3MultipartUploadControllerTrait
 {
@@ -41,10 +37,14 @@ trait S3MultipartUploadControllerTrait
 
     #[Ajax]
     public function init(
-        #[Input] string $path,
-        #[Input] ?string $filename = null,
-        #[Input] array $extra = [],
-        #[Input] ?string $profile = null,
+        #[Input]
+        string $path,
+        #[Input]
+        ?string $filename = null,
+        #[Input]
+        array $extra = [],
+        #[Input]
+        ?string $profile = null,
     ): array {
         $id = $this->getS3MultipartUploader()->initWithFilename($path, $filename, $extra, $profile);
 
@@ -55,10 +55,14 @@ trait S3MultipartUploadControllerTrait
 
     #[Ajax]
     public function sign(
-        #[Input] string $id,
-        #[Input] string $path,
-        #[Input] int $partNumber,
-        #[Input] ?string $profile = null,
+        #[Input]
+        string $id,
+        #[Input]
+        string $path,
+        #[Input]
+        int $partNumber,
+        #[Input]
+        ?string $profile = null,
     ): array {
         try {
             $request = $this->getS3MultipartUploader()->sign($id, $path, $partNumber, $profile);
@@ -75,10 +79,14 @@ trait S3MultipartUploadControllerTrait
 
     #[Ajax]
     public function complete(
-        #[Input] string $id,
-        #[Input] string $path,
-        #[Input] array $parts,
-        #[Input] ?string $profile = null,
+        #[Input]
+        string $id,
+        #[Input]
+        string $path,
+        #[Input]
+        array $parts,
+        #[Input]
+        ?string $profile = null,
     ): array {
         try {
             $result = $this->getS3MultipartUploader()->complete($id, $path, $parts, $profile);
@@ -103,9 +111,12 @@ trait S3MultipartUploadControllerTrait
 
     #[Ajax]
     public function abort(
-        #[Input] string $id,
-        #[Input] string $path,
-        #[Input] ?string $profile = null,
+        #[Input]
+        string $id,
+        #[Input]
+        string $path,
+        #[Input]
+        ?string $profile = null,
     ): true {
         $this->getS3MultipartUploader()->abort($id, $path, $profile);
 

@@ -24,6 +24,5 @@ class TransitionEvent extends BaseEvent
         public string|array $froms = [],
         public string $to = '',
         public ?Transition $transition = null,
-    ) {
-    }
+    ) {}
 }

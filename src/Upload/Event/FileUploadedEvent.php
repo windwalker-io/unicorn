@@ -20,13 +20,12 @@ class FileUploadedEvent extends BaseEvent
 
     public function __construct(
         /**
-         * @var UploadedFileInterface|string
+         * @var  UploadedFileInterface|string
          */
         public mixed $file,
         public PutResult $result,
         public StreamInterface $stream,
         public FileUploadOptions $options,
         public string $dest = '',
-    ) {
-    }
+    ) {}
 }

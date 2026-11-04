@@ -188,7 +188,7 @@ class RepeatableField extends AbstractField implements CompositeFieldInterface
     }
 
     /**
-     * @return bool
+     * @return  bool
      */
     public function isSortable(): bool
     {
@@ -208,7 +208,7 @@ class RepeatableField extends AbstractField implements CompositeFieldInterface
     }
 
     /**
-     * @return bool
+     * @return  bool
      */
     public function isEnsureFirstRow(): bool
     {
@@ -228,7 +228,7 @@ class RepeatableField extends AbstractField implements CompositeFieldInterface
     }
 
     /**
-     * @return bool
+     * @return  bool
      */
     public function isSingleArray(): bool
     {
@@ -248,7 +248,7 @@ class RepeatableField extends AbstractField implements CompositeFieldInterface
     }
 
     /**
-     * @return string
+     * @return  string
      */
     public function getPlaceholder(): string
     {
@@ -268,7 +268,7 @@ class RepeatableField extends AbstractField implements CompositeFieldInterface
     }
 
     /**
-     * @return int
+     * @return  int
      */
     public function getMax(): int
     {

@@ -64,9 +64,7 @@ class UnicornPackage extends AbstractPackage implements
     /**
      * UnicornPackage constructor.
      */
-    public function __construct(protected ApplicationInterface $app)
-    {
-    }
+    public function __construct(protected ApplicationInterface $app) {}
 
     /**
      * boot
@@ -123,7 +121,7 @@ class UnicornPackage extends AbstractPackage implements
      * @param  Container  $container  The DI container.
      *
      * @return  void
-     * @throws \Windwalker\DI\Exception\DefinitionException
+     * @throws  \Windwalker\DI\Exception\DefinitionException
      */
     public function register(Container $container): void
     {

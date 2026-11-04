@@ -97,7 +97,7 @@ class TinymceEditorField extends AbstractEditorField
     }
 
     /**
-     * @throws \Exception
+     * @throws  \Exception
      */
     public function prepareEditorScript(): void
     {
@@ -124,18 +124,18 @@ class TinymceEditorField extends AbstractEditorField
         ];
 
         if ($toolbar === static::TOOLBAR_FULL) {
-            $defaultOptions['toolbar'] = 'undo redo ' .
-                'bold italic strikethrough forecolor backcolor blockquote removeformat | ' .
-                'blocks fontsize styles styleselect formatselect fontsizeselect | ' .
-                'alignleft aligncenter alignright alignjustify bullist numlist outdent indent | ' .
-                'link image media table code | fullscreen';
+            $defaultOptions['toolbar'] = 'undo redo '
+                . 'bold italic strikethrough forecolor backcolor blockquote removeformat | '
+                . 'blocks fontsize styles styleselect formatselect fontsizeselect | '
+                . 'alignleft aligncenter alignright alignjustify bullist numlist outdent indent | '
+                . 'link image media table code | fullscreen';
 
             $defaultOptions['image_advtab'] = true;
         } elseif ($toolbar === static::TOOLBAR_SIMPLE) {
-            $defaultOptions['toolbar'] = 'bold italic strikethrough forecolor backcolor blockquote removeformat | ' .
-                'fontsize | ' .
-                'alignleft aligncenter alignright alignjustify bullist numlist outdent indent | ' .
-                'link image media';
+            $defaultOptions['toolbar'] = 'bold italic strikethrough forecolor backcolor blockquote removeformat | '
+                . 'fontsize | '
+                . 'alignleft aligncenter alignright alignjustify bullist numlist outdent indent | '
+                . 'link image media';
 
             $defaultOptions['image_advtab'] = true;
         }
@@ -251,7 +251,7 @@ class TinymceEditorField extends AbstractEditorField
      *
      * @return  array
      *
-     * @throws \Exception
+     * @throws  \Exception
      */
     protected function loadLanguage(array $options): array
     {

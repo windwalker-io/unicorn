@@ -20,11 +20,10 @@ class State
         protected string $value,
         protected ?string $title = null,
         protected bool $isInitial = false
-    ) {
-    }
+    ) {}
 
     /**
-     * @return string
+     * @return  string
      */
     public function getValue(): string
     {
@@ -44,7 +43,7 @@ class State
     }
 
     /**
-     * @return string|null
+     * @return  string|null
      */
     public function getTitle(): ?string
     {
@@ -64,7 +63,7 @@ class State
     }
 
     /**
-     * @return bool
+     * @return  bool
      */
     public function isInitial(): bool
     {
@@ -84,7 +83,7 @@ class State
     }
 
     /**
-     * @return string
+     * @return  string
      */
     public function getColor(): string
     {
@@ -104,7 +103,7 @@ class State
     }
 
     /**
-     * @return string
+     * @return  string
      */
     public function getIcon(): string
     {

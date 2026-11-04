@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Unicorn\Attributes;
 
-use MyCLabs\Enum\Enum;
 use Unicorn\Workflow\WorkflowInterface;
 use Windwalker\DI\Attributes\AttributeHandler;
 use Windwalker\DI\Attributes\ContainerAttributeInterface;

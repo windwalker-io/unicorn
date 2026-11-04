@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Unicorn\Selector\Filter;
 
 use Windwalker\Query\Query;
@@ -14,10 +16,10 @@ class SearchHelper extends AbstractFilterHelper
     /**
      * Execute the filter and add in query object.
      *
-     * @param   Query  $query  Db query object.
-     * @param   array  $data   The data from request.
+     * @param  Query  $query  Db query object.
+     * @param  array  $data   The data from request.
      *
-     * @return  Query Return the query object.
+     * @return  Query  Return the query object.
      */
     public function process(Query $query, array $data = []): Query
     {
@@ -45,16 +47,16 @@ class SearchHelper extends AbstractFilterHelper
     /**
      * Register the default handler.
      *
-     * @return  callable The handler callback.
+     * @return  callable  The handler callback.
      */
     protected function getDefaultHandler(): callable
     {
         /**
          * Default handler closure.
          *
-         * @param   Query  $query The query object.
-         * @param   string $field The field name.
-         * @param   string $value The filter value.
+         * @param  Query   $query  The query object.
+         * @param  string  $field  The field name.
+         * @param  string  $value  The filter value.
          *
          * @return  string
          */

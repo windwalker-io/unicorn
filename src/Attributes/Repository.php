@@ -21,11 +21,10 @@ class Repository
     public function __construct(
         protected string $entityClass = '',
         public ?string $connection = null
-    ) {
-    }
+    ) {}
 
     /**
-     * @return string
+     * @return  string
      */
     public function getEntityClass(): string
     {

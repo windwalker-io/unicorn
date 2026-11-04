@@ -26,12 +26,12 @@ class WorkflowController implements EventAwareInterface
     protected bool $allowFreeTransitions = true;
 
     /**
-     * @var array<State>
+     * @var  array<State>
      */
     protected array $states = [];
 
     /**
-     * @var array<Transition>
+     * @var  array<Transition>
      */
     protected array $transitions = [];
 
@@ -488,7 +488,7 @@ class WorkflowController implements EventAwareInterface
     }
 
     /**
-     * @return State[]
+     * @return  State[]
      */
     public function getStates(): array
     {
@@ -521,7 +521,7 @@ class WorkflowController implements EventAwareInterface
     }
 
     /**
-     * @return bool
+     * @return  bool
      */
     public function isAllowFreeTransitions(): bool
     {
@@ -546,7 +546,7 @@ class WorkflowController implements EventAwareInterface
     }
 
     /**
-     * @return string
+     * @return  string
      */
     public function getField(): string
     {
@@ -566,7 +566,7 @@ class WorkflowController implements EventAwareInterface
     }
 
     /**
-     * @return Transition[]
+     * @return  Transition[]
      */
     public function getTransitions(): array
     {

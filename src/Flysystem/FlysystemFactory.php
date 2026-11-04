@@ -20,9 +20,7 @@ class FlysystemFactory
     /**
      * FlysystemFactory constructor.
      */
-    public function __construct(protected Container $container)
-    {
-    }
+    public function __construct(protected Container $container) {}
 
     public function s3v3Adapter(array $options): AwsS3V3Adapter
     {

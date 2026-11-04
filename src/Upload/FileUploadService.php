@@ -219,7 +219,7 @@ class FileUploadService implements EventAwareInterface
      * @param  array|FileUploadOptions          $options
      *
      * @return  PutResult
-     * @throws \Exception
+     * @throws  \Exception
      */
     public function handleFileData(
         mixed $file,
@@ -293,7 +293,7 @@ class FileUploadService implements EventAwareInterface
      *
      * @return  string
      *
-     * @throws \Exception
+     * @throws  \Exception
      */
     public function generateFileName(string $prefix = ''): string
     {
@@ -366,7 +366,7 @@ class FileUploadService implements EventAwareInterface
      * @param  ResizeConfig|array  $resizeConfig
      *
      * @return  StreamInterface
-     * @throws \Exception
+     * @throws  \Exception
      */
     public function optimizeImage(
         StreamInterface $src,

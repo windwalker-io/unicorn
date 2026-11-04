@@ -11,10 +11,10 @@ use Windwalker\Utilities\Str;
 /**
  * The ImageHelper class.
  *
- * @method string placeholderSquare()
- * @method string placeholder4x3()
- * @method string placeholder16x10()
- * @method string placeholder16x9()
+ * @method  string  placeholderSquare()
+ * @method  string  placeholder4x3()
+ * @method  string  placeholder16x10()
+ * @method  string  placeholder16x9()
  */
 class ImagePlaceholder
 {
@@ -23,9 +23,7 @@ class ImagePlaceholder
     /**
      * ImageService constructor.
      */
-    public function __construct(protected AssetService $asset)
-    {
-    }
+    public function __construct(protected AssetService $asset) {}
 
     public function setImage(string $ratio, ?string $uri): void
     {
@@ -52,7 +50,7 @@ class ImagePlaceholder
 
     public function avatar(): string
     {
-        return $this->asset->handleUri("@unicorn/../images/placeholder/avatar.png", 'root');
+        return $this->asset->handleUri('@unicorn/../images/placeholder/avatar.png', 'root');
     }
 
     public function ajaxLoader(): string
@@ -87,7 +85,7 @@ class ImagePlaceholder
     }
 
     /**
-     * @return array
+     * @return  array
      */
     public function getImageMap(): array
     {

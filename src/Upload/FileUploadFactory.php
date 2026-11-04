@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Unicorn\Upload;
 
-use Unicorn\Upload\FileUploadService;
 use Windwalker\Core\DI\ServiceFactoryInterface;
 use Windwalker\Core\DI\ServiceFactoryTrait;
 use Windwalker\DI\Attributes\Isolation;
@@ -25,8 +24,8 @@ class FileUploadFactory implements ServiceFactoryInterface
      * @param  mixed        ...$args
      *
      * @return  FileUploadService
-     * @throws \ReflectionException
-     * @throws DefinitionResolveException
+     * @throws  \ReflectionException
+     * @throws  DefinitionResolveException
      */
     public function create(?string $name = null, ...$args): object
     {

@@ -25,7 +25,7 @@ class ExcelImporter
     /**
      * Property spreadsheet.
      *
-     * @var Spreadsheet
+     * @var  Spreadsheet
      */
     protected $spreadsheet;
 
@@ -49,7 +49,7 @@ class ExcelImporter
      * @param  string|StreamInterface|\SplFileInfo|null  $file
      * @param  string|null                               $format
      *
-     * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
+     * @throws  \PhpOffice\PhpSpreadsheet\Reader\Exception
      */
     public function __construct(mixed $file = null, ?string $format = null)
     {
@@ -72,7 +72,7 @@ class ExcelImporter
      *
      * @return  ExcelImporter
      *
-     * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
+     * @throws  \PhpOffice\PhpSpreadsheet\Reader\Exception
      * @since  1.5.13
      */
     public function loadFile(string|\SplFileInfo $file, ?string $format = null): self
@@ -96,7 +96,7 @@ class ExcelImporter
      *
      * @return  \Generator
      *
-     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws  \PhpOffice\PhpSpreadsheet\Exception
      * @since  1.5.13
      */
     public function getRowIterator(bool $asValue = false, mixed $sheet = null): \Generator
@@ -120,7 +120,7 @@ class ExcelImporter
      *
      * @return  \Generator
      *
-     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws  \PhpOffice\PhpSpreadsheet\Exception
      *
      * @since  1.5.14
      */
@@ -166,7 +166,7 @@ class ExcelImporter
      *
      * @return  array
      *
-     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws  \PhpOffice\PhpSpreadsheet\Exception
      *
      * @since  1.5.13
      */
@@ -198,7 +198,7 @@ class ExcelImporter
      *
      * @return  \Generator|null
      *
-     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws  \PhpOffice\PhpSpreadsheet\Exception
      * @since  1.5.13
      */
     protected function iterateSheetRows(Worksheet $sheet, bool $asValue = false): ?\Generator
@@ -255,7 +255,7 @@ class ExcelImporter
      *
      * @return  \Generator|null
      *
-     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws  \PhpOffice\PhpSpreadsheet\Exception
      *
      * @since  1.5.14
      */
@@ -314,7 +314,7 @@ class ExcelImporter
      *
      * @return  void
      *
-     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws  \PhpOffice\PhpSpreadsheet\Exception
      *
      * @since  1.5.13
      */
@@ -353,7 +353,7 @@ class ExcelImporter
      *
      * @return  ExcelImporter
      *
-     * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
+     * @throws  \PhpOffice\PhpSpreadsheet\Reader\Exception
      *
      * @since  1.5.13
      */
@@ -365,7 +365,7 @@ class ExcelImporter
 
         $this->loadFile($temp, $format);
 
-        register_shutdown_function(fn () => $temp->delete());
+        register_shutdown_function(fn() => $temp->delete());
 
         return $this;
     }
@@ -377,7 +377,7 @@ class ExcelImporter
      *
      * @return  IReader
      *
-     * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
+     * @throws  \PhpOffice\PhpSpreadsheet\Reader\Exception
      *
      * @since  1.5.13
      */
@@ -448,10 +448,10 @@ class ExcelImporter
     /**
      * Retrieve an external iterator
      * @link  https://php.net/manual/en/iteratoraggregate.getiterator.php
-     * @return Traversable An instance of an object implementing <b>Iterator</b> or
-     * <b>Traversable</b>
+     * @return  Traversable  An instance of an object implementing <b>Iterator</b> or
+     *                       <b>Traversable</b>
      * @since 5.0.0
-     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws  \PhpOffice\PhpSpreadsheet\Exception
      */
     public function getIterator(): Traversable
     {

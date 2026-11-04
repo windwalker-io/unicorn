@@ -27,7 +27,7 @@ class PsrStreamGdDecoder extends BinaryImageDecoder
     {
         $driverId = function (object $object): string|bool {
             $id = substr($object::class, 27);
-            return strstr($id, "\\", true);
+            return strstr($id, '\\', true);
         };
 
         return strtolower($driverId($object)) === 'gd';

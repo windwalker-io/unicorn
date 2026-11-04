@@ -9,7 +9,7 @@ use Windwalker\Core\Migration\Migration;
 /**
  * Migration UP: 20210327092645_UnicornInit.
  *
- * @var Migration $mig
+ * @var  Migration  $mig
  */
 $mig->up(
     static function () use ($mig) {

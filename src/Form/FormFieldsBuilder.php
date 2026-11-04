@@ -43,9 +43,7 @@ class FormFieldsBuilder extends AbstractAstBuilder implements EventAwareInterfac
     /**
      * FormFieldsBuilder constructor.
      */
-    public function __construct(protected string $className, protected TableManager $table)
-    {
-    }
+    public function __construct(protected string $className, protected TableManager $table) {}
 
     /**
      * @param  Node\Stmt\ClassMethod  $node
@@ -317,11 +315,11 @@ PHP;
 
     protected function createParser(): \PhpParser\Parser
     {
-        return (new ParserFactory())->create(ParserFactory::PREFER_PHP7);
+        return new ParserFactory()->create(ParserFactory::PREFER_PHP7);
     }
 
     /**
-     * @return string
+     * @return  string
      */
     public function getClassName(): string
     {

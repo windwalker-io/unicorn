@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Unicorn\Storage\Adapter;
 
 use Aws\Result as AwsResult;
-use GuzzleHttp\Psr7\MimeType;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
@@ -28,9 +27,7 @@ class S3Storage implements StorageInterface
     /**
      * S3Storage constructor.
      */
-    public function __construct(protected S3Service $s3, protected MimeTypesInterface $mimeTypes)
-    {
-    }
+    public function __construct(protected S3Service $s3, protected MimeTypesInterface $mimeTypes) {}
 
     public function put(string $data, string $path, array $options = []): PutResult
     {
@@ -64,7 +61,7 @@ class S3Storage implements StorageInterface
     {
         return new PutResult(
             uri: new Uri($result->get('ObjectURL')),
-            responseCallback: fn () => $this->createResponseFromResult($result),
+            responseCallback: fn() => $this->createResponseFromResult($result),
             path: $path,
             rawResult: $result,
             fileSize: $size
@@ -109,7 +106,7 @@ class S3Storage implements StorageInterface
         $result = $this->s3->deleteFile($path, $options);
 
         return new Result(
-            fn () => $this->createResponseFromResult($result),
+            fn() => $this->createResponseFromResult($result),
             $result
         );
     }
@@ -124,7 +121,7 @@ class S3Storage implements StorageInterface
         $result = $this->s3->getFileInfo($path, $options);
 
         return new GetResult(
-            responseCallback: fn () => $this->createResponseFromResult($result),
+            responseCallback: fn() => $this->createResponseFromResult($result),
             path: $path,
             uri: $this->getUri($path),
             fileSize: $result->get('ContentLength'),
@@ -170,7 +167,7 @@ class S3Storage implements StorageInterface
     }
 
     /**
-     * @return S3Service
+     * @return  S3Service
      */
     public function getS3Service(): S3Service
     {

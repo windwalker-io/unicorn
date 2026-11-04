@@ -40,7 +40,7 @@ class StateListField extends ListField
     }
 
     /**
-     * @return AbstractWorkflow|null
+     * @return  AbstractWorkflow|null
      */
     public function getWorkflow(): ?AbstractWorkflow
     {

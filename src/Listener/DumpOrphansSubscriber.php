@@ -13,8 +13,6 @@ use Windwalker\Data\Format\FormatRegistry;
 use Windwalker\Event\Attributes\EventSubscriber;
 use Windwalker\Event\Attributes\ListenTo;
 use Windwalker\Filesystem\Filesystem;
-use Windwalker\Language\Language;
-use Windwalker\Utilities\Contract\LanguageInterface;
 
 /**
  * The DumpOrphansListener class.
@@ -25,8 +23,7 @@ class DumpOrphansSubscriber
     public function __construct(
         protected LangService $lang,
         protected string $format = 'ini',
-    ) {
-    }
+    ) {}
 
     #[ListenTo(AfterRequestEvent::class)]
     public function afterRequest(AfterRequestEvent $event): void
@@ -87,7 +84,7 @@ class DumpOrphansSubscriber
             case 'yaml':
             case 'yml':
                 $options['inline'] = 99;
-            // No break
+                // no break
             default:
                 $orphans = $this->getAutoHandledOrphans(false);
                 $returns = $orphans;

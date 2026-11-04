@@ -8,7 +8,6 @@ use Aws\S3\PostObjectV4;
 use Unicorn\Aws\S3Service;
 use Unicorn\Storage\Adapter\S3Storage;
 use Unicorn\Storage\StorageInterface;
-use Unicorn\Storage\StorageManager;
 use Windwalker\Core\Asset\AbstractScript;
 use Windwalker\DI\Container;
 use Windwalker\DI\Exception\DefinitionNotFoundException;
@@ -25,8 +24,7 @@ class AwsScript extends AbstractScript
     public function __construct(
         protected UnicornScript $unicornScript,
         protected Container $container
-    ) {
-    }
+    ) {}
 
     /**
      * @param  string  $name
@@ -39,8 +37,8 @@ class AwsScript extends AbstractScript
      *
      * @return  void
      *
-     * @throws DefinitionNotFoundException
-     * @throws DependencyResolutionException
+     * @throws  DefinitionNotFoundException
+     * @throws  DependencyResolutionException
      */
     public function s3BrowserUploader(
         string $name,

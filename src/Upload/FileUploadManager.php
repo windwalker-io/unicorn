@@ -9,7 +9,7 @@ use Windwalker\DI\Attributes\Isolation;
 /**
  * The FileUploadManager class.
  *
- * @method FileUploadService get(?string $name = null, ...$args)
+ * @method  FileUploadService  get(?string $name = null, ...$args)
  *
  * @deprecated  Use container tags instead.
  */

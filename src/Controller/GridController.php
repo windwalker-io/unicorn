@@ -161,7 +161,7 @@ class GridController implements EventAwareInterface
     }
 
     /**
-     * @return bool
+     * @return  bool
      */
     public function isMuted(): bool
     {

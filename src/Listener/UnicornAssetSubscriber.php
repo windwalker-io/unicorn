@@ -6,13 +6,10 @@ namespace Unicorn\Listener;
 
 use Unicorn\Script\UnicornScript;
 use Windwalker\Core\Application\AppContext;
-use Windwalker\Core\Application\ApplicationInterface;
-use Windwalker\Core\Asset\AssetItem;
 use Windwalker\Core\Asset\AssetLink;
 use Windwalker\Core\Asset\Event\AssetBeforeRender;
 use Windwalker\Event\Attributes\EventSubscriber;
 use Windwalker\Event\Attributes\ListenTo;
-
 use Windwalker\Utilities\Str;
 
 use function Windwalker\collect;
@@ -26,9 +23,7 @@ class UnicornAssetSubscriber
     /**
      * UnicornAssetListener constructor.
      */
-    public function __construct(protected AppContext $app)
-    {
-    }
+    public function __construct(protected AppContext $app) {}
 
     #[ListenTo(AssetBeforeRender::class)]
     public function beforeRender(AssetBeforeRender $event): void
@@ -45,7 +40,7 @@ class UnicornAssetSubscriber
      *
      * @return  void
      *
-     * @throws \Windwalker\DI\Exception\DefinitionException
+     * @throws  \Windwalker\DI\Exception\DefinitionException
      */
     protected function handleJS(AssetBeforeRender $event): void
     {
@@ -74,12 +69,12 @@ class UnicornAssetSubscriber
             $codes = collect($script->initialise)
                 ->map('rtrim')
                 ->filter('strlen')
-                ->map(fn (string $s) => Str::ensureRight($s, ';'));
+                ->map(fn(string $s) => Str::ensureRight($s, ';'));
 
             if (!$script->next) {
                 $codes[] = "u.trigger('ready');";
             } else {
-                $codes->unshift("const { u } = module;");
+                $codes->unshift('const { u } = module;');
             }
 
             $script->importThen(

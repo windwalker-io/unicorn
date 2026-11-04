@@ -53,7 +53,7 @@ class CrudController implements EventAwareInterface
         CrudRepositoryInterface $repository,
         mixed $form,
         array $formArgs = [],
-        iterable|null $data = null,
+        ?iterable $data = null,
         int $options = 0
     ): RouteUri {
         try {
@@ -93,7 +93,7 @@ class CrudController implements EventAwareInterface
         mixed $form,
         array $formArgs = [],
         ?string $namespace = 'item',
-        iterable|null $data = null,
+        ?iterable $data = null,
         int $options = 0
     ): RouteUri {
         try {
@@ -169,7 +169,7 @@ class CrudController implements EventAwareInterface
 
         if (!$this->isMuted()) {
             $app->addMessage(
-                $this->lang->trans("batch.delete.success", count($ids)),
+                $this->lang->trans('batch.delete.success', count($ids)),
                 'success'
             );
         }
@@ -213,7 +213,7 @@ class CrudController implements EventAwareInterface
     }
 
     /**
-     * @return string|null
+     * @return  string|null
      */
     public function getFormNamespace(): ?string
     {
@@ -233,7 +233,7 @@ class CrudController implements EventAwareInterface
     }
 
     /**
-     * @return bool
+     * @return  bool
      */
     public function isMuted(): bool
     {

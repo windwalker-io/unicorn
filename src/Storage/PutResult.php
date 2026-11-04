@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Unicorn\Storage;
 
 use Psr\Http\Message\UriInterface;
-
 use Windwalker\Filesystem\Path;
 
 use function Windwalker\uid;
@@ -39,8 +38,8 @@ class PutResult extends Result implements \Stringable
     /**
      * @param  string|bool  $suffix
      *
-     * @return UriInterface
-     * @throws \Exception
+     * @return  UriInterface
+     * @throws  \Exception
      */
     public function getUri(string|bool $suffix = false): UriInterface
     {

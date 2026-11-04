@@ -15,7 +15,7 @@ class ReorderAction extends AbstractDatabaseAction
     protected string $orderField = 'ordering';
 
     /**
-     * @var \Closure|array
+     * @var  \Closure|array
      */
     protected \Closure|array|null $reorderGroupHandler = null;
 
@@ -158,7 +158,7 @@ class ReorderAction extends AbstractDatabaseAction
     }
 
     /**
-     * @return string
+     * @return  string
      */
     public function getOrderField(): string
     {
@@ -213,7 +213,7 @@ class ReorderAction extends AbstractDatabaseAction
     }
 
     /**
-     * @return \Closure|array
+     * @return  \Closure|array
      */
     public function getReorderGroupHandler(): \Closure|array|null
     {

@@ -86,7 +86,7 @@ class FlatListField extends SqlListField
     }
 
     /**
-     * @return \Closure|null
+     * @return  \Closure|null
      */
     public function getTreeBuilder(): ?\Closure
     {
@@ -124,7 +124,7 @@ class FlatListField extends SqlListField
     }
 
     /**
-     * @return ?string
+     * @return  ?string
      */
     public function getInputType(): ?string
     {

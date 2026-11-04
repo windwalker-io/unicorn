@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace Unicorn\Listener;
 
-use Windwalker\Core\Application\AppContext;
-use Windwalker\Core\Events\Web\BeforeControllerDispatchEvent;
-use Windwalker\Core\Events\Web\BeforeRequestEvent;
-use Windwalker\Core\Http\AppRequest;
 use Windwalker\Core\Http\Event\RequestGetValueEvent;
 use Windwalker\DI\Container;
 use Windwalker\Event\Attributes\EventSubscriber;
@@ -20,9 +16,7 @@ use Windwalker\Utilities\Arr;
 #[EventSubscriber]
 class EmptyArrayFieldSubscriber
 {
-    public function __construct(protected Container $container, protected string $emptyValue = '__EMPTY_ARRAY__')
-    {
-    }
+    public function __construct(protected Container $container, protected string $emptyValue = '__EMPTY_ARRAY__') {}
 
     #[ListenTo(RequestGetValueEvent::class)]
     public function requestGetValue(RequestGetValueEvent $event): void

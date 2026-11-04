@@ -89,7 +89,7 @@ trait FormAwareActionTrait
 
             if ($resultSet->isFailure()) {
                 $messages = collect($resultSet->getResults())
-                    ->filter(fn (ValidateResult $result) => $result->isFailure())
+                    ->filter(fn(ValidateResult $result) => $result->isFailure())
                     ->map(function (ValidateResult $result) {
                         $field = $result->getField();
                         $name = $field->getName();

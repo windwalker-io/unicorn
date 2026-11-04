@@ -16,12 +16,12 @@ use Windwalker\Utilities\Str;
 /**
  * The DragFileField class.
  *
- * @method $this maxFiles(int $value)
- * @method mixed getMaxFiles()
- * @method $this maxSize(int $value)
- * @method mixed getMaxSize()
- * @method $this height(int $value)
- * @method mixed getHeight()
+ * @method  $this  maxFiles(int $value)
+ * @method  mixed  getMaxFiles()
+ * @method  $this  maxSize(int $value)
+ * @method  mixed  getMaxSize()
+ * @method  $this  height(int $value)
+ * @method  mixed  getHeight()
  */
 class FileDragField extends FileField
 {

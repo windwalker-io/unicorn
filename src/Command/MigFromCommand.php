@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Unicorn\Command;
 
-use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpParser\BuilderFactory;
 use PhpParser\Node;
@@ -41,8 +40,7 @@ class MigFromCommand implements CommandInterface
     public function __construct(
         protected ConsoleApplication $app,
         protected MigrationService $migrationService
-    ) {
-    }
+    ) {}
 
     /**
      * configure
@@ -84,7 +82,7 @@ class MigFromCommand implements CommandInterface
      *
      * @param  IOInterface  $io
      *
-     * @return  int Return 0 is success, 1-255 is failure.
+     * @return  int  Return 0 is success, 1-255 is failure.
      */
     public function execute(IOInterface $io): int
     {
@@ -455,11 +453,11 @@ PHP;
         }
 
         if ($method === 'json' || strtolower(trim($null)) === 'allow') {
-            $col .= "->nullable(true)";
+            $col .= '->nullable(true)';
         }
 
         if (strtolower(trim($signed)) === 'unsigned') {
-            $col .= "->unsigned(true)";
+            $col .= '->unsigned(true)';
         }
 
         if ((string) $default !== '') {

@@ -11,9 +11,7 @@ use Windwalker\Core\Asset\AbstractScript;
  */
 class ModernScript extends AbstractScript
 {
-    public function __construct(protected UnicornScript $unicornScript)
-    {
-    }
+    public function __construct(protected UnicornScript $unicornScript) {}
 
     public function ie(): static
     {

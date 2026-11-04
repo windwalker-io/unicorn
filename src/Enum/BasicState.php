@@ -6,15 +6,14 @@ namespace Unicorn\Enum;
 
 use Windwalker\Utilities\Contract\LanguageInterface;
 use Windwalker\Utilities\Enum\EnumBCTrait;
-use Windwalker\Utilities\Enum\EnumSingleton;
 use Windwalker\Utilities\Enum\EnumTranslatableInterface;
 use Windwalker\Utilities\Enum\EnumTranslatableTrait;
 
 /**
  * The State class.
  *
- * @method static static UNPUBLISHED()
- * @method static static PUBLISHED()
+ * @method  static  static  UNPUBLISHED()
+ * @method  static  static  PUBLISHED()
  */
 enum BasicState: int implements EnumTranslatableInterface
 {

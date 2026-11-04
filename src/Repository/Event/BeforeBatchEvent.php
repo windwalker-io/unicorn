@@ -8,6 +8,4 @@ namespace Unicorn\Repository\Event;
  * The BeforeBatchEvent class.
  */
 #[\Attribute]
-class BeforeBatchEvent extends AbstractBatchEvent
-{
-}
+class BeforeBatchEvent extends AbstractBatchEvent {}

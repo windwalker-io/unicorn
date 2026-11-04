@@ -114,7 +114,7 @@ class VueComponentField extends AbstractField
     }
 
     /**
-     * @return string
+     * @return  string
      */
     public function getComponentName(): string
     {
@@ -155,7 +155,7 @@ class VueComponentField extends AbstractField
     }
 
     /**
-     * @return string|null
+     * @return  string|null
      */
     public function getInitFunction(): ?string
     {
@@ -175,7 +175,7 @@ class VueComponentField extends AbstractField
     }
 
     /**
-     * @return bool
+     * @return  bool
      */
     public function isJson(): bool
     {
@@ -195,7 +195,7 @@ class VueComponentField extends AbstractField
     }
 
     /**
-     * @return \Closure|null
+     * @return  \Closure|null
      */
     public function getSlots(): ?\Closure
     {
