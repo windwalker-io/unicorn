@@ -21,9 +21,9 @@
     },
     "require-dev": {
         "windwalker/framework": "4.x-dev",
-        "aws/aws-sdk-php": "^3.181",
-        "league/flysystem": "^2.0||^3.0",
-        "league/flysystem-aws-s3-v3": "^2.0||^3.0",
+        "aws/aws-sdk-php": "^3.402",
+        "league/flysystem": "^3.36",
+        "league/flysystem-aws-s3-v3": "^3.35",
         "phpunit/phpunit": "^13.4",
         "friendsofphp/php-cs-fixer": "^3.95"
     },
@@ -37,8 +37,7 @@
     "suggest": {
         "league/flysystem": "Install ^2.0 to support flysystem storage",
         "league/flysystem-aws-s3-v3": "^2.0",
-        "aws/aws-sdk-php": "^3.181",
-        "myclabs/php-enum": "Install ^1.0 to support enum class."
+        "aws/aws-sdk-php": "^3.181"
     },
     "archive": {
         "exclude": [

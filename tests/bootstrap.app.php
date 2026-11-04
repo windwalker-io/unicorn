@@ -21,6 +21,8 @@ $container = $init(
     workDir: $root,
 );
 
+$container->options->lazy = true;
+
 \Unicorn\Tests\TestApp::createInstance(
     container: $container,
     config: [
