@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Unicorn\Tests\Image;
 
 use GuzzleHttp\Psr7\Utils;
+use Intervention\Image\Drivers\Gd\Driver as GdDriver;
 use Intervention\Image\Exceptions\DecoderException;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Interfaces\ImageInterface;
@@ -27,7 +28,7 @@ class PsrStreamGdDecoderTest extends TestCase
         imagepng($gd);
         $binary = (string) ob_get_clean();
 
-        $image = ImageManager::gd()->read(Utils::streamFor($binary), PsrStreamGdDecoder::class);
+        $image = ImageManager::usingDriver(GdDriver::class)->decode(Utils::streamFor($binary), PsrStreamGdDecoder::class);
 
         self::assertInstanceOf(ImageInterface::class, $image);
         self::assertSame(5, $image->width());
@@ -40,6 +41,6 @@ class PsrStreamGdDecoderTest extends TestCase
     {
         $this->expectException(DecoderException::class);
 
-        ImageManager::gd()->read('not-a-stream', PsrStreamGdDecoder::class);
+        ImageManager::usingDriver(GdDriver::class)->decode('not-a-stream', PsrStreamGdDecoder::class);
     }
 }

@@ -9,7 +9,9 @@ use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\TestDox;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Mime\MimeTypes;
-use Unicorn\Image\InterventionImage;
+use Intervention\Image\Drivers\Gd\Driver as GdDriver;
+use Intervention\Image\ImageManager;
+use Unicorn\Image\Decoder\PsrStreamGdDecoder;
 use Unicorn\Upload\FileUploadService;
 use Unicorn\Upload\ResizeConfig;
 use Windwalker\DI\Container;
@@ -41,7 +43,7 @@ class FileUploadServiceResizeTest extends TestCase
 
     private function readSize(\Psr\Http\Message\StreamInterface $stream): array
     {
-        $image = InterventionImage::read($stream);
+        $image = ImageManager::usingDriver(GdDriver::class)->decode($stream, PsrStreamGdDecoder::class);
 
         return [$image->width(), $image->height()];
     }

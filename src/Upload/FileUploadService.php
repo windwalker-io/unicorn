@@ -4,16 +4,18 @@ declare(strict_types=1);
 
 namespace Unicorn\Upload;
 
-use Intervention\Image\Constraint;
-use Intervention\Image\Exception\NotReadableException;
+use Intervention\Image\Drivers\Gd\Driver as GdDriver;
+use Intervention\Image\Drivers\Imagick\Driver as ImagickDriver;
 use Intervention\Image\FileExtension;
+use Intervention\Image\ImageManager;
 use Intervention\Image\Interfaces\ImageInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use Spatie\ImageOptimizer\OptimizerChainFactory;
 use Symfony\Component\Mime\MimeTypesInterface;
 use Unicorn\Flysystem\Base64DataUri;
-use Unicorn\Image\InterventionImage;
+use Unicorn\Image\Decoder\PsrStreamGdDecoder;
+use Unicorn\Image\Decoder\PsrStreamImagickDecoder;
 use Unicorn\Storage\PutResult;
 use Unicorn\Storage\StorageInterface;
 use Unicorn\Upload\Event\FileUploadedEvent;
@@ -354,11 +356,7 @@ class FileUploadService implements EventAwareInterface
 
         $resizeConfig = $this->options->resize->withMerge($resizeConfig, true, true);
 
-        $interventionVersion = $this->getInterventionVersion();
-
-        return $interventionVersion === 2
-            ? $this->resizeByIntervension2($src, $resizeConfig, $outputFormat)
-            : $this->resizeByIntervension3($src, $resizeConfig, $outputFormat);
+        return $this->resizeWithIntervention($src, $resizeConfig, $outputFormat);
     }
 
     /**
@@ -426,22 +424,31 @@ class FileUploadService implements EventAwareInterface
     }
 
     /**
-     * Overridable seam for the Intervention major version, so both branches can be tested with mocks.
-     */
-    protected function getInterventionVersion(): int
-    {
-        return InterventionImage::version();
-    }
-
-    /**
      * Overridable seam for reading an image through Intervention.
      */
-    protected function readImage(mixed $src, string $driver): object
+    protected function readImage(mixed $src, string $driver): ImageInterface
     {
-        return InterventionImage::read($src, $driver);
+        $driverClass = match ($driver) {
+            'gd' => GdDriver::class,
+            'imagick' => ImagickDriver::class,
+            default => $driver
+        };
+
+        $manager = new ImageManager($driverClass);
+
+        if ($src instanceof StreamInterface) {
+            return $manager->decode(
+                $src,
+                $manager->driver->id() === 'GD'
+                    ? PsrStreamGdDecoder::class
+                    : PsrStreamImagickDecoder::class
+            );
+        }
+
+        return $manager->decode($src);
     }
 
-    protected function resizeByIntervension3(
+    protected function resizeWithIntervention(
         StreamInterface|\SplFileInfo|string|UploadedFileInterface $src,
         array|ResizeConfig $resizeConfig,
         ?string $outputFormat
@@ -486,6 +493,9 @@ class FileUploadService implements EventAwareInterface
         return Stream::wrap($res);
     }
 
+    /**
+     * @return  resource
+     */
     protected function encodeImageByExtension(
         ImageInterface $image,
         mixed $format,
@@ -498,65 +508,12 @@ class FileUploadService implements EventAwareInterface
         $extension = FileExtension::from($format);
 
         if ($extension === FileExtension::PNG) {
-            $encoded = $image->encodeByExtension($format);
+            $encoded = $image->encodeUsingFileExtension($format);
         } else {
-            $encoded = $image->encodeByExtension($format, quality: $quality);
+            $encoded = $image->encodeUsingFileExtension($format, quality: $quality);
         }
 
-        return $encoded->toFilePointer();
-    }
-
-    /**
-     * @deprecated
-     */
-    protected function resizeByIntervension2(
-        StreamInterface|\SplFileInfo|string|UploadedFileInterface $src,
-        array|ResizeConfig $resizeConfig,
-        ?string $outputFormat
-    ): StreamInterface {
-        $resizeConfig = ResizeConfig::wrapWith($resizeConfig, true, true);
-
-        $image = $this->readImage($src, $driver = $resizeConfig->driver);
-
-        if ($resizeConfig->orientate) {
-            try {
-                $image->orientate();
-            } catch (NotReadableException $e) {
-                // No actions
-            }
-        }
-
-        if ($driver === static::DRIVER_IMAGICK && $resizeConfig->stripExif) {
-            $image->getCore()->stripImage();
-        }
-
-        $width = $resizeConfig->width;
-        $height = $resizeConfig->height;
-
-        if (!$resizeConfig->enabled) {
-            return $image->stream(
-                $resizeConfig->outputFormat ?? $outputFormat,
-                TypeCast::safeInteger($resizeConfig->quality)
-            );
-        }
-
-        if (!$width || $image->width() >= $width || !$height || $image->height() >= $height) {
-            if ($resizeConfig->crop) {
-                $image->fit($width, $height, function (Constraint $constraint) {
-                    // $constraint->upsize();
-                });
-            } elseif ($width || $height) {
-                $image->resize($width, $height, function (Constraint $constraint) {
-                    $constraint->aspectRatio();
-                    $constraint->upsize();
-                });
-            }
-        }
-
-        return $image->stream(
-            $resizeConfig->outputFormat ?? $outputFormat,
-            TypeCast::safeInteger($resizeConfig->quality)
-        );
+        return $encoded->toStream();
     }
 
     protected function getMergeOptions(FileUploadOptions|array $options): FileUploadOptions

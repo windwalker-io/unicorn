@@ -7,6 +7,7 @@ namespace Unicorn\Tests\Upload;
 use GuzzleHttp\Psr7\Uri;
 use GuzzleHttp\Psr7\UploadedFile;
 use GuzzleHttp\Psr7\Utils;
+use Intervention\Image\Drivers\Gd\Driver as GdDriver;
 use Intervention\Image\ImageManager;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\TestDox;
@@ -141,7 +142,7 @@ class FileUploadServiceHandleFileTest extends TestCase
 
         $service->handleFile($this->pngPath, 'uploads/a.png');
 
-        $image = ImageManager::gd()->read($this->bytesOf($this->puts[0]['stream']));
+        $image = ImageManager::usingDriver(GdDriver::class)->decode($this->bytesOf($this->puts[0]['stream']));
         self::assertSame(8, $image->width());
         self::assertSame('uploads/a.png', $this->puts[0]['path']);
     }

@@ -6,13 +6,12 @@ namespace Unicorn\Image\Decoder;
 
 use Intervention\Image\Drivers\Gd\Decoders\BinaryImageDecoder;
 use Intervention\Image\Exceptions\DecoderException;
-use Intervention\Image\Interfaces\ColorInterface;
 use Intervention\Image\Interfaces\ImageInterface;
 use Psr\Http\Message\StreamInterface;
 
 class PsrStreamGdDecoder extends BinaryImageDecoder
 {
-    public function decode(mixed $input): ImageInterface|ColorInterface
+    public function decode(mixed $input): ImageInterface
     {
         if (!$input instanceof StreamInterface) {
             throw new DecoderException('Unable to decode input');
