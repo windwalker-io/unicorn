@@ -3,12 +3,11 @@
 declare(strict_types=1);
 
 use Unicorn\Field\SwitcherField;
-use Unicorn\Script\UnicornScript;
 use Windwalker\Core\Application\AppContext;
 
 /**
- * @var SwitcherField $field
- * @var AppContext $app
+ * @var  SwitcherField  $field
+ * @var  AppContext     $app
  */
 
 $app->service(\Unicorn\Script\FormScript::class)->switcher();

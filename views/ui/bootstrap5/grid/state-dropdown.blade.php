@@ -29,15 +29,15 @@ use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\SystemUri;
 
 /**
- * @var StateButton        $state
- * @var string             $value
- * @var StateButton|array  $stateButton
- * @var AbstractWorkflow   $workflow
- * @var AbstractWorkflow[] $workflows
- * @var WorkflowController $workflowCtrl
- * @var Transition         $transition
- * @var \Closure           $prepareWorkflow
- * @var ?StateOption       $currentState
+ * @var  StateButton         $state
+ * @var  string              $value
+ * @var  StateButton|array   $stateButton
+ * @var  AbstractWorkflow    $workflow
+ * @var  AbstractWorkflow[]  $workflows
+ * @var  WorkflowController  $workflowCtrl
+ * @var  Transition          $transition
+ * @var  \Closure            $prepareWorkflow
+ * @var  ?StateOption        $currentState
  */
 
 ?>
@@ -45,8 +45,8 @@ use Windwalker\Core\Router\SystemUri;
 @if ($readonly)
     <?php
     $data = $prepareWorkflow($workflow);
-    extract($data, EXTR_OVERWRITE);
-    ?>
+extract($data, EXTR_OVERWRITE);
+?>
     @php($attributes = $attributes->class("d-inline-block $textColor text-nowrap"))
     <div {!! $attributes !!}>
         <i class="{{ $currentState?->getIcon() ?? 'fa fa-question-circle' }} fa-fw"></i>
@@ -90,10 +90,10 @@ use Windwalker\Core\Router\SystemUri;
             @php($k = 1)
             @foreach ($workflows as $name => $workflow)
                 <?php
-                $data = $prepareWorkflow($workflow);
+            $data = $prepareWorkflow($workflow);
 
-                extract($data);
-                ?>
+extract($data);
+?>
 
                 @if (!is_numeric($name))
                     <li><h6 class="dropdown-header">{{ $name }}</h6></li>

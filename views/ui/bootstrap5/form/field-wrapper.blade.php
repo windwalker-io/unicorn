@@ -28,9 +28,9 @@ use Windwalker\Form\Field\AbstractField;
 use Windwalker\Utilities\Str;
 
 /**
- * @var AbstractField                                  $field
- * @var \Windwalker\DOM\HTMLElement                    $wrapper
- * @var \Windwalker\Edge\Component\ComponentAttributes $attributes
+ * @var  AbstractField                                   $field
+ * @var  \Windwalker\DOM\HTMLElement                     $wrapper
+ * @var  \Windwalker\Edge\Component\ComponentAttributes  $attributes
  */
 
 BootstrapFormRenderer::handleFieldConfiguration($field);

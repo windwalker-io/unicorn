@@ -14,6 +14,17 @@
 
 declare(strict_types=1);
 
+use Unicorn\UnicornPackage;
+use Windwalker\Core\Edge\Component\XComponent;
+use Windwalker\Core\Theme\BootstrapTheme;
+use Windwalker\Core\Theme\ThemeInterface;
+use Windwalker\Edge\Provider\EdgeProvider;
+use Windwalker\Renderer\EdgeRenderer;
+use Windwalker\Renderer\MustacheRenderer;
+use Windwalker\Renderer\PlatesRenderer;
+use Windwalker\Renderer\Provider\RendererProvider;
+use Windwalker\Renderer\TwigRenderer;
+
 $init = include __DIR__ . '/../../core/src/Core/Testing/test.init.php';
 
 $container = $init(
@@ -28,65 +39,70 @@ $container->options->lazy = true;
     config: [
         '@root' => $root,
         '@temp' => $root . '/tmp',
+        '@cache' => $root . '/cache',
         '@public' => $root . '/tests/public',
         '@migrations' => $root . '/tests/resources/migrations',
         '@seeders' => $root . '/tests/resources/seeders',
-    ]
+    ],
 );
 
 /*
- * `www/index.php` defines a handful of constants via `etc/define.php` and
- * registers every `@alias` path via `etc/runtime.config.php` before
- * anything else boots, then `etc/app/main.config.php` merges in the host
- * app's own `etc/config.php` (package providers, `renderer.aliases`, view
- * paths, etc.). This test bootstrap intentionally stays minimal and skips
- * all of that - most app-backed tests don't need it - but anything that
- * renders a real view (Edge components, layouts) does, so load just the
- * `renderer`/`unicorn` config modules here, once, for every app-backed
- * test to share. We deliberately do NOT load the rest of `etc/config.php`
- * (auth, mail, routing, etc.): registering those providers here would
- * change behavior for every existing app-backed test, not just rendering
- * ones.
+ * Minimal `renderer` / `unicorn` config, inlined so the test process depends
+ * on neither the host's `etc/config.php` nor `etc/runtime.config.php` (and
+ * therefore on no `WINDWALKER_*` constants). Only what rendering needs is
+ * registered; auth, mail, routing, etc. are deliberately left out.
  */
-foreach (
-    [
-        'WINDWALKER_BIN' => $root . '/bin',
-        'WINDWALKER_ETC' => $root . '/etc',
-        'WINDWALKER_LOGS' => $root . '/logs',
-        'WINDWALKER_ROUTES' => $root . '/routes',
-        'WINDWALKER_RESOURCES' => $root . '/resources',
-        'WINDWALKER_SOURCE' => $root . '/src',
-        'WINDWALKER_VIEWS' => $root . '/views',
-        'WINDWALKER_VENDOR' => $root . '/vendor',
-        'WINDWALKER_PUBLIC' => $root . '/www',
-        'WINDWALKER_SERVERS' => $root . '/servers',
-        'WINDWALKER_MIGRATIONS' => $root . '/resources/migrations',
-        'WINDWALKER_SEEDERS' => $root . '/resources/seeders',
-        'WINDWALKER_LANGUAGES' => $root . '/resources/languages',
-        'WINDWALKER_DEBUG' => false,
-        'WINDWALKER_CACHE' => $root . '/cache',
-        'WINDWALKER_TEMP' => $root . '/tmp',
-    ] as $name => $value
-) {
-    if (!defined($name)) {
-        define($name, $value);
-    }
-}
+$container->loadParameters([
+    'app' => [
+        'debug' => false,
+    ],
+    'renderer' => [
+        'renderers' => [
+            'edge' => [EdgeRenderer::class, ['edge.php', 'blade.php']],
+            'plates' => [PlatesRenderer::class, ['php']],
+            'mustache' => [MustacheRenderer::class, ['mustache']],
+            'twig' => [TwigRenderer::class, ['twig']],
+        ],
+        'options' => [
+            'cache_path' => $root . '/cache/renderer',
+        ],
+        'pagination' => [
+            'template' => '@pagination',
+            'neighbours' => 4,
+        ],
+        'aliases' => [
+            '@pagination' => 'layout.pagination.basic-pagination',
+            '@messages' => 'layout.messages.bs5-messages',
+            '@csrf' => 'layout.security.csrf',
+        ],
+        'edge' => [
+            'components' => [
+                'component' => XComponent::class,
+                'template' => XComponent::class,
+            ],
+        ],
+    ],
+    'unicorn' => [
+        'modules' => ['next' => true],
+    ],
+]);
 
-$container->loadParameters(
-    array_filter(
-        require $root . '/etc/runtime.config.php',
-        static fn(string $key) => str_starts_with($key, '@'),
-        ARRAY_FILTER_USE_KEY,
-    )
+$container->registerByConfig(
+    [
+        'providers' => [
+            RendererProvider::class,
+            EdgeProvider::class,
+        ],
+        'bindings' => [
+            ThemeInterface::class => BootstrapTheme::class,
+        ],
+    ],
 );
 
-$rendererConfig = require $root . '/etc/config.php';
-
-$container->loadParameters($rendererConfig);
-
-foreach (['renderer', 'unicorn'] as $module) {
-    if ($rendererConfig[$module]['enabled'] ?? true) {
-        $container->registerByConfig($rendererConfig[$module] ?? []);
-    }
-}
+$container->registerByConfig(
+    [
+        'providers' => [
+            UnicornPackage::class,
+        ],
+    ],
+);

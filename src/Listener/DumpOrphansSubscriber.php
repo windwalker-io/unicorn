@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Unicorn\Listener;
 
 use Windwalker\Core\Application\ApplicationInterface;
+use Windwalker\Core\Application\PathResolver;
 use Windwalker\Core\Events\Web\AfterRequestEvent;
 use Windwalker\Core\Language\LangService;
 use Windwalker\Data\Collection;
@@ -37,7 +38,7 @@ class DumpOrphansSubscriber
         $format = strtolower($this->format);
         $ext    = ($format === 'yaml') ? 'yml' : $format;
 
-        $file = WINDWALKER_LOGS . '/language-orphans.' . $ext;
+        $file = $event->container->get(PathResolver::class)->resolve('@logs/language-orphans.' . $ext);
 
         if (!is_file($file)) {
             Filesystem::mkdir(dirname($file));

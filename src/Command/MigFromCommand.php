@@ -16,6 +16,7 @@ use Unicorn\Excel\ExcelImporter;
 use Windwalker\Console\CommandInterface;
 use Windwalker\Console\CommandWrapper;
 use Windwalker\Console\IOInterface;
+use Windwalker\Core\Application\PathResolver;
 use Windwalker\Core\Console\ConsoleApplication;
 use Windwalker\Core\Generator\Builder\CallbackAstBuilder;
 use Windwalker\Core\Migration\Exception\MigrationExistsException;
@@ -123,7 +124,7 @@ class MigFromCommand implements CommandInterface
 
             try {
                 $files = $this->migrationService->copyMigrationFile(
-                    WINDWALKER_MIGRATIONS,
+                    $this->app->service(PathResolver::class)->resolve('@migrations'),
                     $groupName . 'Init',
                     __DIR__ . '/../../../core/resources/templates/migration/create/*',
                 );

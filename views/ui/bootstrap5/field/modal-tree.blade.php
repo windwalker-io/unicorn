@@ -28,14 +28,14 @@ use Windwalker\Core\Router\SystemUri;
 use Windwalker\DOM\HTMLElement;
 
 /**
- * @var ModalTreeField $field
- * @var HTMLElement     $input
+ * @var  ModalTreeField  $field
+ * @var  HTMLElement     $input
  */
 
 $id = $input->getAttribute('id');
 $app->service(VueScript::class)->vue();
 $app->service(UnicornScript::class)
-    ->importMainThen("u.\$ui.modalTree();");
+    ->importMainThen('u.$ui.modalTree();');
 
 $wrapper = $field->getWrapper();
 ?>

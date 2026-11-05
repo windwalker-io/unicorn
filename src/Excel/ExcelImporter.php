@@ -18,7 +18,8 @@ use Windwalker\Filesystem\Path;
 /**
  * The ExcelImporter class.
  *
- * @deprecated This is temp class.
+ * @deprecated Use SpreadsheetKit instead.
+ * @codeCoverageIgnore
  */
 class ExcelImporter
 {

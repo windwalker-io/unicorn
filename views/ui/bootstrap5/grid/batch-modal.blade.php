@@ -24,11 +24,11 @@ use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\SystemUri;
 
 /**
- * @var \Windwalker\Form\Form $form
- * @var string $namespace
- * @var string $size
- * @var string $update
- * @var string $copy
+ * @var  \Windwalker\Form\Form  $form
+ * @var  string                 $namespace
+ * @var  string                 $size
+ * @var  string                 $update
+ * @var  string                 $copy
  */
 
 $namespace ??= 'batch';

@@ -16,7 +16,6 @@ namespace App\View;
  * @var $lang      LangService     The language translation service.
  */
 
-use Unicorn\Script\BootstrapScript;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Asset\AssetService;
 use Windwalker\Core\DateTime\ChronosService;
@@ -24,8 +23,6 @@ use Windwalker\Core\Language\LangService;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\SystemUri;
 use Windwalker\Edge\Component\ComponentAttributes;
-
-use function Windwalker\uid;
 
 /**
  * @var $attributes ComponentAttributes

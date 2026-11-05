@@ -28,10 +28,10 @@ use Windwalker\Edge\Component\ComponentAttributes;
 use Windwalker\Form\Field\AbstractField;
 
 /**
- * @var AbstractField               $field
- * @var \Windwalker\DOM\HTMLElement $input
- * @var array                       $options
- * @var ComponentAttributes         $attributes
+ * @var  AbstractField                $field
+ * @var  \Windwalker\DOM\HTMLElement  $input
+ * @var  array                        $options
+ * @var  ComponentAttributes          $attributes
  */
 
 $inputElement ??= $field->compileInput();

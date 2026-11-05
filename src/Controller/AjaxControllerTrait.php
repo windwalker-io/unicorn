@@ -30,7 +30,7 @@ trait AjaxControllerTrait
 
         if (!$ajaxAttr) {
             throw new RouteNotFoundException(
-                WINDWALKER_DEBUG
+                $app->isDebug()
                     ? "$task() is not an AJAX method, try add #[Ajax] to method"
                     : 'Action not found.'
             );

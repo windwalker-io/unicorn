@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Unicorn\Field;
 
 use Unicorn\Script\EditorScript;
+use Windwalker\Core\Application\ApplicationInterface;
+use Windwalker\Core\Application\PathResolver;
 use Windwalker\Core\Asset\AssetService;
 use Windwalker\Core\Language\TranslatorTrait;
 use Windwalker\Core\Router\SystemUri;
@@ -44,6 +46,12 @@ class TinymceEditorField extends AbstractEditorField
 
     #[Inject]
     protected AssetService $assetService;
+
+    #[Inject]
+    protected PathResolver $pathResolver;
+
+    #[Inject]
+    protected ApplicationInterface $app;
 
     public protected(set) array $plugins = [];
 
@@ -266,11 +274,11 @@ class TinymceEditorField extends AbstractEditorField
         $assetFolder = $this->assetService->getAssetFolder();
 
         // Check vendor path
-        $langPath = WINDWALKER_PUBLIC . '/' . $assetFolder . '/vendor/tinymce-i18n/langs5/' . $lang . '.js';
+        $langPath = $this->pathResolver->resolve('@public/' . $assetFolder . '/vendor/tinymce-i18n/langs5/' . $lang . '.js');
         $langUrl = $this->assetService->root('vendor/tinymce-i18n/langs5/' . $lang . '.js');
 
         if (!is_file($langPath)) {
-            $langPath = WINDWALKER_PUBLIC . '/' . $assetFolder . '/vendor/tinymce-i18n/langs5/' . $first . '.js';
+            $langPath = $this->pathResolver->resolve('@public/' . $assetFolder . '/vendor/tinymce-i18n/langs5/' . $first . '.js');
             $langUrl = $this->assetService->root('vendor/tinymce-i18n/langs5/' . $first . '.js');
             $lang = $first;
         }
@@ -278,7 +286,7 @@ class TinymceEditorField extends AbstractEditorField
         if (is_file($langPath)) {
             $options['language'] = $lang;
             $options['language_url'] = $langUrl;
-        } elseif (!str_starts_with($lang, 'en') && WINDWALKER_DEBUG) {
+        } elseif (!str_starts_with($lang, 'en') && $this->app->isDebug()) {
             $this->assetService->internalJS("console.warn('Install `tinymce-i18n` to support $lang.');");
         }
 

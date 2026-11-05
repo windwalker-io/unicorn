@@ -29,7 +29,7 @@ $falseIcon ??= 'fa-xmark text-dark';
 $size ??= '1x';
 
 /**
- * @var \Windwalker\Edge\Component\ComponentAttributes $attributes
+ * @var  \Windwalker\Edge\Component\ComponentAttributes  $attributes
  */
 $attributes->class(
     [

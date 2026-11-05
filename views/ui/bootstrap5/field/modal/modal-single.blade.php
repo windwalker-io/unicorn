@@ -24,8 +24,8 @@ use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\SystemUri;
 
 /**
- * @var \Unicorn\Field\ModalField $field
- * @var \Windwalker\DOM\HTMLElement $input
+ * @var  \Unicorn\Field\ModalField    $field
+ * @var  \Windwalker\DOM\HTMLElement  $input
  */
 
 $modalId = $field->getId('-modal');

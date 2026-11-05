@@ -18,7 +18,6 @@ namespace App\View;
 
 use Unicorn\Field\MultiUploaderField;
 use Unicorn\Script\FormScript;
-use Unicorn\Script\VueScript;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Asset\AssetService;
 use Windwalker\Core\DateTime\ChronosService;
@@ -32,10 +31,10 @@ $app->service(FormScript::class)->multiUploader();
 $lang = $app->service(LangService::class);
 
 /**
- * @var MultiUploaderField $field
- * @var HTMLElement        $input
- * @var array              $options
- * @var Form               $subForm
+ * @var  MultiUploaderField  $field
+ * @var  HTMLElement         $input
+ * @var  array               $options
+ * @var  Form                $subForm
  */
 
 /** @var $data array{
@@ -195,7 +194,7 @@ $data['tmplSelector'] ??= ('#' . $tmplId);
                                             default => 'form-control'
                                         }
                                     );
-                                    ?>
+?>
                                 <div class="form-group mb-3">
                                     {!! str_replace('value=""', '', $field->render())!!}
                                 </div>

@@ -51,7 +51,7 @@ class UnicornAssetSubscriber
         // $internalScripts = $asset->getInternalScripts();
         $scripts = &$event->links;
 
-        if (WINDWALKER_DEBUG) {
+        if ($this->app->isDebug()) {
             $script->data('windwalker.debug', true);
         }
 

@@ -2,80 +2,10 @@
 
 declare(strict_types=1);
 
-use PhpCsFixer\Config;
-use PhpCsFixer\Finder;
+$file = __DIR__ . '/../core/.php-cs-fixer.dist.php';
 
-$finder = Finder::create()
-    ->in(
-        [
-            __DIR__ . '/etc',
-            __DIR__ . '/routes',
-            __DIR__ . '/src',
-            __DIR__ . '/tests',
-            __DIR__ . '/resources',
-        ]
-    )
-    ->exclude(
-        [
-            'tmp',
-            'resources',
-        ]
-    )
-    ->name('*.php')
-    ->notName(
-        [
-            '*.blade.php',
-            '*.edge.php',
-        ]
-    );
+if (!file_exists($file)) {
+    $file = __DIR__ . '/vendor/windwalker/core/.php-cs-fixer.dist.php';
+}
 
-return new Config()
-    ->setRiskyAllowed(true)
-    ->setRules(
-        [
-            '@PER-CS' => true,
-
-            // Project conventions on top of PER Coding Style
-            'declare_strict_types' => true,
-            'new_expression_parentheses' => true,
-            'new_with_parentheses' => [
-                'anonymous_class' => true,
-                'named_class' => true,
-            ],
-            'nullable_type_declaration_for_default_null_value' => true,
-            // 'ordered_imports' => [
-            //     'sort_algorithm' => 'alpha',
-            // ],
-            'no_unused_imports' => true,
-            'single_quote' => true,
-            'trailing_comma_in_multiline' => false,
-            // 'trailing_comma_in_multiline' => [
-            //     'elements' => ['arrays', 'arguments', 'parameters'],
-            // ],
-            'method_argument_space' => [
-                'on_multiline' => 'ensure_fully_multiline',
-            ],
-            'concat_space' => [
-                'spacing' => 'one',
-            ],
-            'array_syntax' => [
-                'syntax' => 'short',
-            ],
-            'phpdoc_align' => [
-                'align' => 'vertical',
-                'spacing' => 2,
-            ],
-            'phpdoc_summary' => false,
-            'phpdoc_to_comment' => false,
-            'yoda_style' => false,
-            'increment_style' => false,
-            'global_namespace_import' => [
-                'import_classes' => null,
-                'import_constants' => null,
-                'import_functions' => null,
-            ],
-        ]
-    )
-    ->setIndent('    ')
-    ->setLineEnding("\n")
-    ->setFinder($finder);
+return include $file;

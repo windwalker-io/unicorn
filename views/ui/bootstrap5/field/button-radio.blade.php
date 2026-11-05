@@ -26,8 +26,8 @@ use Windwalker\Core\Router\SystemUri;
 use Windwalker\Form\FormNormalizer;
 
 /**
- * @var ButtonRadioField $field
- * @var AppContext $app
+ * @var  ButtonRadioField  $field
+ * @var  AppContext        $app
  */
 $inputElement = $field->getPreparedInput();
 
@@ -40,9 +40,9 @@ $uniScript->importMainThen("u.\$ui.bootstrap.buttonRadio('#{$field->getId()}');"
         @foreach ($field->getOptions() as $option)
             <?php
             $option = clone $option;
-            $id = $field->getId('-' . FormNormalizer::clearAttribute($option['value']));
-            $checked = (string) $option['value'] === (string) $field->getValue();
-            ?>
+$id = $field->getId('-' . FormNormalizer::clearAttribute($option['value']));
+$checked = (string) $option['value'] === (string) $field->getValue();
+?>
             <button type="button" class="btn btn-outline-secondary" data-value="{{ $option['value'] }}" data-for="{{ $id }}">
                 {!! \Windwalker\DOM\h('span', [], $option->childNodes) !!}
             </button>
@@ -52,13 +52,13 @@ $uniScript->importMainThen("u.\$ui.bootstrap.buttonRadio('#{$field->getId()}');"
     @foreach ($field->getOptions() as $option)
         <?php
         $option = clone $option;
-        $option['id'] = $id = $field->getId('-' . FormNormalizer::clearAttribute($option['value']));
-        $option['checked'] = $checked = (string) $option['value'] === (string) $field->getValue();
-        $option['name'] = $field->getInputName();
-        $option['type'] = 'radio';
-        $option['disabled'] = $field->isDisabled();
-        $option['readonly'] = $field->isReadonly();
-        ?>
+$option['id'] = $id = $field->getId('-' . FormNormalizer::clearAttribute($option['value']));
+$option['checked'] = $checked = (string) $option['value'] === (string) $field->getValue();
+$option['name'] = $field->getInputName();
+$option['type'] = 'radio';
+$option['disabled'] = $field->isDisabled();
+$option['readonly'] = $field->isReadonly();
+?>
         <div class="radio" style="display: none;">
             <input type="radio" {!! $option::buildAttributes($option) !!}/>
             <label for="{{ $id }}">

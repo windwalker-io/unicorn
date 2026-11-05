@@ -24,7 +24,7 @@ use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\SystemUri;
 
 /**
- * @var \Unicorn\Field\CascadeSelectField $field
+ * @var  \Unicorn\Field\CascadeSelectField  $field
  */
 
 $app->service(\Unicorn\Script\FormScript::class)->cascadeSelect();

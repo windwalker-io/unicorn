@@ -25,10 +25,10 @@ use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\SystemUri;
 
 /**
- * @var \Unicorn\Html\State\StateButton                $state
- * @var string                                         $value
- * @var \Unicorn\Html\State\StateButton|array          $states
- * @var \Windwalker\Edge\Component\ComponentAttributes $attributes
+ * @var  \Unicorn\Html\State\StateButton                 $state
+ * @var  string                                          $value
+ * @var  \Unicorn\Html\State\StateButton|array           $states
+ * @var  \Windwalker\Edge\Component\ComponentAttributes  $attributes
  */
 
 $value = $states->normalizeValue($value ?? '');

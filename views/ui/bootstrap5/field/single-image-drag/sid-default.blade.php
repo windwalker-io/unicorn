@@ -24,9 +24,9 @@ use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\SystemUri;
 
 /**
- * @var \Unicorn\Field\SingleImageDragField $field
- * @var array                               $options
- * @var \Unicorn\Image\ImagePlaceholder     $imageHelper
+ * @var  \Unicorn\Field\SingleImageDragField  $field
+ * @var  array                                $options
+ * @var  \Unicorn\Image\ImagePlaceholder      $imageHelper
  */
 
 $inputElement = $field->getPreparedInput();
@@ -34,7 +34,7 @@ $inputElement->addClass('c-sid-default');
 $imageHelper = $app->service(\Unicorn\Image\ImagePlaceholder::class);
 
 $image = $field->getValue() ?: $field->getDefaultImage() ?: $imageHelper->placeholder4to3();
-$previewHandler = $field->getPreviewHandler() ?? fn () => $asset->appendVersion($image, \Windwalker\uid());
+$previewHandler = $field->getPreviewHandler() ?? fn() => $asset->appendVersion($image, \Windwalker\uid());
 $image = $previewHandler($image);
 
 $maxWidth = $field->getMaxWidth();

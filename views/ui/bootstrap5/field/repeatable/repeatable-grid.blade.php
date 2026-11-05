@@ -23,11 +23,10 @@ use Windwalker\Core\Language\LangService;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\SystemUri;
 use Windwalker\Form\Field\AbstractField;
-use Windwalker\Form\Field\HiddenField;
 
 /**
- * @var \Unicorn\Field\RepeatableField $field
- * @var \Windwalker\Form\Form          $form
+ * @var  \Unicorn\Field\RepeatableField  $field
+ * @var  \Windwalker\Form\Form           $form
  */
 
 $app->service(\Unicorn\Script\FormScript::class)->repeatable();
@@ -50,9 +49,9 @@ $optString = AssetService::getJSObject(
 $data = AssetService::getJSObject($field->prepareJSData());
 
 if ($field->colWidths !== []) {
-    $columnsStyle = "grid-template-columns: repeat(12, 1fr);";
+    $columnsStyle = 'grid-template-columns: repeat(12, 1fr);';
 } else {
-    $columnsStyle = "grid-template-columns: repeat(" . $countFields . ", 1fr);";
+    $columnsStyle = 'grid-template-columns: repeat(' . $countFields . ', 1fr);';
 }
 
 $colWidth = function (AbstractField $subField, $i) use ($field, $countFields) {
@@ -62,7 +61,7 @@ $colWidth = function (AbstractField $subField, $i) use ($field, $countFields) {
 
     if ($w === null) {
         if ($field->colWidths !== []) {
-            $style = "grid-column: span " . ceil(12 / $countFields) . ";";
+            $style = 'grid-column: span ' . ceil(12 / $countFields) . ';';
         }
     } elseif (is_numeric($w)) {
         $style = "grid-column: span $w;";

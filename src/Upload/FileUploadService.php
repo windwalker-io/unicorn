@@ -18,6 +18,7 @@ use Unicorn\Storage\PutResult;
 use Unicorn\Storage\StorageInterface;
 use Unicorn\Upload\Event\FileUploadedEvent;
 use Unicorn\Upload\Exception\FileUploadException;
+use Windwalker\Core\Application\PathResolver;
 use Windwalker\Core\Event\CoreEventAwareTrait;
 use Windwalker\Core\Manager\Logger;
 use Windwalker\DI\Container;
@@ -343,7 +344,7 @@ class FileUploadService implements EventAwareInterface
         if ($src instanceof UploadedFileInterface) {
             $outputFormat = Path::getExtension($src->getClientFilename());
 
-            $tmp = Filesystem::createTemp(WINDWALKER_TEMP . '/unicorn/upload');
+            $tmp = Filesystem::createTemp($this->container->get(PathResolver::class)->resolve('@temp/unicorn/upload'));
 
             register_shutdown_function(fn() => Filesystem::delete($tmp->getPathname()));
 
@@ -398,7 +399,7 @@ class FileUploadService implements EventAwareInterface
             $optimizer->useLogger($logger);
         }
 
-        $tmpDir = WINDWALKER_TEMP . '/images/';
+        $tmpDir = $this->container->get(PathResolver::class)->resolve('@temp/images/');
         Filesystem::mkdir($tmpDir);
 
         $ext = Path::getExtension($dest);

@@ -25,11 +25,11 @@ use Windwalker\Core\Router\SystemUri;
 use Windwalker\Edge\Component\ComponentAttributes;
 
 /**
- * @var string                     $id
- * @var int|string                 $row
- * @var int                        $value
- * @var string                     $store
- * @var ComponentAttributes        $attributes
+ * @var  string               $id
+ * @var  int|string           $row
+ * @var  int                  $value
+ * @var  string               $store
+ * @var  ComponentAttributes  $attributes
  */
 
 $props = $attributes->props(

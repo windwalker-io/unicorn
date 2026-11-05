@@ -24,8 +24,8 @@ use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\SystemUri;
 
 /**
- * @var int    $row
- * @var string $id
+ * @var  int     $row
+ * @var  string  $id
  */
 ?>
 

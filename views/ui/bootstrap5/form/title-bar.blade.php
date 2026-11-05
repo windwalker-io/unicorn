@@ -2,7 +2,7 @@
 <?php
 
 /**
- * @var \Windwalker\Form\Form $form
+ * @var  \Windwalker\Form\Form  $form
  */
 
 $ns ??= '';

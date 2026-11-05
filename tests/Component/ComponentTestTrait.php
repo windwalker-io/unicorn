@@ -27,8 +27,9 @@ use Windwalker\Edge\Component\AbstractComponent;
  * through the real {@see RendererService}, producing the final HTML string
  * exactly as production code would.
  *
- * `tests/bootstrap.app.php` loads the `renderer`/`unicorn` config modules
- * (view paths, `@alias` layouts, etc.) once for the whole test process, so
+ * `tests/bootstrap.app.php` registers an inlined, minimal `renderer`/`unicorn`
+ * config (renderers, `@alias` layouts, Edge components, etc.) once for the
+ * whole test process - it does not load the host's `etc/config.php` - so
  * this trait does not need to repeat that work - it only has to boot a
  * fresh request-level context per test class.
  */

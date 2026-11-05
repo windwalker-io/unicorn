@@ -24,9 +24,9 @@ use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\SystemUri;
 
 /**
- * @var \Unicorn\Field\InlineField $field
- * @var AppContext $app
- * @var \Windwalker\Form\Form $form
+ * @var  \Unicorn\Field\InlineField  $field
+ * @var  AppContext                  $app
+ * @var  \Windwalker\Form\Form       $form
  */
 
 $fields = iterator_to_array($form->getFields());
@@ -41,7 +41,7 @@ $rwdPoint = $field->rwdBreakpoint ?: 'lg';
 $inputElement->addClass("c-inline-field d-flex flex-column d-{$rwdPoint}-grid w-100");
 
 if ($widths !== []) {
-    $columnsStyle = "repeat(12, 1fr)";
+    $columnsStyle = 'repeat(12, 1fr)';
 } else {
     $columnsStyle = "repeat($countFields, 1fr)";
 }
@@ -66,18 +66,18 @@ $labelClass = $showLabel ? '' : 'visually-hidden';
         <?php
         $w = $widths[$i] ?? null;
 
-        $style = '';
+$style = '';
 
-        if ($w === null) {
-            if ($widths !== []) {
-                $style = "grid-column: span " . ceil(12 / $countFields) . ";";
-            }
-        } elseif (is_numeric($w)) {
-            $style = "grid-column: span $w;";
-        } else {
-            $style = "width: $w;";
-        }
-        ?>
+if ($w === null) {
+    if ($widths !== []) {
+        $style = 'grid-column: span ' . ceil(12 / $countFields) . ';';
+    }
+} elseif (is_numeric($w)) {
+    $style = "grid-column: span $w;";
+} else {
+    $style = "width: $w;";
+}
+?>
         <div class="c-inline-field__column" style="{{ $style }}">
             <x-field :field="$subField" :label-class="$labelClass"></x-field>
         </div>

@@ -18,6 +18,40 @@ background and the package map.
 - Reuse Windwalker Core contracts and services instead of reimplementing
   framework capabilities.
 
+
+## Container layers
+
+- Request-scoped state (request, `AppContext`, `AppState`, anything derived
+  from the request) must be registered at `AppLayer::REQUEST`; never store it
+  in a runtime or app level service, since servers reuse those across requests.
+- Use `providedIn()` / `canProvide()` to restrict a provider's layer, and the
+  request bootable/releasable provider interfaces for per-request setup and
+  cleanup.
+- Resolve services through the container; do not read globals or
+  `Runtime::getContainer()` inside request-scoped code when `AppContext` or
+  injection is available.
+
+## Paths and debug mode
+
+- `WINDWALKER_*` constants (`WINDWALKER_ROOT`, `WINDWALKER_CACHE`,
+  `WINDWALKER_TEMP`, `WINDWALKER_RESOURCES`, `WINDWALKER_DEBUG`, ...) are
+  defined by and scoped to the host app's bootstrap; they are not part of
+  Core's internal API.
+- Inside `src/`, resolve filesystem paths through `PathResolver`
+  (`$app->path('@root/...')` or inject `PathResolver`) instead of referencing
+  `WINDWALKER_*` path constants directly.
+- Inside `src/`, read debug mode via `ApplicationInterface::isDebug()`
+  (`$app->isDebug()`) instead of reading `WINDWALKER_DEBUG` directly.
+- Existing `WINDWALKER_*` usages in `src/` predate this rule; do not copy them
+  as a pattern for new code, and prefer `PathResolver`/`isDebug()` when
+  touching that code.
+- When fixing an existing `WINDWALKER_*` usage: if `PathResolver` /
+  `ApplicationInterface` can be injected or otherwise obtained correctly at
+  that location, replace it directly. If the code runs in an isolated context
+  where injection isn't possible (e.g. before the container/app exists, a
+  static/global context, or a class outside the DI graph), do not guess a
+  workaround — ask the user how to proceed.
+
 ## Extension points and compatibility
 
 - Register new package services, renderer components, attributes, and console

@@ -25,9 +25,9 @@ use Windwalker\Core\Router\SystemUri;
 use Windwalker\Form\Form;
 
 /**
- * @var Form   $form
- * @var string $name
- * @var \Windwalker\Edge\Component\ComponentAttributes $attributes
+ * @var  Form                                            $form
+ * @var  string                                          $name
+ * @var  \Windwalker\Edge\Component\ComponentAttributes  $attributes
  */
 $name ??= null;
 $fieldset = $name ? $form->getFieldset($name) : null;

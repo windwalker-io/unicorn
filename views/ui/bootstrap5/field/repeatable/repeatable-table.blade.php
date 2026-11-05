@@ -16,7 +16,6 @@ namespace App\View;
  * @var $lang      LangService     The language translation service.
  */
 
-use Unicorn\Field\RepeatableField;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Asset\AssetService;
 use Windwalker\Core\DateTime\ChronosService;
@@ -24,11 +23,10 @@ use Windwalker\Core\Language\LangService;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\SystemUri;
 use Windwalker\Form\Field\AbstractField;
-use Windwalker\Form\Field\HiddenField;
 
 /**
- * @var \Unicorn\Field\RepeatableField $field
- * @var \Windwalker\Form\Form          $form
+ * @var  \Unicorn\Field\RepeatableField  $field
+ * @var  \Windwalker\Form\Form           $form
  */
 
 $app->service(\Unicorn\Script\FormScript::class)->repeatable();

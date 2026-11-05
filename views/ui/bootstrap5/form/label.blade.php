@@ -30,9 +30,9 @@ use Windwalker\Form\Field\AbstractField;
 use function Windwalker\DOM\h;
 
 /**
- * @var AbstractField $field
- * @var \Windwalker\DOM\HTMLElement $label
- * @var FormRenderer $renderer
+ * @var  AbstractField                $field
+ * @var  \Windwalker\DOM\HTMLElement  $label
+ * @var  FormRenderer                 $renderer
  */
 
 $label ??= $field->compileLabel();
