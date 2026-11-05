@@ -59,6 +59,12 @@ $container->loadParameters([
         'debug' => false,
     ],
     'renderer' => [
+        'paths' => [
+            '@root/views',
+            __DIR__ . '/views',
+            dirname(__DIR__) . '/views',
+            dirname(__DIR__) . '/views/ui/bootstrap5',
+        ],
         'renderers' => [
             'edge' => [EdgeRenderer::class, ['edge.php', 'blade.php']],
             'plates' => [PlatesRenderer::class, ['php']],
@@ -74,6 +80,7 @@ $container->loadParameters([
         ],
         'aliases' => [
             '@pagination' => 'layout.pagination.basic-pagination',
+
             '@messages' => 'layout.messages.bs5-messages',
             '@csrf' => 'layout.security.csrf',
         ],

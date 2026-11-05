@@ -58,11 +58,11 @@ class Breadcrumb
     /**
      * pop
      *
-     * @return  array
+     * @return  array|null
      *
      * @since  3.3
      */
-    public function pop(): array
+    public function pop(): ?array
     {
         return array_pop($this->items);
     }

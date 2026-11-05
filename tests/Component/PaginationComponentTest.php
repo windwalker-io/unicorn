@@ -10,7 +10,6 @@ use PHPUnit\Framework\TestCase;
 use Unicorn\Component\PaginationComponent;
 use Windwalker\Core\Pagination\Pagination;
 use Windwalker\Core\Router\Navigator;
-use Unicorn\Tests\Component\ComponentTestTrait;
 
 final class PaginationComponentTest extends TestCase
 {
@@ -73,7 +72,7 @@ final class PaginationComponentTest extends TestCase
     #[Test]
     public function rendersJumpInputWhenMultiplePagesExist(): void
     {
-        $pagination = $this->createMock(Pagination::class);
+        $pagination = $this->createStub(Pagination::class);
         $pagination->method('getPages')->willReturn(5);
         $pagination->method('isSimple')->willReturn(false);
         $pagination->method('getCurrent')->willReturn(2);
@@ -91,7 +90,7 @@ final class PaginationComponentTest extends TestCase
     #[Test]
     public function rendersNothingWhenThereIsOnlyOnePage(): void
     {
-        $pagination = $this->createMock(Pagination::class);
+        $pagination = $this->createStub(Pagination::class);
         $pagination->method('getPages')->willReturn(1);
         $pagination->method('isSimple')->willReturn(false);
 

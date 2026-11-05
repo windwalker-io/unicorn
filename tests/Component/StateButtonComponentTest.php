@@ -59,29 +59,31 @@ final class StateButtonComponentTest extends TestCase
     #[Test]
     public function rendersStateButtonWithCompiledColorAndTitle(): void
     {
+        $controller = new WorkflowController('status');
+        $controller->addState('draft')->color('secondary')->title('Draft');
+
         $component = new StateButtonComponent();
         $component->value = 'draft';
-        $component->states = [
-            'draft' => ['title' => 'Draft', 'color' => 'secondary', 'help' => 'Draft help'],
-        ];
+        $component->states = $controller;
 
         $html = static::renderComponent($component);
 
         self::assertStringContainsString('<button type="button"', $html);
         self::assertStringContainsString('c-state-button--draft', $html);
         self::assertStringContainsString('text-secondary', $html);
-        self::assertStringContainsString('title="Draft help"', $html);
+        self::assertStringContainsString('Draft', $html);
         self::assertStringNotContainsString('disabled', $html);
     }
 
     #[Test]
     public function rendersReadonlyStateAsIconSpanWithoutButton(): void
     {
+        $controller = new WorkflowController('status');
+        $controller->addState('1')->color('success')->title('Published');
+
         $component = new StateButtonComponent();
         $component->value = '1';
-        $component->states = [
-            '1' => ['title' => 'Published', 'color' => 'success'],
-        ];
+        $component->states = $controller;
         $component->readonly = true;
 
         $html = static::renderComponent($component);
