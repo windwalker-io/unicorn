@@ -14,6 +14,43 @@ use Windwalker\Core\Language\LangService;
 
 final class PublishingDropdownComponentTest extends TestCase
 {
+    use ComponentTestTrait;
+
+    #[Test]
+    public function rendersPublishingDropdownWithScheduleTooltip(): void
+    {
+        $workflow = new WorkflowController('status');
+        $workflow->addState(new State('1')->title('Published')->color('success'));
+        $workflow->addState(new State('0')->title('Unpublished'));
+        $workflow->addTransition('unpublish', '1', '0')->title('Unpublish');
+        $workflow->allowFreeTransitions(false);
+
+        $component = new PublishingDropdownComponent();
+        $component->workflow = $workflow;
+        $component->value = '1';
+        $publishUp = new \DateTimeImmutable('2030-01-02 03:04:05');
+        $component->publishUp = $publishUp;
+
+        $lang = $this->createStub(LangService::class);
+        $lang->method('trans')->willReturnCallback(
+            static fn(string $id, mixed ...$args): string => $id . (isset($args['time']) ? ' ' . $args['time'] : '')
+        );
+        $this->setComponentProperty($component, 'lang', $lang);
+
+        $chronos = $this->createStub(ChronosService::class);
+        $chronos->method('toLocalFormat')
+            ->willReturnCallback(static fn(\DateTimeInterface $date, string $format): string => $date->format($format));
+        $this->setComponentProperty($component, 'chronosService', $chronos);
+
+        $html = static::renderComponent($component);
+
+        self::assertStringContainsString('id="c-state-dropdown-status"', $html);
+        self::assertStringContainsString('unicorn.publishing.dropdown.waiting.publish', $html);
+        self::assertStringContainsString('data-bs-toggle="tooltip"', $html);
+        self::assertStringContainsString($publishUp->format('Y/m/d H:i:s'), $html);
+        self::assertStringNotContainsString('@attr', $html);
+    }
+
     #[Test]
     public function addsFutureScheduleTooltipWithoutMutatingWorkflowState(): void
     {

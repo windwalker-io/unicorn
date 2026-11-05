@@ -30,7 +30,7 @@ class ImagePlaceholder
         $ratio = static::normalizeRatio($ratio);
 
         if ($uri === null) {
-            unset($this->imageMap[$uri]);
+            unset($this->imageMap[$ratio]);
             return;
         }
 

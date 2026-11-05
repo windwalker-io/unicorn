@@ -103,39 +103,61 @@ class InterventionImageTest extends TestCase
     }
 
     #[Test]
-    #[TestDox('read() with a v2 subclass takes the v2 branch and fails on the v3 ImageManager API')]
-    public function readUsesV2BranchWhenVersionIsTwo(): void
+    #[TestDox('create() on v2 passes the driver config to the v2 manager factory')]
+    public function createUsesV2ManagerWhenVersionIsTwo(): void
     {
         $legacy = new class extends InterventionImage {
+            public static ?array $lastConfig = null;
+
             public static function version(): int
             {
                 return 2;
             }
+
+            protected static function createV2Manager(array $config): object
+            {
+                static::$lastConfig = $config;
+
+                return new FakeV2Manager();
+            }
         };
 
-        // v2 calls `new ImageManager(['driver' => ...])`, which v3 rejects with a TypeError.
-        $this->expectException(\TypeError::class);
-        $this->expectExceptionMessageIsOrContains('ImageManager::__construct()');
+        $manager = $legacy::create('imagick');
 
-        $legacy::read(self::$pngPath);
+        self::assertInstanceOf(FakeV2Manager::class, $manager);
+        self::assertSame(['driver' => 'imagick'], $legacy::$lastConfig);
     }
 
     #[Test]
-    #[TestDox('create() with a v2 subclass uses the legacy constructor signature')]
-    public function createUsesV2BranchWhenVersionIsTwo(): void
+    #[TestDox('read() on v2 delegates to the manager make() method')]
+    public function readUsesV2MakeWhenVersionIsTwo(): void
     {
         $legacy = new class extends InterventionImage {
             public static function version(): int
             {
                 return 2;
             }
+
+            protected static function createV2Manager(array $config): object
+            {
+                return new FakeV2Manager();
+            }
         };
 
-        // v3 ImageManager does not accept an array config, so the v2 path fails here.
-        // The failure proves the v2 constructor call was taken.
-        $this->expectException(\TypeError::class);
-        $this->expectExceptionMessageIsOrContains('array given');
+        $image = $legacy::read(self::$pngPath);
 
-        $legacy::create('gd');
+        self::assertInstanceOf(ImageInterface::class, $image);
+        self::assertSame(4, $image->width());
+    }
+}
+
+/**
+ * Stand-in for an Intervention v2 ImageManager. ImageManager in v3 is final, so it cannot be extended.
+ */
+class FakeV2Manager
+{
+    public function make(mixed $image): ImageInterface
+    {
+        return ImageManager::gd()->read($image);
     }
 }

@@ -6,20 +6,18 @@ namespace Unicorn\Image;
 
 use Intervention\Image\Drivers\Gd\Driver as GdDriver;
 use Intervention\Image\Drivers\Imagick\Driver as ImagickDriver;
-use Intervention\Image\Image;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Interfaces\DriverInterface;
-use Intervention\Image\Interfaces\ImageInterface;
 use Psr\Http\Message\StreamInterface;
 use Unicorn\Image\Decoder\PsrStreamGdDecoder;
 use Unicorn\Image\Decoder\PsrStreamImagickDecoder;
 
 class InterventionImage
 {
-    public static function create(string|DriverInterface $driver = 'gd'): ImageManager
+    public static function create(string|DriverInterface $driver = 'gd'): object
     {
         if (static::version() === 2) {
-            return new ImageManager(['driver' => $driver]);
+            return static::createV2Manager(['driver' => $driver]);
         }
 
         $driver = match ($driver) {
@@ -28,10 +26,10 @@ class InterventionImage
             default => $driver
         };
 
-        return new ImageManager($driver);
+        return static::createV3Manager($driver);
     }
 
-    public static function read(mixed $image, string|DriverInterface $driver = 'gd'): Image|ImageInterface
+    public static function read(mixed $image, string|DriverInterface $driver = 'gd'): object
     {
         $manager = static::create($driver);
 
@@ -51,6 +49,31 @@ class InterventionImage
         }
 
         return $manager->read($image);
+    }
+
+    /**
+     * Build the Intervention v3 manager. Overridable so the v3 flow can be tested with mocks.
+     *
+     * @param  string|DriverInterface  $driver
+     *
+     * @return  object
+     */
+    protected static function createV3Manager(string|DriverInterface $driver): object
+    {
+        return new ImageManager($driver);
+    }
+
+    /**
+     * Build the Intervention v2 manager. Overridable so the v2 flow can be tested
+     * without a real v2 installation.
+     *
+     * @param  array  $config
+     *
+     * @return  object
+     */
+    protected static function createV2Manager(array $config): object
+    {
+        return new ImageManager($config);
     }
 
     public static function version(): int

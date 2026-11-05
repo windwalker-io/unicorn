@@ -10,6 +10,7 @@ use PHPUnit\Framework\TestCase;
 use Unicorn\Component\PaginationComponent;
 use Windwalker\Core\Pagination\Pagination;
 use Windwalker\Core\Router\Navigator;
+use Windwalker\Core\Router\RouteUri;
 
 final class PaginationComponentTest extends TestCase
 {
@@ -77,14 +78,21 @@ final class PaginationComponentTest extends TestCase
         $pagination->method('isSimple')->willReturn(false);
         $pagination->method('getCurrent')->willReturn(2);
 
+        $routeUri = $this->createStub(RouteUri::class);
+        $routeUri->method('var')->willReturnSelf();
+        $routeUri->method('__toString')->willReturn('/page/{page}');
+
+        $nav = $this->createStub(Navigator::class);
+        $nav->method('self')->willReturn($routeUri);
+
         $component = new PaginationComponent();
         $component->pagination = $pagination;
 
-        $html = static::renderComponent($component);
+        $html = static::renderComponent($component, ['nav' => $nav]);
 
         self::assertStringContainsString('data-pagination-jump', $html);
         self::assertStringContainsString('value="2"', $html);
-        self::assertStringContainsString('>GO<', $html);
+        self::assertMatchesRegularExpression('/<button[^>]*>\s*GO\s*<\/button>/', $html);
     }
 
     #[Test]

@@ -11,7 +11,6 @@ use Windwalker\Core\Renderer\Edge\WindwalkerExtension;
 use Windwalker\Core\Renderer\RendererService;
 use Windwalker\DI\Container;
 use Windwalker\Edge\Component\AbstractComponent;
-use Windwalker\Renderer\CompositeRenderer;
 
 /**
  * Shared integration-test helper for Unicorn Edge UI components.
@@ -62,7 +61,7 @@ trait ComponentTestTrait
         $service = static::$container->resolve(RendererService::class);
         $renderer = $service->createRenderer();
         $renderer->getRenderer('edge')->extend(
-            static fn ($engine) => $engine->addExtension(new WindwalkerExtension(static::$appContext))
+            static fn($engine) => $engine->addExtension(new WindwalkerExtension(static::$appContext))
         );
 
         return trim(

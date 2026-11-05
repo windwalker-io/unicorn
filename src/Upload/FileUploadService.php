@@ -354,7 +354,7 @@ class FileUploadService implements EventAwareInterface
 
         $resizeConfig = $this->options->resize->withMerge($resizeConfig, true, true);
 
-        $interventionVersion = InterventionImage::version();
+        $interventionVersion = $this->getInterventionVersion();
 
         return $interventionVersion === 2
             ? $this->resizeByIntervension2($src, $resizeConfig, $outputFormat)
@@ -425,6 +425,22 @@ class FileUploadService implements EventAwareInterface
         return $newImage;
     }
 
+    /**
+     * Overridable seam for the Intervention major version, so both branches can be tested with mocks.
+     */
+    protected function getInterventionVersion(): int
+    {
+        return InterventionImage::version();
+    }
+
+    /**
+     * Overridable seam for reading an image through Intervention.
+     */
+    protected function readImage(mixed $src, string $driver): object
+    {
+        return InterventionImage::read($src, $driver);
+    }
+
     protected function resizeByIntervension3(
         StreamInterface|\SplFileInfo|string|UploadedFileInterface $src,
         array|ResizeConfig $resizeConfig,
@@ -434,7 +450,7 @@ class FileUploadService implements EventAwareInterface
 
         // $optimize = $resizeConfig['strip_exif'] || $this->options['optimize'];
 
-        $image = InterventionImage::read($src, $resizeConfig->driver);
+        $image = $this->readImage($src, $resizeConfig->driver);
 
         $width = TypeCast::safeInteger($resizeConfig->width);
         $height = TypeCast::safeInteger($resizeConfig->height);
@@ -500,7 +516,7 @@ class FileUploadService implements EventAwareInterface
     ): StreamInterface {
         $resizeConfig = ResizeConfig::wrapWith($resizeConfig, true, true);
 
-        $image = InterventionImage::read($src, $driver = $resizeConfig->driver);
+        $image = $this->readImage($src, $driver = $resizeConfig->driver);
 
         if ($resizeConfig->orientate) {
             try {
@@ -614,10 +630,11 @@ class FileUploadService implements EventAwareInterface
     ): string {
         $chronos = chronos();
 
-        $vars = array_map(
-            static fn(string $var) => "{{$var}}",
-            $this->pathVars
-        );
+        $vars = [];
+
+        foreach ($this->pathVars as $name => $value) {
+            $vars['{' . $name . '}'] = $value;
+        }
 
         if ($folder !== null) {
             $vars['{folder}'] = $folder === '.' ? '' : $folder;

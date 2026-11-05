@@ -83,6 +83,22 @@ class ImagePlaceholderTest extends TestCase
     }
 
     #[Test]
+    public function setImageWithNullRemovesCustomImage(): void
+    {
+        $this->placeholder->setImage('16:9', '@custom/wide.png');
+        $this->placeholder->setImage('16:9', null);
+
+        self::assertSame([], $this->placeholder->getImageMap());
+
+        $this->asset->expects($this->once())
+            ->method('handleUri')
+            ->with('@unicorn/../images/placeholder/image-16x9.png', 'root')
+            ->willReturn('/assets/image-16x9.png');
+
+        self::assertSame('/assets/image-16x9.png', $this->placeholder->placeholder('16:9'));
+    }
+
+    #[Test]
     #[AllowMockObjectsWithoutExpectations]
     public function magicMethodWithUnknownSuffixThrows(): void
     {
