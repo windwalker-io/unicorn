@@ -16,3 +16,8 @@ Load only the topic needed for the current task.
 
 Update this index when adding a documentation topic. Keep references specific
 to the package while describing consuming applications generically.
+
+## Testing
+
+- [Database testing](database-testing.md): choosing in-memory SQLite vs. a real DBMS for Repository and ORM tests.
+

@@ -75,7 +75,7 @@ class FileUploadService implements EventAwareInterface
 
     public function setResizeConfig(array|ResizeConfig $resizeConfig, bool $ignoreNulls = true): static
     {
-        $this->options->resize = $this->options->withMerge(
+        $this->options->resize = $this->options->resize->withMerge(
             $resizeConfig,
             true,
             $ignoreNulls,

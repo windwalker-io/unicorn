@@ -55,7 +55,7 @@ trait PublishingEntityTrait
 
     public function isUnpublished(): bool
     {
-        return $this->getState()->isPublished();
+        return $this->getState()->isUnpublished();
     }
 
     public function unpublish(): static

@@ -68,7 +68,7 @@ class FormScript extends AbstractScript
     public function flatpickrLocale(): ?string
     {
         $long = strtolower($this->lang->getLocale());
-        $first = explode($long, '-')[0] ?? '';
+        $first = explode('-', $long)[0] ?? '';
 
         $locale = $long;
         $defaultLocale = null;
