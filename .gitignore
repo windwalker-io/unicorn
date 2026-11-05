@@ -11,6 +11,10 @@ Thumbs.db
 # Extra #
 !.gitkeep
 
+# System #
+/cache/*
+/tmp/*
+
 # Configuration #
 .env*
 !.env.dist

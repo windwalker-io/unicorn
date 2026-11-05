@@ -11,6 +11,8 @@ use Unicorn\Workflow\WorkflowController;
 
 final class StateButtonComponentTest extends TestCase
 {
+    use ComponentTestTrait;
+
     #[Test]
     public function buildsStateFromArrayAndMergesOptions(): void
     {
@@ -53,4 +55,40 @@ final class StateButtonComponentTest extends TestCase
     {
         self::assertSame('@state-button', new StateButtonComponent()->render());
     }
+
+    #[Test]
+    public function rendersStateButtonWithCompiledColorAndTitle(): void
+    {
+        $component = new StateButtonComponent();
+        $component->value = 'draft';
+        $component->states = [
+            'draft' => ['title' => 'Draft', 'color' => 'secondary', 'help' => 'Draft help'],
+        ];
+
+        $html = static::renderComponent($component);
+
+        self::assertStringContainsString('<button type="button"', $html);
+        self::assertStringContainsString('c-state-button--draft', $html);
+        self::assertStringContainsString('text-secondary', $html);
+        self::assertStringContainsString('title="Draft help"', $html);
+        self::assertStringNotContainsString('disabled', $html);
+    }
+
+    #[Test]
+    public function rendersReadonlyStateAsIconSpanWithoutButton(): void
+    {
+        $component = new StateButtonComponent();
+        $component->value = '1';
+        $component->states = [
+            '1' => ['title' => 'Published', 'color' => 'success'],
+        ];
+        $component->readonly = true;
+
+        $html = static::renderComponent($component);
+
+        self::assertStringContainsString('c-state-button--icon', $html);
+        self::assertStringContainsString('text-success', $html);
+        self::assertStringNotContainsString('<button', $html);
+    }
+
 }

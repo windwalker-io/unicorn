@@ -262,6 +262,7 @@ PHP;
             case 'number':
             case 'integer':
             case 'int':
+            case 'bigint':
                 $this->addUse(NumberField::class);
 
                 return <<<PHP

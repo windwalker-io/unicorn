@@ -10,6 +10,8 @@ use Unicorn\Component\TabsComponent;
 
 final class TabsComponentTest extends TestCase
 {
+    use ComponentTestTrait;
+
     #[Test]
     public function encodesDirectiveOptionsAndMapsKeepActiveTrueToFormSelector(): void
     {
@@ -43,4 +45,22 @@ final class TabsComponentTest extends TestCase
     {
         self::assertSame('@tabs', new TabsComponent()->render());
     }
+
+    #[Test]
+    public function rendersTabsContainerWithAutonavDirectiveAndSlotContent(): void
+    {
+        $component = new TabsComponent();
+        $component->id = 'settings-tabs';
+        $component->variant = 'pills';
+        $component->navClass = 'nav-compact';
+
+        $html = static::renderComponent($component, ['slot' => '<div data-role="tab-pane">Pane</div>']);
+
+        self::assertStringContainsString('id="settings-tabs"', $html);
+        self::assertStringContainsString('class="tab-content"', $html);
+        self::assertStringContainsString('uni-tabs-autonav=', $html);
+        self::assertStringContainsString('&quot;variant&quot;:&quot;pills&quot;', $html);
+        self::assertStringContainsString('<div data-role="tab-pane">Pane</div>', $html);
+    }
+
 }

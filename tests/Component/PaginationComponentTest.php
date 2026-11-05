@@ -10,9 +10,12 @@ use PHPUnit\Framework\TestCase;
 use Unicorn\Component\PaginationComponent;
 use Windwalker\Core\Pagination\Pagination;
 use Windwalker\Core\Router\Navigator;
+use Unicorn\Tests\Component\ComponentTestTrait;
 
 final class PaginationComponentTest extends TestCase
 {
+    use ComponentTestTrait;
+
     #[Test]
     public function parsesAllowedQueryNamesAndAddsModalQueryNames(): void
     {
@@ -66,4 +69,36 @@ final class PaginationComponentTest extends TestCase
     {
         self::assertSame('@pagination', new PaginationComponent()->render());
     }
+
+    #[Test]
+    public function rendersJumpInputWhenMultiplePagesExist(): void
+    {
+        $pagination = $this->createMock(Pagination::class);
+        $pagination->method('getPages')->willReturn(5);
+        $pagination->method('isSimple')->willReturn(false);
+        $pagination->method('getCurrent')->willReturn(2);
+
+        $component = new PaginationComponent();
+        $component->pagination = $pagination;
+
+        $html = static::renderComponent($component);
+
+        self::assertStringContainsString('data-pagination-jump', $html);
+        self::assertStringContainsString('value="2"', $html);
+        self::assertStringContainsString('>GO<', $html);
+    }
+
+    #[Test]
+    public function rendersNothingWhenThereIsOnlyOnePage(): void
+    {
+        $pagination = $this->createMock(Pagination::class);
+        $pagination->method('getPages')->willReturn(1);
+        $pagination->method('isSimple')->willReturn(false);
+
+        $component = new PaginationComponent();
+        $component->pagination = $pagination;
+
+        self::assertSame('', static::renderComponent($component));
+    }
+
 }

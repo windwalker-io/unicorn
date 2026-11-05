@@ -20,6 +20,7 @@
         "spatie/image-optimizer": "^1.8"
     },
     "require-dev": {
+        "windwalker/core": "dev-master",
         "windwalker/framework": "4.x-dev",
         "aws/aws-sdk-php": "^3.402",
         "league/flysystem": "^3.36",

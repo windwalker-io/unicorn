@@ -12,6 +12,50 @@ use Unicorn\Workflow\WorkflowController;
 
 final class StateDropdownComponentTest extends TestCase
 {
+    use ComponentTestTrait;
+
+    #[Test]
+    public function rendersCurrentStateTitleAndTransitionMenu(): void
+    {
+        $workflow = new WorkflowController('status');
+        $workflow->addState('draft')->title('Draft');
+        $workflow->addState('published')->color('success')->title('Published');
+        $workflow->addTransition('publish', 'draft', 'published')->title('Publish');
+        $workflow->allowFreeTransitions(false);
+
+        $component = new StateDropdownComponent();
+        $component->workflow = $workflow;
+        $component->value = 'draft';
+
+        $html = static::renderComponent($component);
+
+        self::assertStringContainsString('id="c-state-dropdown-status"', $html);
+        self::assertStringContainsString('title="Draft"', $html);
+        self::assertStringContainsString('<span class="mr-auto me-auto ms-1">Draft</span>', $html);
+        self::assertStringNotContainsString('@attr', $html);
+        self::assertStringContainsString('class="dropdown-item"', $html);
+        self::assertStringContainsString('Publish', $html);
+        self::assertStringContainsString("'status': 'published'", $html);
+    }
+
+    #[Test]
+    public function rendersStateModeWithCurrentStateAsTitleOnly(): void
+    {
+        $workflow = new WorkflowController('status');
+        $workflow->addState('published')->color('success')->title('Published');
+
+        $component = new StateDropdownComponent();
+        $component->workflow = $workflow;
+        $component->value = 'published';
+        $component->useStates = true;
+
+        $html = static::renderComponent($component);
+
+        self::assertStringContainsString('title="Published"', $html);
+        self::assertStringContainsString('btn-success', $html);
+        self::assertStringContainsString('<span class="mr-auto me-auto ms-1">Published</span>', $html);
+    }
+
     #[Test]
     public function usesCurrentStateColorAndSupportsStateMode(): void
     {
@@ -87,6 +131,63 @@ final class StateDropdownComponentTest extends TestCase
 
         self::assertNull($transitionData['stateButton']);
         self::assertCount(1, $transitionData['transitions']);
+    }
+
+    #[Test]
+    public function colorOnTextUsesTextColorAndDefaultButtonColor(): void
+    {
+        $workflow = new WorkflowController('status');
+        $workflow->addState('published')->color('success')->title('Published');
+
+        $component = new StateDropdownComponent();
+        $component->workflow = $workflow;
+        $component->value = 'published';
+        $component->useStates = true;
+        $component->colorOn = 'text';
+
+        $data = $component->data();
+
+        self::assertSame('btn-light', $data['buttonColor']);
+        self::assertSame('text-success', $data['textColor']);
+    }
+
+    #[Test]
+    public function disablesDropdownWhenCurrentStateHasNoEnabledTransitions(): void
+    {
+        $workflow = new WorkflowController('status');
+        $workflow->addState('draft')->title('Draft');
+        $workflow->addState('published')->title('Published');
+        $workflow->addTransition('publish', 'draft', 'published');
+        $workflow->allowFreeTransitions(false);
+
+        $component = new StateDropdownComponent();
+        $component->workflow = $workflow;
+        $component->value = 'published';
+        $component->useStates = false;
+
+        self::assertTrue($component->data()['disabled']);
+
+        $component->value = 'draft';
+
+        self::assertFalse($component->data()['disabled']);
+    }
+
+    #[Test]
+    public function wrapsStringOnclickIntoCallableAndKeepsClosureOnclick(): void
+    {
+        $component = new StateDropdownComponent();
+        $component->workflow = new WorkflowController('status');
+        $component->onclick = 'alert(1)';
+
+        $data = $component->data();
+
+        self::assertIsCallable($data['onclick']);
+        self::assertSame('alert(1)', ($data['onclick'])());
+
+        $closure = static fn() => 'custom';
+        $component->onclick = $closure;
+
+        self::assertSame($closure, $component->data()['onclick']);
     }
 
     #[Test]

@@ -112,12 +112,10 @@ class FlatListField extends SqlListField
     {
         $values = $this->getValue();
 
-        if (is_string($values) && str_contains($values, ',')) {
-            $values = Arr::explodeAndClear(',', $values);
-        }
-
         if (is_json($values)) {
             $values = (array) json_decode($values, true);
+        } elseif (is_string($values) && str_contains($values, ',')) {
+            $values = Arr::explodeAndClear(',', $values);
         }
 
         return (array) $values;

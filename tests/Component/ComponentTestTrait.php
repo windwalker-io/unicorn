@@ -7,9 +7,11 @@ namespace Unicorn\Tests\Component;
 use PHPUnit\Framework\Attributes\BeforeClass;
 use Unicorn\Tests\TestApp;
 use Windwalker\Core\Application\AppContext;
+use Windwalker\Core\Renderer\Edge\WindwalkerExtension;
 use Windwalker\Core\Renderer\RendererService;
 use Windwalker\DI\Container;
 use Windwalker\Edge\Component\AbstractComponent;
+use Windwalker\Renderer\CompositeRenderer;
 
 /**
  * Shared integration-test helper for Unicorn Edge UI components.
@@ -57,8 +59,18 @@ trait ComponentTestTrait
      */
     protected static function renderComponent(AbstractComponent $component, array $extra = []): string
     {
-        $renderer = static::$container->resolve(RendererService::class);
+        $service = static::$container->resolve(RendererService::class);
+        $renderer = $service->createRenderer();
+        $renderer->getRenderer('edge')->extend(
+            static fn ($engine) => $engine->addExtension(new WindwalkerExtension(static::$appContext))
+        );
 
-        return trim($renderer->render($component->render(), [...$component->data(), ...$extra]));
+        return trim(
+            $service->renderWith(
+                $renderer,
+                $component->render(),
+                [...$component->data(), ...$extra]
+            )
+        );
     }
 }

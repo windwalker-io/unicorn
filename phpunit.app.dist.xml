@@ -7,6 +7,7 @@
 >
 	<php>
 		<ini name="error_reporting" value="-1" />
+		<ini name="WINDWALKER_TEST_APP_ROOT" value="../../.." />
 
         <!--
             Database DSN – local installation

@@ -16,9 +16,11 @@ declare(strict_types=1);
 
 use Unicorn\UnicornPackage;
 use Windwalker\Core\Edge\Component\XComponent;
+use Windwalker\Core\Renderer\Edge\WindwalkerExtension;
 use Windwalker\Core\Theme\BootstrapTheme;
 use Windwalker\Core\Theme\ThemeInterface;
 use Windwalker\Edge\Provider\EdgeProvider;
+use Windwalker\Renderer\CompositeRenderer;
 use Windwalker\Renderer\EdgeRenderer;
 use Windwalker\Renderer\MustacheRenderer;
 use Windwalker\Renderer\PlatesRenderer;
@@ -106,3 +108,4 @@ $container->registerByConfig(
         ],
     ],
 );
+
