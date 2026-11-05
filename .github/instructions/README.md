@@ -13,6 +13,7 @@ This directory stores the "instruction layer" of the shared toolkit. It contains
 
 - [architecture.instructions.md](architecture.instructions.md): mandatory
   package placement, host-app boundary, and integration rules
+- [cs.instructions.md](cs.instructions.md): coding style, formatting, and linting rules
 - [instruction.instructions.md](instruction.instructions.md): explains how to route content between `instructions`, `skills`, `docs`, and `prompts`
 - [test-common.instructions.md](test-common.instructions.md): PHPUnit test-writing conventions for PHP test files
 - [test-coverage.instructions.md](test-coverage.instructions.md): mandatory rules for `@codeCoverageIgnore` and untestable branches
