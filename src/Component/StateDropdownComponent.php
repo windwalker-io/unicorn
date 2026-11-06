@@ -110,13 +110,18 @@ class StateDropdownComponent extends AbstractComponent
             }
         }
 
-        $color = $currentState?->getColor() ?? ($this->batch ? 'secondary' : null);
+        $color = $currentState?->getColor();
 
         if ($this->colorOn === 'button') {
-            $buttonColor = 'btn-' . $color;
+            if ($color) {
+                $buttonColor = 'btn-' . $color;
+            }
         } elseif ($this->colorOn === 'text') {
             $buttonColor = $this->buttonColor ?? 'btn-light';
-            $textColor = 'text-' . $color;
+
+            if ($color) {
+                $textColor = 'text-' . $color;
+            }
         }
 
         $fieldName = array_map(

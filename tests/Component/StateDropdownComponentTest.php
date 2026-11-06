@@ -91,7 +91,7 @@ final class StateDropdownComponentTest extends TestCase
         $data = $component->data();
 
         self::assertSame($workflows, $data['workflows']);
-        self::assertSame('btn-secondary', $data['buttonColor']);
+        self::assertNull($data['buttonColor']);
         self::assertSame('c-state-dropdown-status-visibility', $data['buttonId']);
         self::assertFalse($data['disabled']);
     }
