@@ -12,30 +12,34 @@ use Psr\Http\Message\UriInterface;
 // phpcs:disable
 class GetResult extends Result
 {
+    public ?\DateTimeInterface $lastModified = null {
+        set(mixed $value) {
+            if ($value === false) {
+                $value = null;
+            }
+
+            if (is_int($value)) {
+                $value = \DateTimeImmutable::createFromTimestamp($value);
+            }
+
+            if (is_string($value)) {
+                $value = new \DateTimeImmutable($value);
+            }
+
+            $this->lastModified = $value;
+        }
+    }
+
     public function __construct(
         \Closure $responseCallback,
         public string $path,
         public UriInterface $uri,
         public int $fileSize = 0,
-        public ?\DateTimeInterface $lastModified = null {
-            set(mixed $value) {
-                if ($value === false) {
-                    $value = null;
-                }
-
-                if (is_int($value)) {
-                    $value = \DateTimeImmutable::createFromTimestamp($value);
-                }
-
-                if (is_string($value)) {
-                    $value = new \DateTimeImmutable($value);
-                }
-
-                $this->lastModified = $value;
-            }
-        },
+        \DateTimeInterface|int|string|false|null $lastModified = null,
         mixed $rawResult = null,
     ) {
         parent::__construct($responseCallback, $rawResult);
+
+        $this->lastModified = $lastModified;
     }
 }

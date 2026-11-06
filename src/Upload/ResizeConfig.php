@@ -14,7 +14,7 @@ class ResizeConfig extends RecordOptions
         public bool $stripExif = false,
         public ?int $width = null,
         public ?int $height = null,
-        public int $quality = 90,
+        public ?int $quality = 85,
         public bool $crop = false,
         public ?string $outputFormat = null,
         public bool $orientate = true,

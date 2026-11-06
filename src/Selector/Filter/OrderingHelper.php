@@ -57,7 +57,7 @@ class OrderingHelper extends AbstractFilterHelper
          *
          * @return  Query
          */
-        return function (Query $query, string $order, ?string $dir) {
+        return function (Query $query, string $order, \SortDirection|string|null $dir) {
             if (is_string($order) && Str::endsWith($order, ')')) {
                 $order = raw($order);
             }

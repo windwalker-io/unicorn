@@ -102,9 +102,19 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
         return $query;
     }
 
+    /**
+     * Clear computed values (count, offset, allow fields) after any state change.
+     */
+    protected function resetCache(): void
+    {
+        $this->cacheReset();
+        $this->allowFields = null;
+    }
+
     public function modifyQuery(callable $callback): static
     {
         $callback($this->getQuery());
+        $this->resetCache();
 
         return $this;
     }
@@ -274,6 +284,8 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
 
     public function page(int|string|null $page): static
     {
+        $this->resetCache();
+
         if ($page === null) {
             $this->page = $page;
 
@@ -291,6 +303,8 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
 
     public function offset(int|string|null $offset): static
     {
+        $this->resetCache();
+
         if ($offset === null) {
             $this->offset = $offset;
 
@@ -304,6 +318,8 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
 
     public function limit(int|string|null $limit): static
     {
+        $this->resetCache();
+
         if ($limit !== null) {
             $limit = (int) $limit;
         }
@@ -316,6 +332,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
     public function setCountCallback(?\Closure $callback): static
     {
         $this->countCallback = $callback;
+        $this->resetCache();
 
         return $this;
     }
@@ -397,13 +414,17 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
 
                 if ($this->getOption('page_fix') ?? true) {
                     $limit = $this->getLimit();
-                    $total = $this->count();
 
-                    if ($total && $start > $total - $limit) {
-                        $page = (int) ceil($total / $limit);
-                        $start = max(0, ($page - 1) * $limit);
+                    if ($limit > 0) {
+                        $total = $this->count();
 
-                        $this->page($page);
+                        if ($total && $start > $total - $limit) {
+                            $page = (int) ceil($total / $limit);
+                            $start = max(0, ($page - 1) * $limit);
+
+                            // Assign directly to keep the cache alive during computation.
+                            $this->page = $page;
+                        }
                     }
                 }
 
@@ -414,7 +435,13 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
 
     public function getPage(): int
     {
-        return $this->page;
+        if ($this->page !== null) {
+            return $this->page;
+        }
+
+        $limit = (int) $this->getLimit();
+
+        return $limit > 0 ? intdiv($this->getOffset(), $limit) + 1 : 1;
     }
 
     public function getAllowFields(): array
@@ -493,17 +520,29 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
             }
         }
 
-        if ($this->searchText) {
-            foreach ($this->searchFields as $field) {
-                foreach ((array) $this->searchText as $text) {
-                    if ((trim($text) !== '') && $this->isFieldAllow($field)) {
-                        $searches[$field] = $text;
-                    }
-                }
+        $fields = array_filter($this->searchFields, $this->isFieldAllow(...));
+        $texts = array_values(
+            array_filter((array) $this->searchText, static fn($text) => trim((string) $text) !== '')
+        );
+
+        // A single text shares the group with explicit searches.
+        if (count($texts) === 1) {
+            foreach ($fields as $field) {
+                $searches[$field] = $texts[0];
             }
+
+            $texts = [];
         }
 
         $this->getSearchHelper()->process($query, $searches);
+
+        // Multiple texts: each one forms its own group, so every text must match at least one field.
+        foreach ($texts as $text) {
+            $this->getSearchHelper()->process(
+                $query,
+                array_fill_keys($fields, $text)
+            );
+        }
 
         return $query;
     }
@@ -517,6 +556,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
     public function addFilter(string $key, mixed $value): static
     {
         $this->filters[$key] = $value;
+        $this->resetCache();
 
         return $this;
     }
@@ -534,6 +574,8 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
         } else {
             $this->filters = $filters;
         }
+
+        $this->resetCache();
 
         return $this;
     }
@@ -615,6 +657,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
     public function addSearch(string $key, mixed $value): static
     {
         $this->searches[$key] = $value;
+        $this->resetCache();
 
         return $this;
     }
@@ -632,6 +675,8 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
         } else {
             $this->searches = $searches;
         }
+
+        $this->resetCache();
 
         return $this;
     }
@@ -656,6 +701,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
         }
 
         $this->setSearchFields($fields);
+        $this->resetCache();
 
         return $this;
     }
@@ -703,12 +749,16 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
      */
     public function getPagination(int|callable|null $total = null, ?int $neighbours = null): Pagination
     {
+        if (!$this->paginationFactory) {
+            throw new \LogicException('PaginationFactory is required to create pagination.');
+        }
+
         $limit = (int) $this->getLimit();
 
         if ($limit <= 0) {
             $page = 1;
         } else {
-            $page = (int) ceil($this->getOffset() / $limit) + 1;
+            $page = intdiv($this->getOffset(), $limit) + 1;
         }
 
         return $this->paginationFactory->create(
@@ -794,12 +844,15 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
     public function setAllowFields(array $allowFields): static
     {
         $this->customAllowFields = $allowFields;
+        $this->resetCache();
 
         return $this;
     }
 
     public function addAllowFields(string ...$fields): static
     {
+        $this->resetCache();
+
         if (array_is_list($fields)) {
             foreach ($fields as $field) {
                 $this->customAllowFields[] = $field;
@@ -819,7 +872,9 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
     {
         $this->addAllowFields($field);
 
-        $this->fieldAlias($field, $as);
+        if ($as !== null) {
+            $this->fieldAlias($field, $as);
+        }
 
         return $this;
     }
@@ -916,6 +971,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
     public function defaultLimit(?int $defaultLimit): static
     {
         $this->defaultLimit = $defaultLimit;
+        $this->resetCache();
 
         return $this;
     }
@@ -936,6 +992,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
     public function setSearchFields(array $searchFields): static
     {
         $this->searchFields = $searchFields;
+        $this->resetCache();
 
         return $this;
     }
@@ -970,7 +1027,10 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
                 }
 
                 $orderDir ??= 'ASC';
-                $orderDir = strtoupper($orderDir);
+
+                if (is_string($orderDir)) {
+                    $orderDir = strtoupper($orderDir);
+                }
 
                 if (is_string($orderField)) {
                     $orderData[$orderField] = [$orderField, $orderDir];
@@ -1076,6 +1136,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
     public function disablePageFix(bool $value = true): static
     {
         $this->setOption('page_fix', !$value);
+        $this->resetCache();
 
         return $this;
     }
@@ -1130,6 +1191,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
 
     public function __clone(): void
     {
-        $this->query = clone $this->query;
+        $this->query = $this->query ? clone $this->query : null;
+        $this->cacheReset();
     }
 }

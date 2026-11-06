@@ -26,7 +26,7 @@ class ResizeConfigTest extends TestCase
         self::assertFalse($config->stripExif);
         self::assertNull($config->width);
         self::assertNull($config->height);
-        self::assertSame(90, $config->quality);
+        self::assertSame(85, $config->quality);
         self::assertFalse($config->crop);
         self::assertNull($config->outputFormat);
         self::assertTrue($config->orientate);
