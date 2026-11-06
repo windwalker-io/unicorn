@@ -8,15 +8,16 @@ use GuzzleHttp\Psr7\Utils;
 use League\Flysystem\Filesystem;
 use League\Flysystem\Local\LocalFilesystemAdapter;
 use League\Flysystem\UrlGeneration\PublicUrlGenerator;
-use PHPUnit\Framework\Attributes\After;
+use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\Attributes\Before;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Unicorn\Storage\Adapter\FlysystemStorage;
 
 /**
- * Covers FlysystemStorage against a real Flysystem local adapter in a temporary directory. The public URL
- * behavior uses a local adapter subclass that implements PublicUrlGenerator, so no cloud service is needed.
+ * Covers FlysystemStorage against a real Flysystem local adapter on a vfsStream virtual filesystem. The adapter
+ * disables file locking (`LOCK_EX`), which vfsStream does not support. The public URL behavior uses a local adapter
+ * subclass that implements PublicUrlGenerator, so no cloud service is needed.
  */
 final class FlysystemStorageTest extends TestCase
 {
@@ -25,16 +26,7 @@ final class FlysystemStorageTest extends TestCase
     #[Before]
     public function createRootDirectory(): void
     {
-        $this->root = sys_get_temp_dir() . '/flysystem-storage-test-' . uniqid('', true);
-        mkdir($this->root, 0777, true);
-    }
-
-    #[After]
-    public function removeRootDirectory(): void
-    {
-        if (is_dir($this->root)) {
-            $this->removeDirectory($this->root);
-        }
+        $this->root = vfsStream::setup('root')->url();
     }
 
     #[Test]
@@ -63,17 +55,13 @@ final class FlysystemStorageTest extends TestCase
     public function putFileCopiesSourceFile(): void
     {
         $storage = $this->createStorage();
-        $src = sys_get_temp_dir() . '/flysystem-src-' . uniqid('', true) . '.txt';
+        $src = $this->root . '/source.txt';
         file_put_contents($src, 'copied!');
 
-        try {
-            $result = $storage->putFile($src, 'copy.txt');
+        $result = $storage->putFile($src, 'copy.txt');
 
-            self::assertSame(7, $result->fileSize);
-            self::assertSame('copied!', file_get_contents($this->root . '/copy.txt'));
-        } finally {
-            @unlink($src);
-        }
+        self::assertSame(7, $result->fileSize);
+        self::assertSame('copied!', file_get_contents($this->root . '/copy.txt'));
     }
 
     #[Test]
@@ -238,13 +226,13 @@ final class FlysystemStorageTest extends TestCase
         $root = $this->root;
 
         if ($publicUrl === null) {
-            return new Filesystem(new LocalFilesystemAdapter($root));
+            return new Filesystem(new LocalFilesystemAdapter($root, null, 0));
         }
 
         $adapter = new class ($root, $publicUrl) extends LocalFilesystemAdapter implements PublicUrlGenerator {
             public function __construct(string $root, private readonly string $fixedUrl)
             {
-                parent::__construct($root);
+                parent::__construct($root, null, 0);
             }
 
             public function publicUrl(string $path, \League\Flysystem\Config $config): string
@@ -254,24 +242,5 @@ final class FlysystemStorageTest extends TestCase
         };
 
         return new Filesystem($adapter);
-    }
-
-    private function removeDirectory(string $dir): void
-    {
-        foreach (scandir($dir) as $item) {
-            if ($item === '.' || $item === '..') {
-                continue;
-            }
-
-            $path = $dir . '/' . $item;
-
-            if (is_dir($path)) {
-                $this->removeDirectory($path);
-            } else {
-                unlink($path);
-            }
-        }
-
-        rmdir($dir);
     }
 }

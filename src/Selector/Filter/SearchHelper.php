@@ -61,7 +61,7 @@ class SearchHelper extends AbstractFilterHelper
          * @return  string
          */
         return function (Query $query, string $field, mixed $value) {
-            if ($value && $field !== '*' && (string) $value !== '') {
+            if ($field !== '*' && is_scalar($value) && (string) $value !== '') {
                 $query->where($field, 'like', '%' . $value . '%');
             }
 

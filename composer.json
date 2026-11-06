@@ -26,7 +26,8 @@
         "league/flysystem": "^3.36",
         "league/flysystem-aws-s3-v3": "^3.35",
         "phpunit/phpunit": "^13.4",
-        "friendsofphp/php-cs-fixer": "^3.95"
+        "friendsofphp/php-cs-fixer": "^3.95",
+        "mikey179/vfsstream": "^1.6"
     },
     "scripts": {
         "test": "phpunit",

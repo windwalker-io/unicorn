@@ -389,7 +389,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
         $order = $this->getQuery()->getOrder();
 
         if (!$order) {
-            return null;
+            return $this->defaultOrdering;
         }
 
         return (string) $order;
@@ -886,12 +886,11 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
 
     public function resolveFieldAlias(string $field): string
     {
-        while (isset($this->fieldAliases[$field])) {
-            $field = $this->fieldAliases[$field] ?? null;
+        $visited = [];
 
-            if ($field === null) {
-                break;
-            }
+        while (isset($this->fieldAliases[$field]) && !isset($visited[$field])) {
+            $visited[$field] = true;
+            $field = $this->fieldAliases[$field];
         }
 
         return $field;
@@ -1032,11 +1031,7 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
                     $orderDir = strtoupper($orderDir);
                 }
 
-                if (is_string($orderField)) {
-                    $orderData[$orderField] = [$orderField, $orderDir];
-                } else {
-                    $orderData[$orderFieldOrigin] = [$orderField, $orderDir];
-                }
+                $orderData[$orderField] = [$orderField, $orderDir];
             } elseif ($orderItem instanceof RawWrapper) {
                 $orderValue = (string) $orderItem();
 
@@ -1118,9 +1113,9 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
      *
      * @return  static  Return self to support chaining.
      */
-    public function disableAutoSelect(bool $autoSelect = true): static
+    public function disableAutoSelect(bool $disabled = true): static
     {
-        $this->setOption('disable_auto_select', $autoSelect);
+        $this->setOption('disable_auto_select', $disabled);
 
         return $this;
     }
@@ -1192,6 +1187,9 @@ class ListSelector implements EventAwareInterface, \IteratorAggregate, \Countabl
     public function __clone(): void
     {
         $this->query = $this->query ? clone $this->query : null;
+        $this->filterHelper = $this->filterHelper ? clone $this->filterHelper : null;
+        $this->searchHelper = $this->searchHelper ? clone $this->searchHelper : null;
+        $this->orderingHelper = $this->orderingHelper ? clone $this->orderingHelper : null;
         $this->cacheReset();
     }
 }

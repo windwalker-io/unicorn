@@ -143,4 +143,23 @@ class FilterHelpersTest extends TestCase
         $helper->addHandler('a', false);
         $helper->process($query, ['a' => ['id', 'ASC']]);
     }
+
+    #[Test]
+    public function searchKeepsZeroValueAndSkipsNonScalar(): void
+    {
+        $inner = $this->createMock(Query::class);
+        $inner->expects($this->once())
+            ->method('where')
+            ->with('title', 'like', '%0%')
+            ->willReturnSelf();
+
+        $query = $this->createStub(Query::class);
+        $query->method('orWhere')->willReturnCallback(function (callable $cb) use ($inner, $query) {
+            $cb($inner);
+
+            return $query;
+        });
+
+        (new SearchHelper())->process($query, ['title' => '0', 'arr' => ['x'], 'null' => null]);
+    }
 }

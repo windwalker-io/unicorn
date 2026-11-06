@@ -288,4 +288,50 @@ class ListSelectorTest extends TestCase
         $this->assertSame('Date cake', $this->titles($selector)[0]);
         $this->assertStringContainsString('DESC', $selector->compileQuery()->getOrder()->render());
     }
+
+    #[Test]
+    public function cyclicFieldAliasDoesNotLoop(): void
+    {
+        $selector = $this->selector()->fieldAlias('a', 'b')->fieldAlias('b', 'a');
+
+        $this->assertContains($selector->resolveFieldAlias('a'), ['a', 'b']);
+    }
+
+    #[Test]
+    public function chainedFieldAliasResolves(): void
+    {
+        $selector = $this->selector()->fieldAlias('a', 'b')->fieldAlias('b', 'title');
+
+        $this->assertSame('title', $selector->resolveFieldAlias('a'));
+    }
+
+    #[Test]
+    public function searchZeroText(): void
+    {
+        $selector = $this->selector()->searchTextFor('0', ['title']);
+
+        $this->assertSame([], $this->titles($selector));
+    }
+
+    #[Test]
+    public function getOrderingFallsBackToDefaultOrdering(): void
+    {
+        $selector = $this->selector()->defaultOrdering('title DESC');
+        $this->assertSame('title DESC', $selector->getOrdering());
+
+        $selector->ordering('id ASC');
+        $this->assertNotSame('title DESC', $selector->getOrdering());
+    }
+
+    #[Test]
+    public function cloneDoesNotShareHelpers(): void
+    {
+        $selector = $this->selector();
+        $selector->getFilterHelper()->addHandler('state', false);
+        $clone = clone $selector;
+        $clone->getFilterHelper()->addHandler('state', fn() => null);
+
+        $this->assertNotSame($selector->getFilterHelper(), $clone->getFilterHelper());
+        $this->assertCount(5, $selector->addFilter('state', 0)->all());
+    }
 }
