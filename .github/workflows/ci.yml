@@ -62,7 +62,8 @@ jobs:
 
     postgresql:
         name: PostgreSQL (PHP ${{ matrix.php-versions }})
-        runs-on: ubuntu-latest
+        # Pinned: ubuntu-latest (26.04) no longer ships postgresql-client-16, which must match the postgres:16 service.
+        runs-on: ubuntu-24.04
         continue-on-error: ${{ matrix.allow_failure || false }}
         strategy:
             fail-fast: false
@@ -75,6 +76,7 @@ jobs:
             WINDWALKER_TEST_DB_DSN: 'pdo_pgsql:host=127.0.0.1;port=5432;dbname=windwalker_test;user=postgres;password=ut1234;prefix=ww_'
         services:
             postgres:
+                # Major version must match the runner's postgresql-client (pg_dump/pg_restore/psql) for native exports.
                 image: postgres:16
                 env:
                     POSTGRES_PASSWORD: ut1234
@@ -97,6 +99,12 @@ jobs:
                   coverage: none
                   tools: composer
                   extensions: mbstring, intl, json, pdo, pdo_pgsql, pgsql
+
+            - name: Install PostgreSQL client tools
+              run: |
+                  sudo apt-get update
+                  sudo apt-get install -y postgresql-client-16
+                  echo "/usr/lib/postgresql/16/bin" >> "$GITHUB_PATH"
 
             - name: Get Composer cache directory
               id: composer-cache
@@ -153,6 +161,14 @@ jobs:
                   tools: composer
                   extensions: mbstring, intl, json, pdo, pdo_sqlsrv, sqlsrv
 
+            - name: Setup ODBC Driver for SQL Server
+              run: |
+                  curl -sSL -O "https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/packages-microsoft-prod.deb"
+                  sudo dpkg -i packages-microsoft-prod.deb
+                  rm packages-microsoft-prod.deb
+                  sudo apt-get update
+                  sudo ACCEPT_EULA=Y apt-get install -y msodbcsql18 unixodbc-dev
+
             - name: Create test database
               run: |
                   php <<'PHP'
@@ -179,7 +195,7 @@ jobs:
               run: vendor/bin/phpunit -c phpunit.ci.xml
 
     oracle:
-        # Experimental: setup-php does not provide pdo_oci, so the PDO connection needs Oracle Instant Client on the runner.
+        # Experimental: setup-php provides pdo_oci (with Oracle Instant Client) as an extension, as the framework CI does.
         name: Oracle (PHP ${{ matrix.php-versions }})
         runs-on: ubuntu-latest
         continue-on-error: true
@@ -211,7 +227,7 @@ jobs:
                   php-version: ${{ matrix.php-versions }}
                   coverage: none
                   tools: composer
-                  extensions: mbstring, intl, json, pdo
+                  extensions: mbstring, intl, json, pdo, pdo_oci
 
             - name: Get Composer cache directory
               id: composer-cache
