@@ -24,6 +24,10 @@ trait FieldTestTrait
     #[BeforeClass(priority: 100)]
     public static function prepareFieldContext(): void
     {
+        if (!env('WINDWALKER_TEST_DB_DSN')) {
+            self::markTestSkipped('WINDWALKER_TEST_DB_DSN is not set.');
+        }
+
         $container = TestApp::prepareTestContext()->container;
 
         // Layouts that register scripts resolve the asset service, which needs Vite.

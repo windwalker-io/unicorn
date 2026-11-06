@@ -14,10 +14,13 @@
 
 declare(strict_types=1);
 
+use Composer\Autoload\ClassLoader;
+use Unicorn\Tests\TestApp;
 use Unicorn\UnicornPackage;
 use Windwalker\Core\Edge\Component\XComponent;
 use Windwalker\Core\Theme\BootstrapTheme;
 use Windwalker\Core\Theme\ThemeInterface;
+use Windwalker\DI\Container;
 use Windwalker\Edge\Provider\EdgeProvider;
 use Windwalker\Renderer\EdgeRenderer;
 use Windwalker\Renderer\MustacheRenderer;
@@ -27,14 +30,17 @@ use Windwalker\Renderer\TwigRenderer;
 
 $init = include __DIR__ . '/../../core/src/Core/Testing/test.init.php';
 
-$container = $init(
+/** @var Container $container */
+/** @var ClassLoader $classLoader */
+[$container, $classLoader] = $init(
     root: $root = env('WINDWALKER_TEST_APP_ROOT') ?: dirname(__DIR__),
-    workDir: $root,
+    workDir: $root
 );
 
-$container->options->lazy = true;
+// Load local tests
+$classLoader->addPsr4('Unicorn\Tests\\', __DIR__ . '/');
 
-\Unicorn\Tests\TestApp::createInstance(
+TestApp::createInstance(
     container: $container,
     config: [
         '@root' => $root,
