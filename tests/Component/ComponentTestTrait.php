@@ -7,8 +7,10 @@ namespace Unicorn\Tests\Component;
 use PHPUnit\Framework\Attributes\BeforeClass;
 use Unicorn\Tests\TestApp;
 use Windwalker\Core\Application\AppContext;
+use Windwalker\Core\Asset\ViteResolver;
 use Windwalker\Core\Renderer\Edge\WindwalkerExtension;
 use Windwalker\Core\Renderer\RendererService;
+use Windwalker\Core\Router\Router;
 use Windwalker\DI\Container;
 use Windwalker\Edge\Component\AbstractComponent;
 
@@ -50,6 +52,10 @@ trait ComponentTestTrait
         $ctx = TestApp::prepareTestContext();
 
         static::$container = $ctx->container;
+
+        // Edge's globals resolve AssetService (needs Vite) and Navigator (needs a router).
+        static::$container->prepareSharedObject(ViteResolver::class);
+        static::$container->share(Router::class, new Router());
         static::$appContext = $ctx;
     }
 

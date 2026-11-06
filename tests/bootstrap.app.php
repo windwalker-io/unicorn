@@ -38,20 +38,11 @@ $init = include $root . '/vendor/windwalker/core/src/Core/Testing/test.init.php'
     workDir: $root
 );
 
+// Same as www/index.php and Core's own bootstrap: auto-create unregistered classes.
+$container->options->lazy = true;
+
 // Load local tests
 $classLoader->addPsr4('Unicorn\Tests\\', __DIR__ . '/');
-
-TestApp::createInstance(
-    container: $container,
-    config: [
-        '@root' => $root,
-        '@temp' => $root . '/tmp',
-        '@cache' => $root . '/cache',
-        '@public' => $root . '/tests/public',
-        '@migrations' => $root . '/tests/resources/migrations',
-        '@seeders' => $root . '/tests/resources/seeders',
-    ],
-);
 
 /*
  * Minimal `renderer` / `unicorn` config, inlined so the test process depends
@@ -101,22 +92,29 @@ $container->loadParameters([
     ],
 ]);
 
-$container->registerByConfig(
+// Production apps get a level 2 (APP) child of the runtime container; mirror that here.
+TestApp::createInstance(
+    container: $container->createChild(),
+    config: [
+        '@root' => $root,
+        '@temp' => $root . '/tmp',
+        '@cache' => $root . '/cache',
+        '@public' => $root . '/tests/public',
+        '@migrations' => $root . '/tests/resources/migrations',
+        '@seeders' => $root . '/tests/resources/seeders',
+    ],
+);
+
+// Providers need the app services registered while booting, so they go on the app container.
+TestApp::$instance->getContainer()->registerByConfig(
     [
         'providers' => [
             RendererProvider::class,
             EdgeProvider::class,
+            UnicornPackage::class,
         ],
         'bindings' => [
             ThemeInterface::class => BootstrapTheme::class,
-        ],
-    ],
-);
-
-$container->registerByConfig(
-    [
-        'providers' => [
-            UnicornPackage::class,
         ],
     ],
 );

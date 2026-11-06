@@ -7,6 +7,7 @@ namespace Unicorn\Tests\Field;
 use PHPUnit\Framework\Attributes\BeforeClass;
 use Unicorn\Tests\TestApp;
 use Windwalker\Core\Asset\ViteResolver;
+use Windwalker\Core\Router\Router;
 use Windwalker\DI\Container;
 use Windwalker\Form\Field\AbstractField;
 
@@ -33,8 +34,10 @@ trait FieldTestTrait
         // Layouts that register scripts resolve the asset service, which needs Vite.
         $container->prepareSharedObject(ViteResolver::class);
 
-        // Edge's Windwalker extension (and its `$app` global) only registers at container level 3+.
-        static::$container = $container->createChild()->createChild();
+        // Edge's `$nav` global resolves the Navigator, which needs a router.
+        $container->share(Router::class, new Router());
+
+        static::$container = $container;
     }
 
     /**
