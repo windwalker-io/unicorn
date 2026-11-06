@@ -28,12 +28,13 @@ use Windwalker\Renderer\PlatesRenderer;
 use Windwalker\Renderer\Provider\RendererProvider;
 use Windwalker\Renderer\TwigRenderer;
 
-$init = include __DIR__ . '/../../core/src/Core/Testing/test.init.php';
+$root = env('WINDWALKER_TEST_APP_ROOT') ?: dirname(__DIR__);
+$init = include $root . '/vendor/windwalker/core/src/Core/Testing/test.init.php';
 
 /** @var Container $container */
 /** @var ClassLoader $classLoader */
 [$container, $classLoader] = $init(
-    root: $root = env('WINDWALKER_TEST_APP_ROOT') ?: dirname(__DIR__),
+    root: $root,
     workDir: $root
 );
 
