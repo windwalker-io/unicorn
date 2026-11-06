@@ -375,7 +375,9 @@ export class UnicornGridElement {
     url?: Nullable<string>,
     data?: Nullable<Record<string, any>>
   ): boolean {
-    if (!this.validateChecked()) {
+    // validateChecked() always returns `this`, so check the state explicitly
+    if (!this.hasChecked()) {
+      this.validateChecked();
       return false;
     }
 

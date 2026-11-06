@@ -231,7 +231,10 @@ var UnicornGridElement = class {
 	* Delete checked items.
 	*/
 	deleteList(message, url, data) {
-		if (!this.validateChecked()) return false;
+		if (!this.hasChecked()) {
+			this.validateChecked();
+			return false;
+		}
 		message = message == null ? __("unicorn.message.delete.confirm") : message;
 		if (message !== false) simpleConfirm(message).then((isConfirm) => {
 			if (isConfirm) this.form.delete(url, data);
