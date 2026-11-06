@@ -421,6 +421,7 @@ var UnicornFieldValidation = class {
 	get isInputOptions() {
 		return Boolean(this.mergedOptions.inputOptions);
 	}
+	ownCustomMessage = "";
 	get validationMessage() {
 		return this.$input?.validationMessage || "";
 	}
@@ -474,7 +475,7 @@ var UnicornFieldValidation = class {
 		if (this.$input.hasAttribute("[data-novalidate]")) return true;
 		if (this.$input.closest("[data-novalidate]")) return true;
 		if (this.hasChildDirectives()) return true;
-		this.$input.setCustomValidity("");
+		if (!this.hasExternalCustomValidity()) this.setCustomValidity("");
 		let valid = this.$input.checkValidity();
 		if (valid && this.$form) valid = this.runCustomValidity();
 		this.updateValidClass(valid);
@@ -510,7 +511,7 @@ var UnicornFieldValidation = class {
 		if (this.$input.hasAttribute("readonly")) return true;
 		if (this.$input.hasAttribute("[data-novalidate]")) return true;
 		if (this.hasChildDirectives()) return true;
-		this.$input.setCustomValidity("");
+		if (!this.hasExternalCustomValidity()) this.setCustomValidity("");
 		let valid = this.$input.checkValidity();
 		if (valid && this.$form) valid = await this.runCustomValidityAsync();
 		this.updateValidClass(valid);
@@ -609,10 +610,10 @@ var UnicornFieldValidation = class {
 	}
 	handleCustomResult(result, validator) {
 		if (typeof result === "string") {
-			this.$input?.setCustomValidity(result);
+			this.setCustomValidity(result);
 			result = result === "";
 		} else if (result === void 0) result = true;
-		if (result) this.$input?.setCustomValidity("");
+		if (result) this.setCustomValidity("");
 		else if (validator) this.raiseCustomErrorState(validator);
 		return result;
 	}
@@ -627,9 +628,9 @@ var UnicornFieldValidation = class {
 		if (this.$input?.validationMessage === "") {
 			help = validator.options?.notice;
 			if (typeof help === "function") help = help(this.$input, this);
-			if (help != null) this.$input?.setCustomValidity(help);
+			if (help != null) this.setCustomValidity(help);
 		}
-		if (this.$input?.validationMessage === "") this.$input?.setCustomValidity(trans("unicorn.message.validation.custom.error"));
+		if (this.$input?.validationMessage === "") this.setCustomValidity(trans("unicorn.message.validation.custom.error"));
 		this.$input?.dispatchEvent(new CustomEvent("invalid"));
 	}
 	setAsInvalidAndReport(error) {
@@ -637,7 +638,17 @@ var UnicornFieldValidation = class {
 		this.showInvalidResponse();
 	}
 	setCustomValidity(error) {
+		this.ownCustomMessage = String(error);
 		this.$input?.setCustomValidity(error);
+	}
+	/**
+	* Custom validity that was set by other code (not by this directive).
+	* We track the last message we set ourselves, anything else is external.
+	*/
+	hasExternalCustomValidity() {
+		const $input = this.$input;
+		if (!$input?.validity?.customError) return false;
+		return $input.validationMessage !== "" && $input.validationMessage !== this.ownCustomMessage;
 	}
 	reportValidity() {
 		if (this.validationMessage !== "") this.showInvalidResponse();

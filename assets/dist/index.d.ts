@@ -564,16 +564,15 @@ declare interface ModalSelectModule {
     ready: typeof ready_2;
 }
 
-declare function module_2<T = any, E extends Element = Element>(ele: string, name: string, callback?: ((el: E) => any)): (T | null)[];
+export declare function module<T = any, E extends Element = Element>(ele: string, name: string, callback?: ((el: E) => any)): (T | null)[];
 
-declare function module_2<T = any, E extends Element = Element>(ele: NodeListOf<E>, name: string, callback?: ((el: E) => any)): (T | null)[];
+export declare function module<T = any, E extends Element = Element>(ele: NodeListOf<E>, name: string, callback?: ((el: E) => any)): (T | null)[];
 
-declare function module_2<T = any, E extends Element = Element>(ele: E, name: string, callback?: ((el: E) => any)): T | null;
+export declare function module<T = any, E extends Element = Element>(ele: E, name: string, callback?: ((el: E) => any)): T | null;
 
-declare function module_2<T = any, E extends Element = Element>(ele: string | Element | NodeListOf<Element>, name: string, callback?: ((el: E) => any)): (T | null)[] | T | null;
+export declare function module<T = any, E extends Element = Element>(ele: string | Element | NodeListOf<Element>, name: string, callback?: ((el: E) => any)): (T | null)[] | T | null;
 
-declare function module_2<T = any, E extends Element = Element>(ele: string | Element | NodeListOf<Element>, name: string, callback: false): (T | null)[] | T | null;
-export { module_2 as module }
+export declare function module<T = any, E extends Element = Element>(ele: string | Element | NodeListOf<Element>, name: string, callback: false): (T | null)[] | T | null;
 
 declare class MultiUploaderElement extends HTMLElement {
     static is: string;
@@ -751,18 +750,18 @@ declare class S3Uploader extends S3Uploader_base implements EventAwareInterface 
     getHttpClient(): Promise<{
         axios: AxiosInstance;
         request: <T = any, D = any>(options: AxiosRequestConfig) => Promise<AxiosResponse<T, D>>;
-        get: <T = any, D = any>(url: string, options?: Partial<AxiosRequestConfig>) => Promise<AxiosResponse<T, D>>;
-        post: <T = any, D = any>(url: string, data?: any, options?: Partial<AxiosRequestConfig>) => Promise<AxiosResponse<T, D>>;
-        put: <T = any, D = any>(url: string, data?: any, options?: Partial<AxiosRequestConfig>) => Promise<AxiosResponse<T, D>>;
-        patch: <T = any, D = any>(url: string, data?: any, options?: Partial<AxiosRequestConfig>) => Promise<AxiosResponse<T, D>>;
-        delete: <T = any, D = any>(url: string, data?: any, options?: Partial<AxiosRequestConfig>) => Promise<AxiosResponse<T, D>>;
-        head: <T = any, D = any>(url: string, options?: Partial<AxiosRequestConfig>) => Promise<AxiosResponse<T, D>>;
-        options: <T = any, D = any>(url: string, options?: Partial<AxiosRequestConfig>) => Promise<AxiosResponse<T, D>>;
-        requestMiddleware: (callback: Parameters<AxiosInstance["interceptors"]["request"]["use"]>[0]) => number;
-        responseMiddleware: (callback: Parameters<AxiosInstance["interceptors"]["response"]["use"]>[0]) => number;
-        isCancel: isCancel;
-        AxiosError: AxiosError;
-        isAxiosError: isAxiosError;
+        get: <T = any, D = any>(url: string, options?: Partial< AxiosRequestConfig>) => Promise<AxiosResponse<T, D>>;
+        post: <T = any, D = any>(url: string, data?: any, options?: Partial< AxiosRequestConfig>) => Promise<AxiosResponse<T, D>>;
+        put: <T = any, D = any>(url: string, data?: any, options?: Partial< AxiosRequestConfig>) => Promise<AxiosResponse<T, D>>;
+        patch: <T = any, D = any>(url: string, data?: any, options?: Partial< AxiosRequestConfig>) => Promise<AxiosResponse<T, D>>;
+        delete: <T = any, D = any>(url: string, data?: any, options?: Partial< AxiosRequestConfig>) => Promise<AxiosResponse<T, D>>;
+        head: <T = any, D = any>(url: string, options?: Partial< AxiosRequestConfig>) => Promise<AxiosResponse<T, D>>;
+        options: <T = any, D = any>(url: string, options?: Partial< AxiosRequestConfig>) => Promise<AxiosResponse<T, D>>;
+        requestMiddleware: (callback: Parameters< AxiosInstance["interceptors"]["request"]["use"]>[0]) => number;
+        responseMiddleware: (callback: Parameters< AxiosInstance["interceptors"]["response"]["use"]>[0]) => number;
+        isCancel: typeof isCancel;
+        AxiosError: typeof AxiosError;
+        isAxiosError: typeof isAxiosError;
     }>;
     /**
      * Do upload.
@@ -905,9 +904,9 @@ declare class SingleImageDragElement extends HTMLElement {
     checkSize(image: HTMLImageElement): boolean;
     alert(title: string, text?: string, type?: string): Promise<void>;
     saveImage(file: File): Promise<void>;
-    uploadImage(file: File): Promise<AxiosResponse<ApiReturn<{
-    url: string;
-    }>, any, {}>>;
+    uploadImage(file: File): Promise< AxiosResponse<ApiReturn<{
+        url: string;
+    }>, any, {}, any>>;
     storeValue(url: string, preview: string): void;
 }
 
@@ -1034,6 +1033,7 @@ declare class UnicornFieldValidation {
     get invalidClass(): string;
     get isVisible(): boolean;
     get isInputOptions(): boolean;
+    protected ownCustomMessage: string;
     get validationMessage(): string;
     get validity(): ValidityState | undefined;
     selectInput(): InputElements | undefined;
@@ -1058,6 +1058,11 @@ declare class UnicornFieldValidation {
     raiseCustomErrorState(validator: Validator): void;
     setAsInvalidAndReport(error: string): void;
     setCustomValidity(error: string): void;
+    /**
+     * Custom validity that was set by other code (not by this directive).
+     * We track the last message we set ourselves, anything else is external.
+     */
+    protected hasExternalCustomValidity(): boolean;
     reportValidity(): void;
     showInvalidResponse(): void;
     getErrorElement(): Element | null;
@@ -1082,7 +1087,7 @@ declare class UnicornFormElement {
     element: HTMLFormElement | undefined;
     options: Record<string, any>;
     constructor(selector?: string | Element, element?: HTMLFormElement, options?: Record<string, any>);
-    initComponent(store?: string, custom?: {}): Promise<Alpine_2>;
+    initComponent(store?: string, custom?: {}): Promise< Alpine_2>;
     useState(custom?: {}): Record<string, any>;
     getElement(): HTMLFormElement | undefined;
     submit(url?: Nullable<string>, data?: Nullable<Record<string, any>>, method?: Nullable<string>, customMethod?: Nullable<string>): boolean;
@@ -1165,7 +1170,7 @@ declare class UnicornGridElement {
     bindEvents(): void;
     private bindMustCheckedEvent;
     preventBSModal(selector?: string | HTMLElement, msg?: string | boolean): void;
-    initComponent(store?: string, custom?: Record<string, string>): Promise<Alpine_2>;
+    initComponent(store?: string, custom?: Record<string, string>): Promise< Alpine_2>;
     useState(this: any, custom?: Record<string, any>): Partial<Record<string, any>> & Record<string, any>;
     getElement(): HTMLElement;
     sendFilter($event?: Event, method?: string): void;
@@ -1531,12 +1536,12 @@ export declare function useUnicornPhpAdapter(app?: UnicornApp): {
     bootstrap: {
         tooltip: typeof useBs5Tooltip;
         buttonRadio: {
-            (): Promise<ButtonRadioModule>;
-            (selector?: string | HTMLElement, options?: ButtonRadioOptions): Promise<ButtonRadio>;
+            (): Promise< ButtonRadioModule>;
+            (selector?: string | HTMLElement, options?: ButtonRadioOptions): Promise< ButtonRadio>;
         };
         keepTab: {
-            (): Promise<KeepTabModule>;
-            (selector?: string | HTMLElement, options?: KeepTabOptions): Promise<KeepTab>;
+            (): Promise< KeepTabModule>;
+            (selector?: string | HTMLElement, options?: KeepTabOptions): Promise< KeepTab>;
         };
     };
 };
@@ -1584,6 +1589,13 @@ export declare function watchAttributes<T extends HTMLElement>(el: T, callback?:
 export { }
 
 
+declare global {
+    interface Node {
+        __unicorn?: any;
+    }
+}
+
+
 declare module '@windwalker-io/unicorn-next' {
     interface UnicornApp {
         /** @deprecated Only for code generator use. */
@@ -1593,21 +1605,10 @@ declare module '@windwalker-io/unicorn-next' {
 
 
 declare global {
-    interface Node {
-        __unicorn?: any;
-    }
-}
-
-
-declare global {
     var Alpine: AlpineGlobal;
     var TomSelect: typeof TomSelectGlobal;
     var Spectrum: typeof SpectrumGlobal;
     var Mark: any;
-}
-
-declare global {
-    var S: any;
 }
 
 
@@ -1621,9 +1622,8 @@ declare module 'axios' {
     }
 }
 
-
 declare global {
-    var tinymce: TinyMCE;
+    var S: any;
 }
 
 
@@ -1631,4 +1631,9 @@ declare global {
     export interface Window {
         bootstrap: typeof bootstrap;
     }
+}
+
+
+declare global {
+    var tinymce: TinyMCE;
 }

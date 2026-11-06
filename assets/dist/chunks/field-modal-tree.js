@@ -20,7 +20,7 @@ function flattenChildren(children) {
 	loopChildren(children);
 	return flat;
 }
-// ../../../../node_modules/vue3-slide-up-down/dist/vue3-slide-up-down.js
+// node_modules/vue3-slide-up-down/dist/vue3-slide-up-down.js
 function y(t) {
 	return {
 		height: t.style.height,

@@ -405,6 +405,8 @@ export class UnicornFieldValidation {
     return Boolean(this.mergedOptions.inputOptions);
   }
 
+  protected ownCustomMessage = '';
+
   get validationMessage(): string {
     return this.$input?.validationMessage || '';
   }
@@ -509,7 +511,10 @@ export class UnicornFieldValidation {
       return true;
     }
 
-    this.$input.setCustomValidity('');
+    if (!this.hasExternalCustomValidity()) {
+      this.setCustomValidity('');
+    }
+
     let valid = this.$input.checkValidity();
 
     if (valid && this.$form) {
@@ -586,7 +591,10 @@ export class UnicornFieldValidation {
       return true;
     }
 
-    this.$input.setCustomValidity('');
+    if (!this.hasExternalCustomValidity()) {
+      this.setCustomValidity('');
+    }
+
     let valid = this.$input.checkValidity();
 
     if (valid && this.$form) {
@@ -776,14 +784,14 @@ export class UnicornFieldValidation {
 
   handleCustomResult(result: boolean | string | undefined, validator?: Nullable<Validator>): boolean {
     if (typeof result === 'string') {
-      this.$input?.setCustomValidity(result);
+      this.setCustomValidity(result);
       result = result === '';
     } else if (result === undefined) {
       result = true;
     }
 
     if (result) {
-      this.$input?.setCustomValidity('');
+      this.setCustomValidity('');
     } else if (validator) {
       this.raiseCustomErrorState(validator);
     }
@@ -813,12 +821,12 @@ export class UnicornFieldValidation {
       }
 
       if (help != null) {
-        this.$input?.setCustomValidity(help);
+        this.setCustomValidity(help);
       }
     }
 
     if (this.$input?.validationMessage === '') {
-      this.$input?.setCustomValidity(trans('unicorn.message.validation.custom.error'));
+      this.setCustomValidity(trans('unicorn.message.validation.custom.error'));
     }
 
     this.$input?.dispatchEvent(
@@ -832,7 +840,22 @@ export class UnicornFieldValidation {
   }
 
   setCustomValidity(error: string) {
+    this.ownCustomMessage = String(error);
     this.$input?.setCustomValidity(error);
+  }
+
+  /**
+   * Custom validity that was set by other code (not by this directive).
+   * We track the last message we set ourselves, anything else is external.
+   */
+  protected hasExternalCustomValidity(): boolean {
+    const $input = this.$input;
+
+    if (!$input?.validity?.customError) {
+      return false;
+    }
+
+    return $input.validationMessage !== '' && $input.validationMessage !== this.ownCustomMessage;
   }
 
   reportValidity() {

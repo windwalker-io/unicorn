@@ -107,7 +107,7 @@
     "tom-select": "^2.4.3",
     "vue": "^3.5.22",
     "vue-draggable-plus": "^0.6.0",
-    "vue-multi-uploader": "^0.1.9",
+    "vue-multi-uploader": "^0.1.14",
     "web-directive": "^0.2.0"
   }
 }
