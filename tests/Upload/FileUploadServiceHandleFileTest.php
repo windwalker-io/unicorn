@@ -33,7 +33,7 @@ class FileUploadServiceHandleFileTest extends TestCase
     private string $txtPath;
 
     /**
-     * @var array<int, array{stream: mixed, path: string}>
+     * @var  array<int, array{stream: mixed, path: string}>
      */
     private array $puts = [];
 

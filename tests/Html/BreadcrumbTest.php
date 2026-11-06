@@ -93,7 +93,7 @@ final class BreadcrumbTest extends TestCase
         $bc->push('B');
 
         $mapped = $bc->map(
-            static fn (array $item): array => array_merge($item, ['title' => strtoupper($item['title'])])
+            static fn(array $item): array => array_merge($item, ['title' => strtoupper($item['title'])])
         );
 
         self::assertNotSame($bc, $mapped);
@@ -126,7 +126,7 @@ final class BreadcrumbTest extends TestCase
         $renderer->expects($this->once())
             ->method('render')
             ->with('@theme::components.breadcrumb', $this->callback(
-                fn (array $params): bool => ($params['breadcrumb'] ?? null) instanceof Breadcrumb
+                fn(array $params): bool => ($params['breadcrumb'] ?? null) instanceof Breadcrumb
                     && ($params['foo'] ?? null) === 'bar'
             ))
             ->willReturn('<nav>rendered</nav>');

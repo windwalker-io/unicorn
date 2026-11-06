@@ -53,6 +53,6 @@ trait FieldTestTrait
         $dom = new \DOMDocument();
         @$dom->loadHTML('<?xml encoding="UTF-8"><body>' . $html . '</body>');
 
-        return (new \DOMXPath($dom))->query($xpath);
+        return new \DOMXPath($dom)->query($xpath);
     }
 }

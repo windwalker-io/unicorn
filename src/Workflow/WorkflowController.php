@@ -601,7 +601,7 @@ class WorkflowController implements EventAwareInterface
         foreach ($this->getStates() as $state) {
             $attrs['value'] = $state->getValue();
 
-            $options[] = HTMLElement::create(
+            $options[] = HTMLElement::new(
                 'option',
                 $attrs,
                 $state->getTitle() ?? $state->getValue(),
@@ -619,7 +619,7 @@ class WorkflowController implements EventAwareInterface
             $button->addState((string) $value)
                 ->icon($state->getIcon())
                 ->color($state->getColor())
-                ->title($state->getTitle());
+                ->title($state->getTitle() ?? $state->getValue());
         }
 
         return $button;

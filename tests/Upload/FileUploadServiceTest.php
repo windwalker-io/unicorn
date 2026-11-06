@@ -6,7 +6,6 @@ namespace Unicorn\Tests\Upload;
 
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
-use Unicorn\Upload\FileUploadOptions;
 use Unicorn\Upload\FileUploadService;
 use Symfony\Component\Mime\MimeTypes;
 use Windwalker\DI\Container;

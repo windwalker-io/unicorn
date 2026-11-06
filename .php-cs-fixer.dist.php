@@ -2,10 +2,44 @@
 
 declare(strict_types=1);
 
-$file = __DIR__ . '/../core/.php-cs-fixer.dist.php';
+use PhpCsFixer\Config;
+use PhpCsFixer\Finder;
 
-if (!file_exists($file)) {
-    $file = __DIR__ . '/vendor/windwalker/core/.php-cs-fixer.dist.php';
+$rules = __DIR__ . '/../core/.php-cs-fixer.rules.php';
+
+if (!file_exists($rules)) {
+    $rules = __DIR__ . '/vendor/windwalker/core/.php-cs-fixer.rules.php';
 }
 
-return include $file;
+$finder = Finder::create()
+    ->in(
+        [
+            __DIR__ . '/bin',
+            __DIR__ . '/etc',
+            __DIR__ . '/resources',
+            __DIR__ . '/routes',
+            __DIR__ . '/src',
+            __DIR__ . '/tests',
+            __DIR__ . '/views',
+        ]
+    )
+    ->exclude(
+        [
+            'tmp',
+            'cache',
+        ]
+    )
+    ->name('*.php')
+    ->notName(
+        [
+            '*.blade.php',
+            '*.edge.php',
+        ]
+    );
+
+return new Config()
+    ->setRiskyAllowed(true)
+    ->setRules(include $rules)
+    ->setIndent('    ')
+    ->setLineEnding("\n")
+    ->setFinder($finder);

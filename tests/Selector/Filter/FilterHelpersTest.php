@@ -26,7 +26,7 @@ class FilterHelpersTest extends TestCase
                 return $query;
             });
 
-        $result = (new FilterHelper())->process(
+        $result = new FilterHelper()->process(
             $query,
             ['foo' => 'bar', 'empty' => '', 'emptyArr' => [], 'ids' => [1, 2]]
         );
@@ -44,7 +44,7 @@ class FilterHelpersTest extends TestCase
             ->with('f', 'in', ['a' => 1])
             ->willReturnSelf();
 
-        (new FilterHelper())->process($query, ['f' => (object) ['a' => 1]]);
+        new FilterHelper()->process($query, ['f' => (object) ['a' => 1]]);
     }
 
     #[Test]
@@ -123,7 +123,7 @@ class FilterHelpersTest extends TestCase
                 return $query;
             });
 
-        (new OrderingHelper())->process($query, [
+        new OrderingHelper()->process($query, [
             'a' => ['id', 'DESC'],
             'b' => ['RAND()', 'ASC'],
         ]);
@@ -160,6 +160,6 @@ class FilterHelpersTest extends TestCase
             return $query;
         });
 
-        (new SearchHelper())->process($query, ['title' => '0', 'arr' => ['x'], 'null' => null]);
+        new SearchHelper()->process($query, ['title' => '0', 'arr' => ['x'], 'null' => null]);
     }
 }
