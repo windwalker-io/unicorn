@@ -1,5 +1,6 @@
-//#region ../../../../node_modules/@lyrasoft/ts-toolkit/src/generic/stack.ts
+// ../../../../node_modules/@lyrasoft/ts-toolkit/src/generic/stack.ts
 var Stack = class {
+	store;
 	observers = [];
 	constructor(store = []) {
 		this.store = store;
@@ -61,8 +62,7 @@ var Stack = class {
 function stack(store = []) {
 	return new Stack(store);
 }
-//#endregion
-//#region src/composable/useStack.ts
+// src/composable/useStack.ts
 var stacks = {};
 function useStack(name = "default", store = []) {
 	return stacks[name] ??= createStack(store);
@@ -70,7 +70,6 @@ function useStack(name = "default", store = []) {
 function createStack(store = []) {
 	return stack(store);
 }
-//#endregion
 export { useStack as n, createStack as t };
 
 //# sourceMappingURL=useStack.js.map

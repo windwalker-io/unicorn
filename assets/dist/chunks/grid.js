@@ -1,9 +1,11 @@
-import { a as h, t as delegate } from "./dom.js";
-import { f as slideDown, m as slideUp, s as loadAlpine } from "./ui.js";
-import { i as simpleConfirm, n as deleteConfirm, r as simpleAlert } from "./alert.js";
 import { t as __ } from "./lang.js";
-//#region src/module/grid.ts
+import { a as h, t as delegate } from "./dom.js";
+import { i as simpleConfirm, n as deleteConfirm, r as simpleAlert } from "./alert.js";
+import { f as slideDown, m as slideUp, s as loadAlpine } from "./ui.js";
+// src/module/grid.ts
 var UnicornGridElement = class {
+	element;
+	form;
 	options;
 	ordering = "";
 	state = {};
@@ -344,7 +346,6 @@ var UnicornGridElement = class {
 		return this.form.element?.id + suffix;
 	}
 };
-//#endregion
 export { UnicornGridElement };
 
 //# sourceMappingURL=grid.js.map

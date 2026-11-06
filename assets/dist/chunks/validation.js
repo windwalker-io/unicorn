@@ -1,9 +1,9 @@
-import { t as mergeDeep } from "./arr.js";
-import { d as selectOne, o as html, r as getBoundedInstance, u as selectAll } from "./dom.js";
-import { x as useUITheme } from "./ui.js";
-import { n as trans } from "./lang.js";
 import { useUniDirective } from "../unicorn.js";
-//#region ../../../../node_modules/punycode/punycode.es6.js
+import { d as selectOne, o as html, r as getBoundedInstance, u as selectAll } from "./dom.js";
+import { n as trans } from "./lang.js";
+import { x as useUITheme } from "./ui.js";
+import { t as mergeDeep } from "./arr.js";
+// ../../../../node_modules/punycode/punycode.es6.js
 /** Highest positive signed 32-bit float value */
 var maxInt = 2147483647;
 /** Bootstring parameters */
@@ -24,9 +24,9 @@ var errors = {
 	"invalid-input": "Invalid input"
 };
 /** Convenience shortcuts */
-var baseMinusTMin = base - tMin;
-var floor = Math.floor;
-var stringFromCharCode = String.fromCharCode;
+var baseMinusTMin = 35;
+var floor = /*@__PURE__*/ (() => Math.floor)();
+var stringFromCharCode = /*@__PURE__*/ (() => String.fromCharCode)();
 /**
 * A generic error utility function.
 * @private
@@ -124,8 +124,8 @@ var adapt = function(delta, numPoints, firstTime) {
 	let k = 0;
 	delta = firstTime ? floor(delta / damp) : delta >> 1;
 	delta += floor(delta / numPoints);
-	for (; delta > baseMinusTMin * tMax >> 1; k += base) delta = floor(delta / baseMinusTMin);
-	return floor(k + (baseMinusTMin + 1) * delta / (delta + skew));
+	for (; delta > 455; k += base) delta = floor(delta / baseMinusTMin);
+	return floor(k + 36 * delta / (delta + skew));
 };
 /**
 * Converts a string of Unicode symbols (e.g. a domain name label) to a
@@ -191,8 +191,7 @@ var toASCII = function(input) {
 		return regexNonASCII.test(string) ? "xn--" + encode(string) : string;
 	});
 };
-//#endregion
-//#region src/module/validation.ts
+// src/module/validation.ts
 var validatorHandlers = {};
 var defaultOptions = {
 	scroll: false,
@@ -383,6 +382,7 @@ var UnicornFormValidation = class {
 	}
 };
 var UnicornFieldValidation = class {
+	el;
 	$input;
 	options = {};
 	static is = "uni-field-validate";
@@ -701,9 +701,7 @@ var UnicornFieldValidation = class {
 			case "[":
 				obj.attrs.push(token.slice(1, -1).split("="));
 				break;
-			default:
-				obj.tags.push(token);
-				break;
+			default: obj.tags.push(token);
 		}
 		return obj;
 	}
@@ -764,7 +762,7 @@ validatorHandlers["password-confirm"] = function(value, element) {
 	if (!selector) throw new Error("Validator: \"password-confirm\" must add \"data-confirm-target\" attribute.");
 	return document.querySelector(selector)?.value === value;
 };
-var ready = /* @__PURE__ */ Promise.all([/* @__PURE__ */ useUniDirective("form-validate", {
+var ready = /*@__PURE__*/ Promise.all([/*@__PURE__*/ useUniDirective("form-validate", {
 	mounted(el, binding) {
 		getBoundedInstance(el, "form.validation", (ele) => {
 			return new UnicornFormValidation(ele, JSON.parse(binding.value || "{}"));
@@ -773,7 +771,7 @@ var ready = /* @__PURE__ */ Promise.all([/* @__PURE__ */ useUniDirective("form-v
 	updated(el, binding) {
 		getBoundedInstance(el, "form.validation").mergeOptions(JSON.parse(binding.value || "{}"));
 	}
-}), /* @__PURE__ */ useUniDirective("field-validate", {
+}), /*@__PURE__*/ useUniDirective("field-validate", {
 	mounted(el, binding) {
 		getBoundedInstance(el, "field.validation", (ele) => {
 			return new UnicornFieldValidation(ele, JSON.parse(binding.value || "{}"));
@@ -790,7 +788,6 @@ function handleParamValue(value) {
 	if (value === "false") return true;
 	return value;
 }
-//#endregion
 export { UnicornFieldValidation, UnicornFormValidation, ready, validatorHandlers as validators };
 
 //# sourceMappingURL=validation.js.map

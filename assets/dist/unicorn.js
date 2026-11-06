@@ -1,8 +1,8 @@
 import { n as Mixin, t as EventMixin } from "./chunks/events.js";
-import { t as mergeDeep } from "./chunks/arr.js";
 import { n as removeData, t as data } from "./chunks/data.js";
 import { a as h, c as module, d as selectOne, i as getBoundedInstanceList, l as removeBoundedInstance, n as domready, o as html, r as getBoundedInstance, s as injectCssToDocument, t as delegate, u as selectAll } from "./chunks/dom.js";
 import { C as promiseWithResolvers, S as useVueComponentField, _ as useDisableIfStackNotEmpty, a as highlight, b as useUI, c as mark, d as renderMessage, f as slideDown, g as useColorPicker, h as useAlertAdapter, i as fadeOut, l as prepareAlpine, m as slideUp, n as clearMessages, o as initAlpineComponent, p as slideToggle, r as fadeIn, s as loadAlpine, t as UnicornUI, u as prepareAlpineDefer, v as useDisableOnSubmit, w as animateTo, x as useUITheme, y as useKeepAlive } from "./chunks/ui.js";
+import { a as useScriptImport, i as useImport, n as useCssImport, o as useSeriesImport, r as useCssIncludes, t as doImport } from "./chunks/loader.js";
 import { a as simpleNotify, i as simpleConfirm, n as deleteConfirm, r as simpleAlert, t as clearNotifies } from "./chunks/alert.js";
 import { i as uid, n as randomBytesString, r as tid, t as randomBytes } from "./chunks/crypto.js";
 import { n as useQueue, t as createQueue } from "./chunks/useQueue.js";
@@ -10,10 +10,9 @@ import { n as useStack, t as createStack } from "./chunks/useStack.js";
 import { t as sleep } from "./chunks/timing.js";
 import { a as nextTick, i as isError, n as forceArray, o as throttle, r as isDebug, s as wait, t as debounce } from "./chunks/helper.js";
 import { n as trans, r as useLang, t as __ } from "./chunks/lang.js";
-import { a as useScriptImport, i as useImport, n as useCssImport, o as useSeriesImport, r as useCssIncludes, t as doImport } from "./chunks/loader.js";
+import { t as mergeDeep } from "./chunks/arr.js";
 import { a as parseQuery, i as hasRoute, n as addRoute, o as route, r as buildQuery, t as addQuery } from "./chunks/router.js";
-import { Modal } from "bootstrap";
-//#region src/service/crypto.ts
+// src/service/crypto.ts
 function base64UrlEncode(string) {
 	return btoa(String(string)).replace(/\+/, "-").replace(/* @__PURE__ */ new RegExp("\\/"), "_").replace(/=+$/, "");
 }
@@ -27,12 +26,13 @@ var globalSerial = 1;
 function serial() {
 	return globalSerial++;
 }
-//#endregion
-//#region src/service/dom-watcher.ts
+// src/service/dom-watcher.ts
 function watchAttributes(el, callback) {
 	return new AttributeMutationObserver(el, callback);
 }
 var AttributeMutationObserver = class {
+	element;
+	callback;
 	observer;
 	watches = {};
 	constructor(element, callback) {
@@ -67,8 +67,7 @@ var AttributeMutationObserver = class {
 		this.observer.disconnect();
 	}
 };
-//#endregion
-//#region src/composable/useUIBootstrap5.ts
+// src/composable/useUIBootstrap5.ts
 async function useUIBootstrap5(install = false, pushToGlobal = false) {
 	const { UIBootstrap5 } = await import("./chunks/ui-bootstrap5.js");
 	const theme = UIBootstrap5.get();
@@ -87,12 +86,11 @@ var useBs5KeepTab = async (selector, options = {}) => {
 var useBs5ButtonRadio = async (selector, options = {}) => {
 	return (await useUIBootstrap5()).buttonRadio(selector, options);
 };
-//#endregion
-//#region src/composable/useBsModalAlert.ts
+// src/composable/useBsModalAlert.ts
 var currentOpenedModals = {};
 var defaultOptions = { buttons: ["OK"] };
 async function useBsModalAlert(id, options) {
-	await useUIBootstrap5();
+	const { bootstrap: { Modal } } = await useUIBootstrap5();
 	let modalElement = void 0;
 	if (typeof id !== "string" && !(id instanceof HTMLElement)) {
 		options = id;
@@ -273,58 +271,49 @@ async function createButton(buttonOption, handler, isConfirm) {
 	}
 	return button;
 }
-//#endregion
-//#region src/composable/useCheckboxesMultiSelect.ts
+// src/composable/useCheckboxesMultiSelect.ts
 async function useCheckboxesMultiSelect(selector, options = {}) {
 	const m = await import("./chunks/checkboxes-multi-select.js");
 	if (selector) m.CheckboxesMultiSelect.handle(selector, options);
 	return m;
 }
-//#endregion
-//#region src/composable/useFieldCascadeSelect.ts
+// src/composable/useFieldCascadeSelect.ts
 async function useFieldCascadeSelect() {
 	const module = await import("./chunks/field-cascade-select.js");
 	await module.ready;
 	return module;
 }
-//#endregion
-//#region src/composable/useFieldFileDrag.ts
+// src/composable/useFieldFileDrag.ts
 async function useFieldFileDrag() {
 	const module = await import("./chunks/field-file-drag.js");
 	await module.ready;
 	return module;
 }
-//#endregion
-//#region src/composable/useFieldFlatpickr.ts
+// src/composable/useFieldFlatpickr.ts
 function useFieldFlatpickr() {
 	return import("./chunks/field-flatpickr.js");
 }
-//#endregion
-//#region src/composable/useFieldModalSelect.ts
+// src/composable/useFieldModalSelect.ts
 function useFieldModalSelect() {
 	return import("./chunks/field-modal-select.js");
 }
-//#endregion
-//#region src/composable/useFieldModalTree.ts
+// src/composable/useFieldModalTree.ts
 function useFieldModalTree() {
 	return import("./chunks/field-modal-tree.js");
 }
-//#endregion
-//#region src/composable/useFieldRepeatable.ts
+// src/composable/useFieldRepeatable.ts
 async function useFieldRepeatable() {
 	const module = await import("./chunks/field-repeatable.js");
 	await module.ready;
 	return module;
 }
-//#endregion
-//#region src/composable/useFieldSingleImageDrag.ts
+// src/composable/useFieldSingleImageDrag.ts
 async function useFieldSingleImageDrag() {
 	const module = await import("./chunks/field-single-image-drag.js");
 	await module.ready;
 	return module;
 }
-//#endregion
-//#region src/composable/useForm.ts
+// src/composable/useForm.ts
 var formElement;
 function useFormAsync(ele, options = {}) {
 	const promise = import("./chunks/form.js").then(({ UnicornFormElement }) => {
@@ -362,8 +351,7 @@ async function useFormComponent(ele, options = {}) {
 async function useFormSubmit(options = {}) {
 	return (await useFormAsync(options.form))[options.method?.toLowerCase() || "post"](options.url, options.data);
 }
-//#endregion
-//#region src/composable/useGrid.ts
+// src/composable/useGrid.ts
 var gridElement;
 async function useGridAsync(ele, options = {}) {
 	await useFormAsync();
@@ -385,8 +373,7 @@ async function useGridComponent(ele, options = {}) {
 	await grid?.initComponent();
 	return grid;
 }
-//#endregion
-//#region src/composable/useHttp.ts
+// src/composable/useHttp.ts
 function useHttpClient(config) {
 	const promise = import("./chunks/http-client.js").then(({ createHttpClient }) => {
 		return createHttpClient(config);
@@ -431,15 +418,13 @@ function useHttpClient(config) {
 	});
 	return data;
 }
-//#endregion
-//#region src/composable/useIframeModal.ts
+// src/composable/useIframeModal.ts
 async function useIframeModal() {
 	const module = await import("./chunks/iframe-modal.js");
 	await module.ready;
 	return module;
 }
-//#endregion
-//#region src/composable/useListDependent.ts
+// src/composable/useListDependent.ts
 async function useListDependent(element, dependent, options = {}) {
 	const module = await import("./chunks/list-dependent.js");
 	await module.ready;
@@ -449,8 +434,7 @@ async function useListDependent(element, dependent, options = {}) {
 	}
 	return module;
 }
-//#endregion
-//#region src/composable/useS3Uploader.ts
+// src/composable/useS3Uploader.ts
 async function useS3Uploader(name, options = {}) {
 	const module = await import("./chunks/s3-uploader.js");
 	if (!name) return module;
@@ -462,15 +446,13 @@ async function useS3MultipartUploader(options) {
 	if (options != null) return new module.S3MultipartUploader(options);
 	return module;
 }
-//#endregion
-//#region src/composable/useShowOn.ts
+// src/composable/useShowOn.ts
 async function useShowOn() {
 	const module = await import("./chunks/show-on.js");
 	await module.ready;
 	return module;
 }
-//#endregion
-//#region src/composable/useTomSelect.ts
+// src/composable/useTomSelect.ts
 /**
 * @see https://tom-select.js.org/
 */
@@ -504,8 +486,7 @@ async function useTomSelect(selector, options = {}, theme = "bootstrap5") {
 	});
 	return m;
 }
-//#endregion
-//#region src/composable/useTinymce.ts
+// src/composable/useTinymce.ts
 async function useTinymce(selector, options = {}) {
 	const module = await import("./chunks/tinymce.js");
 	if (selector) return module.get(selector, options);
@@ -515,8 +496,7 @@ async function useTinymceHook(handler) {
 	const { addHook } = await import("./chunks/tinymce.js");
 	return addHook(handler);
 }
-//#endregion
-//#region src/composable/useUniDirective.ts
+// src/composable/useUniDirective.ts
 var instances = {};
 async function useWebDirective(name = "unicorn", options = {}) {
 	if (options === false) {
@@ -534,8 +514,7 @@ async function createWebDirective(options = {}) {
 	wd.listen();
 	return wd;
 }
-//#endregion
-//#region src/composable/useValidation.ts
+// src/composable/useValidation.ts
 async function useFormValidation(selector) {
 	const module = await import("./chunks/validation.js");
 	await module.ready;
@@ -552,8 +531,7 @@ async function addGlobalValidator(name, validator, options = {}) {
 	const { UnicornFormValidation } = await useFormValidation();
 	UnicornFormValidation.addGlobalValidator(name, validator, options);
 }
-//#endregion
-//#region src/service/uri.ts
+// src/service/uri.ts
 function useSystemUri(type, path) {
 	const uri = UnicornSystemUri.get();
 	if (type) return uri[type](path);
@@ -618,15 +596,13 @@ var UnicornAssetUri = class {
 		return asset("root") + path;
 	}
 };
-//#endregion
-//#region src/utilities/base.ts
+// src/utilities/base.ts
 function removeCloak() {
 	if (globalThis.document == null) return;
 	selectAll("[uni-cloak]", (el) => el.removeAttribute("uni-cloak"));
 }
-//#endregion
-//#region src/app.ts
-var UnicornApp = class extends Mixin(EventMixin) {
+// src/app.ts
+var UnicornApp = class extends (/*@__PURE__*/ Mixin(EventMixin)) {
 	registry = /* @__PURE__ */ new Map();
 	plugins = /* @__PURE__ */ new Map();
 	waits = [];
@@ -691,8 +667,7 @@ var UnicornApp = class extends Mixin(EventMixin) {
 		return this;
 	}
 };
-//#endregion
-//#region src/polyfill/form-request-submit.ts
+// src/polyfill/form-request-submit.ts
 function formRequestSubmit(prototype) {
 	if (typeof prototype.requestSubmit == "function") return;
 	prototype.requestSubmit = function(submitter) {
@@ -717,20 +692,17 @@ function formRequestSubmit(prototype) {
 		throw new errorConstructor("Failed to execute 'requestSubmit' on 'HTMLFormElement': " + message + ".", name);
 	}
 }
-//#endregion
-//#region src/polyfill/index.ts
+// src/polyfill/index.ts
 function polyfill() {
 	if (typeof window !== "undefined") formRequestSubmit(HTMLFormElement.prototype);
 }
-//#endregion
-//#region src/composable/useFieldMultiUploader.ts
+// src/composable/useFieldMultiUploader.ts
 async function useFieldMultiUploader() {
 	const module = await import("./chunks/field-multi-uploader.js");
 	await module.ready;
 	return module;
 }
-//#endregion
-//#region src/plugin/php-adapter.ts
+// src/plugin/php-adapter.ts
 function useUnicornPhpAdapter(app) {
 	app ??= useUnicorn();
 	app.use(UnicornPhpAdapter);
@@ -766,8 +738,7 @@ var UnicornPhpAdapter = class {
 		else app.$ui = methods;
 	}
 };
-//#endregion
-//#region src/unicorn.ts
+// src/unicorn.ts
 var app;
 function createUnicorn() {
 	polyfill();
@@ -800,7 +771,6 @@ async function useLegacy(app) {
 	await useLegacyMethods(app);
 	return app;
 }
-//#endregion
 export { AttributeMutationObserver, EventMixin, UnicornAssetUri, UnicornPhpAdapter, UnicornSystemUri, UnicornUI, __, addGlobalValidator, addQuery, addRoute, addUriBase, animateTo, base64UrlDecode, base64UrlEncode, buildQuery, clearMessages, clearNotifies, createQueue, createStack, createUnicorn, createUnicornWithPlugins, data, debounce, delegate, deleteConfirm, doImport, domready, fadeIn, fadeOut, forceArray, getBoundedInstance, getBoundedInstanceList, h, hasRoute, highlight, html, initAlpineComponent, injectCssToDocument, isDebug, isError, loadAlpine, mark, module, nextTick, parseQuery, prepareAlpine, prepareAlpineDefer, pushUnicornToGlobal, randomBytes, randomBytesString, removeBoundedInstance, removeData, renderMessage, route, selectAll, selectOne, serial, simpleAlert, simpleConfirm, simpleNotify, sleep, slideDown, slideToggle, slideUp, throttle, tid, trans, uid, useAlertAdapter, useAssetUri, useBs5ButtonRadio, useBs5KeepTab, useBs5Tooltip, useBsModalAlert, useCheckboxesMultiSelect, useColorPicker, useCssImport, useCssIncludes, useDisableIfStackNotEmpty, useDisableOnSubmit, useFieldCascadeSelect, useFieldFileDrag, useFieldFlatpickr, useFieldModalSelect, useFieldModalTree, useFieldRepeatable, useFieldSingleImageDrag, useFieldValidationInstance, useForm, useFormAsync, useFormComponent, useFormSubmit, useFormValidation, useFormValidationInstance, useGrid, useGridAsync, useGridComponent, useHttpClient, useIframeModal, useImport, useInject, useKeepAlive, useLang, useLegacy, useListDependent, useMacro, useQueue, useS3MultipartUploader, useS3Uploader, useScriptImport, useSeriesImport, useShowOn, useStack, useSystemUri, useTinymce, useTinymceHook, useTomSelect, useUI, useUIBootstrap5, useUITheme, useUniDirective, useUnicorn, useUnicornPhpAdapter, useVueComponentField, useWebDirective, wait, watchAttributes };
 
 //# sourceMappingURL=unicorn.js.map

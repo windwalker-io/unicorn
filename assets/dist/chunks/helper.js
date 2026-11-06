@@ -1,5 +1,5 @@
 import { t as data } from "./data.js";
-//#region src/service/helper.ts
+// src/service/helper.ts
 function forceArray(item) {
 	if (Array.isArray(item)) return item;
 	else return [item];
@@ -33,7 +33,6 @@ function wait(...promisee) {
 function isError(e) {
 	return e instanceof Error;
 }
-//#endregion
 export { nextTick as a, isError as i, forceArray as n, throttle as o, isDebug as r, wait as s, debounce as t };
 
 //# sourceMappingURL=helper.js.map

@@ -2,7 +2,7 @@ import { d as selectOne, o as html, u as selectAll } from "./dom.js";
 import { i as uid } from "./crypto.js";
 import * as bootstrap from "bootstrap";
 import { Tooltip } from "bootstrap";
-//#region src/module/ui-bootstrap5.ts
+// src/module/ui-bootstrap5.ts
 var UIBootstrap5 = class {
 	static instance = null;
 	bootstrap = bootstrap;
@@ -58,7 +58,6 @@ var UIBootstrap5 = class {
 		window.bootstrap = bootstrap;
 	}
 };
-//#endregion
 export { UIBootstrap5 };
 
 //# sourceMappingURL=ui-bootstrap5.js.map

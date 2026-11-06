@@ -1,7 +1,7 @@
-import { t as mergeDeep } from "./arr.js";
-import { d as selectOne, o as html, r as getBoundedInstance } from "./dom.js";
 import { useHttpClient, useUniDirective } from "../unicorn.js";
-//#region src/module/list-dependent.ts
+import { d as selectOne, o as html, r as getBoundedInstance } from "./dom.js";
+import { t as mergeDeep } from "./arr.js";
+// src/module/list-dependent.ts
 var nope = () => {};
 var defaultOptions = {
 	ajax: {
@@ -182,7 +182,7 @@ var ListDependent = class {
 		return mergeDeep({}, defaultOptions, options);
 	}
 };
-var ready = /* @__PURE__ */ useUniDirective("list-dependent", {
+var ready = /*@__PURE__*/ useUniDirective("list-dependent", {
 	mounted(el, binding) {
 		const options = JSON.parse(binding.value);
 		ListDependent.handle(el, options.dependent, options);
@@ -192,7 +192,6 @@ var ready = /* @__PURE__ */ useUniDirective("list-dependent", {
 		ListDependent.handle(el).mergeOptions(options);
 	}
 });
-//#endregion
 export { ListDependent, ready };
 
 //# sourceMappingURL=list-dependent.js.map

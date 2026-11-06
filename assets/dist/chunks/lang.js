@@ -1,8 +1,8 @@
-import { t as __commonJSMin } from "./chunk.js";
+import { t as __commonJSMin } from "./rolldown-runtime.js";
 import { t as data } from "./data.js";
 import { r as isDebug } from "./helper.js";
-//#region ../../../../node_modules/sprintf-js/src/sprintf.js
-var require_sprintf = /* @__PURE__ */ __commonJSMin(((exports) => {
+// ../../../../node_modules/sprintf-js/src/sprintf.js
+var require_sprintf = /*@__PURE__*/ __commonJSMin(((exports) => {
 	(function() {
 		"use strict";
 		var re = {
@@ -29,8 +29,8 @@ var require_sprintf = /* @__PURE__ */ __commonJSMin(((exports) => {
 			return sprintf.apply(null, [fmt].concat(argv || []));
 		}
 		function sprintf_format(parse_tree, argv) {
-			var cursor = 1, tree_length = parse_tree.length, arg, output = "", i, k, ph, pad, pad_character, pad_length, is_positive, sign;
-			for (i = 0; i < tree_length; i++) if (typeof parse_tree[i] === "string") output += parse_tree[i];
+			var cursor = 1, tree_length = parse_tree.length, arg, output = "", i = 0, k, ph, pad, pad_character, pad_length, is_positive, sign;
+			for (; i < tree_length; i++) if (typeof parse_tree[i] === "string") output += parse_tree[i];
 			else if (typeof parse_tree[i] === "object") {
 				ph = parse_tree[i];
 				if (ph.keys) {
@@ -92,9 +92,7 @@ var require_sprintf = /* @__PURE__ */ __commonJSMin(((exports) => {
 					case "x":
 						arg = (parseInt(arg, 10) >>> 0).toString(16);
 						break;
-					case "X":
-						arg = (parseInt(arg, 10) >>> 0).toString(16).toUpperCase();
-						break;
+					case "X": arg = (parseInt(arg, 10) >>> 0).toString(16).toUpperCase();
 				}
 				if (re.json.test(ph.type)) output += arg;
 				else {
@@ -165,9 +163,8 @@ var require_sprintf = /* @__PURE__ */ __commonJSMin(((exports) => {
 		}
 	})();
 }));
-//#endregion
-//#region src/service/lang.ts
-var import_sprintf = /* @__PURE__ */ require_sprintf();
+// src/service/lang.ts
+var import_sprintf = /*@__PURE__*/ require_sprintf();
 var lang;
 function useLang() {
 	return lang ??= new UnicornLang();
@@ -244,7 +241,6 @@ var UnicornLang = class {
 		return data("unicorn.languages") || {};
 	}
 };
-//#endregion
 export { require_sprintf as i, trans as n, useLang as r, __ as t };
 
 //# sourceMappingURL=lang.js.map

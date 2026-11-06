@@ -1,13 +1,12 @@
-import { t as mergeDeep } from "./arr.js";
+import { useUniDirective, watchAttributes } from "../unicorn.js";
+import { t as __ } from "./lang.js";
 import { o as html, s as injectCssToDocument } from "./dom.js";
 import { r as simpleAlert } from "./alert.js";
 import { i as uid } from "./crypto.js";
-import { t as __ } from "./lang.js";
-import { useUniDirective, watchAttributes } from "../unicorn.js";
-//#region scss/field/file-drag.scss?inline
+import { t as mergeDeep } from "./arr.js";
+// scss/field/file-drag.scss?inline
 var file_drag_default = ".c-file-drag {\n  --bs-card-border-color: var(--bs-gray-400);\n  --fd-delete-color: var(--bs-danger);\n  overflow: hidden;\n  border: 1px solid var(--bs-card-border-color, #ddd);\n}\n.c-file-drag label {\n  border: none;\n}\n\n.c-file-drag-input {\n  position: relative;\n  display: inline-block;\n  width: 100%;\n  min-height: 100px;\n  cursor: pointer;\n}\n.c-file-drag-input input {\n  position: relative;\n  z-index: 2;\n  width: 100%;\n  margin: 0;\n  overflow: hidden;\n  opacity: 0;\n  height: 100%;\n  cursor: pointer;\n}\n.c-file-drag-input input.hover + label {\n  background-color: #efefef;\n}\n.c-file-drag-input input.is-invalid ~ .c-file-drag-input__label {\n  border-color: var(--bs-danger);\n}\n.c-file-drag-input input:disabled {\n  opacity: 0;\n  cursor: no-drop;\n}\n.c-file-drag-input input:disabled + label {\n  background-color: #eee;\n  color: #999;\n}\n.c-file-drag-input input:disabled + label button {\n  display: none;\n}\n.c-file-drag-input__label {\n  position: absolute;\n  top: 0;\n  bottom: 0;\n  left: 0;\n  right: 0;\n  z-index: 1;\n  padding: 0.375rem 0.75rem;\n  color: #495057;\n  background-color: #fff;\n  border: 1px solid var(--bs-gray-400);\n  border-radius: 0.25rem;\n  height: 100%;\n  text-align: center;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: 0.5rem;\n  transition: all 0.3s;\n  cursor: pointer;\n}\n.c-file-drag-input__label > span {\n  display: inline-block;\n  width: 100%;\n}\n.c-file-drag-input label::after {\n  content: none !important;\n}\n.c-file-drag-preview .c-file-drag-preview__delete {\n  --bs-link-color-rgb: var(--bs-dark-rgb);\n}\n.c-file-drag-preview .c-file-drag-preview__delete.active {\n  --bs-link-color-rgb: var(--bs-primary-rgb);\n}";
-//#endregion
-//#region src/module/field-file-drag.ts
+// src/module/field-file-drag.ts
 var defaultOptions = {
 	maxFiles: void 0,
 	maxSize: void 0,
@@ -101,8 +100,10 @@ var FileDragElement = class extends HTMLElement {
 			return v;
 		});
 		let text;
-		if (!placeholder) if (this.multiple) placeholder = __("unicorn.field.file.drag.placeholder.multiple");
-		else placeholder = __("unicorn.field.file.drag.placeholder.single");
+		if (!placeholder) {
+			if (this.multiple) placeholder = __("unicorn.field.file.drag.placeholder.multiple");
+			else placeholder = __("unicorn.field.file.drag.placeholder.single");
+		}
 		if (limit && files.length > limit) {
 			this.alert(__("unicorn.field.file.drag.message.max.files", limit), "", "warning");
 			evt?.preventDefault();
@@ -180,8 +181,7 @@ async function init() {
 		}
 	} });
 }
-var ready = /* @__PURE__ */ init();
-//#endregion
+var ready = /*@__PURE__*/ init();
 export { FileDragElement, ready };
 
 //# sourceMappingURL=field-file-drag.js.map

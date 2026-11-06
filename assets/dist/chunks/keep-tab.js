@@ -1,9 +1,9 @@
-import { t as mergeDeep } from "./arr.js";
+import { useUniDirective } from "../unicorn.js";
 import { c as module, d as selectOne, u as selectAll } from "./dom.js";
 import { t as sleep } from "./timing.js";
-import { useUniDirective } from "../unicorn.js";
+import { t as mergeDeep } from "./arr.js";
 import { Tab } from "bootstrap";
-//#region src/bootstrap/keep-tab.ts
+// src/bootstrap/keep-tab.ts
 var defaultOptions = {
 	tabItemSelector: "[data-toggle=tab],[data-bs-toggle=tab],[data-toggle=pill],[data-bs-toggle=pill]",
 	delay: 0
@@ -85,11 +85,10 @@ var KeepTab = class {
 		return Array.from(new Uint8Array(hashBuffer)).map((b) => b.toString(16).padStart(2, "0")).join("");
 	}
 };
-var ready = /* @__PURE__ */ useUniDirective("keeptab", { mounted(el, { value }) {
+var ready = /*@__PURE__*/ useUniDirective("keeptab", { mounted(el, { value }) {
 	const options = JSON.parse(value || "{}");
 	module(el, "uni.keeptab", () => new KeepTab(el, options));
 } });
-//#endregion
 export { KeepTab, ready };
 
 //# sourceMappingURL=keep-tab.js.map

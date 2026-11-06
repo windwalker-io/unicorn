@@ -1,15 +1,15 @@
-import { a as h, c as module, d as selectOne, i as getBoundedInstanceList, n as domready, o as html, r as getBoundedInstance, t as delegate, u as selectAll } from "./dom.js";
-import { _ as useDisableIfStackNotEmpty, a as highlight, c as mark, d as renderMessage, f as slideDown, g as useColorPicker, i as fadeOut, l as prepareAlpine, m as slideUp, n as clearMessages, o as initAlpineComponent, p as slideToggle, r as fadeIn, s as loadAlpine, v as useDisableOnSubmit, w as animateTo, y as useKeepAlive } from "./ui.js";
-import { a as simpleNotify, i as simpleConfirm, r as simpleAlert, t as clearNotifies } from "./alert.js";
-import { i as uid, r as tid } from "./crypto.js";
+import { i as require_sprintf, t as __ } from "./lang.js";
+import { addGlobalValidator, base64UrlDecode, base64UrlEncode, serial, useAssetUri, useBs5ButtonRadio, useBs5KeepTab, useBs5Tooltip, useCheckboxesMultiSelect, useFieldValidationInstance, useForm, useFormAsync, useFormValidation, useFormValidationInstance, useGrid, useGridAsync, useHttpClient, useSystemUri, useTomSelect, useUniDirective } from "../unicorn.js";
 import { n as useQueue } from "./useQueue.js";
 import { n as useStack } from "./useStack.js";
+import { _ as useDisableIfStackNotEmpty, a as highlight, c as mark, d as renderMessage, f as slideDown, g as useColorPicker, i as fadeOut, l as prepareAlpine, m as slideUp, n as clearMessages, o as initAlpineComponent, p as slideToggle, r as fadeIn, s as loadAlpine, v as useDisableOnSubmit, w as animateTo, y as useKeepAlive } from "./ui.js";
+import { a as simpleNotify, i as simpleConfirm, r as simpleAlert, t as clearNotifies } from "./alert.js";
 import { o as throttle, r as isDebug, t as debounce } from "./helper.js";
-import { i as require_sprintf, t as __ } from "./lang.js";
+import { a as h, c as module, d as selectOne, i as getBoundedInstanceList, n as domready, o as html, r as getBoundedInstance, t as delegate, u as selectAll } from "./dom.js";
 import { o as route } from "./router.js";
-import { addGlobalValidator, base64UrlDecode, base64UrlEncode, serial, useAssetUri, useBs5ButtonRadio, useBs5KeepTab, useBs5Tooltip, useCheckboxesMultiSelect, useFieldValidationInstance, useForm, useFormAsync, useFormValidation, useFormValidationInstance, useGrid, useGridAsync, useHttpClient, useSystemUri, useTomSelect, useUniDirective } from "../unicorn.js";
+import { i as uid, r as tid } from "./crypto.js";
 import { Modal } from "bootstrap";
-//#region ../../../../node_modules/@lyrasoft/ts-toolkit/src/generic/number.ts
+// ../../../../node_modules/@lyrasoft/ts-toolkit/src/generic/number.ts
 function numberFormat(number, decimals = 0, decPoint = ".", thousandsSep = ",") {
 	number = Number(number);
 	const str = number.toFixed(decimals ? decimals : 0).toString().split(".");
@@ -18,11 +18,11 @@ function numberFormat(number, decimals = 0, decPoint = ".", thousandsSep = ",") 
 	str[0] = parts.join(thousandsSep ? thousandsSep : ",");
 	return str.join(decPoint ? decPoint : ".");
 }
-//#endregion
-//#region src/legacy/loader.ts
-var import_sprintf = /* @__PURE__ */ require_sprintf();
+// src/legacy/loader.ts
+var import_sprintf = /*@__PURE__*/ require_sprintf();
 var imports = {};
 var LegacyLoader = class {
+	app;
 	static install(app) {
 		const loader = app.$loader = new this(app);
 		app.import = loader.import.bind(loader);
@@ -102,8 +102,7 @@ var LegacyLoader = class {
 		return imports[name].promise;
 	}
 };
-//#endregion
-//#region src/legacy/legacy.ts
+// src/legacy/legacy.ts
 async function useLegacyMethods(app) {
 	const http = await useHttpClient();
 	app.use(LegacyLoader);
@@ -206,7 +205,6 @@ async function handleFormGrid(app) {
 	app.form = useForm;
 	app.grid = useGrid;
 }
-//#endregion
 export { useLegacyMethods };
 
 //# sourceMappingURL=legacy.js.map

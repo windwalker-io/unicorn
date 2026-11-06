@@ -1,12 +1,12 @@
-import { t as data } from "./data.js";
-import { d as selectOne, o as html } from "./dom.js";
-import { a as highlight, m as slideUp } from "./ui.js";
-import { r as simpleAlert } from "./alert.js";
-import { a as eq, d as isObjectLike, f as baseGetTag, l as isObject, p as Symbol, r as isArrayLike, u as isArray } from "./_baseUnary.js";
-import { n as apply, r as arrayMap, t as baseRest } from "./_baseRest.js";
 import { l as isIndex, n as keys, s as copyObject, t as getPrototype, u as arrayEach } from "./_getPrototype.js";
+import { n as apply, r as arrayMap, t as baseRest } from "./_baseRest.js";
+import { a as eq, d as isObjectLike, f as baseGetTag, l as isObject, p as Symbol, r as isArrayLike, u as isArray } from "./_baseUnary.js";
+import { t as data } from "./data.js";
 import { t as __ } from "./lang.js";
-//#region ../../../../node_modules/lodash-es/isSymbol.js
+import { a as highlight, m as slideUp } from "./ui.js";
+import { d as selectOne, o as html } from "./dom.js";
+import { r as simpleAlert } from "./alert.js";
+// ../../../../node_modules/lodash-es/isSymbol.js
 /** `Object#toString` result references. */
 var symbolTag = "[object Symbol]";
 /**
@@ -29,12 +29,12 @@ var symbolTag = "[object Symbol]";
 function isSymbol(value) {
 	return typeof value == "symbol" || isObjectLike(value) && baseGetTag(value) == symbolTag;
 }
-//#endregion
-//#region ../../../../node_modules/lodash-es/_baseToString.js
+// ../../../../node_modules/lodash-es/_baseToString.js
 /** Used as references for various `Number` constants. */
-var INFINITY = Infinity;
+var INFINITY = 1 / 0;
 /** Used to convert symbols to primitives and strings. */
-var symbolProto = Symbol ? Symbol.prototype : void 0, symbolToString = symbolProto ? symbolProto.toString : void 0;
+var symbolProto = Symbol ? /*@__PURE__*/ (() => Symbol.prototype)() : void 0;
+var symbolToString = symbolProto ? /*@__PURE__*/ (() => symbolProto.toString)() : void 0;
 /**
 * The base implementation of `_.toString` which doesn't convert nullish
 * values to empty strings.
@@ -50,8 +50,7 @@ function baseToString(value) {
 	var result = value + "";
 	return result == "0" && 1 / value == -INFINITY ? "-0" : result;
 }
-//#endregion
-//#region ../../../../node_modules/lodash-es/_isIterateeCall.js
+// ../../../../node_modules/lodash-es/_isIterateeCall.js
 /**
 * Checks if the given arguments are from an iteratee call.
 *
@@ -68,8 +67,7 @@ function isIterateeCall(value, index, object) {
 	if (type == "number" ? isArrayLike(object) && isIndex(index, object.length) : type == "string" && index in object) return eq(object[index], value);
 	return false;
 }
-//#endregion
-//#region ../../../../node_modules/lodash-es/_createAssigner.js
+// ../../../../node_modules/lodash-es/_createAssigner.js
 /**
 * Creates a function like `_.assign`.
 *
@@ -93,8 +91,7 @@ function createAssigner(assigner) {
 		return object;
 	});
 }
-//#endregion
-//#region ../../../../node_modules/lodash-es/assignWith.js
+// ../../../../node_modules/lodash-es/assignWith.js
 /**
 * This method is like `_.assign` except that it accepts `customizer`
 * which is invoked to produce the assigned values. If `customizer` returns
@@ -123,11 +120,10 @@ function createAssigner(assigner) {
 * defaults({ 'a': 1 }, { 'b': 2 }, { 'a': 3 });
 * // => { 'a': 1, 'b': 2 }
 */
-var assignWith = /* @__PURE__ */ createAssigner(function(object, source, srcIndex, customizer) {
+var assignWith = /*@__PURE__*/ createAssigner(function(object, source, srcIndex, customizer) {
 	copyObject(source, keys(source), object, customizer);
 });
-//#endregion
-//#region ../../../../node_modules/lodash-es/toString.js
+// ../../../../node_modules/lodash-es/toString.js
 /**
 * Converts `value` to a string. An empty string is returned for `null`
 * and `undefined` values. The sign of `-0` is preserved.
@@ -152,18 +148,18 @@ var assignWith = /* @__PURE__ */ createAssigner(function(object, source, srcInde
 function toString(value) {
 	return value == null ? "" : baseToString(value);
 }
-//#endregion
-//#region ../../../../node_modules/lodash-es/isPlainObject.js
+// ../../../../node_modules/lodash-es/isPlainObject.js
 /** `Object#toString` result references. */
 var objectTag = "[object Object]";
 /** Used for built-in method references. */
-var funcProto = Function.prototype, objectProto$1 = Object.prototype;
+var funcProto = /*@__PURE__*/ (() => Function.prototype)();
+var objectProto$1 = /*@__PURE__*/ (() => Object.prototype)();
 /** Used to resolve the decompiled source of functions. */
-var funcToString = funcProto.toString;
+var funcToString = /*@__PURE__*/ (() => funcProto.toString)();
 /** Used to check objects for own properties. */
-var hasOwnProperty$2 = objectProto$1.hasOwnProperty;
+var hasOwnProperty$2 = /*@__PURE__*/ (() => objectProto$1.hasOwnProperty)();
 /** Used to infer the `Object` constructor. */
-var objectCtorString = /* @__PURE__ */ funcToString.call(Object);
+var objectCtorString = /*@__PURE__*/ funcToString.call(Object);
 /**
 * Checks if `value` is a plain object, that is, an object created by the
 * `Object` constructor or one with a `[[Prototype]]` of `null`.
@@ -199,10 +195,10 @@ function isPlainObject(value) {
 	var Ctor = hasOwnProperty$2.call(proto, "constructor") && proto.constructor;
 	return typeof Ctor == "function" && Ctor instanceof Ctor && funcToString.call(Ctor) == objectCtorString;
 }
-//#endregion
-//#region ../../../../node_modules/lodash-es/isError.js
+// ../../../../node_modules/lodash-es/isError.js
 /** `Object#toString` result references. */
-var domExcTag = "[object DOMException]", errorTag = "[object Error]";
+var domExcTag = "[object DOMException]";
+var errorTag = "[object Error]";
 /**
 * Checks if `value` is an `Error`, `EvalError`, `RangeError`, `ReferenceError`,
 * `SyntaxError`, `TypeError`, or `URIError` object.
@@ -226,8 +222,7 @@ function isError(value) {
 	var tag = baseGetTag(value);
 	return tag == errorTag || tag == domExcTag || typeof value.message == "string" && typeof value.name == "string" && !isPlainObject(value);
 }
-//#endregion
-//#region ../../../../node_modules/lodash-es/attempt.js
+// ../../../../node_modules/lodash-es/attempt.js
 /**
 * Attempts to invoke `func`, returning either the result or the caught error
 * object. Any additional arguments are provided to `func` when it's invoked.
@@ -250,15 +245,14 @@ function isError(value) {
 *   elements = [];
 * }
 */
-var attempt = /* @__PURE__ */ baseRest(function(func, args) {
+var attempt = /*@__PURE__*/ baseRest(function(func, args) {
 	try {
 		return apply(func, void 0, args);
 	} catch (e) {
 		return isError(e) ? e : new Error(e);
 	}
 });
-//#endregion
-//#region ../../../../node_modules/lodash-es/_basePropertyOf.js
+// ../../../../node_modules/lodash-es/_basePropertyOf.js
 /**
 * The base implementation of `_.propertyOf` without support for deep paths.
 *
@@ -271,8 +265,7 @@ function basePropertyOf(object) {
 		return object == null ? void 0 : object[key];
 	};
 }
-//#endregion
-//#region ../../../../node_modules/lodash-es/_escapeHtmlChar.js
+// ../../../../node_modules/lodash-es/_escapeHtmlChar.js
 /**
 * Used by `_.escape` to convert characters to HTML entities.
 *
@@ -280,17 +273,17 @@ function basePropertyOf(object) {
 * @param {string} chr The matched character to escape.
 * @returns {string} Returns the escaped character.
 */
-var escapeHtmlChar = /* @__PURE__ */ basePropertyOf({
+var escapeHtmlChar = /*@__PURE__*/ basePropertyOf({
 	"&": "&amp;",
 	"<": "&lt;",
 	">": "&gt;",
 	"\"": "&quot;",
 	"'": "&#39;"
 });
-//#endregion
-//#region ../../../../node_modules/lodash-es/escape.js
+// ../../../../node_modules/lodash-es/escape.js
 /** Used to match HTML entities and HTML characters. */
-var reUnescapedHtml = /[&<>"']/g, reHasUnescapedHtml = /* @__PURE__ */ RegExp(reUnescapedHtml.source);
+var reUnescapedHtml = /[&<>"']/g;
+var reHasUnescapedHtml = /*@__PURE__*/ RegExp(/*@__PURE__*/ (() => reUnescapedHtml.source)());
 /**
 * Converts the characters "&", "<", ">", '"', and "'" in `string` to their
 * corresponding HTML entities.
@@ -323,8 +316,7 @@ function escape(string) {
 	string = toString(string);
 	return string && reHasUnescapedHtml.test(string) ? string.replace(reUnescapedHtml, escapeHtmlChar) : string;
 }
-//#endregion
-//#region ../../../../node_modules/lodash-es/_baseValues.js
+// ../../../../node_modules/lodash-es/_baseValues.js
 /**
 * The base implementation of `_.values` and `_.valuesIn` which creates an
 * array of `object` property values corresponding to the property names
@@ -340,12 +332,11 @@ function baseValues(object, props) {
 		return object[key];
 	});
 }
-//#endregion
-//#region ../../../../node_modules/lodash-es/_customDefaultsAssignIn.js
+// ../../../../node_modules/lodash-es/_customDefaultsAssignIn.js
 /** Used for built-in method references. */
-var objectProto = Object.prototype;
+var objectProto = /*@__PURE__*/ (() => Object.prototype)();
 /** Used to check objects for own properties. */
-var hasOwnProperty$1 = objectProto.hasOwnProperty;
+var hasOwnProperty$1 = /*@__PURE__*/ (() => objectProto.hasOwnProperty)();
 /**
 * Used by `_.defaults` to customize its `_.assignIn` use to assign properties
 * of source objects to the destination object for all destination properties
@@ -362,8 +353,7 @@ function customDefaultsAssignIn(objValue, srcValue, key, object) {
 	if (objValue === void 0 || eq(objValue, objectProto[key]) && !hasOwnProperty$1.call(object, key)) return srcValue;
 	return objValue;
 }
-//#endregion
-//#region ../../../../node_modules/lodash-es/_escapeStringChar.js
+// ../../../../node_modules/lodash-es/_escapeStringChar.js
 /** Used to escape characters for inclusion in compiled string literals. */
 var stringEscapes = {
 	"\\": "\\",
@@ -383,12 +373,10 @@ var stringEscapes = {
 function escapeStringChar(chr) {
 	return "\\" + stringEscapes[chr];
 }
-//#endregion
-//#region ../../../../node_modules/lodash-es/_reInterpolate.js
+// ../../../../node_modules/lodash-es/_reInterpolate.js
 /** Used to match template delimiters. */
 var reInterpolate = /<%=([\s\S]+?)%>/g;
-//#endregion
-//#region ../../../../node_modules/lodash-es/templateSettings.js
+// ../../../../node_modules/lodash-es/templateSettings.js
 /**
 * By default, the template delimiters used by lodash are like those in
 * embedded Ruby (ERB) as well as ES2015 template strings. Change the
@@ -403,18 +391,57 @@ var reInterpolate = /<%=([\s\S]+?)%>/g;
 * @type {Object}
 */
 var templateSettings = {
+	/**
+	* Used to detect `data` property values to be HTML-escaped.
+	*
+	* @memberOf _.templateSettings
+	* @type {RegExp}
+	*/
 	"escape": /<%-([\s\S]+?)%>/g,
+	/**
+	* Used to detect code to be evaluated.
+	*
+	* @memberOf _.templateSettings
+	* @type {RegExp}
+	*/
 	"evaluate": /<%([\s\S]+?)%>/g,
+	/**
+	* Used to detect `data` property values to inject.
+	*
+	* @memberOf _.templateSettings
+	* @type {RegExp}
+	*/
 	"interpolate": reInterpolate,
+	/**
+	* Used to reference the data object in the template text.
+	*
+	* @memberOf _.templateSettings
+	* @type {string}
+	*/
 	"variable": "",
-	"imports": { "_": { "escape": escape } }
+	/**
+	* Used to import variables into the compiled template.
+	*
+	* @memberOf _.templateSettings
+	* @type {Object}
+	*/
+	"imports": { 
+	/**
+	* A reference to the `lodash` function.
+	*
+	* @memberOf _.templateSettings.imports
+	* @type {Function}
+	*/
+"_": { "escape": escape } }
 };
-//#endregion
-//#region ../../../../node_modules/lodash-es/template.js
+// ../../../../node_modules/lodash-es/template.js
 /** Error message constants. */
-var INVALID_TEMPL_VAR_ERROR_TEXT = "Invalid `variable` option passed into `_.template`", INVALID_TEMPL_IMPORTS_ERROR_TEXT = "Invalid `imports` option passed into `_.template`";
+var INVALID_TEMPL_VAR_ERROR_TEXT = "Invalid `variable` option passed into `_.template`";
+var INVALID_TEMPL_IMPORTS_ERROR_TEXT = "Invalid `imports` option passed into `_.template`";
 /** Used to match empty string literals in compiled template source. */
-var reEmptyStringLeading = /\b__p \+= '';/g, reEmptyStringMiddle = /\b(__p \+=) '' \+/g, reEmptyStringTrailing = /(__e\(.*?\)|\b__t\)) \+\n'';/g;
+var reEmptyStringLeading = /\b__p \+= '';/g;
+var reEmptyStringMiddle = /\b(__p \+=) '' \+/g;
+var reEmptyStringTrailing = /(__e\(.*?\)|\b__t\)) \+\n'';/g;
 /**
 * Used to validate the `validate` option in `_.template` variable.
 *
@@ -436,7 +463,7 @@ var reNoMatch = /($^)/;
 /** Used to match unescaped characters in compiled string literals. */
 var reUnescapedString = /['\n\r\u2028\u2029\\]/g;
 /** Used to check objects for own properties. */
-var hasOwnProperty = Object.prototype.hasOwnProperty;
+var hasOwnProperty = /*@__PURE__*/ (() => Object.prototype.hasOwnProperty)();
 /**
 * Creates a compiled template function that can interpolate data properties
 * in "interpolate" delimiters, HTML-escape interpolated data properties in
@@ -585,18 +612,18 @@ function template(string, options, guard) {
 	if (isError(result)) throw result;
 	return result;
 }
-//#endregion
-//#region src/module/field-modal-select.ts
+// src/module/field-modal-select.ts
 function createCallback(type, selector, modalSelector) {
 	switch (type) {
 		case "list": return (item) => {
 			const modalList = document.querySelector(selector);
 			const checked = item.checked;
-			if (checked === void 0) if (!modalList.querySelector(`[data-value="${item.value}"]`)) {
-				modalList.appendItem(item, true);
-				selectOne(modalSelector)?.close();
-			} else simpleAlert(__("unicorn.field.modal.already.selected"));
-			else if (checked) try {
+			if (checked === void 0) {
+				if (!modalList.querySelector(`[data-value="${item.value}"]`)) {
+					modalList.appendItem(item, true);
+					selectOne(modalSelector)?.close();
+				} else simpleAlert(__("unicorn.field.modal.already.selected"));
+			} else if (checked) try {
 				modalList.appendIfNotExists(item, true);
 			} catch (e) {
 				window.postMessage({
@@ -770,8 +797,7 @@ function listenMessages(options) {
 	});
 	window[options.instanceId] = callback;
 }
-var ready = /* @__PURE__ */ init();
-//#endregion
+var ready = /*@__PURE__*/ init();
 export { createCallback, listenMessages, ready };
 
 //# sourceMappingURL=field-modal-select.js.map

@@ -1,9 +1,9 @@
-import { t as __commonJSMin } from "./chunk.js";
-//#region ../../../../node_modules/flatpickr/dist/plugins/monthSelect/index.js
-var require_monthSelect = /* @__PURE__ */ __commonJSMin(((exports, module) => {
+import { t as __commonJSMin } from "./rolldown-runtime.js";
+// ../../../../node_modules/flatpickr/dist/plugins/monthSelect/index.js
+var require_monthSelect = /*@__PURE__*/ __commonJSMin(((exports, module, this$1) => {
 	(function(global, factory) {
 		typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory() : typeof define === "function" && define.amd ? define(factory) : (global = typeof globalThis !== "undefined" ? globalThis : global || self, global.monthSelectPlugin = factory());
-	})(exports, (function() {
+	})(this$1, (function() {
 		"use strict";
 		/*! *****************************************************************************
 		Copyright (c) Microsoft Corporation.
@@ -158,15 +158,13 @@ var require_monthSelect = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 						case "multiple":
 							selectedDates.push(selectedDate);
 							break;
-						case "range":
-							if (fp.selectedDates.length === 2) selectedDates = [selectedDate];
-							else {
-								selectedDates = fp.selectedDates.concat([selectedDate]);
-								selectedDates.sort(function(a, b) {
-									return a.getTime() - b.getTime();
-								});
-							}
-							break;
+						case "range": if (fp.selectedDates.length === 2) selectedDates = [selectedDate];
+						else {
+							selectedDates = fp.selectedDates.concat([selectedDate]);
+							selectedDates.sort(function(a, b) {
+								return a.getTime() - b.getTime();
+							});
+						}
 					}
 					fp.setDate(selectedDates, true);
 					setCurrentlySelected();
@@ -245,7 +243,6 @@ var require_monthSelect = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 		return monthSelectPlugin;
 	}));
 }));
-//#endregion
-export default /* @__PURE__ */ require_monthSelect();
+export default /*@__PURE__*/ require_monthSelect();
 
 //# sourceMappingURL=monthSelect.js.map

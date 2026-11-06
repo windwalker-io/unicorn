@@ -1,4 +1,4 @@
-//#region ../../../../node_modules/@lyrasoft/ts-toolkit/src/generic/alert-adapter.ts
+// ../../../../node_modules/@lyrasoft/ts-toolkit/src/generic/alert-adapter.ts
 var AlertAdapter = class {
 	static alert = async (title, text) => {
 		if (text) title += " | " + text;
@@ -23,7 +23,6 @@ var AlertAdapter = class {
 	static cancelText = () => "Cancel";
 	static deleteText = () => "Delete";
 };
-//#endregion
 export { AlertAdapter as t };
 
 //# sourceMappingURL=alert-adapter.js.map

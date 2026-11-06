@@ -1,10 +1,10 @@
-import { n as removeData, t as data } from "./data.js";
-import { c as module, d as selectOne, o as html, u as selectAll } from "./dom.js";
 import { t as AlertAdapter } from "./alert-adapter.js";
 import { n as useStack } from "./useStack.js";
+import { n as removeData, t as data } from "./data.js";
+import { c as module, d as selectOne, o as html, u as selectAll } from "./dom.js";
 import { a as nextTick } from "./helper.js";
 import { i as useImport, n as useCssImport } from "./loader.js";
-//#region src/service/animate.ts
+// src/service/animate.ts
 function animateTo(element, styles, options = {}) {
 	element = selectOne(element);
 	const currentStyles = window.getComputedStyle(element);
@@ -29,8 +29,7 @@ function animateTo(element, styles, options = {}) {
 	});
 	return animation;
 }
-//#endregion
-//#region ../../../../node_modules/@lyrasoft/ts-toolkit/src/generic/promise.ts
+// ../../../../node_modules/@lyrasoft/ts-toolkit/src/generic/promise.ts
 function promiseWithResolvers() {
 	let resolve;
 	let reject;
@@ -43,8 +42,7 @@ function promiseWithResolvers() {
 		reject
 	};
 }
-//#endregion
-//#region src/service/ui.ts
+// src/service/ui.ts
 var ui;
 AlertAdapter.alert = (title, text = "", type = "info") => {
 	if (text) title += " | " + text;
@@ -93,7 +91,7 @@ var UnicornUI = class {
 	}
 };
 var prepares = [];
-var { promise: alpineLoaded, resolve: alpineResolve } = /* @__PURE__ */ promiseWithResolvers();
+var { promise: alpineLoaded, resolve: alpineResolve } = /*@__PURE__*/ promiseWithResolvers();
 async function loadAlpine(callback) {
 	if (callback && !window.Alpine) prepares.push(callback);
 	const { default: Alpine } = await useImport("@alpinejs");
@@ -314,7 +312,6 @@ async function useVueComponentField(selector, value, options = {}) {
 	if (selector) m.VueComponentField.init(selector, value, options);
 	return m;
 }
-//#endregion
 export { promiseWithResolvers as C, useVueComponentField as S, useDisableIfStackNotEmpty as _, highlight as a, useUI as b, mark as c, renderMessage as d, slideDown as f, useColorPicker as g, useAlertAdapter as h, fadeOut as i, prepareAlpine as l, slideUp as m, clearMessages as n, initAlpineComponent as o, slideToggle as p, fadeIn as r, loadAlpine as s, UnicornUI as t, prepareAlpineDefer as u, useDisableOnSubmit as v, animateTo as w, useUITheme as x, useKeepAlive as y };
 
 //# sourceMappingURL=ui.js.map

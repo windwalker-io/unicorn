@@ -1,16 +1,15 @@
-import { t as mergeDeep } from "./arr.js";
-import { t as data } from "./data.js";
-import { s as injectCssToDocument } from "./dom.js";
 import { n as useStack } from "./useStack.js";
+import { t as data } from "./data.js";
 import { n as forceArray } from "./helper.js";
+import { s as injectCssToDocument } from "./dom.js";
+import { t as mergeDeep } from "./arr.js";
 import { Modal } from "bootstrap";
 import { computed, createApp, defineComponent, getCurrentInstance, nextTick, onMounted, ref, useTemplateRef } from "vue";
 import { VueDraggable } from "vue-draggable-plus";
 import { ItemCard, ItemCardPlaceholder, MultiUploader, createItem } from "vue-multi-uploader";
-//#region ../../../../node_modules/vue-multi-uploader/src/vue-multi-uploader.scss?inline
+// ../../../../node_modules/vue-multi-uploader/src/vue-multi-uploader.scss?inline
 var vue_multi_uploader_default = ".vue-drag-uploader {\n  --vmu-img-size: 155px;\n  display: flex;\n  flex-wrap: wrap;\n  padding: 1rem;\n  border: 1px dotted #999;\n  border-radius: 4px;\n  cursor: pointer;\n  color: #999;\n  min-height: 250px;\n}\n.vue-drag-uploader--readonly {\n  border: 1px solid #999;\n}\n.vue-drag-uploader.h-ondrag {\n  border: 1px dotted #666;\n  background-color: rgba(0, 0, 0, 0.05);\n  color: #666;\n}\n.vue-drag-uploader__wrapper {\n  width: 100%;\n}\n.vue-drag-uploader__draggable-wrapper, .vue-drag-uploader__transition-wrapper {\n  display: flex;\n  flex-wrap: wrap;\n}\n.vue-drag-uploader-item {\n  width: var(--vmu-img-size);\n  height: var(--vmu-img-size);\n  border: 1px solid rgba(0, 0, 0, 0.25);\n  border-radius: 3px;\n  cursor: pointer;\n  padding: 0.5rem;\n}\n.vue-drag-uploader .add-button {\n  display: flex;\n  align-items: center;\n  text-align: center;\n  transition: background-color 0.5s;\n}\n.vue-drag-uploader .add-button:hover {\n  background-color: rgba(0, 0, 0, 0.05);\n}\n.vue-drag-uploader .add-button__body {\n  margin: 0 auto;\n}\n.vue-drag-uploader .add-button__icon {\n  margin-bottom: 10px;\n}\n.vue-drag-uploader .add-button__text {\n  font-size: 14px;\n}\n.vue-drag-uploader .preview-img {\n  position: relative;\n  cursor: pointer;\n  padding: 1px;\n}\n.vue-drag-uploader .preview-img > * {\n  position: absolute;\n}\n.vue-drag-uploader .preview-img:hover .error-message__message {\n  display: block;\n  padding: 10px;\n}\n.vue-drag-uploader .preview-img__body {\n  left: 0;\n  top: 0;\n  width: 100%;\n  height: 100%;\n  background: transparent no-repeat center center;\n  background-size: cover;\n}\n.vue-drag-uploader .preview-img__title {\n  margin: 0 auto;\n}\n.vue-drag-uploader .preview-img__overlay {\n  display: flex;\n  align-items: center;\n  left: 0;\n  top: 0;\n  bottom: 0;\n  right: 0;\n  background-color: rgba(0, 0, 0, 0.35);\n  opacity: 0;\n  transition: opacity 0.5s;\n}\n.vue-drag-uploader .preview-img__overlay:hover {\n  opacity: 1;\n}\n.vue-drag-uploader .preview-img__remove-icon {\n  position: absolute;\n  top: 5px;\n  right: 5px;\n  color: white;\n  opacity: 0.75;\n  transition: opacity 0.5s;\n}\n.vue-drag-uploader .preview-img__remove-icon:hover {\n  opacity: 1;\n}\n.vue-drag-uploader .preview-img__progress {\n  height: 5px;\n  background-color: rgba(255, 255, 255, 0.8);\n  width: 100%;\n  bottom: 0;\n  left: 0;\n}\n.vue-drag-uploader .preview-img__progress-bar {\n  background-color: var(--bs-primary, #007bff);\n  width: 0;\n  height: 100%;\n}\n.vue-drag-uploader .error-message {\n  width: 100%;\n  background-color: #dc3545;\n  color: white;\n  font-size: 14px;\n  word-break: break-all;\n  top: calc(100% - 26px);\n  min-height: 26px;\n}\n.vue-drag-uploader .error-message__notice {\n  display: inline-block;\n  padding: 3px;\n  text-align: center;\n  width: 100%;\n}\n.vue-drag-uploader .error-message__message {\n  display: none;\n}";
-//#endregion
-//#region src/module/field-multi-uploader.ts
+// src/module/field-multi-uploader.ts
 var defaultOptions = {
 	readonly: false,
 	disabled: false,
@@ -25,18 +24,20 @@ var MultiUploaderElement = class extends HTMLElement {
 	modalElement;
 	vm;
 	async connectedCallback() {
-		const resolvedOptions = mergeDeep({}, defaultOptions, JSON.parse(this.getAttribute("options") || "{}"));
+		let options = JSON.parse(this.getAttribute("options") || "{}");
+		const resolvedOptions = mergeDeep({}, defaultOptions, options);
 		resolvedOptions.thumbSize ??= 150;
 		this.modalElement = this.querySelector(".modal");
 		const tmplSelector = resolvedOptions.tmplSelector;
-		this.vm = createApp(createAppInstance(resolvedOptions, document.querySelector(tmplSelector).innerHTML, this)).mount(this);
+		const app = createApp(createAppInstance(resolvedOptions, document.querySelector(tmplSelector).innerHTML, this));
+		this.vm = app.mount(this);
 	}
 };
 async function init() {
 	injectCssToDocument(vue_multi_uploader_default);
 	customElements.define(MultiUploaderElement.is, MultiUploaderElement);
 }
-var ready = /* @__PURE__ */ init();
+var ready = /*@__PURE__*/ init();
 function createAppInstance(opt, tmpl, el) {
 	return defineComponent({
 		name: "MultiUploaderFieldApp",
@@ -250,7 +251,6 @@ function createAppInstance(opt, tmpl, el) {
 		}
 	});
 }
-//#endregion
 export { MultiUploaderElement, ready };
 
 //# sourceMappingURL=field-multi-uploader.js.map

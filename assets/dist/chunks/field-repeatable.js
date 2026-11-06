@@ -1,9 +1,9 @@
-import { t as mergeDeep } from "./arr.js";
+import { t as cloneDeep } from "./cloneDeep.js";
 import { o as initAlpineComponent, u as prepareAlpineDefer } from "./ui.js";
 import { i as uid } from "./crypto.js";
-import { t as cloneDeep } from "./cloneDeep.js";
 import { n as useCssImport } from "./loader.js";
-//#region src/module/field-repeatable.ts
+import { t as mergeDeep } from "./arr.js";
+// src/module/field-repeatable.ts
 var defaultOptions = {
 	id: "",
 	fieldName: "",
@@ -109,8 +109,7 @@ async function init() {
 	});
 	await initAlpineComponent("data-repeatable");
 }
-var ready = /* @__PURE__ */ init();
-//#endregion
+var ready = /*@__PURE__*/ init();
 export { ready };
 
 //# sourceMappingURL=field-repeatable.js.map

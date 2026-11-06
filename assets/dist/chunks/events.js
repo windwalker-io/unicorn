@@ -1,4 +1,4 @@
-//#region ../../../../node_modules/ts-mixer/dist/esm/index.js
+// ../../../../node_modules/ts-mixer/dist/esm/index.js
 /**
 * Utility function that works like `Object.apply`, but copies getters and setters properly as well.  Additionally gives
 * the option to exclude properties by name.
@@ -129,7 +129,7 @@ var settings = {
 	prototypeStrategy: "copy",
 	decoratorInheritance: "deep"
 };
-var mixins = /* @__PURE__ */ new WeakMap();
+var mixins = /*@__PURE__*/ new WeakMap();
 var getMixinsForClass = (clazz) => mixins.get(clazz);
 var registerMixins = (mixedClass, constituents) => mixins.set(mixedClass, constituents);
 var mergeObjectsOfDecorators = (o1, o2) => {
@@ -154,11 +154,11 @@ var mergeDecorators = (d1, d2) => {
 		instance: mergePropertyAndMethodDecorators((_e = d1 === null || d1 === void 0 ? void 0 : d1.instance) !== null && _e !== void 0 ? _e : {}, (_f = d2 === null || d2 === void 0 ? void 0 : d2.instance) !== null && _f !== void 0 ? _f : {})
 	};
 };
-var decorators = /* @__PURE__ */ new Map();
+var decorators = /*@__PURE__*/ new Map();
 var findAllConstituentClasses = (...classes) => {
 	var _a;
 	const allClasses = /* @__PURE__ */ new Set();
-	const frontier = new Set([...classes]);
+	const frontier = /* @__PURE__ */ new Set([...classes]);
 	while (frontier.size > 0) for (let clazz of frontier) {
 		const protoChainClasses = protoChain(clazz.prototype).map((proto) => proto.constructor);
 		const mixinClasses = (_a = getMixinsForClass(clazz)) !== null && _a !== void 0 ? _a : [];
@@ -226,8 +226,7 @@ var applyPropAndMethodDecorators = (propAndMethodDecorators, target) => {
 	if (propDecorators) for (let key in propDecorators) for (let decorator of propDecorators[key]) decorator(target, key);
 	if (methodDecorators) for (let key in methodDecorators) for (let decorator of methodDecorators[key]) decorator(target, key, Object.getOwnPropertyDescriptor(target, key));
 };
-//#endregion
-//#region src/events.ts
+// src/events.ts
 var EventMixin = class {
 	_listeners = {};
 	on(event, handler) {
@@ -264,7 +263,6 @@ var EventMixin = class {
 		return this._listeners[event] === void 0 ? [] : this._listeners[event];
 	}
 };
-//#endregion
 export { Mixin as n, EventMixin as t };
 
 //# sourceMappingURL=events.js.map

@@ -1,9 +1,9 @@
-import { t as mergeDeep } from "./arr.js";
-import { d as selectOne } from "./dom.js";
-import { n as useStack } from "./useStack.js";
-import { a as useScriptImport } from "./loader.js";
 import { useHttpClient } from "../unicorn.js";
-//#region src/module/tinymce.ts
+import { n as useStack } from "./useStack.js";
+import { d as selectOne } from "./dom.js";
+import { a as useScriptImport } from "./loader.js";
+import { t as mergeDeep } from "./arr.js";
+// src/module/tinymce.ts
 var instances = {};
 var hooks = [];
 var imported;
@@ -41,6 +41,8 @@ async function loadTinymce() {
 }
 var defaultOptions = {};
 var TinymceController = class {
+	tinymce;
+	element;
 	editor;
 	options = {};
 	constructor(tinymce, element, options) {
@@ -160,7 +162,6 @@ function registerDragPlugin(tinymce) {
 	});
 	return Promise.resolve();
 }
-//#endregion
 export { TinymceController, addHook, clearHooks, create, destroy, get };
 
 //# sourceMappingURL=tinymce.js.map

@@ -1593,21 +1593,26 @@ declare module '@windwalker-io/unicorn-next' {
 
 
 declare global {
-    interface Node {
-        __unicorn?: any;
-    }
-}
-
-
-declare global {
     var Alpine: AlpineGlobal;
     var TomSelect: typeof TomSelectGlobal;
     var Spectrum: typeof SpectrumGlobal;
     var Mark: any;
 }
 
+
+declare global {
+    interface Node {
+        __unicorn?: any;
+    }
+}
+
 declare global {
     var S: any;
+}
+
+
+declare global {
+    var tinymce: TinyMCE;
 }
 
 
@@ -1619,11 +1624,6 @@ declare module 'axios' {
     }
     interface CreateAxiosDefaults {
     }
-}
-
-
-declare global {
-    var tinymce: TinyMCE;
 }
 
 

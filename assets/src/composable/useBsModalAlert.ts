@@ -1,4 +1,4 @@
-import { Modal } from 'bootstrap';
+import type { Modal } from 'bootstrap';
 import { html } from '../service';
 import { useUIBootstrap5 } from './useUIBootstrap5';
 import { promiseWithResolvers } from '@lyrasoft/ts-toolkit/generic';
@@ -63,7 +63,7 @@ export async function useBsModalAlert(
   id?: string | HTMLElement | Partial<Modal.Options>,
   options?: Partial<Modal.Options>
 ): Promise<BsModalAlertInstance> {
-  await useUIBootstrap5();
+  const { bootstrap: { Modal } } = await useUIBootstrap5();
 
   let modalElement: HTMLElement | null | undefined = undefined;
 

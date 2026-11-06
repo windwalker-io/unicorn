@@ -1,13 +1,13 @@
 import { n as Mixin, t as EventMixin } from "./events.js";
-import { t as mergeDeep } from "./arr.js";
 import { t as createQueue } from "./useQueue.js";
 import { useHttpClient } from "../unicorn.js";
-//#region src/module/s3-multipart-uploader.ts
+import { t as mergeDeep } from "./arr.js";
+// src/module/s3-multipart-uploader.ts
 var defaultOptions = {
-	chunkSize: 5 * 1024 * 1024,
+	chunkSize: 5242880,
 	concurrency: 2
 };
-var S3MultipartUploader = class extends Mixin(EventMixin) {
+var S3MultipartUploader = class extends (/*@__PURE__*/ Mixin(EventMixin)) {
 	options;
 	constructor(options) {
 		super();
@@ -179,7 +179,6 @@ var S3MultipartUploader = class extends Mixin(EventMixin) {
 		return super.on(event, handler);
 	}
 };
-//#endregion
 export { S3MultipartUploader };
 
 //# sourceMappingURL=s3-multipart-uploader.js.map

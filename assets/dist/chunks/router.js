@@ -1,14 +1,16 @@
 import { t as data } from "./data.js";
-//#region ../../../../node_modules/qss/dist/qss.mjs
+// ../../../../node_modules/qss/dist/qss.mjs
 function encode(obj, pfx) {
 	var k, i, tmp, str = "";
-	for (k in obj) if ((tmp = obj[k]) !== void 0) if (Array.isArray(tmp)) for (i = 0; i < tmp.length; i++) {
-		str && (str += "&");
-		str += encodeURIComponent(k) + "=" + encodeURIComponent(tmp[i]);
-	}
-	else {
-		str && (str += "&");
-		str += encodeURIComponent(k) + "=" + encodeURIComponent(tmp);
+	for (k in obj) if ((tmp = obj[k]) !== void 0) {
+		if (Array.isArray(tmp)) for (i = 0; i < tmp.length; i++) {
+			str && (str += "&");
+			str += encodeURIComponent(k) + "=" + encodeURIComponent(tmp[i]);
+		}
+		else {
+			str && (str += "&");
+			str += encodeURIComponent(k) + "=" + encodeURIComponent(tmp);
+		}
 	}
 	return (pfx || "") + str;
 }
@@ -29,8 +31,7 @@ function decode(str) {
 	}
 	return out;
 }
-//#endregion
-//#region src/service/router.ts
+// src/service/router.ts
 /**
 * Add a route.
 */
@@ -49,8 +50,10 @@ function route(route, query) {
 	let path = extract.path;
 	const routes = data("unicorn.routes") || {};
 	let url = routes[route];
-	if (url == null) if (!route.startsWith("@")) route = "@" + route;
-	else route = route.substring(1);
+	if (url == null) {
+		if (!route.startsWith("@")) route = "@" + route;
+		else route = route.substring(1);
+	}
 	url = routes[route];
 	if (url == null) throw new Error(`Route: "${source}" not found`);
 	if (path) {
@@ -105,7 +108,6 @@ function parseQuery(queryString) {
 function buildQuery(query) {
 	return encode(query);
 }
-//#endregion
 export { parseQuery as a, hasRoute as i, addRoute as n, route as o, buildQuery as r, addQuery as t };
 
 //# sourceMappingURL=router.js.map

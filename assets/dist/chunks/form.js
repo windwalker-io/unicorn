@@ -1,7 +1,7 @@
 import { t as data } from "./data.js";
 import { s as loadAlpine } from "./ui.js";
 import { useSystemUri } from "../unicorn.js";
-//#region src/module/form.ts
+// src/module/form.ts
 var UnicornFormElement = class UnicornFormElement {
 	element;
 	options;
@@ -141,7 +141,6 @@ var UnicornFormElement = class UnicornFormElement {
 		return names.shift() + names.map((name) => `[${name}]`).join("");
 	}
 };
-//#endregion
 export { UnicornFormElement };
 
 //# sourceMappingURL=form.js.map

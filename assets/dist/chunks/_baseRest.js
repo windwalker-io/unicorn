@@ -1,5 +1,5 @@
 import { o as defineProperty } from "./_baseUnary.js";
-//#region ../../../../node_modules/lodash-es/_arrayMap.js
+// ../../../../node_modules/lodash-es/_arrayMap.js
 /**
 * A specialized version of `_.map` for arrays without support for iteratee
 * shorthands.
@@ -14,8 +14,7 @@ function arrayMap(array, iteratee) {
 	while (++index < length) result[index] = iteratee(array[index], index, array);
 	return result;
 }
-//#endregion
-//#region ../../../../node_modules/lodash-es/identity.js
+// ../../../../node_modules/lodash-es/identity.js
 /**
 * This method returns the first argument it receives.
 *
@@ -35,8 +34,7 @@ function arrayMap(array, iteratee) {
 function identity(value) {
 	return value;
 }
-//#endregion
-//#region ../../../../node_modules/lodash-es/_apply.js
+// ../../../../node_modules/lodash-es/_apply.js
 /**
 * A faster alternative to `Function#apply`, this function invokes `func`
 * with the `this` binding of `thisArg` and the arguments of `args`.
@@ -56,11 +54,11 @@ function apply(func, thisArg, args) {
 	}
 	return func.apply(thisArg, args);
 }
-//#endregion
-//#region ../../../../node_modules/lodash-es/_shortOut.js
+// ../../../../node_modules/lodash-es/_shortOut.js
 /** Used to detect hot functions by number of calls within a span of milliseconds. */
-var HOT_COUNT = 800, HOT_SPAN = 16;
-var nativeNow = Date.now;
+var HOT_COUNT = 800;
+var HOT_SPAN = 16;
+var nativeNow = /*@__PURE__*/ (() => Date.now)();
 /**
 * Creates a function that'll short out and invoke `identity` instead
 * of `func` when it's called `HOT_COUNT` or more times in `HOT_SPAN`
@@ -81,8 +79,7 @@ function shortOut(func) {
 		return func.apply(void 0, arguments);
 	};
 }
-//#endregion
-//#region ../../../../node_modules/lodash-es/constant.js
+// ../../../../node_modules/lodash-es/constant.js
 /**
 * Creates a function that returns `value`.
 *
@@ -107,8 +104,7 @@ function constant(value) {
 		return value;
 	};
 }
-//#endregion
-//#region ../../../../node_modules/lodash-es/_setToString.js
+// ../../../../node_modules/lodash-es/_setToString.js
 /**
 * Sets the `toString` method of `func` to return `string`.
 *
@@ -117,7 +113,7 @@ function constant(value) {
 * @param {Function} string The `toString` result.
 * @returns {Function} Returns `func`.
 */
-var setToString = /* @__PURE__ */ shortOut(!defineProperty ? identity : function(func, string) {
+var setToString = /*@__PURE__*/ shortOut(!defineProperty ? identity : function(func, string) {
 	return defineProperty(func, "toString", {
 		"configurable": true,
 		"enumerable": false,
@@ -125,9 +121,8 @@ var setToString = /* @__PURE__ */ shortOut(!defineProperty ? identity : function
 		"writable": true
 	});
 });
-//#endregion
-//#region ../../../../node_modules/lodash-es/_overRest.js
-var nativeMax = Math.max;
+// ../../../../node_modules/lodash-es/_overRest.js
+var nativeMax = /*@__PURE__*/ (() => Math.max)();
 /**
 * A specialized version of `baseRest` which transforms the rest array.
 *
@@ -149,8 +144,7 @@ function overRest(func, start, transform) {
 		return apply(func, this, otherArgs);
 	};
 }
-//#endregion
-//#region ../../../../node_modules/lodash-es/_baseRest.js
+// ../../../../node_modules/lodash-es/_baseRest.js
 /**
 * The base implementation of `_.rest` which doesn't validate or coerce arguments.
 *
@@ -162,7 +156,6 @@ function overRest(func, start, transform) {
 function baseRest(func, start) {
 	return setToString(overRest(func, start, identity), func + "");
 }
-//#endregion
 export { apply as n, arrayMap as r, baseRest as t };
 
 //# sourceMappingURL=_baseRest.js.map

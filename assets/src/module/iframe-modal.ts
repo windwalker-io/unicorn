@@ -1,4 +1,4 @@
-import { Modal } from 'bootstrap';
+import type { Modal } from 'bootstrap';
 import { useUniDirective } from '../composable';
 import { mergeDeep } from '../utilities';
 

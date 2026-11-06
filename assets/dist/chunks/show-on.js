@@ -1,10 +1,10 @@
-import { c as module, d as selectOne, u as selectAll } from "./dom.js";
-import { i as fadeOut, r as fadeIn } from "./ui.js";
-import { d as isObjectLike, n as isArguments, p as Symbol, r as isArrayLike, t as baseUnary, u as isArray } from "./_baseUnary.js";
-import { r as arrayMap, t as baseRest } from "./_baseRest.js";
-import { n as MapCache, t as arrayPush } from "./_arrayPush.js";
 import { useUniDirective } from "../unicorn.js";
-//#region ../../../../node_modules/lodash-es/_baseFindIndex.js
+import { i as fadeOut, r as fadeIn } from "./ui.js";
+import { c as module, d as selectOne, u as selectAll } from "./dom.js";
+import { n as MapCache, t as arrayPush } from "./_arrayPush.js";
+import { r as arrayMap, t as baseRest } from "./_baseRest.js";
+import { d as isObjectLike, n as isArguments, p as Symbol, r as isArrayLike, t as baseUnary, u as isArray } from "./_baseUnary.js";
+// ../../../../node_modules/lodash-es/_baseFindIndex.js
 /**
 * The base implementation of `_.findIndex` and `_.findLastIndex` without
 * support for iteratee shorthands.
@@ -21,8 +21,7 @@ function baseFindIndex(array, predicate, fromIndex, fromRight) {
 	while (fromRight ? index-- : ++index < length) if (predicate(array[index], index, array)) return index;
 	return -1;
 }
-//#endregion
-//#region ../../../../node_modules/lodash-es/_baseIsNaN.js
+// ../../../../node_modules/lodash-es/_baseIsNaN.js
 /**
 * The base implementation of `_.isNaN` without support for number objects.
 *
@@ -33,8 +32,7 @@ function baseFindIndex(array, predicate, fromIndex, fromRight) {
 function baseIsNaN(value) {
 	return value !== value;
 }
-//#endregion
-//#region ../../../../node_modules/lodash-es/_strictIndexOf.js
+// ../../../../node_modules/lodash-es/_strictIndexOf.js
 /**
 * A specialized version of `_.indexOf` which performs strict equality
 * comparisons of values, i.e. `===`.
@@ -50,8 +48,7 @@ function strictIndexOf(array, value, fromIndex) {
 	while (++index < length) if (array[index] === value) return index;
 	return -1;
 }
-//#endregion
-//#region ../../../../node_modules/lodash-es/_baseIndexOf.js
+// ../../../../node_modules/lodash-es/_baseIndexOf.js
 /**
 * The base implementation of `_.indexOf` without `fromIndex` bounds checks.
 *
@@ -64,8 +61,7 @@ function strictIndexOf(array, value, fromIndex) {
 function baseIndexOf(array, value, fromIndex) {
 	return value === value ? strictIndexOf(array, value, fromIndex) : baseFindIndex(array, baseIsNaN, fromIndex);
 }
-//#endregion
-//#region ../../../../node_modules/lodash-es/_arrayIncludes.js
+// ../../../../node_modules/lodash-es/_arrayIncludes.js
 /**
 * A specialized version of `_.includes` for arrays without support for
 * specifying an index to search from.
@@ -78,10 +74,9 @@ function baseIndexOf(array, value, fromIndex) {
 function arrayIncludes(array, value) {
 	return !!(array == null ? 0 : array.length) && baseIndexOf(array, value, 0) > -1;
 }
-//#endregion
-//#region ../../../../node_modules/lodash-es/_isFlattenable.js
+// ../../../../node_modules/lodash-es/_isFlattenable.js
 /** Built-in value references. */
-var spreadableSymbol = Symbol ? Symbol.isConcatSpreadable : void 0;
+var spreadableSymbol = Symbol ? /*@__PURE__*/ (() => Symbol.isConcatSpreadable)() : void 0;
 /**
 * Checks if `value` is a flattenable `arguments` object or array.
 *
@@ -92,8 +87,7 @@ var spreadableSymbol = Symbol ? Symbol.isConcatSpreadable : void 0;
 function isFlattenable(value) {
 	return isArray(value) || isArguments(value) || !!(spreadableSymbol && value && value[spreadableSymbol]);
 }
-//#endregion
-//#region ../../../../node_modules/lodash-es/_baseFlatten.js
+// ../../../../node_modules/lodash-es/_baseFlatten.js
 /**
 * The base implementation of `_.flatten` with support for restricting flattening.
 *
@@ -111,14 +105,14 @@ function baseFlatten(array, depth, predicate, isStrict, result) {
 	result || (result = []);
 	while (++index < length) {
 		var value = array[index];
-		if (depth > 0 && predicate(value)) if (depth > 1) baseFlatten(value, depth - 1, predicate, isStrict, result);
-		else arrayPush(result, value);
-		else if (!isStrict) result[result.length] = value;
+		if (depth > 0 && predicate(value)) {
+			if (depth > 1) baseFlatten(value, depth - 1, predicate, isStrict, result);
+			else arrayPush(result, value);
+		} else if (!isStrict) result[result.length] = value;
 	}
 	return result;
 }
-//#endregion
-//#region ../../../../node_modules/lodash-es/_setCacheAdd.js
+// ../../../../node_modules/lodash-es/_setCacheAdd.js
 /** Used to stand-in for `undefined` hash values. */
 var HASH_UNDEFINED = "__lodash_hash_undefined__";
 /**
@@ -135,8 +129,7 @@ function setCacheAdd(value) {
 	this.__data__.set(value, HASH_UNDEFINED);
 	return this;
 }
-//#endregion
-//#region ../../../../node_modules/lodash-es/_setCacheHas.js
+// ../../../../node_modules/lodash-es/_setCacheHas.js
 /**
 * Checks if `value` is in the array cache.
 *
@@ -149,8 +142,7 @@ function setCacheAdd(value) {
 function setCacheHas(value) {
 	return this.__data__.has(value);
 }
-//#endregion
-//#region ../../../../node_modules/lodash-es/_SetCache.js
+// ../../../../node_modules/lodash-es/_SetCache.js
 /**
 *
 * Creates an array cache object to store unique values.
@@ -166,8 +158,7 @@ function SetCache(values) {
 }
 SetCache.prototype.add = SetCache.prototype.push = setCacheAdd;
 SetCache.prototype.has = setCacheHas;
-//#endregion
-//#region ../../../../node_modules/lodash-es/_cacheHas.js
+// ../../../../node_modules/lodash-es/_cacheHas.js
 /**
 * Checks if a `cache` value for `key` exists.
 *
@@ -179,8 +170,7 @@ SetCache.prototype.has = setCacheHas;
 function cacheHas(cache, key) {
 	return cache.has(key);
 }
-//#endregion
-//#region ../../../../node_modules/lodash-es/isArrayLikeObject.js
+// ../../../../node_modules/lodash-es/isArrayLikeObject.js
 /**
 * This method is like `_.isArrayLike` except that it also checks if `value`
 * is an object.
@@ -209,8 +199,7 @@ function cacheHas(cache, key) {
 function isArrayLikeObject(value) {
 	return isObjectLike(value) && isArrayLike(value);
 }
-//#endregion
-//#region ../../../../node_modules/lodash-es/_arrayIncludesWith.js
+// ../../../../node_modules/lodash-es/_arrayIncludesWith.js
 /**
 * This function is like `arrayIncludes` except that it accepts a comparator.
 *
@@ -225,8 +214,7 @@ function arrayIncludesWith(array, value, comparator) {
 	while (++index < length) if (comparator(value, array[index])) return true;
 	return false;
 }
-//#endregion
-//#region ../../../../node_modules/lodash-es/_baseDifference.js
+// ../../../../node_modules/lodash-es/_baseDifference.js
 /** Used as the size to enable large array optimizations. */
 var LARGE_ARRAY_SIZE = 200;
 /**
@@ -263,8 +251,7 @@ function baseDifference(array, values, iteratee, comparator) {
 	}
 	return result;
 }
-//#endregion
-//#region ../../../../node_modules/lodash-es/difference.js
+// ../../../../node_modules/lodash-es/difference.js
 /**
 * Creates an array of `array` values not included in the other given arrays
 * using [`SameValueZero`](http://ecma-international.org/ecma-262/7.0/#sec-samevaluezero)
@@ -286,11 +273,10 @@ function baseDifference(array, values, iteratee, comparator) {
 * _.difference([2, 1], [2, 3]);
 * // => [1]
 */
-var difference = /* @__PURE__ */ baseRest(function(array, values) {
+var difference = /*@__PURE__*/ baseRest(function(array, values) {
 	return isArrayLikeObject(array) ? baseDifference(array, baseFlatten(values, 1, isArrayLikeObject, true)) : [];
 });
-//#endregion
-//#region src/module/show-on.ts
+// src/module/show-on.ts
 var ShowOn = class {
 	el;
 	input;
@@ -330,10 +316,12 @@ var ShowOn = class {
 			if (this.input) this.defaultReadonly ??= this.input.hasAttribute("readonly");
 			fadeOut(this.el, duration);
 		}
-		if (this.input) if (matched) {
-			if (!this.defaultReadonly) this.input.removeAttribute("readonly");
-			this.defaultReadonly = null;
-		} else this.input.setAttribute("readonly", "readonly");
+		if (this.input) {
+			if (matched) {
+				if (!this.defaultReadonly) this.input.removeAttribute("readonly");
+				this.defaultReadonly = null;
+			} else this.input.setAttribute("readonly", "readonly");
+		}
 	}
 	isValueMatched(target, value) {
 		let targetValue = null;
@@ -349,9 +337,7 @@ var ShowOn = class {
 			case "checkbox":
 				targetValue = target.checked ? target.value : [null, false];
 				break;
-			case "radio":
-				targetValue = target.querySelector("input[type=radio]:checked")?.value;
-				break;
+			case "radio": targetValue = target.querySelector("input[type=radio]:checked")?.value;
 		}
 		if (Array.isArray(value)) {
 			if (Array.isArray(targetValue)) return difference(value, targetValue).length === 0;
@@ -380,12 +366,11 @@ var ShowOn = class {
 		return "input";
 	}
 };
-var ready = /* @__PURE__ */ useUniDirective("show-on", { mounted(el, { value }) {
+var ready = /*@__PURE__*/ useUniDirective("show-on", { mounted(el, { value }) {
 	module(el, "show.on", (el) => {
 		return new ShowOn(el, JSON.parse(value));
 	});
 } });
-//#endregion
 export { ShowOn, ready };
 
 //# sourceMappingURL=show-on.js.map

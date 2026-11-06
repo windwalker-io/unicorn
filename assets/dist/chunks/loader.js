@@ -1,5 +1,5 @@
 import { s as injectCssToDocument } from "./dom.js";
-//#region src/service/loader.ts
+// src/service/loader.ts
 async function useScriptImport(src, attrs = {}) {
 	if (typeof src === "function") src = (await src()).default;
 	const script = document.createElement("script");
@@ -62,7 +62,7 @@ async function useCssIncludes(...hrefs) {
 }
 var importedSheets = {};
 async function useCssImport(...hrefs) {
-	return injectCssToDocument(...(await Promise.all(hrefs.map((href) => {
+	const styles = (await Promise.all(hrefs.map((href) => {
 		return new Promise((resolve) => {
 			resolveSource(href).then((href) => {
 				href = resolveUrl(href);
@@ -70,7 +70,8 @@ async function useCssImport(...hrefs) {
 				resolve(importedSheets[href]);
 			});
 		});
-	}))).map((module) => module.default));
+	}))).map((module) => module.default);
+	return injectCssToDocument(...styles);
 }
 async function simulateCssImport(href) {
 	const response = await fetch(href);
@@ -100,7 +101,6 @@ async function resolveSource(src) {
 	if (typeof src === "function") return (await src()).default;
 	return src;
 }
-//#endregion
 export { useScriptImport as a, useImport as i, useCssImport as n, useSeriesImport as o, useCssIncludes as r, doImport as t };
 
 //# sourceMappingURL=loader.js.map

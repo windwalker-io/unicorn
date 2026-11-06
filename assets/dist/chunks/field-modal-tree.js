@@ -1,11 +1,11 @@
 import { t as data } from "./data.js";
+import { n as useCssImport } from "./loader.js";
 import { t as cloneDeep } from "./cloneDeep.js";
 import { n as forceArray } from "./helper.js";
-import { n as useCssImport } from "./loader.js";
 import { useHttpClient } from "../unicorn.js";
 import { Modal } from "bootstrap";
 import { Fragment, Transition, TransitionGroup, computed, createApp, createBlock, createCommentVNode, createElementBlock, createElementVNode, createTextVNode, createVNode, defineComponent, h, inject, mergeProps, nextTick, normalizeClass, normalizeStyle, onBeforeUpdate, onMounted, onUnmounted, openBlock, provide, ref, renderList, toDisplayString, unref, useTemplateRef, vModelDynamic, vModelText, vShow, watch, withCtx, withDirectives, withModifiers } from "vue";
-//#region src/utilities/tree.ts
+// src/utilities/tree.ts
 function flattenChildren(children) {
 	const flat = [];
 	function loopChildren(children) {
@@ -20,8 +20,7 @@ function flattenChildren(children) {
 	loopChildren(children);
 	return flat;
 }
-//#endregion
-//#region ../../../../node_modules/vue3-slide-up-down/dist/vue3-slide-up-down.js
+// ../../../../node_modules/vue3-slide-up-down/dist/vue3-slide-up-down.js
 function y(t) {
 	return {
 		height: t.style.height,
@@ -71,40 +70,64 @@ function m(t, o, i, e) {
 		marginBottom: e.marginBottom || 0
 	}];
 }
-var x = /* @__PURE__ */ defineComponent({
+var x = /*@__PURE__*/ defineComponent({
 	props: {
 		modelValue: {
 			type: Boolean,
 			default: !1
 		},
+		/**
+		* Time in milliseconds for the slide duration
+		*/
 		duration: {
 			type: Number,
 			default: 500
 		},
+		/**
+		* Timing function for the animation
+		*/
 		timingFunction: {
 			type: String,
 			default: "ease-in-out"
 		},
+		/**
+		* Independent timing function for the animation when entering
+		*/
 		timingFunctionEnter: {
 			type: String,
 			default: null
 		},
+		/**
+		* Independent timing function for the animation when leaving
+		*/
 		timingFunctionLeave: {
 			type: String,
 			default: null
 		},
+		/**
+		* Opacity value from 0 - 1 of the element when open
+		*/
 		opacityOpen: {
 			type: Number,
 			default: 1
 		},
+		/**
+		* Opacity value from 0 - 1 of the element when closed
+		*/
 		opacityClosed: {
 			type: Number,
 			default: 0
 		},
+		/**
+		* HTML tag to use for the outer container
+		*/
 		tag: {
 			type: String,
 			default: "div"
 		},
+		/**
+		* Always render the element inside the slide container
+		*/
 		eager: {
 			type: Boolean,
 			default: !1
@@ -120,10 +143,10 @@ var x = /* @__PURE__ */ defineComponent({
 	setup(t, { slots: o, attrs: i, emit: e }) {
 		const n = ref("0px"), s = computed(() => t.timingFunctionEnter || t.timingFunction), v = computed(() => t.timingFunctionLeave || t.timingFunction);
 		function T(g, l) {
-			const d = g, a = y(d);
+			const d = g, a = y(d), r = V(n, d, a);
 			f(d, a, () => {
 				l(), e("open-end");
-			}, m(t, n, V(n, d, a), a), {
+			}, m(t, n, r, a), {
 				duration: t.duration,
 				easing: s.value
 			});
@@ -148,9 +171,8 @@ var x = /* @__PURE__ */ defineComponent({
 		}, { default: () => t.modelValue || t.eager ? withDirectives(h(t.tag, mergeProps(i, { class: "slide-up-down__container" }), o), [t.eager ? [vShow, t.modelValue === !0] : [null]]) : null });
 	}
 });
-//#endregion
-//#region src/vue/components/ModalTree/TreeItem.vue?vue&type=script&setup=true&lang.ts
-var TreeItem_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+// src/vue/components/ModalTree/TreeItem.vue?vue&type=script&setup=true&lang.ts
+var TreeItem_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineComponent({
 	__name: "TreeItem",
 	props: {
 		node: {},
@@ -302,15 +324,13 @@ var TreeItem_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defin
 		return __returned__;
 	}
 });
-//#endregion
-//#region \0plugin-vue:export-helper
+// \0plugin-vue:export-helper
 var _plugin_vue_export_helper_default = (sfc, props) => {
 	const target = sfc.__vccOpts || sfc;
 	for (const [key, val] of props) target[key] = val;
 	return target;
 };
-//#endregion
-//#region src/vue/components/ModalTree/TreeItem.vue
+// src/vue/components/ModalTree/TreeItem.vue
 var _hoisted_1$2 = { class: "p-2 ms-2" };
 var _hoisted_2$2 = [
 	"type",
@@ -383,14 +403,13 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
 		_: 1
 	}, 8, ["modelValue"])) : createCommentVNode("", true)], 2);
 }
-var TreeItem_default = /* @__PURE__ */ _plugin_vue_export_helper_default(TreeItem_vue_vue_type_script_setup_true_lang_default, [
+var TreeItem_default = /*@__PURE__*/ _plugin_vue_export_helper_default(TreeItem_vue_vue_type_script_setup_true_lang_default, [
 	["render", _sfc_render$2],
-	["__scopeId", "data-v-897596f4"],
+	["__scopeId", "data-v-8a4ae0be"],
 	["__file", "TreeItem.vue"]
 ]);
-//#endregion
-//#region src/vue/components/ModalTree/TreeModal.vue?vue&type=script&setup=true&lang.ts
-var TreeModal_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+// src/vue/components/ModalTree/TreeModal.vue?vue&type=script&setup=true&lang.ts
+var TreeModal_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineComponent({
 	__name: "TreeModal",
 	props: {
 		open: { type: Boolean },
@@ -466,8 +485,10 @@ var TreeModal_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defi
 			const http = await useHttpClient();
 			try {
 				let src = props.source;
-				if (typeof src === "string") nodes.value = (await http.get(src)).data.data;
-				else if (typeof src === "function") nodes.value = await src();
+				if (typeof src === "string") {
+					const res = await http.get(src);
+					nodes.value = res.data.data;
+				} else if (typeof src === "function") nodes.value = await src();
 				else {
 					if (!Array.isArray(src)) src = src.children;
 					nodes.value = src;
@@ -536,8 +557,7 @@ var TreeModal_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defi
 		return __returned__;
 	}
 });
-//#endregion
-//#region src/vue/components/ModalTree/TreeModal.vue
+// src/vue/components/ModalTree/TreeModal.vue
 var _hoisted_1$1 = ["id"];
 var _hoisted_2$1 = {
 	class: "modal-dialog",
@@ -590,10 +610,9 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
 		}, null, 8, ["node", "branchSelectable"]);
 	}), 128))])) : (openBlock(), createElementBlock("div", _hoisted_11, [..._cache[2] || (_cache[2] = [createElementVNode("div", { class: "d-flex justify-content-center" }, [createElementVNode("div", { class: "spinner-border spinner-border-sm my-3" })], -1)])]))])])])], 8, _hoisted_1$1);
 }
-var TreeModal_default = /* @__PURE__ */ _plugin_vue_export_helper_default(TreeModal_vue_vue_type_script_setup_true_lang_default, [["render", _sfc_render$1], ["__file", "TreeModal.vue"]]);
-//#endregion
-//#region src/vue/components/ModalTree/ModalTreeApp.vue?vue&type=script&setup=true&lang.ts
-var ModalTreeApp_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var TreeModal_default = /*@__PURE__*/ _plugin_vue_export_helper_default(TreeModal_vue_vue_type_script_setup_true_lang_default, [["render", _sfc_render$1], ["__file", "TreeModal.vue"]]);
+// src/vue/components/ModalTree/ModalTreeApp.vue?vue&type=script&setup=true&lang.ts
+var ModalTreeApp_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineComponent({
 	__name: "ModalTreeApp",
 	props: {
 		id: {},
@@ -686,8 +705,7 @@ var ModalTreeApp_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ d
 		return __returned__;
 	}
 });
-//#endregion
-//#region src/vue/components/ModalTree/ModalTreeApp.vue
+// src/vue/components/ModalTree/ModalTreeApp.vue
 var _hoisted_1 = { class: "c-modal-tree" };
 var _hoisted_2 = { class: "btn-group" };
 var _hoisted_3 = { key: 1 };
@@ -772,13 +790,12 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
 		])
 	]);
 }
-//#endregion
-//#region src/module/field-modal-tree.ts
-var app = /* @__PURE__ */ createApp({
+// src/module/field-modal-tree.ts
+var app = /*@__PURE__*/ createApp({
 	name: "modal-tree",
 	components: { ModalTreeApp: /* @__PURE__ */ _plugin_vue_export_helper_default(ModalTreeApp_vue_vue_type_script_setup_true_lang_default, [
 		["render", _sfc_render],
-		["__scopeId", "data-v-f21c791b"],
+		["__scopeId", "data-v-22fa7050"],
 		["__file", "ModalTreeApp.vue"]
 	]) }
 });
@@ -794,8 +811,7 @@ async function init() {
 	customElements.define(ModalTreeElement.is, ModalTreeElement);
 	await useCssImport("@vue-animate");
 }
-var ready = /* @__PURE__ */ init();
-//#endregion
+var ready = /*@__PURE__*/ init();
 export { ready };
 
 //# sourceMappingURL=field-modal-tree.js.map

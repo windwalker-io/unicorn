@@ -1,5 +1,6 @@
-//#region ../../../../node_modules/@lyrasoft/ts-toolkit/src/generic/queue.ts
+// ../../../../node_modules/@lyrasoft/ts-toolkit/src/generic/queue.ts
 var TaskQueue = class {
+	maxRunning;
 	items = [];
 	currentRunning = 0;
 	running = false;
@@ -96,8 +97,7 @@ var TaskQueue = class {
 function queue(maxRunning = 1) {
 	return new TaskQueue(maxRunning);
 }
-//#endregion
-//#region src/composable/useQueue.ts
+// src/composable/useQueue.ts
 var queues = {};
 function useQueue(name = "default", maxRunning = 1) {
 	return queues[name] ??= createQueue(maxRunning);
@@ -105,7 +105,6 @@ function useQueue(name = "default", maxRunning = 1) {
 function createQueue(maxRunning = 1) {
 	return queue(maxRunning);
 }
-//#endregion
 export { useQueue as n, createQueue as t };
 
 //# sourceMappingURL=useQueue.js.map

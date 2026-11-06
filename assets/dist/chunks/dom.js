@@ -1,5 +1,5 @@
 import { n as removeData, r as defData } from "./data.js";
-//#region src/service/dom.ts
+// src/service/dom.ts
 /**
 * @see https://stackoverflow.com/a/9899701
 */
@@ -122,7 +122,6 @@ async function injectCssToDocument(doc, ...css) {
 	doc.adoptedStyleSheets = [...doc.adoptedStyleSheets, ...styles];
 	return styles;
 }
-//#endregion
 export { h as a, module as c, selectOne as d, getBoundedInstanceList as i, removeBoundedInstance as l, domready as n, html as o, getBoundedInstance as r, injectCssToDocument as s, delegate as t, selectAll as u };
 
 //# sourceMappingURL=dom.js.map
