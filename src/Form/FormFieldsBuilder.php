@@ -183,6 +183,34 @@ class FormFieldsBuilder extends AbstractAstBuilder implements EventAwareInterfac
         return $this->getFieldByColumnType($column);
     }
 
+    /**
+     * Directive keywords in column comments (e.g. `enum:Foo`).
+     * A comment containing any of them is not used as label.
+     */
+    protected const COMMENT_DIRECTIVES = [
+        'enum',
+    ];
+
+    /**
+     * Use column comment as label, unless it contains a directive.
+     */
+    protected function getCommentLabel(Column $column): ?string
+    {
+        $comment = trim((string) $column->getComment());
+
+        if ($comment === '') {
+            return null;
+        }
+
+        $directives = implode('|', array_map('preg_quote', self::COMMENT_DIRECTIVES));
+
+        if (preg_match('/(?:^|\s)(?:' . $directives . '):/', $comment)) {
+            return null;
+        }
+
+        return $comment;
+    }
+
     protected function getFieldByColumnType(Column $column): string
     {
         if ($column->getErratas()['is_json'] ?? false) {
@@ -200,7 +228,7 @@ class FormFieldsBuilder extends AbstractAstBuilder implements EventAwareInterfac
             $label = "\$this->trans('" . $lang . "')";
         } else {
             $label = Str::surrounds(
-                $column->getComment() ?: StrNormalize::toSpaceSeparated(
+                $this->getCommentLabel($column) ?? StrNormalize::toSpaceSeparated(
                     StrNormalize::toPascalCase($column->getColumnName())
                 ),
                 "'"

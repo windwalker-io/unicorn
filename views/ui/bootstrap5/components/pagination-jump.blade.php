@@ -58,14 +58,14 @@ $self = (string) $nav->self()->var('page', '{page}');
 
     <div {!! $attributes !!}>
         <div class="input-group" data-pagination-jump>
-            <div class="input-group-text">前往</div>
+            <div class="input-group-text">{{ $lang('unicorn.pagination.jump.goto') }}</div>
             <input type="number"
                 name="page"
                 value="{{ $pagination->getCurrent() }}"
                 class="form-control"
                 style="max-width: 100px" />
             <button type="button" class="btn btn-primary">
-                GO
+                {{ $lang('unicorn.pagination.jump.go') }}
             </button>
         </div>
     </div>

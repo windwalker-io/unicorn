@@ -45,26 +45,26 @@ $attributes['style'] .= $forceStyle;
 
     <div class="l-pagination-stats__item {{ $itemClass }}">
         <div class="{{ $linkClass }}">
-            第 <strong>{{ $pagination->getCurrent() }}</strong> 頁
+            {!! $lang('unicorn.pagination.stats.page', $pagination->getCurrent()) !!}
         </div>
     </div>
 
     <div class="l-pagination-stats__item {{ $itemClass }}">
         <div class="{{ $linkClass }}">
-            每頁 <strong>{{ $pagination->getLimit() }}</strong> 筆
+            {!! $lang('unicorn.pagination.stats.limit', $pagination->getLimit()) !!}
         </div>
     </div>
 
     @if (!$pagination->isSimple())
         <div class="l-pagination-stats__item {{ $itemClass }}">
             <div class="{{ $linkClass }}">
-                共 <strong>{{ $pagination->getPages() }}</strong> 頁
+                {!! $lang('unicorn.pagination.stats.pages', $pagination->getPages()) !!}
             </div>
         </div>
 
         <div class="l-pagination-stats__item {{ $itemClass }}">
             <div class="{{ $linkClass }}">
-                總數 <strong>{{ $pagination->getTotal() }}</strong>
+                {!! $lang('unicorn.pagination.stats.total', $pagination->getTotal()) !!}
             </div>
         </div>
     @endif

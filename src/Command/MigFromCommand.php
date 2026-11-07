@@ -97,6 +97,7 @@ class MigFromCommand implements CommandInterface
 
         $excel = new ExcelImporter($file);
         $migGroups = [];
+        $emptyTypes = [];
 
         foreach ($excel->getSheetsIterator(true) as $sheet => $rows) {
             if ($sheet[0] === '_' || $sheet === 'Sample' || !Utf8String::isAscii($sheet)) {
@@ -113,7 +114,31 @@ class MigFromCommand implements CommandInterface
                 continue;
             }
 
+            foreach ($rows as $row) {
+                if (empty($row['Name'])) {
+                    continue;
+                }
+
+                if (trim((string) ($row['Type'] ?? '')) === '') {
+                    $emptyTypes[$tableName][] = trim((string) $row['Name']);
+                }
+            }
+
             $migGroups[$this->getGroupName($tableName)][$tableName] = $rows;
+        }
+
+        if ($emptyTypes) {
+            $io->style()->error('Found columns with empty Type. Please fix the Excel file and run again.');
+
+            foreach ($emptyTypes as $tableName => $columns) {
+                $io->writeln("Sheet <comment>$tableName</comment>:");
+
+                foreach ($columns as $column) {
+                    $io->writeln("  - Column <info>$column</info>");
+                }
+            }
+
+            return 1;
         }
 
         $entities = [];
