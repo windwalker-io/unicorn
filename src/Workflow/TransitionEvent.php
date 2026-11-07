@@ -24,5 +24,9 @@ class TransitionEvent extends BaseEvent
         public string|array $froms = [],
         public string $to = '',
         public ?Transition $transition = null,
-    ) {}
+        public ?bool $muted = null,
+    ) {
+        // True while seeding or migrating; regular listeners are skipped, "always" listeners can check this.
+        $this->muted ??= WorkflowController::isMuted();
+    }
 }

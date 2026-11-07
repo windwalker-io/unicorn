@@ -225,4 +225,38 @@ class WorkflowControllerTest extends TestCase
         self::assertFalse($controller->isAllow('-2', '1'));
         self::assertTrue($controller->isAllow('-2', '0'));
     }
+
+    #[Test]
+    public function regularListenersAreMutedWhileSeedingOrMigratingButAlwaysOnesRun(): void
+    {
+        $event = $this->createStub(\Windwalker\ORM\Event\WatchEvent::class);
+        $log = [];
+
+        $controller = $this->createController(true);
+        $controller->onAfterChanged('1', '0', function () use (&$log) {
+            $log[] = 'mail';
+        });
+        $controller->onAfterChangedAlways("1", "0", function ($e) use (&$log) {
+            $log[] = "log:" . ($e->muted ? "muted" : "live");
+        });
+
+        $controller->triggerAfterChanged('1', '0', $event);
+        self::assertSame(["mail", "log:live"], $log);
+
+        foreach ([\Windwalker\Core\Seed\SeedService::class, \Windwalker\Core\Migration\MigrationService::class] as $cls) {
+            $log = [];
+            $cls::$running = true;
+
+            try {
+                self::assertTrue(WorkflowController::isMuted());
+                $controller->triggerAfterChanged('1', '0', $event);
+            } finally {
+                $cls::$running = false;
+            }
+
+            self::assertSame(["log:muted"], $log);
+        }
+
+        self::assertFalse(WorkflowController::isMuted());
+    }
 }

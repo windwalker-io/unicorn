@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Unicorn\Workflow;
 
+use Windwalker\Core\Migration\MigrationService;
+use Windwalker\Core\Seed\SeedService;
 use MyCLabs\Enum\Enum;
 use Unicorn\Html\State\StateButton;
 use Windwalker\Core\Event\CoreEventAwareTrait;
@@ -291,12 +293,60 @@ class WorkflowController implements EventAwareInterface
         );
     }
 
-    public function onBeforeTransition(string $name, callable $listener): static
+    /**
+     * Whether regular (side-effect) listeners should be muted, e.g. while seeding or migrating.
+     */
+    public static function isMuted(): bool
+    {
+        return SeedService::$running || MigrationService::$running;
+    }
+
+    /**
+     * Regular listeners may cause external side effects (mail, API...) and are skipped when muted.
+     * Listeners registered with $always = true (or the *Always methods) still run when muted;
+     * they can check `TransitionEvent::$muted` to decide what to do.
+     */
+    protected function wrapListener(callable $listener, bool $always): callable
+    {
+        if ($always) {
+            return $listener;
+        }
+
+        return static function (...$args) use ($listener) {
+            if (static::isMuted()) {
+                return null;
+            }
+
+            return $listener(...$args);
+        };
+    }
+
+    public function onBeforeChangedAlways(mixed $froms, mixed $tos, callable $listener): static
+    {
+        return $this->onBeforeChanged($froms, $tos, $listener, true);
+    }
+
+    public function onAfterChangedAlways(mixed $froms, mixed $tos, callable $listener): static
+    {
+        return $this->onAfterChanged($froms, $tos, $listener, true);
+    }
+
+    public function onBeforeTransitionAlways(string $name, callable $listener): static
+    {
+        return $this->onBeforeTransition($name, $listener, true);
+    }
+
+    public function onAfterTransitionAlways(string $name, callable $listener): static
+    {
+        return $this->onAfterTransition($name, $listener, true);
+    }
+
+    public function onBeforeTransition(string $name, callable $listener, bool $always = false): static
     {
         $transition = $this->getTransition($name);
 
         if ($transition) {
-            $this->onBeforeChanged($transition->getFroms(), $transition->getTo(), $listener);
+            $this->onBeforeChanged($transition->getFroms(), $transition->getTo(), $listener, $always);
 
             // Do not use transition event since it will call listener twice
             // $this->on(
@@ -308,12 +358,12 @@ class WorkflowController implements EventAwareInterface
         return $this;
     }
 
-    public function onAfterTransition(string $name, callable $listener): static
+    public function onAfterTransition(string $name, callable $listener, bool $always = false): static
     {
         $transition = $this->getTransition($name);
 
         if ($transition) {
-            $this->onAfterChanged($transition->getFroms(), $transition->getTo(), $listener);
+            $this->onAfterChanged($transition->getFroms(), $transition->getTo(), $listener, $always);
 
             // Do not use transition event since it will call listener twice
             // $this->on(
@@ -328,7 +378,8 @@ class WorkflowController implements EventAwareInterface
     public function onBeforeChanged(
         mixed $froms,
         mixed $tos,
-        callable $listener
+        callable $listener,
+        bool $always = false
     ): static {
         $eventNames = $this->sortEventNames(
             'before',
@@ -339,7 +390,7 @@ class WorkflowController implements EventAwareInterface
         foreach ($eventNames as $eventName) {
             $this->on(
                 $eventName,
-                $listener
+                $this->wrapListener($listener, $always)
             );
         }
 
@@ -349,7 +400,8 @@ class WorkflowController implements EventAwareInterface
     public function onAfterChanged(
         mixed $froms,
         mixed $tos,
-        callable $listener
+        callable $listener,
+        bool $always = false
     ): static {
         $eventNames = $this->sortEventNames(
             'after',
@@ -360,46 +412,50 @@ class WorkflowController implements EventAwareInterface
         foreach ($eventNames as $eventName) {
             $this->on(
                 $eventName,
-                $listener
+                $this->wrapListener($listener, $always)
             );
         }
 
         return $this;
     }
 
-    public function onBeforeFrom(mixed $froms, callable $listener): static
+    public function onBeforeFrom(mixed $froms, callable $listener, bool $always = false): static
     {
         return $this->onBeforeChanged(
             $froms,
             $this->getStateValues(),
-            $listener
+            $listener,
+            $always
         );
     }
 
-    public function onAfterFrom(mixed $froms, callable $listener): static
+    public function onAfterFrom(mixed $froms, callable $listener, bool $always = false): static
     {
         return $this->onAfterChanged(
             $froms,
             $this->getStateValues(),
-            $listener
+            $listener,
+            $always
         );
     }
 
-    public function onBeforeTo(mixed $tos, callable $listener): static
+    public function onBeforeTo(mixed $tos, callable $listener, bool $always = false): static
     {
         return $this->onBeforeChanged(
             $this->getStateValues(),
             $tos,
-            $listener
+            $listener,
+            $always
         );
     }
 
-    public function onAfterTo(mixed $tos, callable $listener): static
+    public function onAfterTo(mixed $tos, callable $listener, bool $always = false): static
     {
         return $this->onAfterChanged(
             $this->getStateValues(),
             $tos,
-            $listener
+            $listener,
+            $always
         );
     }
 
