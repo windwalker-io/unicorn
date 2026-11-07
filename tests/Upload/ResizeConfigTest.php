@@ -30,5 +30,6 @@ class ResizeConfigTest extends TestCase
         self::assertFalse($config->crop);
         self::assertNull($config->outputFormat);
         self::assertTrue($config->orientate);
+        self::assertFalse($config->interlaced);
     }
 }

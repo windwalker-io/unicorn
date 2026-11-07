@@ -194,7 +194,8 @@ class ImageRedrawProcessor
                 $this->encodeImageByExtension(
                     $image,
                     $resizeConfig->outputFormat ?? $outputFormat,
-                    TypeCast::safeInteger($resizeConfig->quality ?? 85)
+                    TypeCast::safeInteger($resizeConfig->quality ?? 85),
+                    $resizeConfig->interlaced
                 ),
             );
         }
@@ -208,7 +209,8 @@ class ImageRedrawProcessor
         $res = $this->encodeImageByExtension(
             $image,
             $resizeConfig->outputFormat ?? $outputFormat,
-            TypeCast::safeInteger($resizeConfig->quality ?? 85)
+            TypeCast::safeInteger($resizeConfig->quality ?? 85),
+            $resizeConfig->interlaced
         );
 
         return Stream::wrap($res);
@@ -220,7 +222,8 @@ class ImageRedrawProcessor
     protected function encodeImageByExtension(
         ImageInterface $image,
         mixed $format,
-        int $quality
+        int $quality,
+        bool $interlaced = false
     ) {
         $format ??= 'jpg';
 
@@ -228,11 +231,13 @@ class ImageRedrawProcessor
 
         $extension = FileExtension::from($format);
 
-        if ($extension === FileExtension::PNG) {
-            $encoded = $image->encodeUsingFileExtension($format);
-        } else {
-            $encoded = $image->encodeUsingFileExtension($format, quality: $quality);
-        }
+        $options = match ($extension) {
+            // Only PNG and GIF support interlaced output.
+            FileExtension::PNG, FileExtension::GIF => ['interlaced' => $interlaced],
+            default => ['quality' => $quality],
+        };
+
+        $encoded = $image->encodeUsingFileExtension($format, ...$options);
 
         return $encoded->toStream();
     }

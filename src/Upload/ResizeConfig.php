@@ -21,5 +21,9 @@ class ResizeConfig extends RecordOptions
         public bool $crop = false,
         public ?string $outputFormat = null,
         public bool $orientate = true,
+        /**
+         * Interlaced output. Only applies to PNG and GIF, ignored for other formats.
+         */
+        public bool $interlaced = false,
     ) {}
 }

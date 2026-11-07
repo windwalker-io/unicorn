@@ -56,6 +56,7 @@ static fn() => [
          *      - quality: (int) JPEG quality. (default: 85)
          *      - output_format: The output image format, if not provided, will auto detect.
          *      - orientate: (bool) Auto rotate images based on orientate info.
+         *      - interlaced: (bool) Output interlaced image. Only applies to `png` and `gif`, ignored for other formats.
          * - raw_gif: (bool) If is gif file, use raw file, ignore redraw or resize.
          * - options: The extra options for different storages.
          *

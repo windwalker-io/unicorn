@@ -142,4 +142,41 @@ class FileUploadServiceResizeTest extends TestCase
 
         self::assertSame([2, 1], $this->readSize($stream));
     }
+
+    #[Test]
+    #[TestDox('resizeImage() writes an interlaced PNG when interlaced is enabled')]
+    public function interlacedPng(): void
+    {
+        $service = $this->createService();
+
+        $stream = $service->resizeImage(self::$pngPath, new ResizeConfig(outputFormat: 'png', interlaced: true));
+
+        $stream->rewind();
+        // IHDR interlace method byte: 0 = none, 1 = Adam7.
+        self::assertSame(1, ord($stream->getContents()[28]));
+    }
+
+    #[Test]
+    #[TestDox('resizeImage() writes a non-interlaced PNG by default')]
+    public function nonInterlacedPngByDefault(): void
+    {
+        $service = $this->createService();
+
+        $stream = $service->resizeImage(self::$pngPath, new ResizeConfig(outputFormat: 'png'));
+
+        $stream->rewind();
+        self::assertSame(0, ord($stream->getContents()[28]));
+    }
+
+    #[Test]
+    #[TestDox('resizeImage() ignores interlaced for formats that do not support it')]
+    public function interlacedIgnoredForJpeg(): void
+    {
+        $service = $this->createService();
+
+        $stream = $service->resizeImage(self::$pngPath, new ResizeConfig(outputFormat: 'jpg', interlaced: true));
+
+        $stream->rewind();
+        self::assertSame("\xFF\xD8", substr($stream->getContents(), 0, 2));
+    }
 }

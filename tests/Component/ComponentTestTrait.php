@@ -13,6 +13,7 @@ use Windwalker\Core\Renderer\RendererService;
 use Windwalker\Core\Router\Router;
 use Windwalker\DI\Container;
 use Windwalker\Edge\Component\AbstractComponent;
+use Windwalker\Utilities\Iterator\PriorityQueue;
 
 /**
  * Shared integration-test helper for Unicorn Edge UI components.
@@ -69,6 +70,10 @@ trait ComponentTestTrait
     protected static function renderComponent(AbstractComponent $component, array $extra = []): string
     {
         $service = static::$container->resolve(RendererService::class);
+
+        // Fixtures must win over the app's own views (e.g. the app root's `layout.pagination.basic-pagination`).
+        $service->addPath(dirname(__DIR__) . '/views', PriorityQueue::MAX);
+
         $renderer = $service->createRenderer();
         $renderer->getRenderer('edge')->extend(
             static fn($engine) => $engine->addExtension(new WindwalkerExtension(static::$appContext))
