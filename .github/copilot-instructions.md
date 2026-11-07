@@ -10,6 +10,7 @@ Load only the guidance needed for the task:
 
 - [`../AGENTS.md`](../AGENTS.md): package scope and agent rules
 - [`docs/index.md`](docs/index.md): documentation index
+- https://windwalker.io/llms.txt: public Windwalker documentation index; fetch only the linked `.md` pages a task needs
 - [`docs/architecture.md`](docs/architecture.md): package layout and host-app integration
 - [`instructions/architecture.instructions.md`](instructions/architecture.instructions.md):
   mandatory placement and integration rules
