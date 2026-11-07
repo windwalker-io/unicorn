@@ -30,6 +30,8 @@ use Windwalker\Utilities\Arr;
  * @method  mixed  getTimezone()
  * @method  mixed  noCalendar(bool $value)
  * @method  mixed  getNoCalendar()
+ * @method  $this  convertTimezone(bool $value)
+ * @method  mixed  getConvertTimezone()
  */
 class CalendarField extends TextField
 {
@@ -103,6 +105,10 @@ class CalendarField extends TextField
 
         $value = parent::prepareStore($value);
 
+        if ($this->getConvertTimezone() === false) {
+            return $value;
+        }
+
         return $this->chronosService->toServer($value);
     }
 
@@ -113,6 +119,10 @@ class CalendarField extends TextField
      */
     public function handleTimezone(HTMLElement $input): HTMLElement
     {
+        if ($this->getConvertTimezone() === false) {
+            return $input;
+        }
+
         $tz = $this->getTimezone() ?? $this->chronosService->getTimezone();
         $noCalendar = $this->getNoCalendar();
 
@@ -151,6 +161,7 @@ class CalendarField extends TextField
                 'monthSelect',
                 'timezone',
                 'noCalendar',
+                'convertTimezone',
             ]
         );
     }
