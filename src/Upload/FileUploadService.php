@@ -43,6 +43,15 @@ class FileUploadService implements EventAwareInterface
      */
     public const string DRIVER_IMAGICK = FileUploadOptions::DRIVER_IMAGICK;
 
+    protected const array DANGEROUS_EXTENSIONS = [
+        'php', 'phtml', 'phar', 'pht', 'phps',
+        'html', 'htm', 'xhtml', 'shtml', 'xht',
+        'css', 'js', 'mjs',
+        'asp', 'aspx', 'ashx', 'asmx', 'jsp', 'jspx', 'cfm', 'cgi', 'pl', 'py', 'rb',
+        'sh', 'bash', 'zsh', 'bat', 'cmd', 'ps1', 'vbs', 'wsf',
+        'exe', 'dll', 'com', 'msi', 'jar', 'war', 'htaccess', 'htpasswd',
+    ];
+
     protected array $pathVars = [];
 
     public FileUploadOptions $options;
@@ -145,7 +154,11 @@ class FileUploadService implements EventAwareInterface
         $destExt = Path::getExtension($dest);
         $options = $this->getMergeOptions($options);
 
-        if ($this->isImage($file) && ($forceRedraw || $this->shouldRedraw($srcExt, $destExt))) {
+        if (
+            $this->isImage($file)
+            && !$this->isSvgPassthrough($srcExt, $destExt)
+            && ($forceRedraw || $this->shouldRedraw($srcExt, $destExt))
+        ) {
             $resizeConfig = $options->resize;
 
             // Todo: Should refactor total process
@@ -293,6 +306,14 @@ class FileUploadService implements EventAwareInterface
         return $type !== null && str_starts_with($type, 'image/');
     }
 
+    /**
+     * SVG is vector XML which cannot be redrawn by GD, and is sanitized in putToStorage() instead.
+     */
+    protected function isSvgPassthrough(string $ext, string $destExt): bool
+    {
+        return strtolower($ext) === 'svg' && in_array(strtolower($destExt), ['svg', '{ext}'], true);
+    }
+
     protected function shouldRedraw(string $ext, string $destExt): bool
     {
         if ($destExt !== '{ext}' && $ext !== $destExt) {
@@ -300,6 +321,10 @@ class FileUploadService implements EventAwareInterface
         }
 
         if ($this->options->rawGif && strtolower($ext) === 'gif') {
+            return false;
+        }
+
+        if ($this->isSvgPassthrough($ext, $destExt)) {
             return false;
         }
 
@@ -498,6 +523,14 @@ class FileUploadService implements EventAwareInterface
         string $dest,
         FileUploadOptions $options
     ): PutResult {
+        $this->assertSafeDestination($dest);
+        $this->assertAccepted($dest, $options);
+
+        // SVG is never redrawn, so sanitize it here unless disabled, and minify it if optimize is enabled.
+        if ($options->sanitizeSvg && strtolower(Path::getExtension($dest)) === 'svg') {
+            $stream = $this->imageProcessor->sanitizeSvg($stream, $options->optimize !== false);
+        }
+
         $storageOptions = array_merge($this->options->storageOptions, $options->storageOptions);
 
         $storage = $this->getStorage();
@@ -514,6 +547,85 @@ class FileUploadService implements EventAwareInterface
         );
 
         return $event->result;
+    }
+
+    /**
+     * Reject destinations that could escape the storage root.
+     */
+    protected function assertSafeDestination(string $dest): void
+    {
+        if (str_contains($dest, "\0")) {
+            throw new \InvalidArgumentException('Invalid upload destination.', 400);
+        }
+
+        foreach (preg_split('#[\\\\/]+#', $dest) as $segment) {
+            if ($segment === '..') {
+                throw new \InvalidArgumentException('Invalid upload destination.', 400);
+            }
+        }
+    }
+
+    /**
+     * Validate the final extension, and the mime types mapped from that extension (not the client-provided one),
+     * against `acceptExtensions` and `acceptMimeTypes`. A null or empty list skips that check.
+     */
+    protected function assertAccepted(string $dest, FileUploadOptions $options): void
+    {
+        $extensions = array_filter(
+            array_map(
+                static fn($ext) => static::normalizeExtension(ltrim(trim((string) $ext), '.')),
+                $options->acceptExtensions ?? []
+            )
+        );
+        $mimeTypes = array_filter(
+            array_map(static fn($mime) => strtolower(trim((string) $mime)), $options->acceptMimeTypes ?? [])
+        );
+
+        if ($extensions !== []) {
+            $ext = static::normalizeExtension(Path::getExtension($dest));
+
+            if (!in_array($ext, $extensions, true)) {
+                throw new \DomainException('File extension is not allowed.', 400);
+            }
+        } else {
+            $this->assertNotDangerousExtension($dest);
+        }
+
+        if ($mimeTypes !== []) {
+            $detected = array_map(
+                'strtolower',
+                $this->getMimeTypeFinder()->getMimeTypes(Path::getExtension($dest))
+            );
+
+            foreach ($mimeTypes as $accepted) {
+                foreach ($detected as $mime) {
+                    if ($accepted === '*/*' || $accepted === $mime) {
+                        return;
+                    }
+
+                    if (str_ends_with($accepted, '/*') && str_starts_with($mime, substr($accepted, 0, -1))) {
+                        return;
+                    }
+                }
+            }
+
+            throw new \DomainException('File type is not allowed.', 400);
+        }
+    }
+
+    /**
+     * Executable / active content extensions blocked when `acceptExtensions` is not configured.
+     * Every dot-separated segment of the file name is checked to catch names like `shell.php.jpg`.
+     */
+    protected function assertNotDangerousExtension(string $dest): void
+    {
+        $segments = array_slice(explode('.', strtolower(Path::basename($dest))), 1);
+
+        foreach ($segments as $segment) {
+            if (in_array($segment, static::DANGEROUS_EXTENSIONS, true) || preg_match('/^php\d*$/', $segment)) {
+                throw new \DomainException('File extension is not allowed.', 400);
+            }
+        }
     }
 
     /**

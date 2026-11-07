@@ -46,7 +46,14 @@ class LocalStorage implements StorageInterface
 
     public function getPath(string $suffix = ''): string
     {
-        return Path::normalize($this->getBasePath() . '/' . $suffix);
+        $base = Path::normalize($this->getBasePath());
+        $path = Path::normalize($base . '/' . $suffix);
+
+        if ($path !== $base && !str_starts_with($path, rtrim($base, '/\\') . DIRECTORY_SEPARATOR)) {
+            throw new \InvalidArgumentException('Path is outside of storage root.', 400);
+        }
+
+        return $path;
     }
 
     public function put(string $data, string $path, array $options = []): PutResult

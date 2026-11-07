@@ -29,13 +29,18 @@ class FileUploadOptions extends RecordOptions
     public function __construct(
         public string $storage = 'local',
         public ?string $dir = null,
-        public ?string $accept = null,
+        /** @var string[]|null Allowed extensions, e.g. `['jpg', 'png']`. Null or empty means no check. */
+        public ?array $acceptExtensions = null,
+        /** @var string[]|null Allowed mime types, wildcard supported, e.g. `['image/*']`. Null or empty means no check. */
+        public ?array $acceptMimeTypes = null,
         public bool $forceRedraw = false,
         public bool $rawGif = false,
         public bool|int|array $optimize = false,
         ResizeConfig|array $resize = new ResizeConfig(),
         array $storageOptions = [],
         array $options = [],
+        /** Sanitize uploaded SVG files (remove scripts, event handlers, unsafe URLs). Disable only for trusted uploaders. */
+        public bool $sanitizeSvg = true,
     ) {
         $this->resize = $resize;
         $this->storageOptions = [...$options, ...$storageOptions];

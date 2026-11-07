@@ -9,6 +9,9 @@ use Intervention\Image\Drivers\Imagick\Driver as ImagickDriver;
 use Intervention\Image\FileExtension;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Interfaces\ImageInterface;
+use MathiasReker\PhpSvgOptimizer\Exception\ExceptionInterface as SvgException;
+use MathiasReker\PhpSvgOptimizer\RuleSet;
+use MathiasReker\PhpSvgOptimizer\SvgOptimizer;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use Spatie\ImageOptimizer\OptimizerChainFactory;
@@ -34,6 +37,8 @@ use const Windwalker\Stream\READ_WRITE_RESET;
  */
 class ImageRedrawProcessor
 {
+    protected const int MAX_SVG_SIZE = 5 * 1024 * 1024;
+
     public function __construct(protected ?string $tempPath = null)
     {
         $this->tempPath ??= sys_get_temp_dir();
@@ -152,6 +157,46 @@ class ImageRedrawProcessor
         $newImage->rewind();
 
         return $newImage;
+    }
+
+    /**
+     * Sanitize an untrusted SVG with the `security` rule set, and optionally minify it with the default rules.
+     *
+     * @throws  \DomainException  If the SVG is invalid or too large.
+     */
+    public function sanitizeSvg(StreamInterface $src, bool $optimize = false): StreamInterface
+    {
+        if (!class_exists(SvgOptimizer::class)) {
+            throw new \DomainException('Please install `mathiasreker/php-svg-optimizer` first.');
+        }
+
+        if ($src->isSeekable()) {
+            $src->rewind();
+        }
+
+        $svg = $src->getContents();
+
+        if (strlen($svg) > static::MAX_SVG_SIZE) {
+            throw new \DomainException('SVG file is too large.', 400);
+        }
+
+        $optimizer = new SvgOptimizer()->withRuleSets(RuleSet::Security);
+
+        if ($optimize) {
+            $optimizer = $optimizer->withDefaultRules();
+        }
+
+        try {
+            $content = $optimizer->optimizeString($svg)->getContent();
+        } catch (SvgException $e) {
+            throw new \DomainException('Invalid SVG file.', 400, $e);
+        }
+
+        $newStream = new Stream('php://memory', READ_WRITE_RESET);
+        $newStream->write($content);
+        $newStream->rewind();
+
+        return $newStream;
     }
 
     /**

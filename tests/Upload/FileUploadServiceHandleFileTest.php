@@ -115,6 +115,84 @@ class FileUploadServiceHandleFileTest extends TestCase
     }
 
     #[Test]
+    #[TestDox('handleFile() rejects files not matching acceptExtensions / acceptMimeTypes')]
+    public function rejectsNotAcceptedFiles(): void
+    {
+        $service = $this->createService(['acceptExtensions' => ['png', '.JPG']]);
+
+        $service->handleFile($this->pngPath, 'uploads/a.png');
+        self::assertCount(1, $this->puts);
+
+        try {
+            $service->handleFile($this->txtPath, 'uploads/a.txt');
+            self::fail('Expected extension rejection.');
+        } catch (\DomainException) {
+            self::assertCount(1, $this->puts);
+        }
+
+        $service = $this->createService(['acceptMimeTypes' => ['image/*']]);
+
+        try {
+            $service->handleFile($this->txtPath, 'uploads/a.txt');
+            self::fail('Expected mime rejection.');
+        } catch (\DomainException) {
+            self::assertCount(1, $this->puts);
+        }
+
+        $service->handleFile($this->pngPath, 'uploads/b.png');
+        self::assertCount(2, $this->puts);
+
+        $service = $this->createService(['acceptExtensions' => [], 'acceptMimeTypes' => null]);
+        $service->handleFile($this->txtPath, 'uploads/c.txt');
+        self::assertCount(3, $this->puts);
+
+        foreach (['x.php', 'x.PHTML', 'x.html', 'x.js', 'x.css', 'x.php.jpg'] as $name) {
+            try {
+                $service->handleFile($this->txtPath, 'uploads/' . $name);
+                self::fail('Expected dangerous extension rejection: ' . $name);
+            } catch (\DomainException) {
+                self::assertCount(3, $this->puts);
+            }
+        }
+    }
+
+    #[Test]
+    #[TestDox('handleFile() sanitizes SVG, skips redraw, and minifies it when optimize is enabled')]
+    public function sanitizesSvg(): void
+    {
+        $svgPath = $this->dir . '/evil.svg';
+        file_put_contents(
+            $svgPath,
+            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" onload="alert(1)">'
+            . '<!-- comment --><script>alert(1)</script><rect width="10" height="10" fill="red"/></svg>'
+        );
+
+        $service = $this->createService(['resize' => ['enabled' => true], 'optimize' => false]);
+        $service->handleFile($svgPath, 'uploads/a.svg');
+
+        $content = $this->bytesOf($this->puts[0]['stream']);
+        self::assertStringNotContainsString('<script', $content);
+        self::assertStringNotContainsString('onload', $content);
+        self::assertStringContainsString('<rect', $content);
+        self::assertStringContainsString('<!-- comment -->', $content);
+
+        $service = $this->createService(['optimize' => true]);
+        $service->handleFile($svgPath, 'uploads/b.svg');
+
+        $content = $this->bytesOf($this->puts[1]['stream']);
+        self::assertStringNotContainsString('<script', $content);
+        self::assertStringNotContainsString('comment', $content);
+
+        $service = $this->createService(['sanitizeSvg' => false]);
+        $service->handleFile($svgPath, 'uploads/d.svg');
+        self::assertStringContainsString('<script', $this->bytesOf($this->puts[2]['stream']));
+
+        file_put_contents($svgPath, '<not-svg');
+        $this->expectException(\DomainException::class);
+        $this->createService()->handleFile($svgPath, 'uploads/c.svg');
+    }
+
+    #[Test]
     #[TestDox('handleFile() stores non-image files as-is')]
     public function storesNonImageAsIs(): void
     {
