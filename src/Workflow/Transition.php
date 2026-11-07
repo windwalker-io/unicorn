@@ -15,6 +15,8 @@ class Transition
 
     protected string $description = '';
 
+    protected bool $dangerous = false;
+
     /**
      * Transition constructor.
      */
@@ -168,6 +170,18 @@ class Transition
     public function setTo(string $to): static
     {
         $this->to = $to;
+
+        return $this;
+    }
+
+    public function isDangerous(): bool
+    {
+        return $this->dangerous;
+    }
+
+    public function dangerous(bool $dangerous = true): static
+    {
+        $this->dangerous = $dangerous;
 
         return $this;
     }

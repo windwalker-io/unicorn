@@ -619,7 +619,8 @@ class WorkflowController implements EventAwareInterface
             $button->addState((string) $value)
                 ->icon($state->getIcon())
                 ->color($state->getColor())
-                ->title($state->getTitle() ?? $state->getValue());
+                ->title($state->getTitle() ?? $state->getValue())
+                ->dangerous($state->isDangerous());
         }
 
         return $button;

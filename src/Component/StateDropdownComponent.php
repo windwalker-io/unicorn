@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace Unicorn\Component;
 
 use Closure;
+use Unicorn\Html\State\ConfirmResolver;
 use Unicorn\Html\State\StateButton;
+use Unicorn\Html\State\StateOption;
+use Unicorn\Workflow\Transition;
 use Unicorn\Workflow\State;
 use Unicorn\Workflow\WorkflowController;
 use Unicorn\Workflow\WorkflowInterface;
@@ -74,6 +77,12 @@ class StateDropdownComponent extends AbstractComponent
 
     #[Prop]
     public \Closure|string|null $onclick = null;
+
+    #[Prop]
+    public \Closure|array|string|bool|null $confirm = null;
+
+    #[Prop]
+    public string $confirmMessage = 'Are you sure?';
 
     public function data(): array
     {
@@ -174,6 +183,13 @@ class StateDropdownComponent extends AbstractComponent
             'workflowCtrl',
             'stateButton',
             'transitions'
+        );
+    }
+
+    public function resolveConfirm(Transition|State|StateOption $item, string $key): string
+    {
+        return ConfirmResolver::toJsPrefix(
+            ConfirmResolver::resolve($this->confirm, $item, $key, $this->confirmMessage)
         );
     }
 

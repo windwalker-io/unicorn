@@ -93,4 +93,27 @@ final class StateButtonComponentTest extends TestCase
         self::assertStringNotContainsString('<button', $html);
     }
 
+    #[Test]
+    public function confirmPrefixesTaskClickOnlyWhenRequestedAndDangerous(): void
+    {
+        $controller = new WorkflowController('status');
+        $controller->addState('deleted')->title('Deleted')->dangerous();
+
+        $component = new StateButtonComponent();
+        $component->value = 'deleted';
+        $component->id = 7;
+        $component->states = $controller;
+        $component->options = ['task' => 'delete'];
+
+        $html = static::renderComponent($component);
+        self::assertStringNotContainsString('confirm(', $html);
+        self::assertStringContainsString('$store.grid.updateItemByTask(', $html);
+
+        $component->confirm = true;
+        $html = static::renderComponent($component);
+        self::assertStringContainsString('confirm(&quot;Are you sure?&quot;) &amp;&amp; $store.grid.updateItemByTask(', $html);
+
+        $component->confirm = ['deleted' => '真的刪除?'];
+        self::assertStringContainsString('真的刪除?', static::renderComponent($component));
+    }
 }

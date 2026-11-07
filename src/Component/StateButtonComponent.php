@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Unicorn\Component;
 
 use Closure;
+use Unicorn\Html\State\ConfirmResolver;
 use Unicorn\Html\State\StateButton;
 use Unicorn\Html\State\StateOption;
 use Unicorn\Workflow\WorkflowController;
@@ -46,6 +47,12 @@ class StateButtonComponent extends AbstractComponent
     #[Prop]
     public array $options = [];
 
+    #[Prop]
+    public \Closure|array|string|bool|null $confirm = null;
+
+    #[Prop]
+    public string $confirmMessage = 'Are you sure?';
+
     /**
      * @inheritDoc
      */
@@ -66,12 +73,16 @@ class StateButtonComponent extends AbstractComponent
         }
 
         $color = Str::ensureLeft($state->getColor(), 'text-');
+        $confirmPrefix = ConfirmResolver::toJsPrefix(
+            ConfirmResolver::resolve($this->confirm, $state, $this->value, $this->confirmMessage)
+        );
 
         return array_merge(
             parent::data(),
             compact(
                 'state',
-                'color'
+                'color',
+                'confirmPrefix'
             )
         );
     }

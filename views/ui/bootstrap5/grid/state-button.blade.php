@@ -90,9 +90,9 @@ $color = \Windwalker\Utilities\Str::ensureStart($state->getColor(), 'text-');
                 @click="{{ $state->getTask()($value, $state, $options) }}"
             @else
                 @if ($row ?? null)
-                    @click="$store.{{ $store }}.updateRowByTask('{{ $state->getTask() }}', '{{ $row }}')"
+                    @click="{{ $confirmPrefix }}$store.{{ $store }}.updateRowByTask('{{ $state->getTask() }}', '{{ $row }}')"
                 @elseif ($id ?? null)
-                    @click="$store.{{ $store }}.updateItemByTask('{{ $state->getTask() }}', '{{ $id }}')"
+                    @click="{{ $confirmPrefix }}$store.{{ $store }}.updateItemByTask('{{ $state->getTask() }}', '{{ $id }}')"
                 @endif
             @endif
         @endif

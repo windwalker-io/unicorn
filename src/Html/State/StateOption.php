@@ -40,6 +40,8 @@ class StateOption
 
     protected string $textColor = '';
 
+    protected bool $dangerous = false;
+
     /**
      * StateOption constructor.
      *
@@ -341,6 +343,18 @@ class StateOption
     public function color(string $color): static
     {
         $this->color = $color;
+
+        return $this;
+    }
+
+    public function isDangerous(): bool
+    {
+        return $this->dangerous;
+    }
+
+    public function dangerous(bool $dangerous = true): static
+    {
+        $this->dangerous = $dangerous;
 
         return $this;
     }

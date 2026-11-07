@@ -195,4 +195,120 @@ final class StateDropdownComponentTest extends TestCase
     {
         self::assertSame('@state-dropdown', new StateDropdownComponent()->render());
     }
+
+    private function confirmWorkflow(): WorkflowController
+    {
+        $workflow = new WorkflowController('status');
+        $workflow->addState('draft')->title('Draft');
+        $workflow->addState('published')->title('Published');
+        $workflow->addState('deleted')->title('Deleted')->dangerous();
+        $workflow->addTransition('publish', 'draft', 'published')->title('Publish');
+        $workflow->addTransition('delete', 'draft', 'deleted')->title('Delete')->dangerous();
+        $workflow->allowFreeTransitions(false);
+
+        return $workflow;
+    }
+
+    private function renderConfirm(mixed $confirm, bool $useStates = false, bool $batch = false): string
+    {
+        $component = new StateDropdownComponent();
+        $component->workflow = $this->confirmWorkflow();
+        $component->value = 'draft';
+        $component->id = '5';
+        $component->useStates = $useStates;
+        $component->batch = $batch;
+        $component->confirm = $confirm;
+
+        return static::renderComponent($component);
+    }
+
+    #[Test]
+    public function rendersNoConfirmByDefaultAndDoesNotAddDangerClass(): void
+    {
+        $html = $this->renderConfirm(null);
+
+        self::assertStringNotContainsString('confirm(', $html);
+        self::assertStringNotContainsString('text-danger', $html);
+        self::assertStringContainsString('$store.grid.updateItem', $html);
+    }
+
+    #[Test]
+    public function confirmTrueOnlyAppliesToDangerousTransitions(): void
+    {
+        $html = $this->renderConfirm(true);
+
+        self::assertSame(1, substr_count($html, 'confirm('));
+        self::assertMatchesRegularExpression(
+            '/@click="confirm\(&quot;Are you sure\?&quot;\) &amp;&amp; \$store\.grid\.updateItem\(\'5\', null, [^"]*\'deleted\'/',
+            $html
+        );
+    }
+
+    #[Test]
+    public function confirmStringAndCustomDefaultMessage(): void
+    {
+        self::assertStringContainsString('&quot;Danger!&quot;', $this->renderConfirm('Danger!'));
+
+        $component = new StateDropdownComponent();
+        $component->workflow = $this->confirmWorkflow();
+        $component->value = 'draft';
+        $component->confirm = true;
+        $component->confirmMessage = '確定?';
+
+        self::assertStringContainsString('確定?', static::renderComponent($component));
+    }
+
+    #[Test]
+    public function confirmArrayIsKeyedByTransitionNameOrStateValue(): void
+    {
+        $html = $this->renderConfirm(['publish' => 'Publish it?']);
+
+        self::assertSame(1, substr_count($html, 'confirm('));
+        self::assertStringContainsString('Publish it?', $html);
+
+        $html = $this->renderConfirm(['deleted' => true, 'published' => 'Sure?'], useStates: true);
+
+        self::assertSame(2, substr_count($html, 'confirm('));
+        self::assertStringContainsString('Are you sure?', $html);
+        self::assertStringContainsString('Sure?', $html);
+    }
+
+    #[Test]
+    public function confirmClosureDecidesPerItem(): void
+    {
+        $html = $this->renderConfirm(
+            static fn($item, string $key) => $key === 'publish' ? 'Closure says?' : null
+        );
+
+        self::assertSame(1, substr_count($html, 'confirm('));
+        self::assertStringContainsString('Closure says?', $html);
+    }
+
+    #[Test]
+    public function confirmWorksInBatchModeAndFixesBatchTransitionTarget(): void
+    {
+        $html = $this->renderConfirm(true, batch: true);
+
+        self::assertMatchesRegularExpression(
+            '/confirm\([^"]*\$store\.grid\.batch\(&#039;delete&#039;|\$store\.grid\.batch\(\'delete\'/',
+            $html
+        );
+        self::assertStringContainsString("'status': 'deleted'", $html);
+        self::assertStringNotContainsString('> >', $html);
+    }
+
+    #[Test]
+    public function customOnclickTakesPrecedenceOverConfirm(): void
+    {
+        $component = new StateDropdownComponent();
+        $component->workflow = $this->confirmWorkflow();
+        $component->value = 'draft';
+        $component->confirm = true;
+        $component->onclick = 'custom()';
+
+        $html = static::renderComponent($component);
+
+        self::assertStringContainsString('onclick="custom()"', $html);
+        self::assertStringNotContainsString('confirm(', $html);
+    }
 }

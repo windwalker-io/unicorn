@@ -13,6 +13,8 @@ class State
 
     protected string $icon = '';
 
+    protected bool $dangerous = false;
+
     /**
      * State constructor.
      */
@@ -118,6 +120,18 @@ class State
     public function icon(string $icon): static
     {
         $this->icon = $icon;
+
+        return $this;
+    }
+
+    public function isDangerous(): bool
+    {
+        return $this->dangerous;
+    }
+
+    public function dangerous(bool $dangerous = true): static
+    {
+        $this->dangerous = $dangerous;
 
         return $this;
     }

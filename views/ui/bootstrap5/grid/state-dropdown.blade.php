@@ -38,6 +38,7 @@ use Windwalker\Core\Router\SystemUri;
  * @var  Transition          $transition
  * @var  \Closure            $prepareWorkflow
  * @var  ?StateOption        $currentState
+ * @var  \Closure            $resolveConfirm
  */
 
 ?>
@@ -101,15 +102,17 @@ extract($data);
 
                 @if ($useStates)
                     @foreach ($stateButton?->getStates() as $state)
+                        @php($confirmPrefix = $resolveConfirm($state, (string) $state->getValue()))
                         <li>
                             <a class="dropdown-item" href="javascript://"
                                 @if ($onclick)
                                     onclick="{{ $onclick($state, $workflowCtrl) }}"
                                 @elseif ($batch)
-                                    @click="$store.{{ $store }}.form.patch(null, { batch: { '{{ $workflowCtrl->getField() }}': '{{ $state->getValue() }}' } })">
+                                    @click="{{ $confirmPrefix }}$store.{{ $store }}.form.patch(null, { batch: { '{{ $workflowCtrl->getField() }}': '{{ $state->getValue() }}' } })"
                                 @else
-                                    @click="$store.{{ $store }}.updateItem('{{ $id }}', null, { batch: { '{{ $workflowCtrl->getField() }}': '{{ $state->getValue() }}' } })">
+                                    @click="{{ $confirmPrefix }}$store.{{ $store }}.updateItem('{{ $id }}', null, { batch: { '{{ $workflowCtrl->getField() }}': '{{ $state->getValue() }}' } })"
                                 @endif
+                            >
                                 @if ($state->getIcon())
                                     <i class="{{ $state->getIcon() }} fa-fw text-{{ $state->getColor() }}"></i>
                                 @endif
@@ -119,16 +122,17 @@ extract($data);
                     @endforeach
                 @else
                     @foreach ($transitions as $transition)
+                        @php($confirmPrefix = $resolveConfirm($transition, $transition->getName()))
                         <li>
                             <a class="dropdown-item" href="javascript://"
                                 @if ($onclick)
                                     onclick="{{ $onclick($transition, $workflowCtrl) }}"
                                 @elseif ($batch)
-                                    @click="$store.{{ $store }}.batch('{{ $transition->getName() }}', null, { batch: { '{{ $workflowCtrl->getField() }}': '{{ $state->getValue() }}' } })">
+                                    @click="{{ $confirmPrefix }}$store.{{ $store }}.batch('{{ $transition->getName() }}', null, { batch: { '{{ $workflowCtrl->getField() }}': '{{ $transition->getTo() }}' } })"
                                 @else
-                                    @click="$store.{{ $store }}.updateItem('{{ $id }}', null, { batch: { '{{ $workflowCtrl->getField() }}': '{{ $transition->getTo() }}' } })"
+                                    @click="{{ $confirmPrefix }}$store.{{ $store }}.updateItem('{{ $id }}', null, { batch: { '{{ $workflowCtrl->getField() }}': '{{ $transition->getTo() }}' } })"
                                 @endif
-                                >
+                            >
                                 @if ($transition->getIcon())
                                     <i class="fa-fw {{ $transition->getIcon() }}"></i>
                                 @endif
