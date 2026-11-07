@@ -51,6 +51,16 @@ class InlineField extends AbstractField implements CompositeFieldInterface
     {
         $form = $this->getSubForm();
 
+        foreach ($form->getFields() as $field) {
+            if ($this->isDisabled()) {
+                $field->disabled(true);
+            }
+
+            if ($this->isReadonly()) {
+                $field->readonly(true);
+            }
+        }
+
         if ($this->group) {
             $form->appendNamespace($this->group);
 
