@@ -9,6 +9,7 @@ use PHPUnit\Framework\TestCase;
 use Unicorn\Enum\PublishingState;
 use Unicorn\Model\Contract\PublishingEntityInterface;
 use Unicorn\Model\Traits\PublishingEntityTrait;
+use Windwalker\Core\DateTime\Chronos;
 
 class PublishingEntityTraitTest extends TestCase
 {
@@ -17,6 +18,36 @@ class PublishingEntityTraitTest extends TestCase
         return new class () implements PublishingEntityInterface {
             use PublishingEntityTrait;
         };
+    }
+
+    #[Test]
+    public function deletedAtDefaultsToNull(): void
+    {
+        $entity = $this->createEntity();
+
+        self::assertNull($entity->deletedAt);
+    }
+
+    #[Test]
+    public function deletedAtAcceptsString(): void
+    {
+        $entity = $this->createEntity();
+
+        $entity->deletedAt = '2024-01-02 03:04:05';
+
+        self::assertInstanceOf(Chronos::class, $entity->deletedAt);
+        self::assertSame('2024-01-02 03:04:05', $entity->deletedAt->format('Y-m-d H:i:s'));
+    }
+
+    #[Test]
+    public function deletedAtAcceptsNull(): void
+    {
+        $entity = $this->createEntity();
+        $entity->deletedAt = '2024-01-02 03:04:05';
+
+        $entity->deletedAt = null;
+
+        self::assertNull($entity->deletedAt);
     }
 
     #[Test]

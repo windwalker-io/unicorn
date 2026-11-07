@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace Unicorn\Model\Traits;
 
 use Unicorn\Enum\PublishingState;
+use Windwalker\Core\DateTime\Chronos;
+use Windwalker\Core\DateTime\ServerTimeCast;
 use Windwalker\ORM\Attributes\Cast;
+use Windwalker\ORM\Attributes\CastNullable;
 use Windwalker\ORM\Attributes\Column;
 
 trait PublishingEntityTrait
@@ -15,6 +18,14 @@ trait PublishingEntityTrait
     #[Cast(PublishingState::class)]
     public PublishingState $state {
         set(int|PublishingState $value) => $this->state = PublishingState::wrap($value);
+    }
+
+    #[Column('deleted_at')]
+    #[CastNullable(ServerTimeCast::class)]
+    public ?Chronos $deletedAt = null {
+        set(\DateTimeInterface|string|null $value) {
+            $this->deletedAt = Chronos::tryWrap($value);
+        }
     }
 
     public function isTrashed(): bool
