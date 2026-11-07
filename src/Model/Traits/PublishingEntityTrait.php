@@ -23,9 +23,7 @@ trait PublishingEntityTrait
     #[Column('deleted_at')]
     #[CastNullable(ServerTimeCast::class)]
     public ?Chronos $deletedAt = null {
-        set(\DateTimeInterface|string|null $value) {
-            $this->deletedAt = Chronos::tryWrap($value);
-        }
+        set(\DateTimeInterface|string|null $value) => $this->deletedAt = Chronos::tryWrap($value);
     }
 
     public function isTrashed(): bool

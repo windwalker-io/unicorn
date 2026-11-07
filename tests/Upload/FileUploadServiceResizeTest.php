@@ -13,6 +13,7 @@ use Intervention\Image\Drivers\Gd\Driver as GdDriver;
 use Intervention\Image\ImageManager;
 use Unicorn\Image\Decoder\PsrStreamGdDecoder;
 use Unicorn\Upload\FileUploadService;
+use Unicorn\Upload\ImageRedrawProcessor;
 use Unicorn\Upload\ResizeConfig;
 use Windwalker\DI\Container;
 
@@ -38,7 +39,9 @@ class FileUploadServiceResizeTest extends TestCase
 
     private function createService(array $options = []): FileUploadService
     {
-        return new FileUploadService(new Container(), $options, MimeTypes::getDefault());
+        $container = new Container();
+
+        return new FileUploadService($container, new ImageRedrawProcessor(sys_get_temp_dir()), $options, MimeTypes::getDefault());
     }
 
     private function readSize(\Psr\Http\Message\StreamInterface $stream): array

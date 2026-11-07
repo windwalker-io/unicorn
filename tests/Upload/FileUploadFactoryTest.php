@@ -7,8 +7,10 @@ namespace Unicorn\Tests\Upload;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\TestDox;
 use PHPUnit\Framework\TestCase;
+use Unicorn\Provider\StorageProvider;
 use Unicorn\Upload\FileUploadFactory;
 use Unicorn\Upload\FileUploadService;
+use Windwalker\Core\Application\PathResolver;
 use Windwalker\Core\Runtime\Config;
 use Windwalker\DI\Container;
 
@@ -20,8 +22,13 @@ class FileUploadFactoryTest extends TestCase
     private function createFactory(array $fileUploadConfig): FileUploadFactory
     {
         $config = new Config(['unicorn' => ['file_upload' => $fileUploadConfig]]);
+        $container = new Container();
+        (new StorageProvider())->register($container);
+        $resolver = $this->createStub(PathResolver::class);
+        $resolver->method('resolve')->willReturn(sys_get_temp_dir());
+        $container->set(PathResolver::class, $resolver);
 
-        return new FileUploadFactory($config, new Container());
+        return new FileUploadFactory($config, $container);
     }
 
     #[Test]

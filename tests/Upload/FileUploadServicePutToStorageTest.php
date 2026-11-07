@@ -16,6 +16,7 @@ use Unicorn\Storage\StorageInterface;
 use Unicorn\Upload\Event\FileUploadedEvent;
 use Unicorn\Upload\FileUploadOptions;
 use Unicorn\Upload\FileUploadService;
+use Unicorn\Upload\ImageRedrawProcessor;
 use Windwalker\DI\Container;
 
 /**
@@ -40,14 +41,17 @@ class FileUploadServicePutToStorageTest extends TestCase
      */
     private function createService(StorageInterface $storage, array $options = []): FileUploadService
     {
-        return new class (new Container(), $options, MimeTypes::getDefault(), $storage) extends FileUploadService {
+        $container = new Container();
+
+        return new class ($container, new ImageRedrawProcessor(sys_get_temp_dir()), $options, MimeTypes::getDefault(), $storage) extends FileUploadService {
             public function __construct(
                 Container $container,
+                ImageRedrawProcessor $imageProcessor,
                 FileUploadOptions|array $options,
                 ?\Symfony\Component\Mime\MimeTypesInterface $mimeTypes,
                 private readonly StorageInterface $fakeStorage,
             ) {
-                parent::__construct($container, $options, $mimeTypes);
+                parent::__construct($container, $imageProcessor, $options, $mimeTypes);
             }
 
             public function getStorage(): StorageInterface

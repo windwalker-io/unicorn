@@ -4,42 +4,27 @@ declare(strict_types=1);
 
 namespace Unicorn\Upload;
 
-use Intervention\Image\Drivers\Gd\Driver as GdDriver;
-use Intervention\Image\Drivers\Imagick\Driver as ImagickDriver;
-use Intervention\Image\FileExtension;
-use Intervention\Image\ImageManager;
-use Intervention\Image\Interfaces\ImageInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
-use Spatie\ImageOptimizer\OptimizerChainFactory;
 use Symfony\Component\Mime\MimeTypesInterface;
 use Unicorn\Flysystem\Base64DataUri;
-use Unicorn\Image\Decoder\PsrStreamGdDecoder;
-use Unicorn\Image\Decoder\PsrStreamImagickDecoder;
 use Unicorn\Storage\PutResult;
 use Unicorn\Storage\StorageInterface;
 use Unicorn\Upload\Event\FileUploadedEvent;
 use Unicorn\Upload\Exception\FileUploadException;
-use Windwalker\Core\Application\PathResolver;
 use Windwalker\Core\Event\CoreEventAwareTrait;
-use Windwalker\Core\Manager\Logger;
 use Windwalker\DI\Container;
 use Windwalker\Event\EventAwareInterface;
-use Windwalker\Filesystem\Filesystem;
 use Windwalker\Filesystem\Path;
-use Windwalker\Filesystem\TempFileObject;
 use Windwalker\Http\FullPathAwareInterface;
 use Windwalker\Http\Helper\UploadedFileHelper;
 use Windwalker\Stream\Stream;
-use Windwalker\Stream\StreamHelper;
 use Windwalker\Stream\StringStream;
-use Windwalker\Utilities\TypeCast;
 
 use function Windwalker\chronos;
 use function Windwalker\uid;
 
 use const Windwalker\Stream\READ_ONLY_FROM_BEGIN;
-use const Windwalker\Stream\READ_WRITE_RESET;
 
 /**
  * The FileUploadService class.
@@ -67,6 +52,7 @@ class FileUploadService implements EventAwareInterface
      */
     public function __construct(
         protected Container $container,
+        protected ImageRedrawProcessor $imageProcessor,
         FileUploadOptions|array $options = new FileUploadOptions(),
         protected ?MimeTypesInterface $mimeTypes = null
     ) {
@@ -112,8 +98,7 @@ class FileUploadService implements EventAwareInterface
                 $resizeConfig->outputFormat ??= $destExt;
             }
 
-            $stream = $this->resizeImage($stream, $resizeConfig);
-            $stream = $this->optimizeImage($stream, $dest, $resizeConfig);
+            $stream = $this->redrawImage($stream, $dest, $resizeConfig);
         }
 
         return $this->putToStorage($stream, $file, $dest, $options);
@@ -177,8 +162,7 @@ class FileUploadService implements EventAwareInterface
                 $resizeConfig->outputFormat ??= $srcExt;
             }
 
-            $stream = $this->resizeImage($file, $resizeConfig);
-            $stream = $this->optimizeImage($stream, $dest, $resizeConfig);
+            $stream = $this->redrawImage($file, $dest, $resizeConfig);
         } elseif ($file instanceof UploadedFileInterface) {
             $dest = $this->replaceVariables(
                 $dest,
@@ -267,8 +251,7 @@ class FileUploadService implements EventAwareInterface
                 $resizeConfig->outputFormat ??= $destExt;
             }
 
-            $stream = $this->resizeImage($stream, $resizeConfig);
-            $stream = $this->optimizeImage($stream, $dest, $resizeConfig);
+            $stream = $this->redrawImage($stream, $dest, $resizeConfig);
         }
 
         $options = $this->getMergeOptions($options);
@@ -333,36 +316,28 @@ class FileUploadService implements EventAwareInterface
         StreamInterface|\SplFileInfo|string|UploadedFileInterface $src,
         array|ResizeConfig $resizeConfig = []
     ): StreamInterface {
-        $outputFormat = null;
-
-        if (is_string($src)) {
-            $src = new Stream($src, READ_ONLY_FROM_BEGIN);
-        } elseif ($src instanceof \SplFileInfo) {
-            $src = new Stream($src->getPathname(), READ_ONLY_FROM_BEGIN);
-        }
-
-        // Must save image to temp file to support image exif.
-        // @see https://github.com/Intervention/image/issues/745
-        if ($src instanceof UploadedFileInterface) {
-            $outputFormat = Path::getExtension($src->getClientFilename());
-
-            $tmp = Filesystem::createTemp($this->container->get(PathResolver::class)->resolve('@temp/unicorn/upload'));
-
-            register_shutdown_function(fn() => Filesystem::delete($tmp->getPathname()));
-
-            $src->moveTo($tmp->getPathname());
-            $src = $tmp->getPathname();
-        }
-
         $resizeConfig = $this->options->resize->withMerge($resizeConfig, true, true);
 
-        return $this->resizeWithIntervention($src, $resizeConfig, $outputFormat);
+        return $this->imageProcessor->resize($src, $resizeConfig);
+    }
+
+    /**
+     * Resize (or re-encode) the image, then optimize it, using the service's merged resize config.
+     */
+    protected function redrawImage(
+        StreamInterface|\SplFileInfo|string|UploadedFileInterface $src,
+        string $dest,
+        ResizeConfig|array $resizeConfig
+    ): StreamInterface {
+        $resizeConfig = $this->options->resize->withMerge($resizeConfig, true, true);
+
+        return $this->imageProcessor->redraw($src, $dest, $resizeConfig, $this->options->optimize);
     }
 
     /**
      * @param  StreamInterface     $src
      * @param  string              $dest
-     * @param  ResizeConfig|array  $resizeConfig
+     * @param  ResizeConfig|array  $resizeConfig  Unused. `stripExif` is deprecated and has no effect.
      *
      * @return  StreamInterface
      * @throws  \Exception
@@ -372,148 +347,7 @@ class FileUploadService implements EventAwareInterface
         string $dest,
         ResizeConfig|array $resizeConfig
     ): StreamInterface {
-        $resizeConfig = ResizeConfig::wrapWith($resizeConfig);
-
-        $optimize = $resizeConfig->stripExif ?: $this->options->optimize;
-
-        if ($optimize === false) {
-            return $src;
-        }
-
-        if (!class_exists(OptimizerChainFactory::class)) {
-            throw new \DomainException('Please install `spatie/image-optimizer` first.');
-        }
-
-        $options = [];
-
-        if (is_array($optimize)) {
-            $options = $optimize;
-        }
-
-        $optimizer = OptimizerChainFactory::create($options);
-        $logger = Logger::getChannel('image-optimizer');
-
-        if ($logger) {
-            $optimizer->useLogger($logger);
-        }
-
-        $tmpDir = $this->container->get(PathResolver::class)->resolve('@temp/images/');
-        Filesystem::mkdir($tmpDir);
-
-        $ext = Path::getExtension($dest);
-        $filename = uid();
-        $tmp = $tmpDir . $filename . '.' . $ext;
-        $tmpFile = new TempFileObject($tmp);
-        $tmpFile->deleteWhenDestruct(true);
-        $tmpFile->touch();
-
-        StreamHelper::copy($src, $tmpFile->getStream());
-
-        $tmp = $tmpDir . $filename . '.new.' . $ext;
-        $newFile = new TempFileObject($tmp);
-        $newFile->deleteWhenDestruct(true);
-        $newFile->touch();
-
-        $optimizer->optimize($tmpFile->getPathname(), $newFile->getPathname());
-
-        $newImage = new Stream('php://memory', READ_WRITE_RESET);
-        StreamHelper::copy($newFile->getStream(), $newImage);
-        $newImage->rewind();
-
-        return $newImage;
-    }
-
-    /**
-     * Overridable seam for reading an image through Intervention.
-     */
-    protected function readImage(mixed $src, string $driver): ImageInterface
-    {
-        $driverClass = match ($driver) {
-            'gd' => GdDriver::class,
-            'imagick' => ImagickDriver::class,
-            default => $driver
-        };
-
-        $manager = new ImageManager($driverClass);
-
-        if ($src instanceof StreamInterface) {
-            return $manager->decode(
-                $src,
-                $manager->driver->id() === 'GD'
-                    ? PsrStreamGdDecoder::class
-                    : PsrStreamImagickDecoder::class
-            );
-        }
-
-        return $manager->decode($src);
-    }
-
-    protected function resizeWithIntervention(
-        StreamInterface|\SplFileInfo|string|UploadedFileInterface $src,
-        array|ResizeConfig $resizeConfig,
-        ?string $outputFormat
-    ): StreamInterface {
-        $resizeConfig = ResizeConfig::wrapWith($resizeConfig);
-
-        // $optimize = $resizeConfig['strip_exif'] || $this->options['optimize'];
-
-        $image = $this->readImage($src, $resizeConfig->driver);
-
-        $width = TypeCast::safeInteger($resizeConfig->width);
-        $height = TypeCast::safeInteger($resizeConfig->height);
-
-        if (!$resizeConfig->enabled) {
-            return Stream::wrap(
-                $this->encodeImageByExtension(
-                    $image,
-                    $resizeConfig->outputFormat ?? $outputFormat,
-                    TypeCast::safeInteger($resizeConfig->quality ?? 85)
-                ),
-            );
-        }
-
-        if ($resizeConfig->crop && $width !== null && $height !== null) {
-            $image->coverDown($width, $height);
-        } elseif ($width || $height) {
-            $image->scaleDown($width, $height);
-        }
-
-        // if ($optimize && $outputFormat === 'png') {
-        //     $colors = is_int($this->options['optimize']) ? $this->options['optimize'] : 2048;
-        //
-        //     $image->reduceColors($colors);
-        // }
-
-        $res = $this->encodeImageByExtension(
-            $image,
-            $resizeConfig->outputFormat ?? $outputFormat,
-            TypeCast::safeInteger($resizeConfig->quality ?? 85)
-        );
-
-        return Stream::wrap($res);
-    }
-
-    /**
-     * @return  resource
-     */
-    protected function encodeImageByExtension(
-        ImageInterface $image,
-        mixed $format,
-        int $quality
-    ) {
-        $format ??= 'jpg';
-
-        $format = strtolower($format);
-
-        $extension = FileExtension::from($format);
-
-        if ($extension === FileExtension::PNG) {
-            $encoded = $image->encodeUsingFileExtension($format);
-        } else {
-            $encoded = $image->encodeUsingFileExtension($format, quality: $quality);
-        }
-
-        return $encoded->toStream();
+        return $this->imageProcessor->optimize($src, $dest, $this->options->optimize);
     }
 
     protected function getMergeOptions(FileUploadOptions|array $options): FileUploadOptions

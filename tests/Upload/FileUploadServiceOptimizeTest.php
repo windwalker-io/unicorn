@@ -10,7 +10,7 @@ use PHPUnit\Framework\Attributes\TestDox;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Mime\MimeTypes;
 use Unicorn\Upload\FileUploadService;
-use Windwalker\Core\Application\PathResolver;
+use Unicorn\Upload\ImageRedrawProcessor;
 use Windwalker\DI\Container;
 
 /**
@@ -37,13 +37,9 @@ class FileUploadServiceOptimizeTest extends TestCase
 
     private function createService(array $options): FileUploadService
     {
-        $resolver = $this->createStub(PathResolver::class);
-        $resolver->method('resolve')->willReturn($this->tmpDir);
-
         $container = new Container();
-        $container->set(PathResolver::class, $resolver);
 
-        return new FileUploadService($container, $options, MimeTypes::getDefault());
+        return new FileUploadService($container, new ImageRedrawProcessor($this->tmpDir), $options, MimeTypes::getDefault());
     }
 
     #[Test]

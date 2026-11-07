@@ -13,6 +13,7 @@ use Unicorn\Module\FileUpload\FileController;
 use Unicorn\Storage\PutResult;
 use Unicorn\Upload\FileUploadOptions;
 use Unicorn\Upload\FileUploadService;
+use Unicorn\Upload\ImageRedrawProcessor;
 use Unicorn\Upload\ResizeConfig;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Http\AppRequest;
@@ -75,7 +76,9 @@ class FileControllerTest extends TestCase
     private function createService(array $mocked = []): FileUploadService
     {
         if ($mocked === []) {
-            return new FileUploadService(new Container());
+            $container = new Container();
+
+            return new FileUploadService($container, new ImageRedrawProcessor(sys_get_temp_dir()));
         }
 
         $service = $this->createPartialMock(FileUploadService::class, $mocked);

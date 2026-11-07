@@ -7,6 +7,7 @@ namespace Unicorn\Tests\Upload;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Unicorn\Upload\FileUploadService;
+use Unicorn\Upload\ImageRedrawProcessor;
 use Symfony\Component\Mime\MimeTypes;
 use Windwalker\DI\Container;
 
@@ -17,7 +18,9 @@ class FileUploadServiceTest extends TestCase
 {
     private function createService(array $options = []): FileUploadService
     {
-        return new FileUploadService(new Container(), $options, MimeTypes::getDefault());
+        $container = new Container();
+
+        return new FileUploadService($container, new ImageRedrawProcessor(sys_get_temp_dir()), $options, MimeTypes::getDefault());
     }
 
     #[Test]
