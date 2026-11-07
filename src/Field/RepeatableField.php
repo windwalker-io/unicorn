@@ -114,9 +114,8 @@ class RepeatableField extends AbstractField implements CompositeFieldInterface
             $field->set('id', null);
             $field->set('name', null);
             $field->attr(':id', sprintf("getId(i, item, '%s')", $field->getName()));
-            $isMultiple = method_exists($field, 'isMultiple')
-                ? (bool) $field->isMultiple()
-                : (bool) $field->get('multiple');
+            // `isMultiple()` is a real method on some fields and resolved by `__call()` as an attribute on others
+            $isMultiple = (bool) $field->isMultiple();
             $field->attr(
                 ':name',
                 sprintf("getName(i, item, '%s', %s)", $field->getName(), $isMultiple ? 'true' : 'false')
