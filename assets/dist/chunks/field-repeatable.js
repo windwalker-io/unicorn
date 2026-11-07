@@ -79,15 +79,16 @@ async function init() {
 			getId(i, item, field) {
 				return `${this.id}-${item.uid}-${field}`;
 			},
-			getName(i, item, field) {
+			getName(i, item, field, multiple = false) {
+				const suffix = multiple ? "[]" : "";
 				if (this.options.singleArray) {
 					if (this.options.hasKey) {
 						if (field === "key") return "";
-						return `${this.fieldName}[${item.key}]`;
+						return `${this.fieldName}[${item.key}]${suffix}`;
 					}
-					return `${this.fieldName}[]`;
+					return `${this.fieldName}[]${suffix}`;
 				}
-				return `${this.fieldName}[${i}][${field}]`;
+				return `${this.fieldName}[${i}][${field}]${suffix}`;
 			},
 			getEmptyItem() {
 				return cloneDeep(this.defaultValues);

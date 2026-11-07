@@ -150,20 +150,22 @@ async function init() {
         return `${this.id}-${item.uid}-${field}`;
       },
 
-      getName(i: number, item: any, field: string) {
+      getName(i: number, item: any, field: string, multiple = false) {
+        const suffix = multiple ? '[]' : '';
+
         if (this.options.singleArray) {
           if (this.options.hasKey) {
             if (field === 'key') {
               return '';
             }
 
-            return `${this.fieldName}[${item.key}]`;
+            return `${this.fieldName}[${item.key}]${suffix}`;
           }
 
-          return `${this.fieldName}[]`;
+          return `${this.fieldName}[]${suffix}`;
         }
 
-        return `${this.fieldName}[${i}][${field}]`;
+        return `${this.fieldName}[${i}][${field}]${suffix}`;
       },
 
       getEmptyItem() {
