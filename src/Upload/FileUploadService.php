@@ -567,18 +567,18 @@ class FileUploadService implements EventAwareInterface
 
     /**
      * Validate the final extension, and the mime types mapped from that extension (not the client-provided one),
-     * against `acceptExtensions` and `acceptMimeTypes`. A null or empty list skips that check.
+     * against `accept` (entries with `/` are mime types, others are extensions). A null or empty list skips that check.
      */
     protected function assertAccepted(string $dest, FileUploadOptions $options): void
     {
         $extensions = array_filter(
             array_map(
                 static fn($ext) => static::normalizeExtension(ltrim(trim((string) $ext), '.')),
-                $options->acceptExtensions ?? []
+                $options->acceptExtensions
             )
         );
         $mimeTypes = array_filter(
-            array_map(static fn($mime) => strtolower(trim((string) $mime)), $options->acceptMimeTypes ?? [])
+            array_map(static fn($mime) => strtolower(trim((string) $mime)), $options->acceptMimeTypes)
         );
 
         if ($extensions !== []) {
@@ -614,7 +614,7 @@ class FileUploadService implements EventAwareInterface
     }
 
     /**
-     * Executable / active content extensions blocked when `acceptExtensions` is not configured.
+     * Executable / active content extensions blocked when `accept` has no extension entries.
      * Every dot-separated segment of the file name is checked to catch names like `shell.php.jpg`.
      */
     protected function assertNotDangerousExtension(string $dest): void
