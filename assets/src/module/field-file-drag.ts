@@ -108,7 +108,8 @@ export class FileDragElement extends HTMLElement {
     const inputId = this.id + '__input';
     const btnText = __('unicorn.field.file.drag.button.text');
 
-    const input = html(`<input id="${inputId}" type="file" name="${name}" />`);
+    const accept = this.getAttribute('accept') || '';
+    const input = html(`<input id="${inputId}" type="file" name="${name}" ${accept ? 'accept="' + accept.replace(/"/g, '&quot;') + '"' : ''} />`);
     const label = html(`<label class="px-3 c-file-drag-input__label"
         data-overlay-label
         for="${inputId}">
@@ -218,6 +219,8 @@ export class FileDragElement extends HTMLElement {
       });
 
       if (!allow) {
+        this.element.value = '';
+
         this.alert(
           __('unicorn.field.file.drag.message.unaccepted.files'),
           __('unicorn.field.file.drag.message.unaccepted.files.desc', accepted.join(', ')),
