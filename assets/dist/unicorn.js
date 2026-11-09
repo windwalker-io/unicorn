@@ -348,7 +348,25 @@ async function useFormComponent(ele, options = {}) {
 	await form?.initComponent();
 	return form;
 }
-async function useFormSubmit(options = {}) {
+async function useFormSubmit(...args) {
+	let options = {};
+	if (args.length === 1 && typeof args[0] === "object") options = args[0];
+	else if (typeof args[0] === "string" && typeof args[1] === "string") {
+		options.method = args[0];
+		options.url = args[1];
+		options.data = args[2] ?? {};
+		options = {
+			...options,
+			...args[3] ?? {}
+		};
+	} else if (typeof args[0] === "string") {
+		options.url = args[0];
+		options.data = args[1] ?? {};
+		options = {
+			...options,
+			...args[2] ?? {}
+		};
+	}
 	return (await useFormAsync(options.form))[options.method?.toLowerCase() || "post"](options.url, options.data);
 }
 // src/composable/useGrid.ts

@@ -110,6 +110,12 @@ var UnicornFormElement = class UnicornFormElement {
 	delete(url, data) {
 		return this.post(url, data, "DELETE");
 	}
+	/**
+	* Make a QUERY request.
+	*/
+	query(url, data) {
+		return this.post(url, data, "QUERY");
+	}
 	destroy() {
 		if (this.element) {
 			this.element.remove();

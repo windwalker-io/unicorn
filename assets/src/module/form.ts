@@ -182,6 +182,16 @@ export class UnicornFormElement {
     return this.post(url, data, 'DELETE');
   }
 
+  /**
+   * Make a QUERY request.
+   */
+  query(
+    url?: Nullable<string>,
+    data?: Nullable<Record<string, any>>,
+  ) {
+    return this.post(url, data, 'QUERY');
+  }
+
   destroy() {
     if (this.element) {
       this.element.remove();

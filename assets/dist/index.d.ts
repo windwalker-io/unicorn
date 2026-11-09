@@ -60,6 +60,8 @@ export declare interface AlertAdapterConfig {
     clearNotifies?: typeof AlertAdapter['clearNotifies'];
 }
 
+declare type AllowedMethods = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'QUERY';
+
 declare type AlpinePrepareCallback = (Alpine: Alpine_2) => MaybePromise<any>;
 
 export declare function animateTo(element: HTMLElement, styles: Partial<Record<keyof CSSStyleDeclaration, any>>, options?: number | KeyframeAnimationOptions): Animation;
@@ -355,11 +357,12 @@ declare type FormProxy = {
     put: (...args: Parameters<UnicornFormElement['put']>) => Promise<ReturnType<UnicornFormElement['put']> | undefined>;
     patch: (...args: Parameters<UnicornFormElement['patch']>) => Promise<ReturnType<UnicornFormElement['patch']> | undefined>;
     delete: (...args: Parameters<UnicornFormElement['delete']>) => Promise<ReturnType<UnicornFormElement['delete']> | undefined>;
+    query: (...args: Parameters<UnicornFormElement['query']>) => Promise<ReturnType<UnicornFormElement['query']> | undefined>;
 };
 
 export declare interface FormSubmitOptions {
     form?: string | Element;
-    method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+    method?: AllowedMethods;
     url?: string;
     data?: Record<string, any>;
 }
@@ -1112,6 +1115,10 @@ declare class UnicornFormElement {
      * Make a DELETE request.
      */
     delete(url?: Nullable<string>, data?: Nullable<Record<string, any>>): boolean;
+    /**
+     * Make a QUERY request.
+     */
+    query(url?: Nullable<string>, data?: Nullable<Record<string, any>>): boolean;
     destroy(): void;
     /**
      * @see https://stackoverflow.com/a/53739792
@@ -1414,7 +1421,11 @@ export declare function useFormAsync(ele?: string | Element, options?: Record<st
 
 export declare function useFormComponent(ele?: string | Element, options?: Record<string, any>): Promise<UnicornFormElement | null>;
 
-export declare function useFormSubmit(options?: FormSubmitOptions): Promise<boolean>;
+export declare function useFormSubmit(method: AllowedMethods, url: string, data?: Record<string, any>, options?: Omit<FormSubmitOptions, 'url' | 'data' | 'method'>): Promise<boolean>;
+
+export declare function useFormSubmit(url: string, data?: Record<string, any>, options?: Omit<FormSubmitOptions, 'url' | 'data'>): Promise<boolean>;
+
+export declare function useFormSubmit(options: FormSubmitOptions): Promise<boolean>;
 
 export declare function useFormValidation(): Promise<ValidationModule>;
 
@@ -1590,6 +1601,14 @@ export { }
 
 
 declare global {
+    var Alpine: AlpineGlobal;
+    var TomSelect: typeof TomSelectGlobal;
+    var Spectrum: typeof SpectrumGlobal;
+    var Mark: any;
+}
+
+
+declare global {
     interface Node {
         __unicorn?: any;
     }
@@ -1603,12 +1622,20 @@ declare module '@windwalker-io/unicorn-next' {
     }
 }
 
+declare global {
+    var S: any;
+}
+
 
 declare global {
-    var Alpine: AlpineGlobal;
-    var TomSelect: typeof TomSelectGlobal;
-    var Spectrum: typeof SpectrumGlobal;
-    var Mark: any;
+    var tinymce: TinyMCE;
+}
+
+
+declare global {
+    export interface Window {
+        bootstrap: typeof bootstrap;
+    }
 }
 
 
@@ -1620,20 +1647,4 @@ declare module 'axios' {
     }
     interface CreateAxiosDefaults {
     }
-}
-
-declare global {
-    var S: any;
-}
-
-
-declare global {
-    export interface Window {
-        bootstrap: typeof bootstrap;
-    }
-}
-
-
-declare global {
-    var tinymce: TinyMCE;
 }

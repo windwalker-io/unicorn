@@ -10,6 +10,7 @@ type FormProxy = {
   put: (...args: Parameters<UnicornFormElement['put']>) => Promise<ReturnType<UnicornFormElement['put']> | undefined>;
   patch: (...args: Parameters<UnicornFormElement['patch']>) => Promise<ReturnType<UnicornFormElement['patch']> | undefined>;
   delete: (...args: Parameters<UnicornFormElement['delete']>) => Promise<ReturnType<UnicornFormElement['delete']> | undefined>;
+  query: (...args: Parameters<UnicornFormElement['query']>) => Promise<ReturnType<UnicornFormElement['query']> | undefined>;
 };
 
 export function useFormAsync(): FormProxy & Promise<UnicornFormElement>;
@@ -89,18 +90,50 @@ export async function useFormComponent(ele?: string | Element, options: Record<s
   return form;
 }
 
+type AllowedMethods = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'QUERY';
+
 export interface FormSubmitOptions {
   form?: string | Element;
-  method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+  method?: AllowedMethods;
   url?: string;
   data?: Record<string, any>;
 }
 
-export async function useFormSubmit(options: FormSubmitOptions = {}) {
+export async function useFormSubmit(
+  method: AllowedMethods,
+  url: string,
+  data?: Record<string, any>,
+  options?: Omit<FormSubmitOptions, 'url' | 'data' | 'method'>
+): Promise<boolean>;
+export async function useFormSubmit(
+  url: string,
+  data?: Record<string, any>,
+  options?: Omit<FormSubmitOptions, 'url' | 'data'>
+): Promise<boolean>;
+export async function useFormSubmit(options: FormSubmitOptions): Promise<boolean>;
+export async function useFormSubmit(...args: any[]) {
+  let options: FormSubmitOptions = {};
+
+  if (args.length === 1 && typeof args[0] === 'object') {
+    // (options)
+    options = args[0];
+  } else if (typeof args[0] === 'string' && typeof args[1] === 'string') {
+    // (method, url, data, options)
+    options.method = args[0] as AllowedMethods;
+    options.url = args[1];
+    options.data = args[2] ?? {};
+    options = { ...options, ...(args[3] ?? {}) };
+  } else if (typeof args[0] === 'string') {
+    // (url, data, options)
+    options.url = args[0];
+    options.data = args[1] ?? {};
+    options = { ...options, ...(args[2] ?? {}) };
+  }
+
   const form = (await useFormAsync(options.form)) as UnicornFormElement;
 
   // fun type should be method of form
-  const func = (options.method?.toLowerCase() || 'post') as 'get' | 'post' | 'put' | 'delete' | 'patch';
+  const func = (options.method?.toLowerCase() || 'post') as 'get' | 'post' | 'put' | 'delete' | 'patch' | 'query';
 
   return form[func](options.url, options.data);
 }
