@@ -472,6 +472,17 @@ export class UnicornFieldValidation {
       this.showInvalidResponse();
     });
     
+    // After the form is validated, the "was-validated" style shows feedback for any :invalid input immediately,
+    // so keep the message in sync while typing, otherwise it may show empty message.
+    this.$input.addEventListener('input', () => {
+      const form = this.getForm();
+      const validatedClass = this.getFormValidation(form)?.validatedClass;
+
+      if (validatedClass && form?.classList.contains(validatedClass)) {
+        this.checkValidity();
+      }
+    });
+
     const events = this.mergedOptions.events;
 
     events.forEach((eventName) => {

@@ -458,6 +458,11 @@ var UnicornFieldValidation = class {
 		this.$input.addEventListener("invalid", (e) => {
 			this.showInvalidResponse();
 		});
+		this.$input.addEventListener("input", () => {
+			const form = this.getForm();
+			const validatedClass = this.getFormValidation(form)?.validatedClass;
+			if (validatedClass && form?.classList.contains(validatedClass)) this.checkValidity();
+		});
 		this.mergedOptions.events.forEach((eventName) => {
 			this.$input?.addEventListener(eventName, () => {
 				this.checkValidity();
