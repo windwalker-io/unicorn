@@ -1,7 +1,6 @@
-import { useHttpClient } from "../unicorn.js";
+import { simpleAlert, useHttpClient } from "../unicorn.js";
 import { t as __ } from "./lang.js";
 import { s as injectCssToDocument, u as selectAll } from "./dom.js";
-import { r as simpleAlert } from "./alert.js";
 import { t as mergeDeep } from "./arr.js";
 import { Modal } from "bootstrap";
 // scss/field/single-image-drag.scss?inline
@@ -275,7 +274,7 @@ function getFileExtension(file) {
 }
 var loadingCropper;
 async function loadCropper() {
-	loadingCropper ??= Promise.all([import("cropperjs"), import("./cropper.min.js").then(({ default: css }) => {
+	loadingCropper ??= Promise.all([import("cropperjs"), import("cropperjs/dist/cropper.min.css?inline").then(({ default: css }) => {
 		injectCssToDocument(css);
 	})]);
 	return (await loadingCropper)[0].default;

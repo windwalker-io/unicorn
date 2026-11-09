@@ -1,5 +1,5 @@
 import { d as selectOne, o as html, u as selectAll } from "./dom.js";
-import { i as uid } from "./crypto.js";
+import { uid } from "../unicorn.js";
 import * as bootstrap from "bootstrap";
 import { Tooltip } from "bootstrap";
 // src/module/ui-bootstrap5.ts

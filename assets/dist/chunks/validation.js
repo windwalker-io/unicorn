@@ -1,7 +1,6 @@
-import { useUniDirective } from "../unicorn.js";
+import { useUITheme, useUniDirective } from "../unicorn.js";
 import { d as selectOne, o as html, r as getBoundedInstance, u as selectAll } from "./dom.js";
 import { n as trans } from "./lang.js";
-import { x as useUITheme } from "./ui.js";
 import { t as mergeDeep } from "./arr.js";
 // ../../../../node_modules/punycode/punycode.es6.js
 /** Highest positive signed 32-bit float value */

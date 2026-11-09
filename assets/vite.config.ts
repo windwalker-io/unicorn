@@ -60,19 +60,16 @@ export default defineConfig(({ mode }) => {
         },
         external: [
           'node:crypto',
-          '@unicorn/*',
+          /^@unicorn\/.*/,
           'dayjs',
           'flatpickr',
           'bootstrap',
           'sortablejs',
           '@asika32764/vue-animate',
-          // Seems still not excludes,
-          // Maybe we need to compile @lyrasoft/ts-toolkit to js
-          '@lyrasoft/ts-toolkit',
-          '@lyrasoft/ts-toolkit/*',
+          // Rollup string externals are exact match, use RegExp for subpaths
+          /^@lyrasoft\/ts-toolkit(\/.*)?$/,
           'alpinejs',
-          'cropperjs',
-          'cropperjs/*',
+          /^cropperjs(\/.*)?$/,
           'tinymce',
           'bootstrap',
           'vue',

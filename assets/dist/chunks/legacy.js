@@ -1,23 +1,10 @@
 import { i as require_sprintf, t as __ } from "./lang.js";
-import { addGlobalValidator, base64UrlDecode, base64UrlEncode, serial, useAssetUri, useBs5ButtonRadio, useBs5KeepTab, useBs5Tooltip, useCheckboxesMultiSelect, useFieldValidationInstance, useForm, useFormAsync, useFormValidation, useFormValidationInstance, useGrid, useGridAsync, useHttpClient, useSystemUri, useTomSelect, useUniDirective } from "../unicorn.js";
-import { n as useQueue } from "./useQueue.js";
-import { n as useStack } from "./useStack.js";
-import { _ as useDisableIfStackNotEmpty, a as highlight, c as mark, d as renderMessage, f as slideDown, g as useColorPicker, i as fadeOut, l as prepareAlpine, m as slideUp, n as clearMessages, o as initAlpineComponent, p as slideToggle, r as fadeIn, s as loadAlpine, v as useDisableOnSubmit, w as animateTo, y as useKeepAlive } from "./ui.js";
-import { a as simpleNotify, i as simpleConfirm, r as simpleAlert, t as clearNotifies } from "./alert.js";
-import { o as throttle, r as isDebug, t as debounce } from "./helper.js";
+import { addGlobalValidator, animateTo, base64UrlDecode, base64UrlEncode, clearMessages, clearNotifies, fadeIn, fadeOut, highlight, initAlpineComponent, loadAlpine, mark, prepareAlpine, renderMessage, serial, simpleAlert, simpleConfirm, simpleNotify, slideDown, slideToggle, slideUp, tid, uid, useAssetUri, useBs5ButtonRadio, useBs5KeepTab, useBs5Tooltip, useCheckboxesMultiSelect, useColorPicker, useDisableIfStackNotEmpty, useDisableOnSubmit, useFieldValidationInstance, useForm, useFormAsync, useFormValidation, useFormValidationInstance, useGrid, useGridAsync, useHttpClient, useKeepAlive, useQueue, useStack, useSystemUri, useTomSelect, useUniDirective } from "../unicorn.js";
+import { r as isDebug, s as throttle, t as debounce } from "./helper.js";
 import { a as h, c as module, d as selectOne, i as getBoundedInstanceList, n as domready, o as html, r as getBoundedInstance, t as delegate, u as selectAll } from "./dom.js";
 import { o as route } from "./router.js";
-import { i as uid, r as tid } from "./crypto.js";
+import { numberFormat } from "@lyrasoft/ts-toolkit/generic";
 import { Modal } from "bootstrap";
-// ../../../../node_modules/@lyrasoft/ts-toolkit/src/generic/number.ts
-function numberFormat(number, decimals = 0, decPoint = ".", thousandsSep = ",") {
-	number = Number(number);
-	const str = number.toFixed(decimals ? decimals : 0).toString().split(".");
-	const parts = [];
-	for (var i = str[0].length; i > 0; i -= 3) parts.unshift(str[0].substring(Math.max(0, i - 3), i));
-	str[0] = parts.join(thousandsSep ? thousandsSep : ",");
-	return str.join(decPoint ? decPoint : ".");
-}
 // src/legacy/loader.ts
 var import_sprintf = /*@__PURE__*/ require_sprintf();
 var imports = {};

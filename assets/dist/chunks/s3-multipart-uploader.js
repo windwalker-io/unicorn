@@ -1,6 +1,5 @@
 import { n as Mixin, t as EventMixin } from "./events.js";
-import { t as createQueue } from "./useQueue.js";
-import { useHttpClient } from "../unicorn.js";
+import { createQueue, useHttpClient } from "../unicorn.js";
 import { t as mergeDeep } from "./arr.js";
 // src/module/s3-multipart-uploader.ts
 var defaultOptions = {

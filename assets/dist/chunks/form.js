@@ -1,6 +1,5 @@
 import { t as data } from "./data.js";
-import { s as loadAlpine } from "./ui.js";
-import { useSystemUri } from "../unicorn.js";
+import { loadAlpine, useSystemUri } from "../unicorn.js";
 // src/module/form.ts
 var UnicornFormElement = class UnicornFormElement {
 	element;

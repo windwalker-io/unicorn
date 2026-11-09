@@ -1,6 +1,6 @@
 import { useUniDirective } from "../unicorn.js";
 import { c as module, d as selectOne, u as selectAll } from "./dom.js";
-import { t as sleep } from "./timing.js";
+import { o as sleep } from "./helper.js";
 import { t as mergeDeep } from "./arr.js";
 import { Tab } from "bootstrap";
 // src/bootstrap/keep-tab.ts

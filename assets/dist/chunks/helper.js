@@ -1,4 +1,5 @@
 import { t as data } from "./data.js";
+import { sleep } from "@lyrasoft/ts-toolkit/generic";
 // src/service/helper.ts
 function forceArray(item) {
 	if (Array.isArray(item)) return item;
@@ -33,6 +34,6 @@ function wait(...promisee) {
 function isError(e) {
 	return e instanceof Error;
 }
-export { nextTick as a, isError as i, forceArray as n, throttle as o, isDebug as r, wait as s, debounce as t };
+export { nextTick as a, wait as c, isError as i, forceArray as n, sleep as o, isDebug as r, throttle as s, debounce as t };
 
 //# sourceMappingURL=helper.js.map

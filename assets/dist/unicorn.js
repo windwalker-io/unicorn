@@ -1,17 +1,36 @@
 import { n as Mixin, t as EventMixin } from "./chunks/events.js";
 import { n as removeData, t as data } from "./chunks/data.js";
 import { a as h, c as module, d as selectOne, i as getBoundedInstanceList, l as removeBoundedInstance, n as domready, o as html, r as getBoundedInstance, s as injectCssToDocument, t as delegate, u as selectAll } from "./chunks/dom.js";
-import { C as promiseWithResolvers, S as useVueComponentField, _ as useDisableIfStackNotEmpty, a as highlight, b as useUI, c as mark, d as renderMessage, f as slideDown, g as useColorPicker, h as useAlertAdapter, i as fadeOut, l as prepareAlpine, m as slideUp, n as clearMessages, o as initAlpineComponent, p as slideToggle, r as fadeIn, s as loadAlpine, t as UnicornUI, u as prepareAlpineDefer, v as useDisableOnSubmit, w as animateTo, x as useUITheme, y as useKeepAlive } from "./chunks/ui.js";
-import { a as useScriptImport, i as useImport, n as useCssImport, o as useSeriesImport, r as useCssIncludes, t as doImport } from "./chunks/loader.js";
-import { a as simpleNotify, i as simpleConfirm, n as deleteConfirm, r as simpleAlert, t as clearNotifies } from "./chunks/alert.js";
-import { i as uid, n as randomBytesString, r as tid, t as randomBytes } from "./chunks/crypto.js";
-import { n as useQueue, t as createQueue } from "./chunks/useQueue.js";
-import { n as useStack, t as createStack } from "./chunks/useStack.js";
-import { t as sleep } from "./chunks/timing.js";
-import { a as nextTick, i as isError, n as forceArray, o as throttle, r as isDebug, s as wait, t as debounce } from "./chunks/helper.js";
-import { n as trans, r as useLang, t as __ } from "./chunks/lang.js";
+import { a as nextTick, c as wait, i as isError, n as forceArray, o as sleep, r as isDebug, s as throttle, t as debounce } from "./chunks/helper.js";
 import { t as mergeDeep } from "./chunks/arr.js";
+import { n as trans, r as useLang, t as __ } from "./chunks/lang.js";
 import { a as parseQuery, i as hasRoute, n as addRoute, o as route, r as buildQuery, t as addQuery } from "./chunks/router.js";
+import { AlertAdapter, clearNotifies, deleteConfirm, promiseWithResolvers, queue, randomBytes, randomBytesString, simpleAlert, simpleConfirm, simpleNotify, stack, tid, uid } from "@lyrasoft/ts-toolkit/generic";
+// src/service/animate.ts
+function animateTo(element, styles, options = {}) {
+	element = selectOne(element);
+	const currentStyles = window.getComputedStyle(element);
+	const transitions = {};
+	for (const name in styles) {
+		const value = styles[name];
+		transitions[name] = Array.isArray(value) ? value : [currentStyles.getPropertyValue(name), value];
+	}
+	if (typeof options === "number") options = { duration: options };
+	options = Object.assign({
+		duration: 400,
+		easing: "linear",
+		fill: "both"
+	}, options);
+	const animation = element.animate(transitions, options);
+	animation.addEventListener("finish", () => {
+		for (const name in styles) {
+			const value = styles[name];
+			element.style.setProperty(name, Array.isArray(value) ? value[value.length - 1] : value);
+		}
+		animation.cancel();
+	});
+	return animation;
+}
 // src/service/crypto.ts
 function base64UrlEncode(string) {
 	return btoa(String(string)).replace(/\+/, "-").replace(/* @__PURE__ */ new RegExp("\\/"), "_").replace(/=+$/, "");
@@ -67,6 +86,108 @@ var AttributeMutationObserver = class {
 		this.observer.disconnect();
 	}
 };
+// src/service/loader.ts
+async function useScriptImport(src, attrs = {}) {
+	if (typeof src === "function") src = (await src()).default;
+	const script = document.createElement("script");
+	script.src = resolveUrl(src);
+	for (const key in attrs) script.setAttribute(key, attrs[key]);
+	return new Promise((resolve, reject) => {
+		script.onload = () => {
+			resolve();
+			document.body.removeChild(script);
+		};
+		script.onerror = (e) => {
+			reject(e);
+			document.body.removeChild(script);
+		};
+		document.body.appendChild(script);
+	});
+}
+function doImport(src) {
+	return import(
+		/* @vite-ignore */
+		src
+);
+}
+async function useImport(...src) {
+	if (src.length === 1) return doImport(src[0]);
+	const promises = [];
+	src.forEach((link) => {
+		promises.push(link instanceof Promise ? link : doImport(link));
+	});
+	return Promise.all(promises);
+}
+async function useSeriesImport(...src) {
+	const modules = [];
+	for (const source of src) {
+		if (Array.isArray(source)) {
+			const m = await useImport(...source);
+			modules.push(m);
+			continue;
+		}
+		const m = await useImport(source);
+		modules.push(m);
+	}
+	return modules;
+}
+async function useCssIncludes(...hrefs) {
+	const promises = hrefs.map((href) => {
+		return new Promise((resolve, reject) => {
+			resolveSource(href).then((href) => {
+				href = resolveUrl(href);
+				const link = document.createElement("link");
+				link.rel = "stylesheet";
+				link.href = href;
+				link.onload = () => resolve();
+				link.onerror = (e) => reject(e);
+				document.head.appendChild(link);
+			});
+		});
+	});
+	return Promise.all(promises);
+}
+var importedSheets = {};
+async function useCssImport(...hrefs) {
+	const styles = (await Promise.all(hrefs.map((href) => {
+		return new Promise((resolve) => {
+			resolveSource(href).then((href) => {
+				href = resolveUrl(href);
+				if (!importedSheets[href]) importedSheets[href] = simulateCssImport(href);
+				resolve(importedSheets[href]);
+			});
+		});
+	}))).map((module) => module.default);
+	return injectCssToDocument(...styles);
+}
+async function simulateCssImport(href) {
+	const response = await fetch(href);
+	if (!response.ok) throw new Error(`Failed to load CSS: ${href}`);
+	const cssText = await response.text();
+	const sheet = new CSSStyleSheet();
+	await sheet.replace(cssText);
+	return { default: sheet };
+}
+var importMap;
+function parseImportMap() {
+	const importMapScript = document.querySelector("script[type=\"importmap\"]");
+	if (importMapScript) try {
+		return JSON.parse(importMapScript.textContent || "{}").imports || {};
+	} catch (e) {
+		console.error("Failed to parse import map:", e);
+	}
+	return {};
+}
+function resolveUrl(specifier) {
+	importMap ??= parseImportMap();
+	for (const [prefix, target] of Object.entries(importMap)) if (specifier === prefix) return target;
+	for (const [prefix, target] of Object.entries(importMap)) if (specifier.startsWith(prefix)) return specifier.replace(prefix, target);
+	return specifier;
+}
+async function resolveSource(src) {
+	if (typeof src === "function") return (await src()).default;
+	return src;
+}
 // src/composable/useUIBootstrap5.ts
 async function useUIBootstrap5(install = false, pushToGlobal = false) {
 	const { UIBootstrap5 } = await import("./chunks/ui-bootstrap5.js");
@@ -452,6 +573,14 @@ async function useListDependent(element, dependent, options = {}) {
 	}
 	return module;
 }
+// src/composable/useQueue.ts
+var queues = {};
+function useQueue(name = "default", maxRunning = 1) {
+	return queues[name] ??= createQueue(maxRunning);
+}
+function createQueue(maxRunning = 1) {
+	return queue(maxRunning);
+}
 // src/composable/useS3Uploader.ts
 async function useS3Uploader(name, options = {}) {
 	const module = await import("./chunks/s3-uploader.js");
@@ -469,6 +598,14 @@ async function useShowOn() {
 	const module = await import("./chunks/show-on.js");
 	await module.ready;
 	return module;
+}
+// src/composable/useStack.ts
+var stacks = {};
+function useStack(name = "default", store = []) {
+	return stacks[name] ??= createStack(store);
+}
+function createStack(store = []) {
+	return stack(store);
 }
 // src/composable/useTomSelect.ts
 /**
@@ -548,6 +685,276 @@ function useFieldValidationInstance(selector) {
 async function addGlobalValidator(name, validator, options = {}) {
 	const { UnicornFormValidation } = await useFormValidation();
 	UnicornFormValidation.addGlobalValidator(name, validator, options);
+}
+// src/service/ui.ts
+var ui;
+AlertAdapter.alert = (title, text = "", type = "info") => {
+	if (text) title += " | " + text;
+	window.alert(title);
+	return Promise.resolve();
+};
+AlertAdapter.confirm = (message, text = "", type = "info") => {
+	message = message || "Are you sure?";
+	if (text) message += " | " + text;
+	return new Promise((resolve) => {
+		resolve(window.confirm(message));
+	});
+};
+AlertAdapter.notify = async (title, text, type = "log") => {
+	if (text) title += " | " + text;
+	return ui.theme?.renderMessage(title, type) ?? (() => null);
+};
+AlertAdapter.clearNotifies = async () => {
+	ui.theme?.clearMessages();
+};
+AlertAdapter.confirmText = () => "OK";
+AlertAdapter.cancelText = () => "Cancel";
+AlertAdapter.deleteText = () => "Delete";
+function useAlertAdapter(config) {
+	if (config) Object.assign(AlertAdapter, config);
+	return AlertAdapter;
+}
+function useUI(instance) {
+	if (instance) ui = instance;
+	return ui ??= new UnicornUI();
+}
+function useUITheme(theme) {
+	const ui = useUI();
+	if (ui.theme && !theme) return ui.theme;
+	if (typeof theme === "function") theme = new theme();
+	ui.installTheme(theme);
+	return ui.theme;
+}
+var UnicornUI = class {
+	theme;
+	static get defaultOptions() {
+		return { messageSelector: ".message-wrap" };
+	}
+	installTheme(theme) {
+		this.theme = theme;
+	}
+};
+var prepares = [];
+var { promise: alpineLoaded, resolve: alpineResolve } = /*@__PURE__*/ promiseWithResolvers();
+async function loadAlpine(callback) {
+	if (callback && !window.Alpine) prepares.push(callback);
+	const { default: Alpine } = await useImport("@alpinejs");
+	if (!window.Alpine) {
+		await Promise.all(prepares.map((callback) => Promise.resolve(callback(Alpine))));
+		Alpine.start();
+		window.Alpine = Alpine;
+		alpineResolve(Alpine);
+	} else if (callback) await callback(Alpine);
+	return Alpine;
+}
+async function initAlpineComponent(directive) {
+	const Alpine = await alpineLoaded;
+	await nextTick();
+	selectAll(`[${directive}]`, (el) => {
+		const code = el.getAttribute(directive) || "";
+		el.removeAttribute(directive);
+		Alpine.mutateDom(() => {
+			el.setAttribute("x-data", code);
+		});
+		Alpine.initTree(el);
+	});
+}
+/**
+* Before Alpine init
+*/
+async function prepareAlpine(callback) {
+	if (window.Alpine) await callback(window.Alpine);
+	else prepares.push(callback);
+}
+async function prepareAlpineDefer(callback) {
+	await alpineLoaded;
+	await callback(window.Alpine);
+}
+/**
+* Render Messages.
+*/
+function renderMessage(messages, type = "info") {
+	return ui.theme?.renderMessage(messages, type);
+}
+/**
+* Clear messages.
+*/
+function clearMessages() {
+	ui.theme?.clearMessages();
+}
+async function mark(selector, keyword = "", options = {}) {
+	const modules = await useImport("@vendor/mark.js/dist/mark.min.js");
+	if (selector != null) new Mark(selector).mark(keyword, options);
+	return modules;
+}
+async function slideUp(target, duration = 300) {
+	const ele = selectOne(target);
+	if (!ele) return Promise.resolve();
+	ele.style.overflow = "hidden";
+	const animation = animateTo(ele, {
+		height: 0,
+		paddingTop: 0,
+		paddingBottom: 0
+	}, {
+		duration,
+		easing: "ease-out"
+	});
+	data(ele, "animation.sliding.up", true);
+	const r = await animation.finished;
+	if (!data(ele, "animation.sliding.down")) ele.style.display = "none";
+	removeData(ele, "animation.sliding.up");
+	return r;
+}
+function slideDown(target, duration = 300, display = "block") {
+	const ele = selectOne(target);
+	if (!ele) return Promise.resolve();
+	data(ele, "animation.sliding.down", true);
+	ele.style.display = display;
+	ele.style.overflow = "hidden";
+	let maxHeight = 0;
+	for (const child of Array.from(ele.children)) maxHeight = Math.max(child.offsetHeight, maxHeight);
+	const animation = animateTo(ele, { height: [0, maxHeight + "px"] }, {
+		duration,
+		easing: "ease-out"
+	});
+	animation.addEventListener("finish", () => {
+		ele.style.height = "";
+		if (!data(ele, "animation.sliding.up")) ele.style.overflow = "visible";
+		removeData(ele, "animation.sliding.down");
+	});
+	return animation.finished;
+}
+/**
+* slideToggle
+*/
+function slideToggle(target, duration = 500, display = "block") {
+	const ele = selectOne(target);
+	if (!ele) return Promise.resolve();
+	if (window.getComputedStyle(ele).display === "none") return slideDown(ele, duration, display);
+	else return slideUp(ele, duration);
+}
+async function fadeOut(selector, duration = 500) {
+	const el = selectOne(selector);
+	if (!el) return;
+	const p = await animateTo(el, { opacity: 0 }, {
+		duration,
+		easing: "ease-out"
+	}).finished;
+	el.style.display = "none";
+	return p;
+}
+async function fadeIn(selector, duration = 500, display = "block") {
+	const el = selectOne(selector);
+	if (!el) return;
+	el.style.display = "";
+	if (window.getComputedStyle(el).display !== display) el.style.display = display;
+	return animateTo(el, { opacity: 1 }, {
+		duration,
+		easing: "ease-out"
+	}).finished;
+}
+async function highlight(selector, color = "#ffff99", duration = 600) {
+	const ele = selectOne(selector);
+	if (!ele) return;
+	duration /= 2;
+	const bg = window.getComputedStyle(ele).backgroundColor;
+	await animateTo(ele, { backgroundColor: color }, { duration }).finished;
+	return animateTo(ele, { backgroundColor: bg }, { duration });
+}
+/**
+* Color Picker.
+*/
+async function useColorPicker(selector, options = {}) {
+	if (options?.theme === "dark") useCssImport("@spectrum/spectrum-dark.min.css");
+	else if (!options?.theme) useCssImport("@spectrum/spectrum.min.css");
+	const m = await useImport("@spectrum");
+	if (typeof options.locale === "string") {
+		let ls = options.locale.split("-").map((l) => l.toLowerCase());
+		if (ls[0] === ls[1]) ls = [ls];
+		ls = ls.join("-");
+		try {
+			await useImport(`@spectrum/i18n/${ls}.js`);
+		} catch (e) {
+			console.warn(`Unable to load Spectrum locale "${ls}" (${options.locale})`);
+		}
+	}
+	if (selector) return module(selector, "spectrum", (ele) => Spectrum.getInstance(ele, options));
+	return m;
+}
+function useDisableOnSubmit(formSelector = "#admin-form", buttonSelector = "", options = {}) {
+	buttonSelector = buttonSelector || [
+		"#admin-toolbar button",
+		"#admin-toolbar a",
+		formSelector + " .disable-on-submit",
+		formSelector + " .js-dos",
+		formSelector + " [data-dos]"
+	].join(",");
+	const iconSelector = options.iconSelector || [
+		"[class*=\"fa-\"]",
+		"[data-spin]",
+		"[data-spinner]"
+	].join(",");
+	const event = options.event || "submit";
+	const spinnerClass = options.spinnerClass || "spinner-border spinner-border-sm";
+	const loadingClass = options.loadingCass || "is-uni-loading";
+	selectAll(buttonSelector, (button) => {
+		button.addEventListener("click", (e) => {
+			button.dataset.clicked = "1";
+			setTimeout(() => {
+				delete button.dataset.clicked;
+			}, 1500);
+		});
+	});
+	const form = selectOne(formSelector);
+	form?.addEventListener(event, (e) => {
+		setTimeout(() => {
+			if (!form.checkValidity()) return;
+			selectAll(buttonSelector, (button) => {
+				button.style.pointerEvents = "none";
+				button.setAttribute("disabled", "disabled");
+				button.classList.add("disabled");
+				if (button.dataset.clicked) makeButtonLoading(button);
+			});
+			if (e instanceof SubmitEvent && e.submitter) makeButtonLoading(e.submitter);
+		}, 0);
+	});
+	function makeButtonLoading(button) {
+		let icon = button.querySelector(iconSelector);
+		button.classList.add(loadingClass);
+		if (icon) {
+			const i = html("<i></i>");
+			icon.parentNode?.replaceChild(i, icon);
+			i.setAttribute("class", spinnerClass);
+		}
+	}
+}
+function useDisableIfStackNotEmpty(buttonSelector = "[data-task=save]", stackName = "uploading") {
+	useStack(stackName).observe((stack, length) => {
+		for (const button of selectAll(buttonSelector)) if (length > 0) {
+			button.setAttribute("disabled", "disabled");
+			button.classList.add("disabled");
+		} else {
+			button.removeAttribute("disabled");
+			button.classList.remove("disabled");
+		}
+	});
+}
+/**
+* Keep alive.
+*/
+function useKeepAlive(url, time = 6e4) {
+	const aliveHandle = window.setInterval(() => fetch(url), time);
+	return () => {
+		clearInterval(aliveHandle);
+	};
+}
+/**
+* Vue component field.
+*/
+async function useVueComponentField(selector, value, options = {}) {
+	const m = await useImport("@unicorn/field/vue-component-field.js");
+	if (selector) m.VueComponentField.init(selector, value, options);
+	return m;
 }
 // src/service/uri.ts
 function useSystemUri(type, path) {

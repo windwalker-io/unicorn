@@ -1,5 +1,5 @@
 import { n as __toESM } from "./rolldown-runtime.js";
-import { i as useImport, n as useCssImport } from "./loader.js";
+import { useCssImport, useImport } from "../unicorn.js";
 import { s as injectCssToDocument } from "./dom.js";
 import flatpickr from "flatpickr";
 // ../../../../node_modules/flatpickr/dist/flatpickr.css?inline

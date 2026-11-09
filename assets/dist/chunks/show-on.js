@@ -1,5 +1,4 @@
-import { useUniDirective } from "../unicorn.js";
-import { i as fadeOut, r as fadeIn } from "./ui.js";
+import { fadeIn, fadeOut, useUniDirective } from "../unicorn.js";
 import { c as module, d as selectOne, u as selectAll } from "./dom.js";
 import { n as MapCache, t as arrayPush } from "./_arrayPush.js";
 import { r as arrayMap, t as baseRest } from "./_baseRest.js";

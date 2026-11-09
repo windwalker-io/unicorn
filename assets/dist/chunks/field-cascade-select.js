@@ -1,8 +1,6 @@
 import { n as __toESM, t as __commonJSMin } from "./rolldown-runtime.js";
-import { useHttpClient } from "../unicorn.js";
-import { o as initAlpineComponent, u as prepareAlpineDefer } from "./ui.js";
+import { initAlpineComponent, prepareAlpineDefer, uid, useHttpClient } from "../unicorn.js";
 import { c as module } from "./dom.js";
-import { i as uid } from "./crypto.js";
 import { t as mergeDeep } from "./arr.js";
 // ../../../../node_modules/@rubenbimmel/alpine-class-component/dist/alpineComponent.js
 var require_alpineComponent = /*@__PURE__*/ __commonJSMin(((exports) => {

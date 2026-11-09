@@ -1601,14 +1601,6 @@ export { }
 
 
 declare global {
-    var Alpine: AlpineGlobal;
-    var TomSelect: typeof TomSelectGlobal;
-    var Spectrum: typeof SpectrumGlobal;
-    var Mark: any;
-}
-
-
-declare global {
     interface Node {
         __unicorn?: any;
     }
@@ -1622,6 +1614,14 @@ declare module '@windwalker-io/unicorn-next' {
     }
 }
 
+
+declare global {
+    var Alpine: AlpineGlobal;
+    var TomSelect: typeof TomSelectGlobal;
+    var Spectrum: typeof SpectrumGlobal;
+    var Mark: any;
+}
+
 declare global {
     var S: any;
 }
@@ -1632,13 +1632,6 @@ declare global {
 }
 
 
-declare global {
-    export interface Window {
-        bootstrap: typeof bootstrap;
-    }
-}
-
-
 declare module 'axios' {
     interface AxiosRequestConfig {
         vars?: Record<string, any>;
@@ -1646,5 +1639,12 @@ declare module 'axios' {
         methodSimulateByHeader?: boolean;
     }
     interface CreateAxiosDefaults {
+    }
+}
+
+
+declare global {
+    export interface Window {
+        bootstrap: typeof bootstrap;
     }
 }

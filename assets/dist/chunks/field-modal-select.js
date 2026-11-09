@@ -3,9 +3,8 @@ import { n as apply, r as arrayMap, t as baseRest } from "./_baseRest.js";
 import { a as eq, d as isObjectLike, f as baseGetTag, l as isObject, p as Symbol, r as isArrayLike, u as isArray } from "./_baseUnary.js";
 import { t as data } from "./data.js";
 import { t as __ } from "./lang.js";
-import { a as highlight, m as slideUp } from "./ui.js";
+import { highlight, simpleAlert, slideUp } from "../unicorn.js";
 import { d as selectOne, o as html } from "./dom.js";
-import { r as simpleAlert } from "./alert.js";
 // ../../../../node_modules/lodash-es/isSymbol.js
 /** `Object#toString` result references. */
 var symbolTag = "[object Symbol]";

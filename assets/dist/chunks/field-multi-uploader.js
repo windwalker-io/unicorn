@@ -1,4 +1,4 @@
-import { n as useStack } from "./useStack.js";
+import { useStack } from "../unicorn.js";
 import { t as data } from "./data.js";
 import { n as forceArray } from "./helper.js";
 import { s as injectCssToDocument } from "./dom.js";

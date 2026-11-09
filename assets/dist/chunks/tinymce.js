@@ -1,7 +1,5 @@
-import { useHttpClient } from "../unicorn.js";
-import { n as useStack } from "./useStack.js";
+import { useHttpClient, useScriptImport, useStack } from "../unicorn.js";
 import { d as selectOne } from "./dom.js";
-import { a as useScriptImport } from "./loader.js";
 import { t as mergeDeep } from "./arr.js";
 // src/module/tinymce.ts
 var instances = {};
