@@ -121,10 +121,20 @@ class RepeatableField extends AbstractField implements CompositeFieldInterface
                 sprintf("getName(i, item, '%s', %s)", $field->getName(), $isMultiple ? 'true' : 'false')
             );
 
-            $field->attr(':disabled', 'attrs.disabled != null');
-            $field->attr(':readonly', 'attrs.readonly != null');
-            $field->disabled($this->isDisabled());
-            $field->readonly($this->isReadonly());
+            // Keep the sub-field's own disabled/readonly; only inherit `true` from the repeatable field
+            $ownDisabled = (bool) $field->isDisabled();
+            $ownReadonly = (bool) $field->isReadonly();
+
+            $field->attr(':disabled', $ownDisabled ? 'true' : 'attrs.disabled != null');
+            $field->attr(':readonly', $ownReadonly ? 'true' : 'attrs.readonly != null');
+
+            if ($this->isDisabled()) {
+                $field->disabled(true);
+            }
+
+            if ($this->isReadonly()) {
+                $field->readonly(true);
+            }
 
             $field->setValue(null);
             $field->attr('x-model', 'item.' . str_replace('/', '.', $field->getNamespaceName()));
