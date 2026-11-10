@@ -236,12 +236,12 @@ class WorkflowControllerTest extends TestCase
         $controller->onAfterChanged('1', '0', function () use (&$log) {
             $log[] = 'mail';
         });
-        $controller->onAfterChangedAlways("1", "0", function ($e) use (&$log) {
-            $log[] = "log:" . ($e->muted ? "muted" : "live");
+        $controller->onAfterChangedAlways('1', '0', function ($e) use (&$log) {
+            $log[] = 'log:' . ($e->muted ? 'muted' : 'live');
         });
 
         $controller->triggerAfterChanged('1', '0', $event);
-        self::assertSame(["mail", "log:live"], $log);
+        self::assertSame(['mail', 'log:live'], $log);
 
         foreach ([\Windwalker\Core\Seed\SeedService::class, \Windwalker\Core\Migration\MigrationService::class] as $cls) {
             $log = [];
@@ -254,7 +254,7 @@ class WorkflowControllerTest extends TestCase
                 $cls::$running = false;
             }
 
-            self::assertSame(["log:muted"], $log);
+            self::assertSame(['log:muted'], $log);
         }
 
         self::assertFalse(WorkflowController::isMuted());

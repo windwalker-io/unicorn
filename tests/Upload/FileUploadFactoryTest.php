@@ -23,7 +23,7 @@ class FileUploadFactoryTest extends TestCase
     {
         $config = new Config(['unicorn' => ['file_upload' => $fileUploadConfig]]);
         $container = new Container();
-        (new StorageProvider())->register($container);
+        new StorageProvider()->register($container);
         $resolver = $this->createStub(PathResolver::class);
         $resolver->method('resolve')->willReturn(sys_get_temp_dir());
         $container->set(PathResolver::class, $resolver);

@@ -29,7 +29,7 @@ final class ConfirmResolverTest extends TestCase
     public function resolvesEachConfirmType(): void
     {
         $safe = new Transition('safe', 'a', 'b');
-        $danger = (new Transition('danger', 'a', 'c'))->dangerous();
+        $danger = new Transition('danger', 'a', 'c')->dangerous();
 
         self::assertNull(ConfirmResolver::resolve(null, $danger, 'danger'));
         self::assertNull(ConfirmResolver::resolve(false, $danger, 'danger'));
