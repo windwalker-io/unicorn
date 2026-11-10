@@ -399,7 +399,8 @@ final class S3ServiceTest extends TestCase
     private function commandArguments(MockHandler $handler): array
     {
         $args = $handler->getLastCommand()->toArray();
-        unset($args['@http'], $args['@context']);
+        // Newer AWS SDK releases inject ChecksumMode into GetObject/HeadObject by default.
+        unset($args['@http'], $args['@context'], $args['ChecksumMode']);
 
         return $args;
     }
