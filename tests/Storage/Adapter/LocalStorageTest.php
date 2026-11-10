@@ -24,7 +24,7 @@ final class LocalStorageTest extends TestCase
     #[Before]
     public function createRootDirectory(): void
     {
-        $this->root = sys_get_temp_dir() . '/local-storage-test-' . uniqid('', true);
+        $this->root = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'local-storage-test-' . uniqid('', true);
         mkdir($this->root, 0777, true);
     }
 
@@ -141,9 +141,10 @@ final class LocalStorageTest extends TestCase
     #[Test]
     public function getBasePathUsesAbsolutePathsAsIs(): void
     {
-        $storage = $this->createStorage(['path' => '/var/data']);
+        $path = DIRECTORY_SEPARATOR . 'var' . DIRECTORY_SEPARATOR . 'data';
+        $storage = $this->createStorage(['path' => $path]);
 
-        self::assertSame('/var/data', $storage->getBasePath());
+        self::assertSame($path, $storage->getBasePath());
     }
 
     #[Test]
@@ -151,7 +152,10 @@ final class LocalStorageTest extends TestCase
     {
         $storage = $this->createStorage(['path' => 'uploads']);
 
-        self::assertSame($this->root . '/uploads/x/y.txt', $storage->getPath('x/y.txt'));
+        self::assertSame(
+            $this->root . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'x' . DIRECTORY_SEPARATOR . 'y.txt',
+            $storage->getPath('x' . DIRECTORY_SEPARATOR . 'y.txt')
+        );
     }
 
     #[Test]
@@ -170,8 +174,10 @@ final class LocalStorageTest extends TestCase
     {
         $storage = $this->createStorage(['path' => 'uploads']);
 
-        self::assertSame('a/b.txt', $storage->stripBasePath($storage->getPath('a/b.txt')));
-        self::assertSame('a/b.txt', $storage->stripBasePath($storage->getBasePath() . '/a/b.txt'));
+        $expected = 'a' . DIRECTORY_SEPARATOR . 'b.txt';
+
+        self::assertSame($expected, $storage->stripBasePath($storage->getPath('a/b.txt')));
+        self::assertSame($expected, $storage->stripBasePath($storage->getBasePath() . DIRECTORY_SEPARATOR . $expected));
     }
 
     /**

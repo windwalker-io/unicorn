@@ -118,7 +118,7 @@ class FileUploadServiceHandleFileTest extends TestCase
     #[TestDox('handleFile() rejects files not matching acceptExtensions / acceptMimeTypes')]
     public function rejectsNotAcceptedFiles(): void
     {
-        $service = $this->createService(['acceptExtensions' => ['png', '.JPG']]);
+        $service = $this->createService(['accept' => ['png', '.JPG']]);
 
         $service->handleFile($this->pngPath, 'uploads/a.png');
         self::assertCount(1, $this->puts);
@@ -130,7 +130,7 @@ class FileUploadServiceHandleFileTest extends TestCase
             self::assertCount(1, $this->puts);
         }
 
-        $service = $this->createService(['acceptMimeTypes' => ['image/*']]);
+        $service = $this->createService(['accept' => ['image/*']]);
 
         try {
             $service->handleFile($this->txtPath, 'uploads/a.txt');
@@ -142,7 +142,7 @@ class FileUploadServiceHandleFileTest extends TestCase
         $service->handleFile($this->pngPath, 'uploads/b.png');
         self::assertCount(2, $this->puts);
 
-        $service = $this->createService(['acceptExtensions' => [], 'acceptMimeTypes' => null]);
+        $service = $this->createService(['accept' => []]);
         $service->handleFile($this->txtPath, 'uploads/c.txt');
         self::assertCount(3, $this->puts);
 
@@ -160,6 +160,10 @@ class FileUploadServiceHandleFileTest extends TestCase
     #[TestDox('handleFile() sanitizes SVG, skips redraw, and minifies it when optimize is enabled')]
     public function sanitizesSvg(): void
     {
+        if (!class_exists(\Mathiasreker\PhpSvgOptimizer\SvgOptimizer::class)) {
+            self::markTestSkipped('mathiasreker/php-svg-optimizer is not installed.');
+        }
+
         $svgPath = $this->dir . '/evil.svg';
         file_put_contents(
             $svgPath,

@@ -92,7 +92,7 @@ final class PaginationComponentTest extends TestCase
 
         self::assertStringContainsString('data-pagination-jump', $html);
         self::assertStringContainsString('value="2"', $html);
-        self::assertMatchesRegularExpression('/<button[^>]*>\s*GO\s*<\/button>/', $html);
+        self::assertMatchesRegularExpression('/<button[^>]*>\s*(GO|unicorn\.pagination\.jump\.go)\s*<\/button>/i', $html);
     }
 
     #[Test]
