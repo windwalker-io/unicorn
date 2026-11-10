@@ -29,6 +29,8 @@ class RepeatableField extends AbstractField implements CompositeFieldInterface
 
     protected bool $ensureFirstRow = false;
 
+    protected bool $showControls = true;
+
     protected bool $singleArray = false;
 
     protected string $placeholder = '';
@@ -238,6 +240,28 @@ class RepeatableField extends AbstractField implements CompositeFieldInterface
     public function ensureFirstRow(bool $ensureFirstRow): static
     {
         $this->ensureFirstRow = $ensureFirstRow;
+
+        return $this;
+    }
+
+    /**
+     * @return  bool
+     */
+    public function isShowControls(): bool
+    {
+        return $this->showControls;
+    }
+
+    /**
+     * Whether to show the add/remove buttons.
+     *
+     * @param  bool  $showControls
+     *
+     * @return  static  Return self to support chaining.
+     */
+    public function showControls(bool $showControls): static
+    {
+        $this->showControls = $showControls;
 
         return $this;
     }

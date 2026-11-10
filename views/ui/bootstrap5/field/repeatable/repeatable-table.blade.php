@@ -32,6 +32,7 @@ use Windwalker\Form\Field\AbstractField;
 $app->service(\Unicorn\Script\FormScript::class)->repeatable();
 
 $inputElement = $field->compileInput();
+$showControls = $field->isShowControls();
 
 $optString = AssetService::getJSObject(
     [
@@ -40,6 +41,7 @@ $optString = AssetService::getJSObject(
         'sortable' => $field->isSortable(),
         'hasKey' => (bool) $form->hasField('key'),
         'singleArray' => $field->isSingleArray(),
+        'showControls' => $field->isShowControls(),
         'ensureFirstRow' => $field->isEnsureFirstRow(),
         'max' => $field->getMax()
     ]
@@ -100,15 +102,17 @@ $colWidth = function (AbstractField $subField, $i) use ($field) {
                 @php($i++)
             @endforeach
 
-            <template x-if="canModify">
-                <th class="text-end" width="1%" style="min-width: 80px">
-                    <button type="button" class="btn btn-sm btn-success btn-primary"
-                        :disabled="!canAdd"
-                        @click="addItem(-1)">
-                        <span class="fa fa-plus"></span>
-                    </button>
-                </th>
-            </template>
+            @if ($showControls)
+                <template x-if="canModify">
+                    <th class="text-end" width="1%" style="min-width: 80px">
+                        <button type="button" class="btn btn-sm btn-success btn-primary"
+                            :disabled="!canAdd"
+                            @click="addItem(-1)">
+                            <span class="fa fa-plus"></span>
+                        </button>
+                    </th>
+                </template>
+            @endif
         </tr>
         </thead>
         <tbody x-ref="tbody">
@@ -130,20 +134,22 @@ $colWidth = function (AbstractField $subField, $i) use ($field) {
                     </td>
                     @php($i++)
                 @endforeach
-                <template x-if="canModify">
-                    <td class="text-nowrap text-end" width="1%">
-                        <button type="button" class="btn btn-sm btn-success btn-primary"
-                            @click="addItem(i)"
-                            :disabled="!canAdd"
-                        >
-                            <span class="fa fa-plus"></span>
-                        </button>
-                        <button type="button" class="btn btn-sm btn-success btn-danger"
-                            @click="delItem(i)">
-                            <span class="fa fa-trash"></span>
-                        </button>
-                    </td>
-                </template>
+                @if ($showControls)
+                    <template x-if="canModify">
+                        <td class="text-nowrap text-end" width="1%">
+                            <button type="button" class="btn btn-sm btn-success btn-primary"
+                                @click="addItem(i)"
+                                :disabled="!canAdd"
+                            >
+                                <span class="fa fa-plus"></span>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-success btn-danger"
+                                @click="delItem(i)">
+                                <span class="fa fa-trash"></span>
+                            </button>
+                        </td>
+                    </template>
+                @endif
             </tr>
         </template>
         </tbody>
