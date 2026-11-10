@@ -41,6 +41,15 @@ class StorageFactory implements ServiceFactoryInterface
         return 'storage';
     }
 
+    /**
+     * @param  array{
+     *     path?: string,
+     *     host?: string,
+     *     uri_base?: string,
+     *     uri_handler?: callable,
+     *     ...
+     * }  $options
+     */
     public function localStorage(array $options = []): LocalStorage
     {
         return new LocalStorage(
@@ -49,6 +58,29 @@ class StorageFactory implements ServiceFactoryInterface
         );
     }
 
+    /**
+     * @param  array{
+     *     access_key?: string,
+     *     secret?: string,
+     *     credentials?: \Aws\Credentials\CredentialsInterface,
+     *     region?: string,
+     *     version?: string,
+     *     bucket?: string,
+     *     subfolder?: string,
+     *     public_host?: string,
+     *     http?: array,
+     *     args?: array,
+     *     cdn?: array{
+     *         root?: string,
+     *         provider?: string,
+     *         auto_clear_cache?: bool,
+     *         id?: string,
+     *         private_key?: string,
+     *         key_pair_id?: string,
+     *     },
+     *     ...
+     * }  $options
+     */
     public function s3Storage(array $options = []): S3Storage
     {
         if (!class_exists(S3Client::class) || !interface_exists(MimeTypesInterface::class)) {
@@ -61,6 +93,29 @@ class StorageFactory implements ServiceFactoryInterface
         );
     }
 
+    /**
+     * @param  array{
+     *     access_key?: string,
+     *     secret?: string,
+     *     credentials?: \Aws\Credentials\CredentialsInterface,
+     *     region?: string,
+     *     version?: string,
+     *     bucket?: string,
+     *     subfolder?: string,
+     *     public_host?: string,
+     *     http?: array,
+     *     args?: array,
+     *     cdn?: array{
+     *         root?: string,
+     *         provider?: string,
+     *         auto_clear_cache?: bool,
+     *         id?: string,
+     *         private_key?: string,
+     *         key_pair_id?: string,
+     *     },
+     *     ...
+     * }  $options
+     */
     public function s3Service(array $options = []): S3Service
     {
         $s3Client = $this->s3Client($options);
@@ -68,6 +123,29 @@ class StorageFactory implements ServiceFactoryInterface
         return new S3Service($s3Client, $options);
     }
 
+    /**
+     * @param  array{
+     *     access_key?: string,
+     *     secret?: string,
+     *     credentials?: \Aws\Credentials\CredentialsInterface,
+     *     region?: string,
+     *     version?: string,
+     *     bucket?: string,
+     *     subfolder?: string,
+     *     public_host?: string,
+     *     http?: array,
+     *     args?: array,
+     *     cdn?: array{
+     *         root?: string,
+     *         provider?: string,
+     *         auto_clear_cache?: bool,
+     *         id?: string,
+     *         private_key?: string,
+     *         key_pair_id?: string,
+     *     },
+     *     ...
+     * }  $options
+     */
     public function s3Client(array $options = []): S3Client
     {
         if (!class_exists(S3Client::class)) {
