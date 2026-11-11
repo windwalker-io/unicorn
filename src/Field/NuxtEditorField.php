@@ -49,7 +49,7 @@ class NuxtEditorField extends AbstractEditorField
             locale: $this->lang->getLocale() ?: $this->lang->getFallback(),
             readonly: (bool) ($this->isReadonly() || $this->isDisabled()),
             captionSyncAttrs: ['alt', 'title'],
-            captionLive: true,
+            captionFigure: false,
         );
 
         if ($this->getEnableImageUpload() ?? true) {

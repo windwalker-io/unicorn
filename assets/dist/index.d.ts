@@ -618,7 +618,7 @@ declare interface NuxtEditorOptions {
     readonly?: boolean;
     imageUploadUrl?: string;
     captionSyncAttrs?: string[];
-    captionLive?: boolean;
+    captionFigure?: boolean;
     unicorn?: {
         stack_name?: string;
     };
@@ -1665,10 +1665,9 @@ export declare function watchAttributes<T extends HTMLElement>(el: T, callback?:
 export { }
 
 
-declare module '@windwalker-io/unicorn-next' {
-    interface UnicornApp {
-        /** @deprecated Only for code generator use. */
-        $ui: typeof methods;
+declare global {
+    interface Node {
+        __unicorn?: any;
     }
 }
 
@@ -1681,9 +1680,21 @@ declare global {
 }
 
 
-declare global {
-    interface Node {
-        __unicorn?: any;
+declare module '@windwalker-io/unicorn-next' {
+    interface UnicornApp {
+        /** @deprecated Only for code generator use. */
+        $ui: typeof methods;
+    }
+}
+
+
+declare module 'axios' {
+    interface AxiosRequestConfig {
+        vars?: Record<string, any>;
+        methodSimulate?: string;
+        methodSimulateByHeader?: boolean;
+    }
+    interface CreateAxiosDefaults {
     }
 }
 
@@ -1700,16 +1711,5 @@ declare global {
 declare global {
     export interface Window {
         bootstrap: typeof bootstrap;
-    }
-}
-
-
-declare module 'axios' {
-    interface AxiosRequestConfig {
-        vars?: Record<string, any>;
-        methodSimulate?: string;
-        methodSimulateByHeader?: boolean;
-    }
-    interface CreateAxiosDefaults {
     }
 }

@@ -31,8 +31,13 @@ class NuxtFieldOptions implements \JsonSerializable
         public ?string $imageUploadUrl = null,
         /**
          * Extra props passed to Nuxt UI `UEditor`.
+         *
+         * @var  array<string, mixed>|null
          */
         public ?array $props = null,
+        /**
+         * @var  array{stack_name?: string}|null
+         */
         public ?array $unicorn = null,
         /**
          * Image attributes that mirror the caption text. A list: it is replaced, not merged.
@@ -41,30 +46,63 @@ class NuxtFieldOptions implements \JsonSerializable
          */
         public ?array $captionSyncAttrs = null,
         /**
-         * Reflect caption typing into the output HTML on every keystroke. If false, only on blur / Enter.
+         * true: the output HTML renders a caption as `<figure><img><figcaption>`.
+         * false: the caption is only saved into the `captionSyncAttrs` (title & alt), left for the frontend to render.
          */
-        public ?bool $captionLive = null,
+        public ?bool $captionFigure = null,
+        /**
+         * Backend endpoint that downloads a remote image and stores it.
+         * Receives POST `{url}` and returns `{data: {url}}` like the upload endpoint.
+         * When set, pasted images from other hosts are sent here and replaced with the stored URL.
+         */
+        public ?string $imageFetchUrl = null,
+        /**
+         * Hosts treated as "own" (not fetched). Empty: only the current page host. A list: it is replaced, not merged.
+         *
+         * @var  string[]|null
+         */
+        public ?array $imageOwnHosts = null,
     ) {}
 
     public function merge(mixed $values, bool $recursive = false, bool $ignoreNulls = false): static
     {
         $values = $values instanceof self ? $values->toArray() : TypeCast::toArray($values);
 
-        if (isset($values['captionSyncAttrs'])) {
-            $this->captionSyncAttrs = array_values((array) $values['captionSyncAttrs']);
-        }
+        foreach (['captionSyncAttrs', 'imageOwnHosts'] as $listKey) {
+            if (isset($values[$listKey])) {
+                $this->$listKey = array_values((array) $values[$listKey]);
+            }
 
-        unset($values['captionSyncAttrs']);
+            unset($values[$listKey]);
+        }
 
         // Nulls never override already-set values.
         return $this->traitMerge($values, $recursive, true);
     }
 
+    /**
+     * @return    array{
+     *           format?: string,
+     *           locale?: string,
+     *           readonly?: bool,
+     *           imageUploadUrl?: string,
+     *           props?: array<string, mixed>,
+     *           unicorn?: array{stack_name?: string},
+     *           captionSyncAttrs?: string[],
+     *           captionFigure?: bool,
+     *           imageFetchUrl?: string,
+     *           imageOwnHosts?: string[],
+     *           ...
+     *           }
+     */
     public function toArray(): array
     {
         return array_filter(get_object_vars($this), static fn($v) => $v !== null);
     }
 
+    /**
+     * @return  array<string, mixed>
+     */
     public function jsonSerialize(): array
     {
         return $this->toArray();
