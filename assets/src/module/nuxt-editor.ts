@@ -11,6 +11,7 @@ import type { NuxtEditorOptions, NuxtEditorToolbars } from './nuxt-editor-lib/ty
 import type { DragHandleNode, Editor } from '../vue/components/NuxtEditor/types';
 import { createCodeBlock } from './nuxt-editor-lib/code-block';
 import { createTable } from './nuxt-editor-lib/table';
+import { createVideoEmbed } from './nuxt-editor-lib/video-embed';
 import { createFetchImage, createImagePasteDrop, createUploadImage } from './nuxt-editor-lib/upload';
 // Resolved by the host Vite (@nuxt/ui/vite + Tailwind). Do not bundle here.
 // @ts-ignore
@@ -174,7 +175,7 @@ async function mount(element: HTMLTextAreaElement, options: NuxtEditorOptions): 
   const resolveItems = createItemsResolver({ ...globalToolbars, ...options.toolbars }, opts);
 
   const uploadImage = createUploadImage(element, opts);
-  const { toolbarItems, textBubbleItems, imageBubbleItems, suggestionItems, blockMenuItems: defaultBlockMenu } = createToolbars(opts, uploadImage);
+  const { toolbarItems, textBubbleItems, videoBubbleItems, imageBubbleItems, suggestionItems, blockMenuItems: defaultBlockMenu } = createToolbars(opts, uploadImage);
   const CaptionImage = createCaptionImage(TiptapImage, mergeAttributes, opts);
   const CodeBlock = createCodeBlock(TiptapCodeBlock, opts);
   const { ImageUpload, customHandlers } = createImageUpload({
@@ -198,6 +199,7 @@ async function mount(element: HTMLTextAreaElement, options: NuxtEditorOptions): 
     TextStyle,
     Color,
     BackgroundColor,
+    createVideoEmbed({ Node, mergeAttributes, Plugin, PluginKey }),
     ...table.extensions,
     ...(opts.imageUploadUrl ? [ImageUpload, createImagePasteDrop(
       { Extension, Plugin, PluginKey, Decoration, DecorationSet },
@@ -210,6 +212,7 @@ async function mount(element: HTMLTextAreaElement, options: NuxtEditorOptions): 
   const items = {
     fixed: (ed: any) => resolveItems('fixed', [...toolbarItems(), table.toolbarGroup()], ed),
     text: (ed: any) => resolveItems('textBubble', textBubbleItems(), ed),
+    video: (ed: any) => resolveItems('videoBubble', videoBubbleItems(ed), ed),
     image: (ed: any) => resolveItems('imageBubble', imageBubbleItems(ed), ed),
     slash: (ed: any) => resolveItems('slash', suggestionItems, ed),
     blockMenu: blockMenuItems,

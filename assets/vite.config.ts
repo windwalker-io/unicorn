@@ -73,6 +73,7 @@ export default defineConfig(({ mode }) => {
           'tinymce',
           /^@nuxt\/ui(\/.*)?$/,
           /^@tiptap\/.*/,
+          /^@social-embed\/.*/,
           /^@windwalker-io\/unicorn-next\/.*/,
           'bootstrap',
           'vue',

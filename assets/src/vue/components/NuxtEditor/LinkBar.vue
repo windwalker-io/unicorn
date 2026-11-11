@@ -32,6 +32,18 @@ function remove() {
   props.editor.chain().focus().extendMarkRange('link').unsetLink().setMeta('preventAutolink', true).run();
 }
 
+const copied = ref(false);
+
+async function copy() {
+  if (!url.value) {
+    return;
+  }
+
+  await navigator.clipboard.writeText(url.value);
+  copied.value = true;
+  setTimeout(() => (copied.value = false), 1500);
+}
+
 function open() {
   window.open(url.value, '_blank', 'noopener,noreferrer');
 }
@@ -66,8 +78,9 @@ function onKeydown(e: KeyboardEvent) {
     <div class="flex items-center mr-0.5">
       <UButton icon="i-lucide-corner-down-left" title="Apply link" color="neutral" variant="ghost" size="sm" @click="apply" />
       <USeparator orientation="vertical" class="h-6 mx-1" />
+      <UButton :icon="copied ? 'i-lucide-check' : 'i-lucide-copy'" title="Copy link" color="neutral" variant="ghost" size="sm" @click="copy" />
       <UButton icon="i-lucide-external-link" title="Open in new window" color="neutral" variant="ghost" size="sm" @click="open" />
-      <UButton icon="i-lucide-trash" title="Remove link" color="neutral" variant="ghost" size="sm" @click="remove" />
+      <UButton icon="i-lucide-unlink" title="Unlink" color="neutral" variant="ghost" size="sm" @click="remove" />
     </div>
   </UInput>
 </template>

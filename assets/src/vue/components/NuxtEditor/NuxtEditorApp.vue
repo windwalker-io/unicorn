@@ -61,6 +61,7 @@ function onCreate({ editor }: { editor: Editor }) {
           :editor="editor"
           :fixed-items="items.fixed(editor)"
           :text-items="items.text(editor)"
+          :video-items="items.video(editor)"
           :image-items="items.image(editor)"
           :slash-items="items.slash(editor)"
         />

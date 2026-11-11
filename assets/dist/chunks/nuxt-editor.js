@@ -3,6 +3,7 @@ import { d as selectOne } from "./dom.js";
 import { t as mergeDeep } from "./arr.js";
 import { useHttpClient, useStack } from "../unicorn.js";
 import { createApp, defineComponent, h, ref, shallowRef, watch } from "vue";
+import { convertUrlToEmbedUrl, getProviderFromUrl } from "@social-embed/lib";
 import css from "@windwalker-io/unicorn-next/src/css/nuxt-editor.css?inline";
 // src/module/nuxt-editor-lib/caption-image.ts
 var imageOptions = {
@@ -550,10 +551,17 @@ function createToolbars(opts, uploadImage) {
 				}
 			],
 			[...marksGroup, ...colorsButton()],
-			[{
-				slot: "link",
-				icon: "i-lucide-link"
-			}, ...imageButton()],
+			[
+				{
+					slot: "link",
+					icon: "i-lucide-link"
+				},
+				...imageButton(),
+				{
+					slot: "video",
+					icon: "i-lucide-video"
+				}
+			],
 			alignButtons
 		];
 	}
@@ -612,6 +620,22 @@ function createToolbars(opts, uploadImage) {
 			}, ...imageButton()],
 			alignButtons
 		];
+	}
+	function videoBubbleItems(ed) {
+		const src = ed.state.selection.node?.attrs?.src;
+		return [[{
+			icon: "i-lucide-external-link",
+			tooltip: { text: "Open in new window" },
+			onClick: () => window.open(src, "_blank", "noopener,noreferrer")
+		}, {
+			slot: "videosource",
+			icon: "i-lucide-pencil"
+		}], [{
+			icon: "i-lucide-trash",
+			color: "error",
+			tooltip: { text: "Delete" },
+			onClick: () => ed.chain().focus().deleteSelection().run()
+		}]];
 	}
 	function imageBubbleItems(ed) {
 		const node = ed.state.doc.nodeAt(ed.state.selection.from);
@@ -806,6 +830,7 @@ function createToolbars(opts, uploadImage) {
 	return {
 		toolbarItems,
 		textBubbleItems,
+		videoBubbleItems,
 		imageBubbleItems,
 		suggestionItems,
 		blockMenuItems
@@ -1422,6 +1447,235 @@ function canRun(ed, kind) {
 		withHeaderRow: true
 	}) : can[kind]();
 }
+// src/module/nuxt-editor-lib/video-embed.ts
+var FILE_RE = /\.(mp4|webm|ogv|ogg|mov|m4v)$/i;
+var DEFAULT_RATIO = 56.25;
+var num = (v) => v && /^\d+(\.\d+)?(px)?$/.test(v.trim()) ? parseFloat(v) : null;
+function parseIframeCode(input) {
+	const text = input.trim();
+	if (!/^<iframe[\s>]/i.test(text)) return null;
+	const body = new DOMParser().parseFromString(text, "text/html").body;
+	const el = body.childNodes.length === 1 ? body.firstElementChild : null;
+	if (el?.tagName !== "IFRAME") return null;
+	let src;
+	try {
+		src = new URL(el.getAttribute("src") || "", "https://placeholder.invalid");
+	} catch {
+		return null;
+	}
+	if (!/^https?:$/.test(src.protocol) || src.hostname === "placeholder.invalid") return null;
+	const width = num(el.getAttribute("width"));
+	const height = num(el.getAttribute("height"));
+	const ratio = width && height ? Math.round(height / width * 1e4) / 100 : null;
+	return {
+		type: "iframe",
+		src: src.href,
+		ratio: ratio ?? (height ? null : DEFAULT_RATIO),
+		height: ratio ? null : height,
+		title: el.getAttribute("title")
+	};
+}
+function parseEmbedInput(input) {
+	return parseIframeCode(input) ?? parseVideoUrl(input);
+}
+function parseVideoUrl(input) {
+	let url;
+	try {
+		url = new URL(input.trim());
+	} catch {
+		return null;
+	}
+	if (!/^https?:$/.test(url.protocol)) return null;
+	if (FILE_RE.test(url.pathname)) return {
+		type: "video",
+		src: url.href
+	};
+	if (url.hostname.replace(/^(www|m)\./, "") === "bilibili.com") {
+		const bvid = url.pathname.split("/").find((p) => /^BV\w+$/i.test(p));
+		return bvid ? {
+			type: "iframe",
+			src: `https://player.bilibili.com/player.html?bvid=${bvid}&autoplay=0`
+		} : null;
+	}
+	let src = convertUrlToEmbedUrl(url.href);
+	if (!src) return null;
+	const start = url.searchParams.get("t") || url.searchParams.get("start");
+	if (getProviderFromUrl(url.href)?.name === "YouTube" && start && /^\d+s?$/.test(start)) src += `?start=${parseInt(start, 10)}`;
+	return {
+		type: "iframe",
+		src
+	};
+}
+function createVideoEmbed({ Node, mergeAttributes, Plugin, PluginKey }) {
+	const box = (ratio, height) => "position:relative;width:100%;overflow:hidden;" + (height ? `height:${height}px;` : `padding-bottom:${ratio || DEFAULT_RATIO}%;height:0;`);
+	const FILL = "position:absolute;top:0;left:0;width:100%;height:100%;border:0;";
+	const ALLOW = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+	const mediaAttrs = (a) => a.type === "video" ? {
+		src: a.src,
+		controls: "",
+		style: FILL
+	} : {
+		src: a.src,
+		style: FILL,
+		allowfullscreen: "",
+		loading: "lazy",
+		allow: ALLOW,
+		...a.title ? { title: a.title } : {}
+	};
+	const build = (a) => {
+		const el = document.createElement(a.type === "video" ? "video" : "iframe");
+		Object.entries(mediaAttrs(a)).forEach(([k, v]) => el.setAttribute(k, v));
+		return el;
+	};
+	const parseBox = (el) => {
+		const media = el.querySelector("iframe, video");
+		return media ? {
+			src: media.getAttribute("src"),
+			type: media.tagName === "VIDEO" ? "video" : "iframe",
+			title: media.getAttribute("title"),
+			ratio: num(el.getAttribute("data-ratio")),
+			height: num(el.getAttribute("data-height"))
+		} : false;
+	};
+	return Node.create({
+		name: "videoEmbed",
+		group: "block",
+		atom: true,
+		draggable: true,
+		selectable: true,
+		addAttributes() {
+			return {
+				src: {
+					default: null,
+					rendered: false
+				},
+				type: {
+					default: "iframe",
+					rendered: false
+				},
+				ratio: {
+					default: null,
+					rendered: false
+				},
+				height: {
+					default: null,
+					rendered: false
+				},
+				title: {
+					default: null,
+					rendered: false
+				}
+			};
+		},
+		parseHTML() {
+			return [{
+				tag: "p[data-video-embed]",
+				priority: 100,
+				getAttrs: parseBox
+			}, {
+				tag: "div[data-video-embed]",
+				getAttrs: parseBox
+			}];
+		},
+		renderHTML({ node, HTMLAttributes }) {
+			const a = node.attrs;
+			const extra = {
+				"data-video-embed": "",
+				style: box(a.ratio, a.height) + "margin:0 0 1rem;"
+			};
+			if (a.height) extra["data-height"] = a.height;
+			else if (a.ratio) extra["data-ratio"] = a.ratio;
+			return [
+				"p",
+				mergeAttributes(HTMLAttributes, extra),
+				[a.type === "video" ? "video" : "iframe", mediaAttrs(a)]
+			];
+		},
+		addNodeView() {
+			return ({ node }) => {
+				const dom = document.createElement("div");
+				dom.setAttribute("data-video-embed", "");
+				dom.setAttribute("style", box(node.attrs.ratio, node.attrs.height) + "margin:1rem 0;background:#000;border-radius:.375rem;");
+				dom.append(build(node.attrs));
+				const overlay = document.createElement("div");
+				overlay.setAttribute("style", "position:absolute;inset:0;cursor:grab;");
+				dom.append(overlay);
+				return {
+					dom,
+					selectNode: () => {
+						dom.style.outline = "2px solid var(--ui-primary, #3b82f6)";
+					},
+					deselectNode: () => {
+						dom.style.outline = "";
+					}
+				};
+			};
+		},
+		addCommands() {
+			return { setVideoEmbed: (input) => ({ commands }) => {
+				const source = parseEmbedInput(input);
+				return source ? commands.insertContent({
+					type: this.name,
+					attrs: attrsOf(source)
+				}) : false;
+			} };
+		},
+		addStorage() {
+			return { key: new PluginKey("videoEmbedPaste") };
+		},
+		addProseMirrorPlugins() {
+			const key = this.storage.key;
+			let pending = null;
+			return [new Plugin({
+				key,
+				state: {
+					init: () => null,
+					apply(tr, value) {
+						const meta = tr.getMeta(key);
+						if (meta !== void 0) return meta;
+						if (value && (tr.docChanged || tr.selection.from !== value.to)) return null;
+						return value;
+					}
+				},
+				appendTransaction(_trs, _old, state) {
+					if (!pending) return null;
+					const { text, source } = pending;
+					const { $from, empty } = state.selection;
+					if (!empty || $from.parent.textContent !== text || $from.parentOffset !== text.length) return null;
+					pending = null;
+					return state.tr.setMeta(key, {
+						from: $from.start(),
+						to: $from.pos,
+						source
+					});
+				},
+				props: { handleDOMEvents: { paste(view, event) {
+					const text = event.clipboardData?.getData("text/plain")?.trim();
+					const source = text ? parseEmbedInput(text) : null;
+					const { $from, empty } = view.state.selection;
+					pending = null;
+					if (source && text && empty && $from.parent.type.name === "paragraph" && !$from.parent.content.size) {
+						pending = {
+							text,
+							source
+						};
+						setTimeout(() => {
+							pending = null;
+						}, 0);
+					}
+					return false;
+				} } }
+			})];
+		}
+	});
+}
+var attrsOf = (s) => ({
+	src: s.src,
+	type: s.type,
+	ratio: s.ratio ?? null,
+	height: s.height ?? null,
+	title: s.title ?? null
+});
 // src/module/nuxt-editor.ts
 var nuxt_editor_exports = /*@__PURE__*/ __exportAll({
 	configure: () => configure,
@@ -1502,7 +1756,7 @@ async function mount(element, options) {
 		...options.toolbars
 	}, opts);
 	const uploadImage = createUploadImage(element, opts);
-	const { toolbarItems, textBubbleItems, imageBubbleItems, suggestionItems, blockMenuItems: defaultBlockMenu } = createToolbars(opts, uploadImage);
+	const { toolbarItems, textBubbleItems, videoBubbleItems, imageBubbleItems, suggestionItems, blockMenuItems: defaultBlockMenu } = createToolbars(opts, uploadImage);
 	const CaptionImage = createCaptionImage(TiptapImage, mergeAttributes, opts);
 	const CodeBlock = createCodeBlock(TiptapCodeBlock, opts);
 	const { ImageUpload, customHandlers } = createImageUpload({
@@ -1530,6 +1784,12 @@ async function mount(element, options) {
 		TextStyle,
 		Color,
 		BackgroundColor,
+		createVideoEmbed({
+			Node,
+			mergeAttributes,
+			Plugin,
+			PluginKey
+		}),
 		...table.extensions,
 		...opts.imageUploadUrl ? [ImageUpload, createImagePasteDrop({
 			Extension,
@@ -1542,6 +1802,7 @@ async function mount(element, options) {
 	const items = {
 		fixed: (ed) => resolveItems("fixed", [...toolbarItems(), table.toolbarGroup()], ed),
 		text: (ed) => resolveItems("textBubble", textBubbleItems(), ed),
+		video: (ed) => resolveItems("videoBubble", videoBubbleItems(ed), ed),
 		image: (ed) => resolveItems("imageBubble", imageBubbleItems(ed), ed),
 		slash: (ed) => resolveItems("slash", suggestionItems, ed),
 		blockMenu: blockMenuItems,
@@ -1605,6 +1866,6 @@ function parseValue(value, format) {
 	}
 	return value;
 }
-export { configure, create, destroy, get, toBackground as i, createColorMenu as n, resolveColors as r, nuxt_editor_exports as t };
+export { resolveColors as a, configure, create, destroy, get, createColorMenu as i, attrsOf as n, toBackground as o, parseEmbedInput as r, nuxt_editor_exports as t };
 
 //# sourceMappingURL=nuxt-editor.js.map

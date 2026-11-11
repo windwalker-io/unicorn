@@ -28,6 +28,7 @@ export interface BubbleShouldShowProps {
 export interface NuxtEditorItems {
   fixed: (editor: Editor) => ToolbarItems;
   text: (editor: Editor) => ToolbarItems;
+  video: (editor: Editor) => ToolbarItems;
   image: (editor: Editor) => ToolbarItems;
   slash: (editor: Editor) => EditorSuggestionMenuItem[] | EditorSuggestionMenuItem[][];
   tableMenu: (editor: Editor, scope?: 'cell' | 'row' | 'column') => DropdownMenuItem[][];

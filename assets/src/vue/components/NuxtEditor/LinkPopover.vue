@@ -112,7 +112,7 @@ function onKeydown(e: KeyboardEvent) {
             :disabled="!url && !editor.isActive('link')" @click="openLink"
           />
           <UButton
-            icon="i-lucide-trash" title="Remove link" color="neutral" variant="ghost" size="sm"
+            icon="i-lucide-unlink" title="Unlink" color="neutral" variant="ghost" size="sm"
             :disabled="!url && !editor.isActive('link')" @click="removeLink"
           />
         </div>

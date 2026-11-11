@@ -1,6 +1,6 @@
 import { t as _plugin_vue_export_helper_default } from "./_plugin-vue_export-helper.js";
-import { i as toBackground, n as createColorMenu, r as resolveColors } from "./nuxt-editor.js";
-import { Fragment, createBlock, createCommentVNode, createElementBlock, createElementVNode, createVNode, defineComponent, mergeProps, normalizeClass, normalizeStyle, onBeforeUnmount, onMounted, openBlock, ref, withCtx, withModifiers } from "vue";
+import { a as resolveColors, i as createColorMenu, n as attrsOf, o as toBackground, r as parseEmbedInput } from "./nuxt-editor.js";
+import { Fragment, createBlock, createCommentVNode, createElementBlock, createElementVNode, createVNode, defineComponent, mergeProps, normalizeClass, normalizeStyle, onBeforeUnmount, onMounted, openBlock, ref, watch, withCtx, withModifiers } from "vue";
 import UApp from "@nuxt/ui/components/App.vue";
 import UEditor from "@nuxt/ui/components/Editor.vue";
 import UButton from "@nuxt/ui/components/Button.vue";
@@ -69,7 +69,7 @@ var EditorDragHandle_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/
 	}
 });
 // src/vue/components/NuxtEditor/EditorDragHandle.vue
-function _sfc_render$6(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render$9(_ctx, _cache, $props, $setup, $data, $options) {
 	return openBlock(), createBlock($setup["UEditorDragHandle"], {
 		editor: $props.editor,
 		onNodeChange: _cache[0] || (_cache[0] = ($event) => $setup.emit("node-change", $event))
@@ -102,16 +102,20 @@ function _sfc_render$6(_ctx, _cache, $props, $setup, $data, $options) {
 		_: 1
 	}, 8, ["editor"]);
 }
-var EditorDragHandle_default = /*@__PURE__*/ _plugin_vue_export_helper_default(EditorDragHandle_vue_vue_type_script_setup_true_lang_default, [["render", _sfc_render$6], ["__file", "EditorDragHandle.vue"]]);
+var EditorDragHandle_default = /*@__PURE__*/ _plugin_vue_export_helper_default(EditorDragHandle_vue_vue_type_script_setup_true_lang_default, [["render", _sfc_render$9], ["__file", "EditorDragHandle.vue"]]);
 // src/composable/nuxt-editor/useBubbleVisibility.ts
 function useBubbleVisibility() {
-	const text = ({ editor, view, state }) => view.hasFocus() && !state.selection.empty && !editor.isActive("image") && !editor.isActive("imageUpload") && !editor.isActive("codeBlock");
-	const link = ({ editor, view, state }) => (view.hasFocus() || !!view.dom.getRootNode().activeElement?.closest("[data-link-bar]")) && state.selection.empty && editor.isActive("link");
+	const text = ({ editor, view, state }) => view.hasFocus() && !state.selection.empty && !editor.isActive("image") && !editor.isActive("imageUpload") && !editor.isActive("videoEmbed") && !editor.isActive("codeBlock");
+	const link = ({ editor, view, state }) => (view.hasFocus() || !!view.dom.getRootNode().activeElement?.closest("[data-link-bar]")) && state.selection.empty && editor.isActive("link") && !editor.storage.videoEmbed?.key.getState(state);
 	const image = ({ editor, view }) => editor.isActive("image") && view.hasFocus();
+	const video = ({ editor, view }) => editor.isActive("videoEmbed") && !!editor.state.selection.node?.attrs.src && (view.hasFocus() || !!view.dom.getRootNode().activeElement?.closest("[data-video-source]"));
+	const videoPrompt = ({ editor }) => !!editor.storage.videoEmbed?.key.getState(editor.state);
 	return {
 		text,
 		link,
-		image
+		image,
+		video,
+		videoPrompt
 	};
 }
 // src/vue/components/NuxtEditor/ColorsDropdown.vue?vue&type=script&setup=true&lang.ts
@@ -139,7 +143,7 @@ var ColorsDropdown_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ d
 	}
 });
 // src/vue/components/NuxtEditor/ColorsDropdown.vue
-function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render$8(_ctx, _cache, $props, $setup, $data, $options) {
 	return openBlock(), createBlock($setup["UDropdownMenu"], {
 		modal: false,
 		items: $props.items,
@@ -171,7 +175,7 @@ function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
 		_: 1
 	}, 8, ["items"]);
 }
-var ColorsDropdown_default = /*@__PURE__*/ _plugin_vue_export_helper_default(ColorsDropdown_vue_vue_type_script_setup_true_lang_default, [["render", _sfc_render$5], ["__file", "ColorsDropdown.vue"]]);
+var ColorsDropdown_default = /*@__PURE__*/ _plugin_vue_export_helper_default(ColorsDropdown_vue_vue_type_script_setup_true_lang_default, [["render", _sfc_render$8], ["__file", "ColorsDropdown.vue"]]);
 // src/vue/components/NuxtEditor/LinkBar.vue?vue&type=script&setup=true&lang.ts
 var LinkBar_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineComponent({
 	__name: "LinkBar",
@@ -192,6 +196,13 @@ var LinkBar_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineCo
 		function remove() {
 			props.editor.chain().focus().extendMarkRange("link").unsetLink().setMeta("preventAutolink", true).run();
 		}
+		const copied = ref(false);
+		async function copy() {
+			if (!url.value) return;
+			await navigator.clipboard.writeText(url.value);
+			copied.value = true;
+			setTimeout(() => copied.value = false, 1500);
+		}
 		function open() {
 			window.open(url.value, "_blank", "noopener,noreferrer");
 		}
@@ -210,6 +221,8 @@ var LinkBar_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineCo
 			sync,
 			apply,
 			remove,
+			copied,
+			copy,
 			open,
 			onFocusIn,
 			onKeydown,
@@ -225,8 +238,8 @@ var LinkBar_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineCo
 	}
 });
 // src/vue/components/NuxtEditor/LinkBar.vue
-var _hoisted_1$2 = { class: "flex items-center mr-0.5" };
-function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
+var _hoisted_1$5 = { class: "flex items-center mr-0.5" };
+function _sfc_render$7(_ctx, _cache, $props, $setup, $data, $options) {
 	return openBlock(), createBlock($setup["UInput"], {
 		modelValue: $setup.url,
 		"onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => $setup.url = $event),
@@ -238,7 +251,7 @@ function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
 		onFocusin: $setup.onFocusIn,
 		onKeydown: $setup.onKeydown
 	}, {
-		default: withCtx(() => [createElementVNode("div", _hoisted_1$2, [
+		default: withCtx(() => [createElementVNode("div", _hoisted_1$5, [
 			createVNode($setup["UButton"], {
 				icon: "i-lucide-corner-down-left",
 				title: "Apply link",
@@ -252,6 +265,14 @@ function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
 				class: "h-6 mx-1"
 			}),
 			createVNode($setup["UButton"], {
+				icon: $setup.copied ? "i-lucide-check" : "i-lucide-copy",
+				title: "Copy link",
+				color: "neutral",
+				variant: "ghost",
+				size: "sm",
+				onClick: $setup.copy
+			}, null, 8, ["icon"]),
+			createVNode($setup["UButton"], {
 				icon: "i-lucide-external-link",
 				title: "Open in new window",
 				color: "neutral",
@@ -260,7 +281,7 @@ function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
 				onClick: $setup.open
 			}),
 			createVNode($setup["UButton"], {
-				icon: "i-lucide-trash",
+				icon: "i-lucide-unlink",
 				title: "Remove link",
 				color: "neutral",
 				variant: "ghost",
@@ -271,7 +292,7 @@ function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
 		_: 1
 	}, 8, ["modelValue"]);
 }
-var LinkBar_default = /*@__PURE__*/ _plugin_vue_export_helper_default(LinkBar_vue_vue_type_script_setup_true_lang_default, [["render", _sfc_render$4], ["__file", "LinkBar.vue"]]);
+var LinkBar_default = /*@__PURE__*/ _plugin_vue_export_helper_default(LinkBar_vue_vue_type_script_setup_true_lang_default, [["render", _sfc_render$7], ["__file", "LinkBar.vue"]]);
 // src/vue/components/NuxtEditor/LinkPopover.vue?vue&type=script&setup=true&lang.ts
 var LinkPopover_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineComponent({
 	__name: "LinkPopover",
@@ -346,8 +367,8 @@ var LinkPopover_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defi
 	}
 });
 // src/vue/components/NuxtEditor/LinkPopover.vue
-var _hoisted_1$1 = { class: "flex items-center mr-0.5" };
-function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
+var _hoisted_1$4 = { class: "flex items-center mr-0.5" };
+function _sfc_render$6(_ctx, _cache, $props, $setup, $data, $options) {
 	return openBlock(), createBlock($setup["UPopover"], {
 		open: $setup.open,
 		"onUpdate:open": _cache[1] || (_cache[1] = ($event) => $setup.open = $event),
@@ -363,7 +384,7 @@ function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
 			onFocusin: $setup.onFocusIn,
 			onKeydown: $setup.onKeydown
 		}, {
-			default: withCtx(() => [createElementVNode("div", _hoisted_1$1, [
+			default: withCtx(() => [createElementVNode("div", _hoisted_1$4, [
 				createVNode($setup["UButton"], {
 					icon: "i-lucide-corner-down-left",
 					title: "Apply link",
@@ -387,7 +408,7 @@ function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
 					onClick: $setup.openLink
 				}, null, 8, ["disabled"]),
 				createVNode($setup["UButton"], {
-					icon: "i-lucide-trash",
+					icon: "i-lucide-unlink",
 					title: "Remove link",
 					color: "neutral",
 					variant: "ghost",
@@ -414,7 +435,279 @@ function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
 		_: 1
 	}, 8, ["open"]);
 }
-var LinkPopover_default = /*@__PURE__*/ _plugin_vue_export_helper_default(LinkPopover_vue_vue_type_script_setup_true_lang_default, [["render", _sfc_render$3], ["__file", "LinkPopover.vue"]]);
+var LinkPopover_default = /*@__PURE__*/ _plugin_vue_export_helper_default(LinkPopover_vue_vue_type_script_setup_true_lang_default, [["render", _sfc_render$6], ["__file", "LinkPopover.vue"]]);
+// src/vue/components/NuxtEditor/VideoPopover.vue?vue&type=script&setup=true&lang.ts
+var VideoPopover_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineComponent({
+	__name: "VideoPopover",
+	props: { editor: {} },
+	setup(__props, { expose: __expose }) {
+		__expose();
+		const props = __props;
+		const open = ref(false);
+		const url = ref("");
+		const invalid = ref(false);
+		function insert() {
+			if (!parseEmbedInput(url.value)) {
+				invalid.value = true;
+				return;
+			}
+			props.editor.chain().focus().setVideoEmbed(url.value).run();
+			url.value = "";
+			invalid.value = false;
+			open.value = false;
+		}
+		function onKeydown(e) {
+			if (e.key === "Enter") {
+				e.preventDefault();
+				insert();
+			}
+		}
+		const __returned__ = {
+			props,
+			open,
+			url,
+			invalid,
+			insert,
+			onKeydown,
+			UButton,
+			UInput,
+			UPopover,
+			UTooltip
+		};
+		Object.defineProperty(__returned__, "__isScriptSetup", {
+			enumerable: false,
+			value: true
+		});
+		return __returned__;
+	}
+});
+// src/vue/components/NuxtEditor/VideoPopover.vue
+var _hoisted_1$3 = { class: "flex items-center mr-0.5" };
+function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
+	return openBlock(), createBlock($setup["UPopover"], {
+		open: $setup.open,
+		"onUpdate:open": _cache[2] || (_cache[2] = ($event) => $setup.open = $event),
+		ui: { content: "p-0.5 w-[28rem] max-w-[90vw]" }
+	}, {
+		content: withCtx(() => [createVNode($setup["UInput"], {
+			modelValue: $setup.url,
+			"onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => $setup.url = $event),
+			autofocus: "",
+			type: "url",
+			variant: "none",
+			class: "w-full",
+			color: $setup.invalid ? "error" : void 0,
+			placeholder: $setup.invalid ? "Unsupported video URL or iframe" : "Paste a video URL or <iframe> code...",
+			onInput: _cache[1] || (_cache[1] = ($event) => $setup.invalid = false),
+			onKeydown: $setup.onKeydown
+		}, {
+			default: withCtx(() => [createElementVNode("div", _hoisted_1$3, [createVNode($setup["UButton"], {
+				icon: "i-lucide-corner-down-left",
+				title: "Embed video",
+				color: "neutral",
+				variant: "ghost",
+				size: "sm",
+				disabled: !$setup.url,
+				onClick: $setup.insert
+			}, null, 8, ["disabled"])])]),
+			_: 1
+		}, 8, [
+			"modelValue",
+			"color",
+			"placeholder"
+		])]),
+		default: withCtx(() => [createVNode($setup["UTooltip"], { text: "Video" }, {
+			default: withCtx(() => [createVNode($setup["UButton"], {
+				icon: "i-lucide-video",
+				color: "neutral",
+				variant: "ghost",
+				size: "sm",
+				"aria-label": "Video",
+				disabled: !$props.editor.isEditable
+			}, null, 8, ["disabled"])]),
+			_: 1
+		})]),
+		_: 1
+	}, 8, ["open"]);
+}
+var VideoPopover_default = /*@__PURE__*/ _plugin_vue_export_helper_default(VideoPopover_vue_vue_type_script_setup_true_lang_default, [["render", _sfc_render$5], ["__file", "VideoPopover.vue"]]);
+// src/vue/components/NuxtEditor/VideoSourcePopover.vue?vue&type=script&setup=true&lang.ts
+var VideoSourcePopover_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineComponent({
+	__name: "VideoSourcePopover",
+	props: { editor: {} },
+	setup(__props, { expose: __expose }) {
+		__expose();
+		const props = __props;
+		const open = ref(false);
+		const url = ref("");
+		const invalid = ref(false);
+		watch(open, (v) => {
+			if (v) {
+				url.value = props.editor.state.selection.node?.attrs.src || "";
+				invalid.value = false;
+			}
+		});
+		function apply() {
+			const source = parseEmbedInput(url.value);
+			const { selection } = props.editor.state;
+			if (!source || !selection.node) {
+				invalid.value = true;
+				return;
+			}
+			const { state, view } = props.editor;
+			view.dispatch(state.tr.setNodeMarkup(selection.from, void 0, attrsOf(source)));
+			open.value = false;
+			props.editor.commands.focus();
+		}
+		function onKeydown(e) {
+			if (e.key === "Enter") {
+				e.preventDefault();
+				apply();
+			}
+		}
+		function onFocusIn(e) {
+			if (e.target instanceof HTMLInputElement) e.target.select();
+		}
+		const __returned__ = {
+			props,
+			open,
+			url,
+			invalid,
+			apply,
+			onKeydown,
+			onFocusIn,
+			UButton,
+			UInput,
+			UPopover,
+			UTooltip
+		};
+		Object.defineProperty(__returned__, "__isScriptSetup", {
+			enumerable: false,
+			value: true
+		});
+		return __returned__;
+	}
+});
+// src/vue/components/NuxtEditor/VideoSourcePopover.vue
+var _hoisted_1$2 = { "data-video-source": "" };
+var _hoisted_2 = { class: "flex items-center mr-0.5" };
+function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
+	return openBlock(), createBlock($setup["UPopover"], {
+		open: $setup.open,
+		"onUpdate:open": _cache[2] || (_cache[2] = ($event) => $setup.open = $event),
+		ui: { content: "p-0.5 w-[28rem] max-w-[90vw]" }
+	}, {
+		content: withCtx(() => [createElementVNode("div", _hoisted_1$2, [createVNode($setup["UInput"], {
+			modelValue: $setup.url,
+			"onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => $setup.url = $event),
+			autofocus: "",
+			type: "url",
+			variant: "none",
+			class: "w-full",
+			color: $setup.invalid ? "error" : void 0,
+			placeholder: $setup.invalid ? "Unsupported video URL or iframe" : "Paste a video URL or <iframe> code...",
+			onInput: _cache[1] || (_cache[1] = ($event) => $setup.invalid = false),
+			onFocusin: $setup.onFocusIn,
+			onKeydown: $setup.onKeydown
+		}, {
+			default: withCtx(() => [createElementVNode("div", _hoisted_2, [createVNode($setup["UButton"], {
+				icon: "i-lucide-corner-down-left",
+				title: "Apply",
+				color: "neutral",
+				variant: "ghost",
+				size: "sm",
+				disabled: !$setup.url,
+				onClick: $setup.apply
+			}, null, 8, ["disabled"])])]),
+			_: 1
+		}, 8, [
+			"modelValue",
+			"color",
+			"placeholder"
+		])])]),
+		default: withCtx(() => [createVNode($setup["UTooltip"], { text: "Change source" }, {
+			default: withCtx(() => [createVNode($setup["UButton"], {
+				icon: "i-lucide-pencil",
+				color: "neutral",
+				variant: "ghost",
+				size: "sm",
+				"aria-label": "Change source"
+			})]),
+			_: 1
+		})]),
+		_: 1
+	}, 8, ["open"]);
+}
+var VideoSourcePopover_default = /*@__PURE__*/ _plugin_vue_export_helper_default(VideoSourcePopover_vue_vue_type_script_setup_true_lang_default, [["render", _sfc_render$4], ["__file", "VideoSourcePopover.vue"]]);
+// src/vue/components/NuxtEditor/VideoPastePrompt.vue?vue&type=script&setup=true&lang.ts
+var VideoPastePrompt_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineComponent({
+	__name: "VideoPastePrompt",
+	props: { editor: {} },
+	setup(__props, { expose: __expose }) {
+		__expose();
+		const props = __props;
+		const state = () => {
+			const ed = props.editor;
+			return ed.storage.videoEmbed.key.getState(ed.state);
+		};
+		const clear = () => {
+			const ed = props.editor;
+			ed.view.dispatch(ed.state.tr.setMeta(ed.storage.videoEmbed.key, null));
+		};
+		function embed() {
+			const prompt = state();
+			const ed = props.editor;
+			if (!prompt) return;
+			const $pos = ed.state.doc.resolve(prompt.from);
+			const type = ed.state.schema.nodes.videoEmbed;
+			ed.view.dispatch(ed.state.tr.replaceWith($pos.before(), $pos.after(), type.create(attrsOf(prompt.source))));
+			ed.commands.focus();
+		}
+		function dismiss() {
+			clear();
+			props.editor.commands.focus();
+		}
+		const __returned__ = {
+			props,
+			state,
+			clear,
+			embed,
+			dismiss,
+			UButton
+		};
+		Object.defineProperty(__returned__, "__isScriptSetup", {
+			enumerable: false,
+			value: true
+		});
+		return __returned__;
+	}
+});
+// src/vue/components/NuxtEditor/VideoPastePrompt.vue
+var _hoisted_1$1 = { class: "flex flex-col min-w-40 p-1" };
+function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
+	return openBlock(), createElementBlock("div", _hoisted_1$1, [
+		_cache[0] || (_cache[0] = createElementVNode("div", { class: "px-2 py-1 text-xs font-medium text-muted" }, "Paste as", -1)),
+		createVNode($setup["UButton"], {
+			icon: "i-lucide-video",
+			label: "Embed",
+			color: "neutral",
+			variant: "ghost",
+			size: "sm",
+			class: "justify-start",
+			onClick: $setup.embed
+		}),
+		createVNode($setup["UButton"], {
+			icon: "i-lucide-link",
+			label: "Link",
+			color: "neutral",
+			variant: "ghost",
+			size: "sm",
+			class: "justify-start",
+			onClick: $setup.dismiss
+		})
+	]);
+}
+var VideoPastePrompt_default = /*@__PURE__*/ _plugin_vue_export_helper_default(VideoPastePrompt_vue_vue_type_script_setup_true_lang_default, [["render", _sfc_render$3], ["__file", "VideoPastePrompt.vue"]]);
 // src/vue/components/NuxtEditor/EditorToolbars.vue?vue&type=script&setup=true&lang.ts
 var EditorToolbars_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineComponent({
 	__name: "EditorToolbars",
@@ -422,6 +715,7 @@ var EditorToolbars_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ d
 		editor: {},
 		fixedItems: {},
 		textItems: {},
+		videoItems: {},
 		imageItems: {},
 		slashItems: {}
 	},
@@ -430,6 +724,7 @@ var EditorToolbars_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ d
 		const props = __props;
 		const shouldShow = useBubbleVisibility();
 		const linkBarItems = [[{ slot: "linkbar" }]];
+		const videoPromptItems = [[{ slot: "videoprompt" }]];
 		const menuTick = ref(0);
 		const colorMenu = (item) => {
 			menuTick.value;
@@ -444,13 +739,17 @@ var EditorToolbars_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ d
 			props,
 			shouldShow,
 			linkBarItems,
+			videoPromptItems,
 			menuTick,
 			colorMenu,
 			UEditorToolbar,
 			UEditorSuggestionMenu,
 			ColorsDropdown: ColorsDropdown_default,
 			LinkBar: LinkBar_default,
-			LinkPopover: LinkPopover_default
+			LinkPopover: LinkPopover_default,
+			VideoPopover: VideoPopover_default,
+			VideoSourcePopover: VideoSourcePopover_default,
+			VideoPastePrompt: VideoPastePrompt_default
 		};
 		Object.defineProperty(__returned__, "__isScriptSetup", {
 			enumerable: false,
@@ -469,6 +768,7 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
 			class: "border-b border-default py-2 overflow-x-auto"
 		}, {
 			link: withCtx(() => [createVNode($setup["LinkPopover"], { editor: $props.editor }, null, 8, ["editor"])]),
+			video: withCtx(() => [createVNode($setup["VideoPopover"], { editor: $props.editor }, null, 8, ["editor"])]),
 			colors: withCtx(({ item }) => [createVNode($setup["ColorsDropdown"], {
 				items: $setup.colorMenu(item),
 				tooltip: item.tooltip,
@@ -510,6 +810,29 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
 			"items",
 			"should-show"
 		])) : createCommentVNode("", true),
+		$props.videoItems.length ? (openBlock(), createBlock($setup["UEditorToolbar"], {
+			key: 3,
+			editor: $props.editor,
+			items: $props.videoItems,
+			layout: "bubble",
+			"should-show": $setup.shouldShow.video
+		}, {
+			videosource: withCtx(() => [createVNode($setup["VideoSourcePopover"], { editor: $props.editor }, null, 8, ["editor"])]),
+			_: 1
+		}, 8, [
+			"editor",
+			"items",
+			"should-show"
+		])) : createCommentVNode("", true),
+		createVNode($setup["UEditorToolbar"], {
+			editor: $props.editor,
+			items: $setup.videoPromptItems,
+			layout: "bubble",
+			"should-show": $setup.shouldShow.videoPrompt
+		}, {
+			videoprompt: withCtx(() => [createVNode($setup["VideoPastePrompt"], { editor: $props.editor }, null, 8, ["editor"])]),
+			_: 1
+		}, 8, ["editor", "should-show"]),
 		createVNode($setup["UEditorToolbar"], {
 			editor: $props.editor,
 			items: $setup.linkBarItems,
@@ -520,7 +843,7 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
 			_: 1
 		}, 8, ["editor", "should-show"]),
 		$props.imageItems.length ? (openBlock(), createBlock($setup["UEditorToolbar"], {
-			key: 3,
+			key: 4,
 			editor: $props.editor,
 			items: $props.imageItems,
 			layout: "bubble",
@@ -775,12 +1098,14 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
 					editor,
 					"fixed-items": $props.items.fixed(editor),
 					"text-items": $props.items.text(editor),
+					"video-items": $props.items.video(editor),
 					"image-items": $props.items.image(editor),
 					"slash-items": $props.items.slash(editor)
 				}, null, 8, [
 					"editor",
 					"fixed-items",
 					"text-items",
+					"video-items",
 					"image-items",
 					"slash-items"
 				]),

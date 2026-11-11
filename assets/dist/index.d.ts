@@ -651,6 +651,8 @@ declare interface NuxtEditorToolbars {
     fixed?: NuxtEditorToolbarOverride;
     /** Floating toolbar on text selection. */
     textBubble?: NuxtEditorToolbarOverride;
+    /** Floating toolbar on an empty line: a "+" button (opens the "/" menu) and quick inserts. */
+    videoBubble?: NuxtEditorToolbarOverride;
     /** Floating toolbar of a selected image. */
     imageBubble?: NuxtEditorToolbarOverride;
     /** The "/" slash menu (grouped items). */
@@ -1673,10 +1675,9 @@ export declare function watchAttributes<T extends HTMLElement>(el: T, callback?:
 export { }
 
 
-declare module '@windwalker-io/unicorn-next' {
-    interface UnicornApp {
-        /** @deprecated Only for code generator use. */
-        $ui: typeof methods;
+declare global {
+    interface Node {
+        __unicorn?: any;
     }
 }
 
@@ -1689,9 +1690,10 @@ declare global {
 }
 
 
-declare global {
-    interface Node {
-        __unicorn?: any;
+declare module '@windwalker-io/unicorn-next' {
+    interface UnicornApp {
+        /** @deprecated Only for code generator use. */
+        $ui: typeof methods;
     }
 }
 

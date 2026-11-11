@@ -16,6 +16,8 @@ export interface NuxtEditorToolbars {
   fixed?: NuxtEditorToolbarOverride;
   /** Floating toolbar on text selection. */
   textBubble?: NuxtEditorToolbarOverride;
+  /** Floating toolbar on an empty line: a "+" button (opens the "/" menu) and quick inserts. */
+  videoBubble?: NuxtEditorToolbarOverride;
   /** Floating toolbar of a selected image. */
   imageBubble?: NuxtEditorToolbarOverride;
   /** The "/" slash menu (grouped items). */
