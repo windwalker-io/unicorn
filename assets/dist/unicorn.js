@@ -651,6 +651,12 @@ async function useTinymceHook(handler) {
 	const { addHook } = await import("./chunks/tinymce.js");
 	return addHook(handler);
 }
+// src/composable/useNuxtEditor.ts
+async function useNuxtEditor(selector, options = {}) {
+	const module = await import("./chunks/nuxt-editor.js");
+	if (selector) return module.get(selector, options);
+	return module;
+}
 // src/composable/useUniDirective.ts
 var instances = {};
 async function useWebDirective(name = "unicorn", options = {}) {
@@ -1141,6 +1147,7 @@ var methods = {
 	cascadeSelect: useFieldCascadeSelect,
 	sid: useFieldSingleImageDrag,
 	tinymce: { init: useTinymce },
+	nuxtEditor: { init: useNuxtEditor },
 	s3Uploader: useS3Uploader,
 	iframeModal: useIframeModal,
 	initShowOn: useShowOn,
@@ -1196,6 +1203,6 @@ async function useLegacy(app) {
 	await useLegacyMethods(app);
 	return app;
 }
-export { AttributeMutationObserver, EventMixin, UnicornAssetUri, UnicornPhpAdapter, UnicornSystemUri, UnicornUI, __, addGlobalValidator, addQuery, addRoute, addUriBase, animateTo, base64UrlDecode, base64UrlEncode, buildQuery, clearMessages, clearNotifies, createQueue, createStack, createUnicorn, createUnicornWithPlugins, data, debounce, delegate, deleteConfirm, doImport, domready, fadeIn, fadeOut, forceArray, getBoundedInstance, getBoundedInstanceList, h, hasRoute, highlight, html, initAlpineComponent, injectCssToDocument, isDebug, isError, loadAlpine, mark, module, nextTick, parseQuery, prepareAlpine, prepareAlpineDefer, pushUnicornToGlobal, randomBytes, randomBytesString, removeBoundedInstance, removeData, renderMessage, route, selectAll, selectOne, serial, simpleAlert, simpleConfirm, simpleNotify, sleep, slideDown, slideToggle, slideUp, throttle, tid, trans, uid, useAlertAdapter, useAssetUri, useBs5ButtonRadio, useBs5KeepTab, useBs5Tooltip, useBsModalAlert, useCheckboxesMultiSelect, useColorPicker, useCssImport, useCssIncludes, useDisableIfStackNotEmpty, useDisableOnSubmit, useFieldCascadeSelect, useFieldFileDrag, useFieldFlatpickr, useFieldModalSelect, useFieldModalTree, useFieldRepeatable, useFieldSingleImageDrag, useFieldValidationInstance, useForm, useFormAsync, useFormComponent, useFormSubmit, useFormValidation, useFormValidationInstance, useGrid, useGridAsync, useGridComponent, useHttpClient, useIframeModal, useImport, useInject, useKeepAlive, useLang, useLegacy, useListDependent, useMacro, useQueue, useS3MultipartUploader, useS3Uploader, useScriptImport, useSeriesImport, useShowOn, useStack, useSystemUri, useTinymce, useTinymceHook, useTomSelect, useUI, useUIBootstrap5, useUITheme, useUniDirective, useUnicorn, useUnicornPhpAdapter, useVueComponentField, useWebDirective, wait, watchAttributes };
+export { AttributeMutationObserver, EventMixin, UnicornAssetUri, UnicornPhpAdapter, UnicornSystemUri, UnicornUI, __, addGlobalValidator, addQuery, addRoute, addUriBase, animateTo, base64UrlDecode, base64UrlEncode, buildQuery, clearMessages, clearNotifies, createQueue, createStack, createUnicorn, createUnicornWithPlugins, data, debounce, delegate, deleteConfirm, doImport, domready, fadeIn, fadeOut, forceArray, getBoundedInstance, getBoundedInstanceList, h, hasRoute, highlight, html, initAlpineComponent, injectCssToDocument, isDebug, isError, loadAlpine, mark, module, nextTick, parseQuery, prepareAlpine, prepareAlpineDefer, pushUnicornToGlobal, randomBytes, randomBytesString, removeBoundedInstance, removeData, renderMessage, route, selectAll, selectOne, serial, simpleAlert, simpleConfirm, simpleNotify, sleep, slideDown, slideToggle, slideUp, throttle, tid, trans, uid, useAlertAdapter, useAssetUri, useBs5ButtonRadio, useBs5KeepTab, useBs5Tooltip, useBsModalAlert, useCheckboxesMultiSelect, useColorPicker, useCssImport, useCssIncludes, useDisableIfStackNotEmpty, useDisableOnSubmit, useFieldCascadeSelect, useFieldFileDrag, useFieldFlatpickr, useFieldModalSelect, useFieldModalTree, useFieldRepeatable, useFieldSingleImageDrag, useFieldValidationInstance, useForm, useFormAsync, useFormComponent, useFormSubmit, useFormValidation, useFormValidationInstance, useGrid, useGridAsync, useGridComponent, useHttpClient, useIframeModal, useImport, useInject, useKeepAlive, useLang, useLegacy, useListDependent, useMacro, useNuxtEditor, useQueue, useS3MultipartUploader, useS3Uploader, useScriptImport, useSeriesImport, useShowOn, useStack, useSystemUri, useTinymce, useTinymceHook, useTomSelect, useUI, useUIBootstrap5, useUITheme, useUniDirective, useUnicorn, useUnicornPhpAdapter, useVueComponentField, useWebDirective, wait, watchAttributes };
 
 //# sourceMappingURL=unicorn.js.map

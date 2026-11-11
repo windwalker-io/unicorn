@@ -1,0 +1,21 @@
+/*
+ * Entry for the Nuxt UI editor. Compiled by the HOST Vite (needs `@nuxt/ui/vite`),
+ * then injected into a shadow root so Tailwind never leaks into Bootstrap pages.
+ */
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/preflight.css" layer(base);
+@import "tailwindcss/utilities.css" layer(utilities);
+@import "@nuxt/ui";
+@source "../module/nuxt-editor.ts";
+
+/* TipTap resizable image: center the flex container, style the edge handles (shown on hover/selection). */
+[data-resize-container] { justify-content: center; max-width: 100%; }
+[data-resize-container] [data-resize-wrapper] { max-width: 100%; }
+[data-resize-handle] { width: 8px; height: 48px !important; top: 50% !important; bottom: auto !important; transform: translateY(-50%); border-radius: 9999px; background: var(--ui-primary); border: 1px solid #fff; cursor: ew-resize; opacity: 0; }
+[data-resize-container]:hover [data-resize-handle], [data-resize-container][data-resize-state=true] [data-resize-handle] { opacity: 1; }
+[data-resize-handle=left] { left: -4px !important; }
+[data-resize-handle=right] { right: -4px !important; }
+
+/* Caption input under an image. */
+.nuxt-editor-caption { display: block; width: 100%; margin-top: .25rem; text-align: center; font-size: .875rem; color: var(--ui-text-muted); background: transparent; outline: none; }

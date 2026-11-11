@@ -26,4 +26,15 @@ class EditorScript extends AbstractScript
             );
         }
     }
+
+    public function nuxtEditor(string $selector, array $options = []): void
+    {
+        if ($this->available($selector)) {
+            $optionsString = static::getJSObject($options);
+
+            $this->unicornScript->importMainThen(
+                "u.\$ui.nuxtEditor.init('$selector', $optionsString);"
+            );
+        }
+    }
 }

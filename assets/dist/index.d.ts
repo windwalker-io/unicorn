@@ -593,6 +593,35 @@ export declare function nextTick(callback?: () => any): Promise<any>;
 
 declare type Nullable<T> = T | null | undefined;
 
+declare interface NuxtEditorController {
+    element: HTMLTextAreaElement;
+    options: NuxtEditorOptions;
+    readonly editor: any;
+    getValue(): string;
+    setValue(value: string): void;
+    insert(content: string): void;
+    setEditable(editable: boolean): void;
+    destroy(): void;
+}
+
+declare interface NuxtEditorModule {
+    get(selector: string | HTMLElement, options?: NuxtEditorOptions): Promise<NuxtEditorController>;
+    create(selector: string | HTMLElement, options?: NuxtEditorOptions): Promise<NuxtEditorController>;
+    destroy(selector: string | HTMLElement): void;
+}
+
+declare interface NuxtEditorOptions {
+    props?: Record<string, any>;
+    format?: 'html' | 'markdown' | 'json';
+    locale?: string;
+    readonly?: boolean;
+    imageUploadUrl?: string;
+    unicorn?: {
+        stack_name?: string;
+    };
+    [key: string]: any;
+}
+
 export declare function parseQuery<T = Record<string, any>>(queryString: string): T;
 
 /**
@@ -1476,6 +1505,10 @@ export declare function useMacro<N extends string, T extends any>(name: N, prop:
     [K in N]: T;
 };
 
+export declare function useNuxtEditor(): Promise<NuxtEditorModule>;
+
+export declare function useNuxtEditor(selector: string | HTMLElement, options?: Record<string, any>): Promise<NuxtEditorController>;
+
 export declare function useQueue(name?: string, maxRunning?: number): TaskQueue;
 
 export declare function useS3MultipartUploader(): Promise<S3MultipartUploaderModule>;
@@ -1536,6 +1569,9 @@ export declare function useUnicornPhpAdapter(app?: UnicornApp): {
     sid: typeof useFieldSingleImageDrag;
     tinymce: {
         init: typeof useTinymce;
+    };
+    nuxtEditor: {
+        init: typeof useNuxtEditor;
     };
     s3Uploader: typeof useS3Uploader;
     iframeModal: typeof useIframeModal;
@@ -1600,13 +1636,6 @@ export declare function watchAttributes<T extends HTMLElement>(el: T, callback?:
 export { }
 
 
-declare global {
-    interface Node {
-        __unicorn?: any;
-    }
-}
-
-
 declare module '@windwalker-io/unicorn-next' {
     interface UnicornApp {
         /** @deprecated Only for code generator use. */
@@ -1622,13 +1651,15 @@ declare global {
     var Mark: any;
 }
 
+
 declare global {
-    var S: any;
+    interface Node {
+        __unicorn?: any;
+    }
 }
 
-
 declare global {
-    var tinymce: TinyMCE;
+    var S: any;
 }
 
 
@@ -1640,6 +1671,11 @@ declare module 'axios' {
     }
     interface CreateAxiosDefaults {
     }
+}
+
+
+declare global {
+    var tinymce: TinyMCE;
 }
 
 

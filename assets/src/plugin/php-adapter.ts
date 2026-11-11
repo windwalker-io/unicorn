@@ -13,6 +13,7 @@ import {
 } from '../composable';
 import { useFieldMultiUploader } from '../composable/useFieldMultiUploader';
 import { useTinymce } from '../composable/useTinymce';
+import { useNuxtEditor } from '../composable/useNuxtEditor';
 import { useUnicorn } from '../unicorn';
 
 declare module '../app' {
@@ -47,6 +48,9 @@ const methods = {
   sid: useFieldSingleImageDrag,
   tinymce: {
     init: useTinymce
+  },
+  nuxtEditor: {
+    init: useNuxtEditor
   },
   s3Uploader: useS3Uploader,
   iframeModal: useIframeModal,
