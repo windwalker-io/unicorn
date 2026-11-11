@@ -1,0 +1,1 @@
+{"version":3,"file":"model.js","names":[],"sources":["../../../../../../node_modules/@tiptap/pm/dist/model/index.js"],"sourcesContent":["export * from \"prosemirror-model\";\nexport {};\n"],"ignoreList":[0],"mappings":""}

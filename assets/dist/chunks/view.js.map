@@ -1,0 +1,1 @@
+{"version":3,"file":"view.js","names":[],"sources":["../../../../../../node_modules/@tiptap/pm/dist/view/index.js"],"sourcesContent":["export * from \"prosemirror-view\";\nexport {};\n"],"ignoreList":[0],"mappings":""}

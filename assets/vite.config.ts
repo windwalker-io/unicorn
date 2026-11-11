@@ -1,3 +1,4 @@
+import ui from '@nuxt/ui/vite';
 import vuePlugin from '@vitejs/plugin-vue';
 import { resolve, basename, relative } from 'node:path';
 import { rimraf } from 'rimraf';
@@ -71,10 +72,8 @@ export default defineConfig(({ mode }) => {
           'alpinejs',
           /^cropperjs(\/.*)?$/,
           'tinymce',
-          /^@nuxt\/ui(\/.*)?$/,
-          /^@tiptap\/.*/,
-          /^@social-embed\/.*/,
           /^@windwalker-io\/unicorn-next\/.*/,
+          /^@tiptap\/.*/,
           'bootstrap',
           'vue',
           'vue-draggable-plus',
@@ -91,6 +90,7 @@ export default defineConfig(({ mode }) => {
     },
     plugins: [
       treeShakeable(),
+      ui(),
       vuePlugin({
         features: {
           prodDevtools: true,

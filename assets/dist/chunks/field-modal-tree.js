@@ -3,8 +3,8 @@ import { useCssImport, useHttpClient } from "../unicorn.js";
 import { t as cloneDeep } from "./cloneDeep.js";
 import { n as forceArray } from "./helper.js";
 import { t as _plugin_vue_export_helper_default } from "./_plugin-vue_export-helper.js";
-import { Modal } from "bootstrap";
 import { Fragment, Transition, TransitionGroup, computed, createApp, createBlock, createCommentVNode, createElementBlock, createElementVNode, createTextVNode, createVNode, defineComponent, h, inject, mergeProps, nextTick, normalizeClass, normalizeStyle, onBeforeUpdate, onMounted, onUnmounted, openBlock, provide, ref, renderList, toDisplayString, unref, useTemplateRef, vModelDynamic, vModelText, vShow, watch, withCtx, withDirectives, withModifiers } from "vue";
+import { Modal } from "bootstrap";
 // src/utilities/tree.ts
 function flattenChildren(children) {
 	const flat = [];

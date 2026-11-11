@@ -15,7 +15,7 @@ import { createVideoEmbed } from './nuxt-editor-lib/video-embed';
 import { createFetchImage, createImagePasteDrop, createUploadImage } from './nuxt-editor-lib/upload';
 // Resolved by the host Vite (@nuxt/ui/vite + Tailwind). Do not bundle here.
 // @ts-ignore
-import css from '@windwalker-io/unicorn-next/src/css/nuxt-editor.css?inline';
+import css from '../css/nuxt-editor.css?inline';
 
 export type { NuxtEditorOptions, NuxtEditorToolbars, NuxtEditorToolbarOverride } from './nuxt-editor-lib/types';
 

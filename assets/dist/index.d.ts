@@ -1675,17 +1675,17 @@ export declare function watchAttributes<T extends HTMLElement>(el: T, callback?:
 export { }
 
 
-declare global {
-    interface Node {
-        __unicorn?: any;
-    }
-}
-
-
 declare module '@windwalker-io/unicorn-next' {
     interface UnicornApp {
         /** @deprecated Only for code generator use. */
         $ui: typeof methods;
+    }
+}
+
+
+declare global {
+    interface Node {
+        __unicorn?: any;
     }
 }
 
@@ -1702,6 +1702,17 @@ declare global {
 }
 
 
+declare module 'axios' {
+    interface AxiosRequestConfig {
+        vars?: Record<string, any>;
+        methodSimulate?: string;
+        methodSimulateByHeader?: boolean;
+    }
+    interface CreateAxiosDefaults {
+    }
+}
+
+
 declare global {
     var tinymce: TinyMCE;
 }
@@ -1710,16 +1721,5 @@ declare global {
 declare global {
     export interface Window {
         bootstrap: typeof bootstrap;
-    }
-}
-
-
-declare module 'axios' {
-    interface AxiosRequestConfig {
-        vars?: Record<string, any>;
-        methodSimulate?: string;
-        methodSimulateByHeader?: boolean;
-    }
-    interface CreateAxiosDefaults {
     }
 }

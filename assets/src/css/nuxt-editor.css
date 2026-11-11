@@ -1,5 +1,5 @@
 /*
- * Entry for the Nuxt UI editor. Compiled by the HOST Vite (needs `@nuxt/ui/vite`),
+ * Entry for the Nuxt UI editor. Compiled by the unicorn build (via `@nuxt/ui/vite`),
  * then injected into a shadow root so Tailwind never leaks into Bootstrap pages.
  */
 @layer theme, base, components, utilities;

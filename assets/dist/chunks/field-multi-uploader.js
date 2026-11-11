@@ -3,8 +3,8 @@ import { t as data } from "./data.js";
 import { n as forceArray } from "./helper.js";
 import { s as injectCssToDocument } from "./dom.js";
 import { t as mergeDeep } from "./arr.js";
-import { Modal } from "bootstrap";
 import { computed, createApp, defineComponent, getCurrentInstance, nextTick, onMounted, ref, useTemplateRef } from "vue";
+import { Modal } from "bootstrap";
 import { VueDraggable } from "vue-draggable-plus";
 import { ItemCard, ItemCardPlaceholder, MultiUploader, createItem } from "vue-multi-uploader";
 // ../../../../node_modules/vue-multi-uploader/src/vue-multi-uploader.scss?inline
