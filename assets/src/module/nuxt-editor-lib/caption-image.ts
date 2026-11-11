@@ -27,10 +27,20 @@ export function createCaptionImage(TiptapImage: any, mergeAttributes: any, opts:
   };
 
   // When editing, always prefer the title, then the figcaption caption, then the other synced attrs.
+  // An alt auto-filled from the file name is not a caption.
+  const isAutoAlt = (node: any, value: string) => {
+    const src = String(node.attrs.src || '').split(/[?#]/)[0];
+    const name = decodeURIComponent(src.split('/').pop() || '');
+
+    return value === name || value === name.replace(/\.[^.]+$/, '');
+  };
+
   const readCaption = (node: any): string =>
     node.attrs.title
     || node.attrs.caption
-    || (captionOptions.syncAttrs.map((a) => node.attrs[a]).find(Boolean) ?? '');
+    || (captionOptions.syncAttrs
+      .map((a) => node.attrs[a])
+      .find((v) => v && !isAutoAlt(node, String(v))) ?? '');
 
   return TiptapImage.extend({
     addAttributes() {

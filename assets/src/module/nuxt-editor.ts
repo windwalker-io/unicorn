@@ -7,7 +7,8 @@ import { createLinkPopover } from './nuxt-editor-lib/link-popover';
 import { createShadowHost } from './nuxt-editor-lib/shadow';
 import { createItemsResolver, createToolbars } from './nuxt-editor-lib/toolbars';
 import type { NuxtEditorOptions, NuxtEditorToolbars } from './nuxt-editor-lib/types';
-import { createFetchImage, createUploadImage, setupImagePasteDrop } from './nuxt-editor-lib/upload';
+import { createCodeBlock } from './nuxt-editor-lib/code-block';
+import { createFetchImage, createImagePasteDrop, createUploadImage } from './nuxt-editor-lib/upload';
 // Resolved by the host Vite (@nuxt/ui/vite + Tailwind). Do not bundle here.
 // @ts-ignore
 import css from '@windwalker-io/unicorn-next/src/css/nuxt-editor.css?inline';
@@ -95,9 +96,12 @@ async function mount(element: HTMLTextAreaElement, options: NuxtEditorOptions): 
     { default: UTooltip },
     { default: UInput },
     { default: USeparator },
-    { Node, mergeAttributes },
+    { Node, Extension, mergeAttributes },
+    { Plugin, PluginKey },
+    { Decoration, DecorationSet },
     { TextAlign },
     { default: TiptapImage },
+    { default: TiptapCodeBlock },
     { VueNodeViewRenderer, NodeViewWrapper, nodeViewProps },
     { mapEditorItems },
     { default: ui },
@@ -132,9 +136,15 @@ async function mount(element: HTMLTextAreaElement, options: NuxtEditorOptions): 
     // @ts-ignore
     import('@tiptap/core'),
     // @ts-ignore
+    import('@tiptap/pm/state'),
+    // @ts-ignore
+    import('@tiptap/pm/view'),
+    // @ts-ignore
     import('@tiptap/extension-text-align'),
     // @ts-ignore
     import('@tiptap/extension-image'),
+    // @ts-ignore
+    import('@tiptap/extension-code-block'),
     // @ts-ignore
     import('@tiptap/vue-3'),
     // @ts-ignore
@@ -180,6 +190,7 @@ async function mount(element: HTMLTextAreaElement, options: NuxtEditorOptions): 
   const { toolbarItems, textBubbleItems, imageBubbleItems, suggestionItems, blockMenuItems: defaultBlockMenu } = createToolbars(opts, uploadImage);
   const LinkPopover = createLinkPopover({ UButton, UPopover, UTooltip, UInput, USeparator });
   const CaptionImage = createCaptionImage(TiptapImage, mergeAttributes, opts);
+  const CodeBlock = createCodeBlock(TiptapCodeBlock, opts);
   const { ImageUpload, customHandlers } = createImageUpload({
     Node, mergeAttributes, VueNodeViewRenderer, NodeViewWrapper, nodeViewProps, UFileUpload, UAvatar, uploadImage,
   });
@@ -207,10 +218,17 @@ async function mount(element: HTMLTextAreaElement, options: NuxtEditorOptions): 
           contentType: format,
           handlers: customHandlers,
           image: false,
+          starterKit: { codeBlock: false },
           extensions: [
             CaptionImage,
+            CodeBlock,
             TextAlign.configure({ types: ['heading', 'paragraph'] }),
-            ...(opts.imageUploadUrl ? [ImageUpload] : []),
+            ...(opts.imageUploadUrl ? [ImageUpload, createImagePasteDrop(
+              { Extension, Plugin, PluginKey, Decoration, DecorationSet },
+              uploadImage,
+              opts,
+              opts.imageFetchUrl ? createFetchImage(element, opts) : undefined,
+            )] : []),
           ],
           placeholder: "Write, type '/' for commands...",
           editable: editable.value,
@@ -218,10 +236,6 @@ async function mount(element: HTMLTextAreaElement, options: NuxtEditorOptions): 
           ui: { base: 'p-4 pl-16 sm:p-4 sm:pl-16 min-h-48 border border-default rounded-md' },
           onCreate: ({ editor: ed }: any) => {
             editor.value = ed;
-
-            if (opts.imageUploadUrl) {
-              setupImagePasteDrop(ed, uploadImage, opts, opts.imageFetchUrl ? createFetchImage(element, opts) : undefined);
-            }
 
             element.dispatchEvent(new CustomEvent('nuxt-editor:create', { detail: ed }));
           },

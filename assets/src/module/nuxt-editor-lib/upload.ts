@@ -50,6 +50,8 @@ export function createUploadImage(element: HTMLElement, opts: NuxtEditorOptions)
 // Ask the backend to download a remote image (the browser cannot: cross-origin images have no CORS access).
 export function createFetchImage(element: HTMLElement, opts: NuxtEditorOptions) {
   return async (imageUrl: string): Promise<string> => {
+    element.dispatchEvent(new CustomEvent('upload-start'));
+
     const stack = useStack(opts.unicorn?.stack_name);
     stack.push(true);
 
@@ -57,6 +59,7 @@ export function createFetchImage(element: HTMLElement, opts: NuxtEditorOptions) 
 
     try {
       const res = await post(opts.imageFetchUrl!, { url: imageUrl }, { withCredentials: false });
+      element.dispatchEvent(new CustomEvent('upload-success'));
 
       return res.data.data.url;
     } catch (e) {
@@ -64,6 +67,7 @@ export function createFetchImage(element: HTMLElement, opts: NuxtEditorOptions) 
       console.error(e);
       throw e;
     } finally {
+      element.dispatchEvent(new CustomEvent('upload-complete'));
       stack.pop();
     }
   };
@@ -73,8 +77,9 @@ const IMAGE_URL_RE = /^https?:\/\/\S+\.(png|jpe?g|gif|webp|svg|avif)(\?\S*)?$/i;
 
 // Paste / drop image files: upload them and insert as images.
 // Pasted remote images from non-own hosts are re-hosted through `imageFetchUrl` when configured.
-export function setupImagePasteDrop(
+function createPasteDropPlugins(
   ed: any,
+  { Plugin, key, Decoration, DecorationSet }: Record<string, any>,
   uploadImage: UploadImage,
   opts: NuxtEditorOptions = {},
   fetchImage?: (url: string) => Promise<string>,
@@ -148,32 +153,88 @@ export function setupImagePasteDrop(
 
     (async () => {
       for (const file of images) {
-        const src = await uploadImage(file);
-        const chain = ed.chain().focus();
+        const id = {};
+        const at = pos ?? ed.state.selection.from;
 
-        if (pos != null) {
-          chain.insertContentAt(pos, { type: 'image', attrs: { src, alt: fileNameFromUrl(src) } });
-        } else {
-          chain.setImage({ src, alt: fileNameFromUrl(src) });
+        ed.view.dispatch(ed.state.tr.setMeta(key, { add: { id, pos: at } }));
+
+        const findPlaceholder = () => key.getState(ed.state).find(undefined, undefined, (s: any) => s.id === id)[0]?.from;
+
+        try {
+          const src = await uploadImage(file);
+          const where = findPlaceholder();
+
+          ed.view.dispatch(ed.state.tr.setMeta(key, { remove: id }));
+
+          if (where != null) {
+            ed.chain().focus().insertContentAt(where, { type: 'image', attrs: { src, alt: fileNameFromUrl(src) } }).run();
+          }
+        } catch (e) {
+          ed.view.dispatch(ed.state.tr.setMeta(key, { remove: id }));
         }
-
-        chain.run();
       }
     })();
 
     return true;
   };
 
-  ed.setOptions({
-    editorProps: {
-      handlePaste: (_view: any, event: ClipboardEvent) =>
-        insertFiles(Array.from(event.clipboardData?.files ?? [])) || handleRemotePaste(event),
-      handleDrop: (view: any, event: DragEvent) => {
-        const files = Array.from(event.dataTransfer?.files ?? []);
-        const pos = view.posAtCoords({ left: event.clientX, top: event.clientY })?.pos;
+  return [
+    new Plugin({
+      key,
+      state: {
+        init: () => DecorationSet.empty,
+        apply(tr: any, set: any) {
+          set = set.map(tr.mapping, tr.doc);
+          const meta = tr.getMeta(key);
 
-        return insertFiles(files, pos) && (event.preventDefault(), true);
+          if (meta?.add) {
+            const el = document.createElement('span');
+            el.setAttribute('contenteditable', 'false');
+            el.style.cssText = 'display:inline-flex;align-items:center;gap:.5rem;padding:.5rem 1rem;margin:.25rem 0;'
+              + 'border:1px dashed currentColor;border-radius:.5rem;opacity:.7;font-size:.875rem;';
+            el.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
+              + 'stroke-width="2" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-6.2-8.55">'
+              + '<animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" '
+              + 'dur="1s" repeatCount="indefinite"/></path></svg><span>Uploading...</span>';
+
+            set = set.add(tr.doc, [Decoration.widget(meta.add.pos, el, { id: meta.add.id, side: -1 })]);
+          }
+
+          if (meta?.remove) {
+            set = set.remove(set.find(undefined, undefined, (s: any) => s.id === meta.remove));
+          }
+
+          return set;
+        },
       },
+      props: {
+        decorations: (state: any) => key.getState(state),
+        handlePaste: (_view: any, event: ClipboardEvent) =>
+          insertFiles(Array.from(event.clipboardData?.files ?? [])) || handleRemotePaste(event),
+        handleDrop: (view: any, event: DragEvent) => {
+          const files = Array.from(event.dataTransfer?.files ?? []);
+          const pos = view.posAtCoords({ left: event.clientX, top: event.clientY })?.pos;
+
+          return insertFiles(files, pos) && (event.preventDefault(), true);
+        },
+      },
+    }),
+  ];
+}
+
+// A TipTap extension (not `setOptions`, which UEditor overrides) wiring paste / drop of images.
+export function createImagePasteDrop(
+  { Extension, Plugin, PluginKey, Decoration, DecorationSet }: Record<string, any>,
+  uploadImage: UploadImage,
+  opts: NuxtEditorOptions = {},
+  fetchImage?: (url: string) => Promise<string>,
+) {
+  const key = new PluginKey('imagePasteDrop');
+
+  return Extension.create({
+    name: 'imagePasteDrop',
+    addProseMirrorPlugins() {
+      return createPasteDropPlugins(this.editor, { Plugin, key, Decoration, DecorationSet }, uploadImage, opts, fetchImage);
     },
   });
 }

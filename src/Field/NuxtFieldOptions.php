@@ -21,6 +21,46 @@ class NuxtFieldOptions implements \JsonSerializable
         merge as protected traitMerge;
     }
 
+    /**
+     * Built-in code block languages (same as the JS default). Copy it to tweak, e.g.
+     * `codeBlockLanguages: [...NuxtFieldOptions::DEFAULT_CODE_BLOCK_LANGUAGES, 'rust' => 'Rust']`.
+     */
+    public const array DEFAULT_CODE_BLOCK_LANGUAGES = [
+        'html' => 'HTML',
+        'css' => 'CSS',
+        'javascript' => 'JavaScript',
+        'typescript' => 'TypeScript',
+        'json' => 'JSON',
+        'php' => 'PHP',
+        'sql' => 'SQL',
+        'bash' => 'Bash',
+        'python' => 'Python',
+        'xml' => 'XML',
+        'yaml' => 'YAML',
+        'markdown' => 'Markdown',
+    ];
+
+    /**
+     * Built-in code block aliases (same as the JS default).
+     */
+    public const array DEFAULT_CODE_BLOCK_ALIASES = [
+        'js' => 'javascript',
+        'jsx' => 'javascript',
+        'mjs' => 'javascript',
+        'ts' => 'typescript',
+        'tsx' => 'typescript',
+        'md' => 'markdown',
+        'yml' => 'yaml',
+        'sh' => 'bash',
+        'shell' => 'bash',
+        'zsh' => 'bash',
+        'py' => 'python',
+        'htm' => 'html',
+        'text' => '',
+        'plain' => '',
+        'plaintext' => '',
+    ];
+
     public function __construct(
         /**
          * html | markdown | json
@@ -62,12 +102,37 @@ class NuxtFieldOptions implements \JsonSerializable
          * @var  string[]|null
          */
         public ?array $imageOwnHosts = null,
+        /**
+         * Languages of the code block selector (value => label). Replaced, not merged. Empty: a built-in list.
+         *
+         * @var  array<string, string>|null
+         */
+        public ?array $codeBlockLanguages = null,
+        /**
+         * Language aliases (alias => language value, '' = plain text). Replaced, not merged.
+         * Empty: DEFAULT_CODE_BLOCK_ALIASES.
+         *
+         * @var  array<string, string>|null
+         */
+        public ?array $codeBlockAliases = null,
     ) {}
 
     public function merge(mixed $values, bool $recursive = false, bool $ignoreNulls = false): static
     {
         $values = $values instanceof self ? $values->toArray() : TypeCast::toArray($values);
 
+        // Array options are replaced as a whole instead of being recursively merged with the defaults,
+        // so users can shrink a list. They are handled here and removed from $values before traitMerge().
+        // The (array) cast guards against objects (stdClass/ArrayObject), which would TypeError on `?array`.
+        foreach (['codeBlockLanguages', 'codeBlockAliases'] as $mapKey) {
+            if (isset($values[$mapKey])) {
+                $this->$mapKey = (array) $values[$mapKey];
+            }
+
+            unset($values[$mapKey]);
+        }
+
+        // Lists are also re-indexed so they serialize to a JSON array, not an object.
         foreach (['captionSyncAttrs', 'imageOwnHosts'] as $listKey) {
             if (isset($values[$listKey])) {
                 $this->$listKey = array_values((array) $values[$listKey]);
@@ -92,6 +157,8 @@ class NuxtFieldOptions implements \JsonSerializable
      *           captionFigure?: bool,
      *           imageFetchUrl?: string,
      *           imageOwnHosts?: string[],
+     *           codeBlockLanguages?: array<string, string>,
+     *           codeBlockAliases?: array<string, string>,
      *           ...
      *           }
      */

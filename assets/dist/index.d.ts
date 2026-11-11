@@ -619,6 +619,10 @@ declare interface NuxtEditorOptions {
     imageUploadUrl?: string;
     captionSyncAttrs?: string[];
     captionFigure?: boolean;
+    imageFetchUrl?: string;
+    imageOwnHosts?: string[];
+    codeBlockLanguages?: Record<string, string>;
+    codeBlockAliases?: Record<string, string>;
     unicorn?: {
         stack_name?: string;
     };
@@ -1666,17 +1670,17 @@ export { }
 
 
 declare global {
-    interface Node {
-        __unicorn?: any;
-    }
-}
-
-
-declare global {
     var Alpine: AlpineGlobal;
     var TomSelect: typeof TomSelectGlobal;
     var Spectrum: typeof SpectrumGlobal;
     var Mark: any;
+}
+
+
+declare global {
+    interface Node {
+        __unicorn?: any;
+    }
 }
 
 
@@ -1685,6 +1689,10 @@ declare module '@windwalker-io/unicorn-next' {
         /** @deprecated Only for code generator use. */
         $ui: typeof methods;
     }
+}
+
+declare global {
+    var S: any;
 }
 
 
@@ -1696,10 +1704,6 @@ declare module 'axios' {
     }
     interface CreateAxiosDefaults {
     }
-}
-
-declare global {
-    var S: any;
 }
 
 

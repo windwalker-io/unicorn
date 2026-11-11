@@ -35,6 +35,8 @@ export interface NuxtEditorOptions {
   captionFigure?: boolean;
   imageFetchUrl?: string;
   imageOwnHosts?: string[];
+  codeBlockLanguages?: Record<string, string>;
+  codeBlockAliases?: Record<string, string>;
   unicorn?: { stack_name?: string };
   [key: string]: any;
 }

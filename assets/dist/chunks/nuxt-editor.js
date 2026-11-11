@@ -18,7 +18,12 @@ function createCaptionImage(TiptapImage, mergeAttributes, opts) {
 		syncAttrs: opts.captionSyncAttrs ?? ["alt", "title"],
 		figure: opts.captionFigure ?? false
 	};
-	const readCaption = (node) => node.attrs.title || node.attrs.caption || (captionOptions.syncAttrs.map((a) => node.attrs[a]).find(Boolean) ?? "");
+	const isAutoAlt = (node, value) => {
+		const src = String(node.attrs.src || "").split(/[?#]/)[0];
+		const name = decodeURIComponent(src.split("/").pop() || "");
+		return value === name || value === name.replace(/\.[^.]+$/, "");
+	};
+	const readCaption = (node) => node.attrs.title || node.attrs.caption || (captionOptions.syncAttrs.map((a) => node.attrs[a]).find((v) => v && !isAutoAlt(node, String(v))) ?? "");
 	return TiptapImage.extend({
 		addAttributes() {
 			return {
@@ -146,41 +151,143 @@ function createUploadImage(element, opts) {
 		}
 	};
 }
-function setupImagePasteDrop(ed, uploadImage) {
+function createFetchImage(element, opts) {
+	return async (imageUrl) => {
+		element.dispatchEvent(new CustomEvent("upload-start"));
+		const stack = useStack(opts.unicorn?.stack_name);
+		stack.push(true);
+		const { post } = await useHttpClient();
+		try {
+			const res = await post(opts.imageFetchUrl, { url: imageUrl }, { withCredentials: false });
+			element.dispatchEvent(new CustomEvent("upload-success"));
+			return res.data.data.url;
+		} catch (e) {
+			element.dispatchEvent(new CustomEvent("upload-error", { detail: e }));
+			console.error(e);
+			throw e;
+		} finally {
+			element.dispatchEvent(new CustomEvent("upload-complete"));
+			stack.pop();
+		}
+	};
+}
+var IMAGE_URL_RE = /^https?:\/\/\S+\.(png|jpe?g|gif|webp|svg|avif)(\?\S*)?$/i;
+function createPasteDropPlugins(ed, { Plugin, key, Decoration, DecorationSet }, uploadImage, opts = {}, fetchImage) {
+	const ownHosts = opts.imageOwnHosts?.length ? opts.imageOwnHosts : [location.host];
+	const isExternal = (src) => {
+		try {
+			const u = new URL(src, location.href);
+			return /^https?:$/.test(u.protocol) && !ownHosts.includes(u.host) && !ownHosts.includes(u.hostname);
+		} catch (e) {
+			return false;
+		}
+	};
+	const rehostHtml = async (html) => {
+		const doc = new DOMParser().parseFromString(html, "text/html");
+		const imgs = Array.from(doc.querySelectorAll("img")).filter((img) => isExternal(img.getAttribute("src") || ""));
+		await Promise.all(imgs.map(async (img) => {
+			try {
+				img.setAttribute("src", await fetchImage(img.getAttribute("src")));
+			} catch (e) {}
+		}));
+		return doc.body.innerHTML;
+	};
+	const handleRemotePaste = (event) => {
+		if (!fetchImage) return false;
+		const html = event.clipboardData?.getData("text/html") || "";
+		const text = (event.clipboardData?.getData("text/plain") || "").trim();
+		if (html && /<img\b/i.test(html)) {
+			if (!Array.from(new DOMParser().parseFromString(html, "text/html").querySelectorAll("img")).some((img) => isExternal(img.getAttribute("src") || ""))) return false;
+			rehostHtml(html).then((newHtml) => ed.chain().focus().insertContent(newHtml).run());
+			return true;
+		}
+		if (IMAGE_URL_RE.test(text) && isExternal(text)) {
+			fetchImage(text).then((src) => ed.chain().focus().setImage({
+				src,
+				alt: fileNameFromUrl(src)
+			}).run()).catch(() => ed.chain().focus().insertContent(text).run());
+			return true;
+		}
+		return false;
+	};
 	const insertFiles = (files, pos) => {
 		const images = files.filter((f) => f.type.startsWith("image/"));
 		if (!images.length) return false;
 		(async () => {
 			for (const file of images) {
-				const src = await uploadImage(file);
-				const chain = ed.chain().focus();
-				if (pos != null) chain.insertContentAt(pos, {
-					type: "image",
-					attrs: {
-						src,
-						alt: fileNameFromUrl(src)
-					}
-				});
-				else chain.setImage({
-					src,
-					alt: fileNameFromUrl(src)
-				});
-				chain.run();
+				const id = {};
+				const at = pos ?? ed.state.selection.from;
+				ed.view.dispatch(ed.state.tr.setMeta(key, { add: {
+					id,
+					pos: at
+				} }));
+				const findPlaceholder = () => key.getState(ed.state).find(void 0, void 0, (s) => s.id === id)[0]?.from;
+				try {
+					const src = await uploadImage(file);
+					const where = findPlaceholder();
+					ed.view.dispatch(ed.state.tr.setMeta(key, { remove: id }));
+					if (where != null) ed.chain().focus().insertContentAt(where, {
+						type: "image",
+						attrs: {
+							src,
+							alt: fileNameFromUrl(src)
+						}
+					}).run();
+				} catch (e) {
+					ed.view.dispatch(ed.state.tr.setMeta(key, { remove: id }));
+				}
 			}
 		})();
 		return true;
 	};
-	ed.setOptions({ editorProps: {
-		handlePaste: (_view, event) => insertFiles(Array.from(event.clipboardData?.files ?? [])),
-		handleDrop: (view, event) => {
-			const files = Array.from(event.dataTransfer?.files ?? []);
-			const pos = view.posAtCoords({
-				left: event.clientX,
-				top: event.clientY
-			})?.pos;
-			return insertFiles(files, pos) && (event.preventDefault(), true);
+	return [new Plugin({
+		key,
+		state: {
+			init: () => DecorationSet.empty,
+			apply(tr, set) {
+				set = set.map(tr.mapping, tr.doc);
+				const meta = tr.getMeta(key);
+				if (meta?.add) {
+					const el = document.createElement("span");
+					el.setAttribute("contenteditable", "false");
+					el.style.cssText = "display:inline-flex;align-items:center;gap:.5rem;padding:.5rem 1rem;margin:.25rem 0;border:1px dashed currentColor;border-radius:.5rem;opacity:.7;font-size:.875rem;";
+					el.innerHTML = "<svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"><path d=\"M21 12a9 9 0 1 1-6.2-8.55\"><animateTransform attributeName=\"transform\" type=\"rotate\" from=\"0 12 12\" to=\"360 12 12\" dur=\"1s\" repeatCount=\"indefinite\"/></path></svg><span>Uploading...</span>";
+					set = set.add(tr.doc, [Decoration.widget(meta.add.pos, el, {
+						id: meta.add.id,
+						side: -1
+					})]);
+				}
+				if (meta?.remove) set = set.remove(set.find(void 0, void 0, (s) => s.id === meta.remove));
+				return set;
+			}
+		},
+		props: {
+			decorations: (state) => key.getState(state),
+			handlePaste: (_view, event) => insertFiles(Array.from(event.clipboardData?.files ?? [])) || handleRemotePaste(event),
+			handleDrop: (view, event) => {
+				const files = Array.from(event.dataTransfer?.files ?? []);
+				const pos = view.posAtCoords({
+					left: event.clientX,
+					top: event.clientY
+				})?.pos;
+				return insertFiles(files, pos) && (event.preventDefault(), true);
+			}
 		}
-	} });
+	})];
+}
+function createImagePasteDrop({ Extension, Plugin, PluginKey, Decoration, DecorationSet }, uploadImage, opts = {}, fetchImage) {
+	const key = new PluginKey("imagePasteDrop");
+	return Extension.create({
+		name: "imagePasteDrop",
+		addProseMirrorPlugins() {
+			return createPasteDropPlugins(this.editor, {
+				Plugin,
+				key,
+				Decoration,
+				DecorationSet
+			}, uploadImage, opts, fetchImage);
+		}
+	});
 }
 // src/module/nuxt-editor-lib/image-upload.ts
 function createImageUpload(deps) {
@@ -354,6 +461,14 @@ function createShadowHost(css) {
 	const root = document.createElement("div");
 	root.className = "nuxt-ui-root";
 	shadow.append(root, portal);
+	const stopBacktick = (e) => {
+		if (e.key === "`" && !e.ctrlKey && !e.metaKey && !e.altKey) e.stopPropagation();
+	};
+	for (const target of [root, portal]) for (const type of [
+		"keydown",
+		"keypress",
+		"keyup"
+	]) target.addEventListener(type, stopBacktick);
 	return {
 		host,
 		root,
@@ -696,8 +811,8 @@ function createToolbars(opts, uploadImage) {
 			}, {
 				kind: "clearFormatting",
 				pos,
-				label: "Reset formatting",
-				icon: "i-lucide-rotate-ccw"
+				label: "Clear formatting",
+				icon: "i-lucide-remove-formatting"
 			}],
 			[{
 				kind: "duplicate",
@@ -748,6 +863,97 @@ function createItemsResolver(toolbars, opts) {
 		return defaults;
 	};
 }
+// src/module/nuxt-editor-lib/code-block.ts
+var DEFAULT_LANGUAGES = {
+	html: "HTML",
+	css: "CSS",
+	javascript: "JavaScript",
+	typescript: "TypeScript",
+	json: "JSON",
+	php: "PHP",
+	sql: "SQL",
+	bash: "Bash",
+	python: "Python",
+	xml: "XML",
+	yaml: "YAML",
+	markdown: "Markdown"
+};
+var DEFAULT_ALIASES = {
+	js: "javascript",
+	jsx: "javascript",
+	mjs: "javascript",
+	ts: "typescript",
+	tsx: "typescript",
+	md: "markdown",
+	yml: "yaml",
+	sh: "bash",
+	shell: "bash",
+	zsh: "bash",
+	py: "python",
+	htm: "html",
+	text: "",
+	plain: "",
+	plaintext: ""
+};
+function createCodeBlock(CodeBlock, opts) {
+	const languages = opts.codeBlockLanguages && Object.keys(opts.codeBlockLanguages).length ? opts.codeBlockLanguages : DEFAULT_LANGUAGES;
+	const ALIASES = opts.codeBlockAliases && Object.keys(opts.codeBlockAliases).length ? opts.codeBlockAliases : DEFAULT_ALIASES;
+	return CodeBlock.extend({ addNodeView() {
+		return ({ node, editor, getPos }) => {
+			let current = node;
+			const dom = document.createElement("div");
+			dom.className = "nuxt-code-block";
+			const select = document.createElement("select");
+			select.setAttribute("contenteditable", "false");
+			const sync = () => {
+				select.innerHTML = "";
+				select.add(new Option("Plain text", ""));
+				for (const [value, label] of Object.entries(languages)) select.add(new Option(label, value));
+				const raw = current.attrs.language || "";
+				const lang = raw in languages ? raw : ALIASES[raw] ?? raw;
+				if (lang && !(lang in languages)) select.add(new Option(lang, lang));
+				select.value = lang;
+			};
+			select.addEventListener("change", () => {
+				const pos = getPos();
+				if (typeof pos === "number") editor.view.dispatch(editor.state.tr.setNodeMarkup(pos, void 0, {
+					...current.attrs,
+					language: select.value || null
+				}));
+			});
+			const pre = document.createElement("pre");
+			const code = document.createElement("code");
+			pre.append(code);
+			dom.append(select, pre);
+			sync();
+			const markActive = () => {
+				const pos = getPos();
+				const { from, to } = editor.state.selection;
+				dom.classList.toggle("is-active", typeof pos === "number" && from >= pos && to <= pos + current.nodeSize);
+			};
+			editor.on("selectionUpdate", markActive);
+			editor.on("focus", markActive);
+			editor.on("blur", () => dom.classList.remove("is-active"));
+			markActive();
+			return {
+				dom,
+				contentDOM: code,
+				destroy() {
+					editor.off("selectionUpdate", markActive);
+					editor.off("focus", markActive);
+				},
+				update(updated) {
+					if (updated.type !== current.type) return false;
+					current = updated;
+					sync();
+					return true;
+				},
+				stopEvent: (e) => e.target === select,
+				ignoreMutation: (m) => !code.contains(m.target)
+			};
+		};
+	} });
+}
 // src/module/nuxt-editor.ts
 var instances = /*@__PURE__*/ new WeakMap();
 var globalToolbars = {};
@@ -775,7 +981,7 @@ function destroy(selector) {
 	}
 }
 async function mount(element, options) {
-	const [{ default: UApp }, { default: UEditor }, { default: UEditorToolbar }, { default: UEditorDragHandle }, { default: UEditorSuggestionMenu }, { default: UDropdownMenu }, { default: UButton }, { default: UFileUpload }, { default: UAvatar }, { default: UPopover }, { default: UTooltip }, { default: UInput }, { default: USeparator }, { Node, mergeAttributes }, { TextAlign }, { default: TiptapImage }, { VueNodeViewRenderer, NodeViewWrapper, nodeViewProps }, { mapEditorItems }, { default: ui }, locales] = await Promise.all([
+	const [{ default: UApp }, { default: UEditor }, { default: UEditorToolbar }, { default: UEditorDragHandle }, { default: UEditorSuggestionMenu }, { default: UDropdownMenu }, { default: UButton }, { default: UFileUpload }, { default: UAvatar }, { default: UPopover }, { default: UTooltip }, { default: UInput }, { default: USeparator }, { Node, Extension, mergeAttributes }, { Plugin, PluginKey }, { Decoration, DecorationSet }, { TextAlign }, { default: TiptapImage }, { default: TiptapCodeBlock }, { VueNodeViewRenderer, NodeViewWrapper, nodeViewProps }, { mapEditorItems }, { default: ui }, locales] = await Promise.all([
 		import("@nuxt/ui/components/App.vue"),
 		import("@nuxt/ui/components/Editor.vue"),
 		import("@nuxt/ui/components/EditorToolbar.vue"),
@@ -790,8 +996,11 @@ async function mount(element, options) {
 		import("@nuxt/ui/components/Input.vue"),
 		import("@nuxt/ui/components/Separator.vue"),
 		import("@tiptap/core"),
+		import("@tiptap/pm/state"),
+		import("@tiptap/pm/view"),
 		import("@tiptap/extension-text-align"),
 		import("@tiptap/extension-image"),
+		import("@tiptap/extension-code-block"),
 		import("@tiptap/vue-3"),
 		import("@nuxt/ui/utils/editor"),
 		import("@nuxt/ui/vue-plugin"),
@@ -834,6 +1043,7 @@ async function mount(element, options) {
 		USeparator
 	});
 	const CaptionImage = createCaptionImage(TiptapImage, mergeAttributes, opts);
+	const CodeBlock = createCodeBlock(TiptapCodeBlock, opts);
 	const { ImageUpload, customHandlers } = createImageUpload({
 		Node,
 		mergeAttributes,
@@ -860,10 +1070,18 @@ async function mount(element, options) {
 			contentType: format,
 			handlers: customHandlers,
 			image: false,
+			starterKit: { codeBlock: false },
 			extensions: [
 				CaptionImage,
+				CodeBlock,
 				TextAlign.configure({ types: ["heading", "paragraph"] }),
-				...opts.imageUploadUrl ? [ImageUpload] : []
+				...opts.imageUploadUrl ? [ImageUpload, createImagePasteDrop({
+					Extension,
+					Plugin,
+					PluginKey,
+					Decoration,
+					DecorationSet
+				}, uploadImage, opts, opts.imageFetchUrl ? createFetchImage(element, opts) : void 0)] : []
 			],
 			placeholder: "Write, type '/' for commands...",
 			editable: editable.value,
@@ -871,7 +1089,6 @@ async function mount(element, options) {
 			ui: { base: "p-4 pl-16 sm:p-4 sm:pl-16 min-h-48 border border-default rounded-md" },
 			onCreate: ({ editor: ed }) => {
 				editor.value = ed;
-				if (opts.imageUploadUrl) setupImagePasteDrop(ed, uploadImage);
 				element.dispatchEvent(new CustomEvent("nuxt-editor:create", { detail: ed }));
 			},
 			...opts.props

@@ -26,6 +26,20 @@ export function createShadowHost(css: string) {
   root.className = 'nuxt-ui-root';
   shadow.append(root, portal);
 
+  // Page-level key listeners (e.g. the Evernote Web Clipper's "`" shortcut) see the shadow host as the event
+  // target, which is not editable, so they would fire. Keep the backtick inside the editor.
+  const stopBacktick = (e: KeyboardEvent) => {
+    if (e.key === '`' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+      e.stopPropagation();
+    }
+  };
+
+  for (const target of [root, portal]) {
+    for (const type of ['keydown', 'keypress', 'keyup'] as const) {
+      target.addEventListener(type, stopBacktick);
+    }
+  }
+
   return { host, root, portal };
 }
 

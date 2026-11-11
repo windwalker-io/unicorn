@@ -184,7 +184,7 @@ export function createToolbars(opts: NuxtEditorOptions, uploadImage: UploadImage
           { kind: 'codeBlock', label: 'Code Block', icon: 'i-lucide-square-code' },
         ],
       },
-      { kind: 'clearFormatting', pos, label: 'Reset formatting', icon: 'i-lucide-rotate-ccw' },
+      { kind: 'clearFormatting', pos, label: 'Clear formatting', icon: 'i-lucide-remove-formatting' },
     ], [
       { kind: 'duplicate', pos, label: 'Duplicate', icon: 'i-lucide-copy' },
       {
