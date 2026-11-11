@@ -1682,14 +1682,6 @@ declare global {
 }
 
 
-declare global {
-    var Alpine: AlpineGlobal;
-    var TomSelect: typeof TomSelectGlobal;
-    var Spectrum: typeof SpectrumGlobal;
-    var Mark: any;
-}
-
-
 declare module '@windwalker-io/unicorn-next' {
     interface UnicornApp {
         /** @deprecated Only for code generator use. */
@@ -1698,14 +1690,15 @@ declare module '@windwalker-io/unicorn-next' {
 }
 
 
-declare module 'axios' {
-    interface AxiosRequestConfig {
-        vars?: Record<string, any>;
-        methodSimulate?: string;
-        methodSimulateByHeader?: boolean;
-    }
-    interface CreateAxiosDefaults {
-    }
+declare global {
+    var Alpine: AlpineGlobal;
+    var TomSelect: typeof TomSelectGlobal;
+    var Spectrum: typeof SpectrumGlobal;
+    var Mark: any;
+}
+
+declare global {
+    var S: any;
 }
 
 
@@ -1720,6 +1713,13 @@ declare global {
     }
 }
 
-declare global {
-    var S: any;
+
+declare module 'axios' {
+    interface AxiosRequestConfig {
+        vars?: Record<string, any>;
+        methodSimulate?: string;
+        methodSimulateByHeader?: boolean;
+    }
+    interface CreateAxiosDefaults {
+    }
 }
