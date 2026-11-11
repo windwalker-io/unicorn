@@ -1,4 +1,4 @@
-import { n as __toESM, t as __commonJSMin } from "./rolldown-runtime.js";
+import { r as __toESM, t as __commonJSMin } from "./rolldown-runtime.js";
 import { initAlpineComponent, prepareAlpineDefer, uid, useHttpClient } from "../unicorn.js";
 import { c as module } from "./dom.js";
 import { t as mergeDeep } from "./arr.js";

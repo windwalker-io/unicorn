@@ -1,3 +1,4 @@
+import { n as __exportAll } from "./rolldown-runtime.js";
 import { d as selectOne } from "./dom.js";
 import { t as mergeDeep } from "./arr.js";
 import { useHttpClient, useStack } from "../unicorn.js";
@@ -466,6 +467,19 @@ function createToolbars(opts, uploadImage) {
 			tooltip: { text: "Highlight" }
 		}
 	];
+	const colorsButton = () => [{
+		slot: "colors",
+		colorKind: "text",
+		icon: "i-lucide-baseline",
+		tooltip: { text: "Text Colors" },
+		colors: opts.tableColors
+	}, {
+		slot: "colors",
+		colorKind: "background",
+		icon: "i-lucide-paint-bucket",
+		tooltip: { text: "Background Colors" },
+		colors: opts.tableColors
+	}];
 	const imageButton = () => opts.imageUploadUrl ? [{
 		kind: "uploadImage",
 		icon: "i-lucide-image",
@@ -535,7 +549,7 @@ function createToolbars(opts, uploadImage) {
 					tooltip: { text: "Horizontal Rule" }
 				}
 			],
-			marksGroup,
+			[...marksGroup, ...colorsButton()],
 			[{
 				slot: "link",
 				icon: "i-lucide-link"
@@ -591,7 +605,7 @@ function createToolbars(opts, uploadImage) {
 					}
 				]
 			}],
-			marksGroup,
+			[...marksGroup, ...colorsButton()],
 			[{
 				slot: "link",
 				icon: "i-lucide-link"
@@ -694,6 +708,11 @@ function createToolbars(opts, uploadImage) {
 			label: "Image",
 			icon: "i-lucide-image"
 		}] : [],
+		{
+			kind: "insertTable",
+			label: "Table",
+			icon: "i-lucide-table"
+		},
 		{
 			kind: "horizontalRule",
 			label: "Horizontal Rule",
@@ -895,7 +914,521 @@ function createCodeBlock(CodeBlock, opts) {
 		};
 	} });
 }
+// src/module/nuxt-editor-lib/colors.ts
+var DEFAULT_COLORS = {
+	Primary: "var(--bs-primary)",
+	Secondary: "var(--bs-secondary)",
+	Success: "var(--bs-success)",
+	Danger: "var(--bs-danger)",
+	Warning: "var(--bs-warning)",
+	Info: "var(--bs-info)",
+	Gray: "#6b7280",
+	Red: "#ef4444",
+	Orange: "#f97316",
+	Yellow: "#eab308",
+	Green: "#22c55e",
+	Blue: "#3b82f6",
+	Purple: "#a855f7",
+	Pink: "#ec4899"
+};
+var RECENT_KEY = "nuxt-editor:table-recent-colors";
+var resolveColors = (colors) => colors && Object.keys(colors).length ? colors : DEFAULT_COLORS;
+var toBackground = (color) => {
+	if (/^#[0-9a-f]{6}$/i.test(color)) return `${color}33`;
+	const bs = color.match(/^var\(--bs-([\w-]+)\)$/);
+	return bs ? `rgba(var(--bs-${bs[1]}-rgb), .2)` : color;
+};
+function getRecentColors() {
+	try {
+		const list = JSON.parse(localStorage.getItem(RECENT_KEY) || "[]");
+		return Array.isArray(list) ? list : [];
+	} catch {
+		return [];
+	}
+}
+function pushRecentColor(recent) {
+	const others = getRecentColors().filter((r) => r.kind !== recent.kind);
+	const same = getRecentColors().filter((r) => r.kind === recent.kind && r.color !== recent.color);
+	const list = [
+		...others,
+		recent,
+		...same.slice(0, 2)
+	];
+	try {
+		localStorage.setItem(RECENT_KEY, JSON.stringify(list));
+	} catch {}
+}
+/**
+* Two submenu items (Text Colors, Background Colors). `apply(kind, color)` receives the raw palette
+* color, or null for "Default"; recent colors are recorded here.
+*/
+function createColorMenu(colors, apply) {
+	const select = (kind, color) => {
+		apply(kind, color);
+		if (color) pushRecentColor({
+			kind,
+			color
+		});
+	};
+	const colorItem = (kind, label, color) => ({
+		label,
+		slot: kind === "text" ? "textSwatch" : "swatch",
+		swatch: color,
+		onSelect: () => {
+			select(kind, color);
+		}
+	});
+	const palette = (kind) => {
+		const recent = getRecentColors().filter((r) => r.kind === kind).map(({ color }) => colorItem(kind, Object.entries(colors).find(([, v]) => v === color)?.[0] ?? color, color));
+		return [...recent.length ? [[{
+			type: "label",
+			label: "Recent colors"
+		}, ...recent]] : [], [{
+			icon: "i-lucide-ban",
+			label: "Default",
+			onSelect: () => {
+				select(kind, null);
+			}
+		}, ...Object.entries(colors).map(([label, color]) => colorItem(kind, label, color))]];
+	};
+	return [{
+		icon: "i-lucide-baseline",
+		label: "Text Colors",
+		children: palette("text")
+	}, {
+		icon: "i-lucide-paint-bucket",
+		label: "Background Colors",
+		children: palette("background")
+	}];
+}
+// src/module/nuxt-editor-lib/table.ts
+var commands = {
+	insertTable: (ed) => ed.chain().focus().insertTable({
+		rows: 3,
+		cols: 3,
+		withHeaderRow: true
+	}),
+	addRowBefore: (ed) => ed.chain().focus().addRowBefore(),
+	addRowAfter: (ed) => ed.chain().focus().addRowAfter(),
+	deleteRow: (ed) => ed.chain().focus().deleteRow(),
+	addColumnBefore: (ed) => ed.chain().focus().addColumnBefore(),
+	addColumnAfter: (ed) => ed.chain().focus().addColumnAfter(),
+	deleteColumn: (ed) => ed.chain().focus().deleteColumn(),
+	toggleHeaderRow: (ed) => ed.chain().focus().toggleHeaderRow(),
+	mergeCells: (ed) => ed.chain().focus().mergeCells(),
+	splitCell: (ed) => ed.chain().focus().splitCell(),
+	deleteTable: (ed) => ed.chain().focus().deleteTable()
+};
+function createTable(tableExt, pmTables, pmModel, tableOptions = {}) {
+	const colors = resolveColors(tableOptions.colors);
+	const { TableKit, TableCell, TableHeader } = tableExt;
+	const { selectedRect } = pmTables;
+	const { Fragment } = pmModel;
+	const styleAttr = (attr, css) => ({
+		default: null,
+		parseHTML: (el) => el.style.getPropertyValue(css) || null,
+		renderHTML: (attrs) => attrs[attr] ? { style: `${css}: ${attrs[attr]}` } : {}
+	});
+	const withCellAttrs = (Base) => Base.extend({ addAttributes() {
+		return {
+			...this.parent?.(),
+			backgroundColor: styleAttr("backgroundColor", "background-color"),
+			textColor: styleAttr("textColor", "color"),
+			textAlign: styleAttr("textAlign", "text-align"),
+			verticalAlign: styleAttr("verticalAlign", "vertical-align")
+		};
+	} });
+	const getContext = (state) => {
+		let rect;
+		try {
+			rect = selectedRect(state);
+		} catch {
+			return null;
+		}
+		const rows = [];
+		let spanned = false;
+		rect.table.forEach((row) => {
+			rows.push(row);
+			row.forEach((cell) => {
+				spanned ||= cell.attrs.colspan > 1 || cell.attrs.rowspan > 1;
+			});
+		});
+		return {
+			rect,
+			rows,
+			spanned
+		};
+	};
+	const rowCells = (row) => {
+		const cells = [];
+		row.forEach((cell) => cells.push(cell));
+		return cells;
+	};
+	const swap = (list, a, b) => {
+		[list[a], list[b]] = [list[b], list[a]];
+		return list;
+	};
+	const mapColumns = ({ rows }, fn) => rows.map((row) => row.copy(Fragment.from(fn(rowCells(row)))));
+	const custom = {
+		moveRowUp: (c) => c.spanned || c.rect.top < 1 ? null : {
+			rows: swap([...c.rows], c.rect.top, c.rect.top - 1),
+			row: c.rect.top - 1,
+			col: c.rect.left
+		},
+		moveRowDown: (c) => c.spanned || c.rect.top >= c.rows.length - 1 ? null : {
+			rows: swap([...c.rows], c.rect.top, c.rect.top + 1),
+			row: c.rect.top + 1,
+			col: c.rect.left
+		},
+		duplicateRow: (c) => {
+			if (c.spanned) return null;
+			const rows = [...c.rows];
+			rows.splice(c.rect.top + 1, 0, rows[c.rect.top]);
+			return {
+				rows,
+				row: c.rect.top + 1,
+				col: c.rect.left
+			};
+		},
+		moveColumnLeft: (c) => c.spanned || c.rect.left < 1 ? null : {
+			rows: mapColumns(c, (cells) => swap(cells, c.rect.left, c.rect.left - 1)),
+			row: c.rect.top,
+			col: c.rect.left - 1
+		},
+		moveColumnRight: (c) => c.spanned || c.rect.left >= c.rect.map.width - 1 ? null : {
+			rows: mapColumns(c, (cells) => swap(cells, c.rect.left, c.rect.left + 1)),
+			row: c.rect.top,
+			col: c.rect.left + 1
+		},
+		duplicateColumn: (c) => c.spanned ? null : {
+			rows: mapColumns(c, (cells) => {
+				cells.splice(c.rect.left + 1, 0, cells[c.rect.left]);
+				return cells;
+			}),
+			row: c.rect.top,
+			col: c.rect.left + 1
+		}
+	};
+	const runCustom = (ed, kind) => ed.chain().focus().command(({ state, tr, dispatch }) => {
+		const ctx = getContext(state);
+		const result = ctx && custom[kind](ctx);
+		if (!ctx || !result) return false;
+		if (dispatch) {
+			const { table, tableStart } = ctx.rect;
+			const newTable = table.copy(Fragment.from(result.rows));
+			tr.replaceWith(tableStart - 1, tableStart - 1 + table.nodeSize, newTable);
+			let pos = tableStart;
+			for (let i = 0; i < result.row; i++) pos += newTable.child(i).nodeSize;
+			const row = newTable.child(result.row);
+			pos += 1;
+			for (let i = 0; i < result.col; i++) pos += row.child(i).nodeSize;
+			tr.setSelection(tr.selection.constructor.near(tr.doc.resolve(pos + 1)));
+		}
+		return true;
+	}).run();
+	const setCellAttrs = (ed, scope, attrs) => ed.chain().focus().command(({ state, tr }) => {
+		const ctx = getContext(state);
+		if (!ctx) return false;
+		const { map, tableStart, top, left, bottom, right } = ctx.rect;
+		const area = scope === "row" ? {
+			left: 0,
+			right: map.width,
+			top,
+			bottom: top + 1
+		} : scope === "column" ? {
+			left,
+			right: left + 1,
+			top: 0,
+			bottom: map.height
+		} : {
+			left,
+			right,
+			top,
+			bottom
+		};
+		map.cellsInRect(area).forEach((offset) => {
+			const node = tr.doc.nodeAt(tableStart + offset);
+			tr.setNodeMarkup(tableStart + offset, void 0, {
+				...node.attrs,
+				...attrs
+			});
+		});
+		return true;
+	}).run();
+	const handlers = Object.fromEntries(Object.entries(commands).map(([kind, run]) => [kind, {
+		canExecute: (ed) => canRun(ed, kind),
+		execute: (ed) => run(ed),
+		isActive: (ed) => kind === "insertTable" ? ed.isActive("table") : false,
+		isDisabled: void 0
+	}]));
+	const toolbarGroup = () => [{
+		kind: "insertTable",
+		icon: "i-lucide-table",
+		tooltip: { text: "Insert Table" }
+	}, {
+		icon: "i-lucide-table-properties",
+		tooltip: { text: "Table" },
+		content: { align: "start" },
+		items: [
+			{
+				kind: "addRowBefore",
+				icon: "i-lucide-arrow-up-from-line",
+				label: "Add row above"
+			},
+			{
+				kind: "addRowAfter",
+				icon: "i-lucide-arrow-down-from-line",
+				label: "Add row below"
+			},
+			{
+				kind: "deleteRow",
+				icon: "i-lucide-table-rows-split",
+				label: "Delete row"
+			},
+			{
+				kind: "addColumnBefore",
+				icon: "i-lucide-arrow-left-from-line",
+				label: "Add column before"
+			},
+			{
+				kind: "addColumnAfter",
+				icon: "i-lucide-arrow-right-from-line",
+				label: "Add column after"
+			},
+			{
+				kind: "deleteColumn",
+				icon: "i-lucide-table-columns-split",
+				label: "Delete column"
+			},
+			{
+				kind: "toggleHeaderRow",
+				icon: "i-lucide-heading",
+				label: "Toggle header row"
+			},
+			{
+				kind: "mergeCells",
+				icon: "i-lucide-table-cells-merge",
+				label: "Merge cells"
+			},
+			{
+				kind: "splitCell",
+				icon: "i-lucide-table-cells-split",
+				label: "Split cell"
+			},
+			{
+				kind: "deleteTable",
+				icon: "i-lucide-trash",
+				label: "Delete table",
+				color: "error"
+			}
+		]
+	}];
+	const menuGroups = [
+		[
+			[
+				"addRowBefore",
+				"i-lucide-arrow-up-from-line",
+				"Add row above"
+			],
+			[
+				"addRowAfter",
+				"i-lucide-arrow-down-from-line",
+				"Add row below"
+			],
+			[
+				"deleteRow",
+				"i-lucide-table-rows-split",
+				"Delete row"
+			],
+			[
+				"toggleHeaderRow",
+				"i-lucide-heading",
+				"Toggle header row"
+			]
+		],
+		[
+			[
+				"addColumnBefore",
+				"i-lucide-arrow-left-from-line",
+				"Add column before"
+			],
+			[
+				"addColumnAfter",
+				"i-lucide-arrow-right-from-line",
+				"Add column after"
+			],
+			[
+				"deleteColumn",
+				"i-lucide-table-columns-split",
+				"Delete column"
+			]
+		],
+		[[
+			"mergeCells",
+			"i-lucide-table-cells-merge",
+			"Merge cells"
+		], [
+			"splitCell",
+			"i-lucide-table-cells-split",
+			"Split cell"
+		]],
+		[[
+			"deleteTable",
+			"i-lucide-trash",
+			"Delete table",
+			true
+		]]
+	];
+	const scopes = {
+		cell: [2],
+		row: [0],
+		column: [1]
+	};
+	const customGroups = {
+		row: [
+			[
+				"moveRowUp",
+				"i-lucide-move-up",
+				"Move row up"
+			],
+			[
+				"moveRowDown",
+				"i-lucide-move-down",
+				"Move row down"
+			],
+			[
+				"duplicateRow",
+				"i-lucide-copy-plus",
+				"Duplicate row"
+			]
+		],
+		column: [
+			[
+				"moveColumnLeft",
+				"i-lucide-move-left",
+				"Move column left"
+			],
+			[
+				"moveColumnRight",
+				"i-lucide-move-right",
+				"Move column right"
+			],
+			[
+				"duplicateColumn",
+				"i-lucide-copy-plus",
+				"Duplicate column"
+			]
+		]
+	};
+	const alignmentMenu = (ed) => ({
+		icon: "i-lucide-align-center",
+		label: "Alignment",
+		children: [[
+			[
+				"left",
+				"i-lucide-align-left",
+				"Align left"
+			],
+			[
+				"center",
+				"i-lucide-align-center",
+				"Align center"
+			],
+			[
+				"right",
+				"i-lucide-align-right",
+				"Align right"
+			]
+		].map(([value, icon, label]) => ({
+			icon,
+			label,
+			onSelect: () => {
+				setCellAttrs(ed, "cell", { textAlign: value });
+			}
+		})), [
+			[
+				"top",
+				"i-lucide-align-vertical-justify-start",
+				"Align top"
+			],
+			[
+				"middle",
+				"i-lucide-align-vertical-justify-center",
+				"Align middle"
+			],
+			[
+				"bottom",
+				"i-lucide-align-vertical-justify-end",
+				"Align bottom"
+			]
+		].map(([value, icon, label]) => ({
+			icon,
+			label,
+			onSelect: () => {
+				setCellAttrs(ed, "cell", { verticalAlign: value });
+			}
+		}))]
+	});
+	const colorsMenu = (ed, scope) => createColorMenu(colors, (kind, color) => {
+		setCellAttrs(ed, scope, kind === "text" ? { textColor: color } : { backgroundColor: color && toBackground(color) });
+	});
+	const toItems = (ed, group) => group.map(([kind, icon, label, danger]) => ({
+		icon,
+		label,
+		color: danger ? "error" : void 0,
+		disabled: kind in custom ? !canCustom(ed, kind) : !canRun(ed, kind),
+		onSelect: () => {
+			if (kind in custom) runCustom(ed, kind);
+			else commands[kind](ed).run();
+		}
+	}));
+	const canCustom = (ed, kind) => {
+		const ctx = getContext(ed.state);
+		return !!ctx && !!custom[kind](ctx);
+	};
+	const menuItems = (ed, scope = "cell") => {
+		const groups = scopes[scope].map((i) => toItems(ed, menuGroups[i]));
+		if (scope === "cell") return [
+			...groups,
+			[alignmentMenu(ed), ...colorsMenu(ed, "cell")],
+			toItems(ed, menuGroups[3])
+		];
+		return [
+			...groups,
+			toItems(ed, customGroups[scope]),
+			colorsMenu(ed, scope)
+		];
+	};
+	return {
+		extensions: [
+			TableKit.configure({
+				table: { resizable: true },
+				tableCell: false,
+				tableHeader: false
+			}),
+			withCellAttrs(TableCell),
+			withCellAttrs(TableHeader)
+		],
+		handlers,
+		toolbarGroup,
+		menuItems
+	};
+}
+function canRun(ed, kind) {
+	const can = ed.can();
+	return kind === "insertTable" ? can.insertTable({
+		rows: 3,
+		cols: 3,
+		withHeaderRow: true
+	}) : can[kind]();
+}
 // src/module/nuxt-editor.ts
+var nuxt_editor_exports = /*@__PURE__*/ __exportAll({
+	configure: () => configure,
+	create: () => create,
+	destroy: () => destroy,
+	get: () => get
+});
 var instances = /*@__PURE__*/ new WeakMap();
 var globalToolbars = {};
 function configure(options) {
@@ -928,7 +1461,7 @@ async function mount(element, options) {
 	loader.style.cssText = "display:flex;align-items:center;justify-content:center;gap:.5rem;min-height:8rem;border:1px solid var(--bs-border-color,#dee2e6);border-radius:.375rem;color:var(--bs-secondary-color,#6c757d);font-size:.875rem;";
 	loader.innerHTML = "<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"><path d=\"M21 12a9 9 0 1 1-6.2-8.55\"><animateTransform attributeName=\"transform\" type=\"rotate\" from=\"0 12 12\" to=\"360 12 12\" dur=\"1s\" repeatCount=\"indefinite\"/></path></svg><span>Loading editor...</span>";
 	element.after(loader);
-	const [{ default: UFileUpload }, { default: UAvatar }, { Node, Extension, mergeAttributes }, { Plugin, PluginKey }, { Decoration, DecorationSet }, { TextAlign }, { default: TiptapHighlight }, { default: TiptapImage }, { default: TiptapCodeBlock }, { VueNodeViewRenderer, NodeViewWrapper, nodeViewProps }, { mapEditorItems }, { default: ui }, locales] = await Promise.all([
+	const [{ default: UFileUpload }, { default: UAvatar }, { Node, Extension, mergeAttributes }, { Plugin, PluginKey }, { Decoration, DecorationSet }, { TextAlign }, { default: TiptapHighlight }, { TextStyle, Color, BackgroundColor }, { default: TiptapImage }, { default: TiptapCodeBlock }, tableExt, pmTables, pmModel, { VueNodeViewRenderer, NodeViewWrapper, nodeViewProps }, { mapEditorItems }, { default: ui }, locales] = await Promise.all([
 		import("@nuxt/ui/components/FileUpload.vue"),
 		import("@nuxt/ui/components/Avatar.vue"),
 		import("@tiptap/core"),
@@ -936,8 +1469,12 @@ async function mount(element, options) {
 		import("@tiptap/pm/view"),
 		import("@tiptap/extension-text-align"),
 		import("@tiptap/extension-highlight"),
+		import("@tiptap/extension-text-style"),
 		import("@tiptap/extension-image"),
 		import("@tiptap/extension-code-block"),
+		import("@tiptap/extension-table"),
+		import("@tiptap/pm/tables"),
+		import("@tiptap/pm/model"),
 		import("@tiptap/vue-3"),
 		import("@nuxt/ui/utils/editor"),
 		import("@nuxt/ui/vue-plugin"),
@@ -978,6 +1515,11 @@ async function mount(element, options) {
 		UAvatar,
 		uploadImage
 	});
+	const table = createTable(tableExt, pmTables, pmModel, { colors: opts.tableColors });
+	const handlers = {
+		...customHandlers,
+		...table.handlers
+	};
 	const { selectedNode, items: blockMenuItems } = useBlockMenu(resolveItems, defaultBlockMenu, mapEditorItems);
 	const locale = locales[(opts.locale || "").replace("-", "_")] ?? locales.en;
 	const extensions = [
@@ -985,6 +1527,10 @@ async function mount(element, options) {
 		CodeBlock,
 		TextAlign.configure({ types: ["heading", "paragraph"] }),
 		TiptapHighlight,
+		TextStyle,
+		Color,
+		BackgroundColor,
+		...table.extensions,
 		...opts.imageUploadUrl ? [ImageUpload, createImagePasteDrop({
 			Extension,
 			Plugin,
@@ -994,11 +1540,12 @@ async function mount(element, options) {
 		}, uploadImage, opts, opts.imageFetchUrl ? createFetchImage(element, opts) : void 0)] : []
 	];
 	const items = {
-		fixed: (ed) => resolveItems("fixed", toolbarItems(), ed),
+		fixed: (ed) => resolveItems("fixed", [...toolbarItems(), table.toolbarGroup()], ed),
 		text: (ed) => resolveItems("textBubble", textBubbleItems(), ed),
 		image: (ed) => resolveItems("imageBubble", imageBubbleItems(ed), ed),
 		slash: (ed) => resolveItems("slash", suggestionItems, ed),
-		blockMenu: blockMenuItems
+		blockMenu: blockMenuItems,
+		tableMenu: table.menuItems
 	};
 	const app = createApp({ setup() {
 		return () => h(NuxtEditorApp, {
@@ -1008,7 +1555,7 @@ async function mount(element, options) {
 			locale,
 			portal,
 			extensions,
-			handlers: customHandlers,
+			handlers,
 			editorProps: opts.props,
 			items,
 			"onUpdate:modelValue": update,
@@ -1058,6 +1605,6 @@ function parseValue(value, format) {
 	}
 	return value;
 }
-export { configure, create, destroy, get };
+export { configure, create, destroy, get, toBackground as i, createColorMenu as n, resolveColors as r, nuxt_editor_exports as t };
 
 //# sourceMappingURL=nuxt-editor.js.map

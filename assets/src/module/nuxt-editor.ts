@@ -10,6 +10,7 @@ import { createItemsResolver, createToolbars } from './nuxt-editor-lib/toolbars'
 import type { NuxtEditorOptions, NuxtEditorToolbars } from './nuxt-editor-lib/types';
 import type { DragHandleNode, Editor } from '../vue/components/NuxtEditor/types';
 import { createCodeBlock } from './nuxt-editor-lib/code-block';
+import { createTable } from './nuxt-editor-lib/table';
 import { createFetchImage, createImagePasteDrop, createUploadImage } from './nuxt-editor-lib/upload';
 // Resolved by the host Vite (@nuxt/ui/vite + Tailwind). Do not bundle here.
 // @ts-ignore
@@ -104,8 +105,12 @@ async function mount(element: HTMLTextAreaElement, options: NuxtEditorOptions): 
     { Decoration, DecorationSet },
     { TextAlign },
     { default: TiptapHighlight },
+    { TextStyle, Color, BackgroundColor },
     { default: TiptapImage },
     { default: TiptapCodeBlock },
+    tableExt,
+    pmTables,
+    pmModel,
     { VueNodeViewRenderer, NodeViewWrapper, nodeViewProps },
     { mapEditorItems },
     { default: ui },
@@ -126,9 +131,17 @@ async function mount(element: HTMLTextAreaElement, options: NuxtEditorOptions): 
     // @ts-ignore
     import('@tiptap/extension-highlight'),
     // @ts-ignore
+    import('@tiptap/extension-text-style'),
+    // @ts-ignore
     import('@tiptap/extension-image'),
     // @ts-ignore
     import('@tiptap/extension-code-block'),
+    // @ts-ignore
+    import('@tiptap/extension-table'),
+    // @ts-ignore
+    import('@tiptap/pm/tables'),
+    // @ts-ignore
+    import('@tiptap/pm/model'),
     // @ts-ignore
     import('@tiptap/vue-3'),
     // @ts-ignore
@@ -168,7 +181,9 @@ async function mount(element: HTMLTextAreaElement, options: NuxtEditorOptions): 
     Node, mergeAttributes, VueNodeViewRenderer, NodeViewWrapper, nodeViewProps, UFileUpload, UAvatar, uploadImage,
   });
 
-  // The block the drag handle currently points at, used by the block menu.
+  const table = createTable(tableExt, pmTables, pmModel, { colors: opts.tableColors });
+  const handlers = { ...customHandlers, ...table.handlers };
+
   const { selectedNode, items: blockMenuItems } = useBlockMenu(resolveItems, defaultBlockMenu, mapEditorItems);
 
   // Pick the Nuxt UI locale from options, fallback to English.
@@ -180,6 +195,10 @@ async function mount(element: HTMLTextAreaElement, options: NuxtEditorOptions): 
     CodeBlock,
     TextAlign.configure({ types: ['heading', 'paragraph'] }),
     TiptapHighlight,
+    TextStyle,
+    Color,
+    BackgroundColor,
+    ...table.extensions,
     ...(opts.imageUploadUrl ? [ImageUpload, createImagePasteDrop(
       { Extension, Plugin, PluginKey, Decoration, DecorationSet },
       uploadImage,
@@ -189,11 +208,12 @@ async function mount(element: HTMLTextAreaElement, options: NuxtEditorOptions): 
   ];
 
   const items = {
-    fixed: (ed: any) => resolveItems('fixed', toolbarItems(), ed),
+    fixed: (ed: any) => resolveItems('fixed', [...toolbarItems(), table.toolbarGroup()], ed),
     text: (ed: any) => resolveItems('textBubble', textBubbleItems(), ed),
     image: (ed: any) => resolveItems('imageBubble', imageBubbleItems(ed), ed),
     slash: (ed: any) => resolveItems('slash', suggestionItems, ed),
     blockMenu: blockMenuItems,
+    tableMenu: table.menuItems as any,
   };
 
   // Root Vue app: the NuxtEditorApp SFC, reactive to the state above.
@@ -206,7 +226,7 @@ async function mount(element: HTMLTextAreaElement, options: NuxtEditorOptions): 
         locale,
         portal,
         extensions,
-        handlers: customHandlers,
+        handlers,
         editorProps: opts.props,
         items,
         'onUpdate:modelValue': update,

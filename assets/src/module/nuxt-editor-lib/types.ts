@@ -37,6 +37,8 @@ export interface NuxtEditorOptions {
   imageOwnHosts?: string[];
   codeBlockLanguages?: Record<string, string>;
   codeBlockAliases?: Record<string, string>;
+  /** Palette of the table Colors menu (label => CSS color). Replaces the built-in palette. */
+  tableColors?: Record<string, string>;
   unicorn?: { stack_name?: string };
   [key: string]: any;
 }

@@ -653,7 +653,7 @@ async function useTinymceHook(handler) {
 }
 // src/composable/useNuxtEditor.ts
 async function useNuxtEditor(selector, options = {}) {
-	const module = await import("./chunks/nuxt-editor.js");
+	const module = await import("./chunks/nuxt-editor.js").then((n) => n.t);
 	if (selector) return module.get(selector, options);
 	return module;
 }

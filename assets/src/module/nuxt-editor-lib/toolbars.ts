@@ -12,6 +12,11 @@ export function createToolbars(opts: NuxtEditorOptions, uploadImage: UploadImage
     { kind: 'mark', mark: 'code', icon: 'i-lucide-code', tooltip: { text: 'Code' } },
     { kind: 'mark', mark: 'highlight', icon: 'i-lucide-highlighter', tooltip: { text: 'Highlight' } },
   ];
+  // Rendered by the `colors` slot of EditorToolbars.vue.
+  const colorsButton = () => [
+    { slot: 'colors', colorKind: 'text', icon: 'i-lucide-baseline', tooltip: { text: 'Text Colors' }, colors: opts.tableColors },
+    { slot: 'colors', colorKind: 'background', icon: 'i-lucide-paint-bucket', tooltip: { text: 'Background Colors' }, colors: opts.tableColors },
+  ];
   const imageButton = () => opts.imageUploadUrl
     ? [{ kind: 'uploadImage', icon: 'i-lucide-image', tooltip: { text: 'Image' } }]
     : [];
@@ -51,7 +56,7 @@ export function createToolbars(opts: NuxtEditorOptions, uploadImage: UploadImage
         { kind: 'codeBlock', icon: 'i-lucide-square-code', tooltip: { text: 'Code Block' } },
         { kind: 'horizontalRule', icon: 'i-lucide-separator-horizontal', tooltip: { text: 'Horizontal Rule' } },
       ],
-      marksGroup,
+      [...marksGroup, ...colorsButton()],
       [{ slot: 'link', icon: 'i-lucide-link' }, ...imageButton()],
       alignButtons,
     ];
@@ -80,7 +85,7 @@ export function createToolbars(opts: NuxtEditorOptions, uploadImage: UploadImage
           { kind: 'codeBlock', icon: 'i-lucide-square-code', label: 'Code Block' },
         ],
       }],
-      marksGroup,
+      [...marksGroup, ...colorsButton()],
       [{ slot: 'link', icon: 'i-lucide-link' }, ...imageButton()],
       alignButtons,
     ];
@@ -146,6 +151,7 @@ export function createToolbars(opts: NuxtEditorOptions, uploadImage: UploadImage
     ...(opts.imageUploadUrl
       ? [{ kind: 'uploadImage', label: 'Image', icon: 'i-lucide-image' }]
       : []),
+    { kind: 'insertTable', label: 'Table', icon: 'i-lucide-table' },
     { kind: 'horizontalRule', label: 'Horizontal Rule', icon: 'i-lucide-separator-horizontal' },
   ].reduce<any[][]>((groups, item: any) => {
     if (item.type === 'label') {

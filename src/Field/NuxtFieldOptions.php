@@ -61,6 +61,26 @@ class NuxtFieldOptions implements \JsonSerializable
         'plaintext' => '',
     ];
 
+    /**
+     * Built-in table color palette (same as the JS default).
+     */
+    public const array DEFAULT_TABLE_COLORS = [
+        'Primary' => 'var(--bs-primary)',
+        'Secondary' => 'var(--bs-secondary)',
+        'Success' => 'var(--bs-success)',
+        'Danger' => 'var(--bs-danger)',
+        'Warning' => 'var(--bs-warning)',
+        'Info' => 'var(--bs-info)',
+        'Gray' => '#6b7280',
+        'Red' => '#ef4444',
+        'Orange' => '#f97316',
+        'Yellow' => '#eab308',
+        'Green' => '#22c55e',
+        'Blue' => '#3b82f6',
+        'Purple' => '#a855f7',
+        'Pink' => '#ec4899',
+    ];
+
     public function __construct(
         /**
          * html | markdown | json
@@ -115,6 +135,14 @@ class NuxtFieldOptions implements \JsonSerializable
          * @var  array<string, string>|null
          */
         public ?array $codeBlockAliases = null,
+        /**
+         * Palette of the table cell Text/Background Colors menus (label => CSS color; background is made translucent).
+         * Bootstrap variables work, e.g. ['Primary' => 'var(--bs-primary)', 'Warning' => 'var(--bs-warning)'].
+         * Replaced, not merged. Empty: DEFAULT_TABLE_COLORS.
+         *
+         * @var  array<string, string>|null
+         */
+        public ?array $tableColors = null,
     ) {}
 
     public function merge(mixed $values, bool $recursive = false, bool $ignoreNulls = false): static
@@ -124,7 +152,7 @@ class NuxtFieldOptions implements \JsonSerializable
         // Array options are replaced as a whole instead of being recursively merged with the defaults,
         // so users can shrink a list. They are handled here and removed from $values before traitMerge().
         // The (array) cast guards against objects (stdClass/ArrayObject), which would TypeError on `?array`.
-        foreach (['codeBlockLanguages', 'codeBlockAliases'] as $mapKey) {
+        foreach (['codeBlockLanguages', 'codeBlockAliases', 'tableColors'] as $mapKey) {
             if (isset($values[$mapKey])) {
                 $this->$mapKey = (array) $values[$mapKey];
             }
@@ -159,6 +187,7 @@ class NuxtFieldOptions implements \JsonSerializable
      *           imageOwnHosts?: string[],
      *           codeBlockLanguages?: array<string, string>,
      *           codeBlockAliases?: array<string, string>,
+     *           tableColors?: array<string, string>,
      *           ...
      *           }
      */

@@ -30,5 +30,6 @@ export interface NuxtEditorItems {
   text: (editor: Editor) => ToolbarItems;
   image: (editor: Editor) => ToolbarItems;
   slash: (editor: Editor) => EditorSuggestionMenuItem[] | EditorSuggestionMenuItem[][];
+  tableMenu: (editor: Editor, scope?: 'cell' | 'row' | 'column') => DropdownMenuItem[][];
   blockMenu: (editor: Editor) => DropdownMenuItem[] | DropdownMenuItem[][];
 }

@@ -625,6 +625,8 @@ declare interface NuxtEditorOptions {
     imageOwnHosts?: string[];
     codeBlockLanguages?: Record<string, string>;
     codeBlockAliases?: Record<string, string>;
+    /** Palette of the table Colors menu (label => CSS color). Replaces the built-in palette. */
+    tableColors?: Record<string, string>;
     unicorn?: {
         stack_name?: string;
     };
@@ -1671,13 +1673,6 @@ export declare function watchAttributes<T extends HTMLElement>(el: T, callback?:
 export { }
 
 
-declare global {
-    interface Node {
-        __unicorn?: any;
-    }
-}
-
-
 declare module '@windwalker-io/unicorn-next' {
     interface UnicornApp {
         /** @deprecated Only for code generator use. */
@@ -1694,6 +1689,17 @@ declare global {
 }
 
 
+declare global {
+    interface Node {
+        __unicorn?: any;
+    }
+}
+
+declare global {
+    var S: any;
+}
+
+
 declare module 'axios' {
     interface AxiosRequestConfig {
         vars?: Record<string, any>;
@@ -1702,10 +1708,6 @@ declare module 'axios' {
     }
     interface CreateAxiosDefaults {
     }
-}
-
-declare global {
-    var S: any;
 }
 
 

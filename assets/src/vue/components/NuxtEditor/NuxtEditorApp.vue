@@ -6,6 +6,7 @@ import UEditor from '@nuxt/ui/components/Editor.vue';
 import { useLinkAutoSelect } from '../../../composable/nuxt-editor/useLinkAutoSelect';
 import EditorDragHandle from './EditorDragHandle.vue';
 import EditorToolbars from './EditorToolbars.vue';
+import TableHandle from './TableHandle.vue';
 import type { AnyExtension, Content } from '@tiptap/core';
 import type { EditorCustomHandlers } from '@nuxt/ui';
 import type { DragHandleNode, Editor, Locale, NuxtEditorItems } from './types';
@@ -63,6 +64,7 @@ function onCreate({ editor }: { editor: Editor }) {
           :image-items="items.image(editor)"
           :slash-items="items.slash(editor)"
         />
+        <TableHandle :editor="editor" :menu-items="items.tableMenu" />
         <EditorDragHandle
           :editor="editor"
           :handlers="editorHandlers"
