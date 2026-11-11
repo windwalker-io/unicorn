@@ -2,8 +2,9 @@ import { createApp, h, ref, shallowRef, type App } from 'vue';
 import { selectOne } from '../service';
 import { mergeDeep } from '../utilities';
 import { createCaptionImage } from './nuxt-editor-lib/caption-image';
+import { useBlockMenu } from '../composable/nuxt-editor/useBlockMenu';
+import { useEditorSync } from '../composable/nuxt-editor/useEditorSync';
 import { createImageUpload } from './nuxt-editor-lib/image-upload';
-import { createLinkBar, createLinkPopover } from './nuxt-editor-lib/link-popover';
 import { createShadowHost } from './nuxt-editor-lib/shadow';
 import { createItemsResolver, createToolbars } from './nuxt-editor-lib/toolbars';
 import type { NuxtEditorOptions, NuxtEditorToolbars } from './nuxt-editor-lib/types';
@@ -95,19 +96,8 @@ async function mount(element: HTMLTextAreaElement, options: NuxtEditorOptions): 
 
   // Lazy-load Nuxt UI components, TipTap and the locale/plugin, so they are only fetched when an editor is used.
   const [
-    { default: UApp },
-    { default: UEditor },
-    { default: UEditorToolbar },
-    { default: UEditorDragHandle },
-    { default: UEditorSuggestionMenu },
-    { default: UDropdownMenu },
-    { default: UButton },
     { default: UFileUpload },
     { default: UAvatar },
-    { default: UPopover },
-    { default: UTooltip },
-    { default: UInput },
-    { default: USeparator },
     { Node, Extension, mergeAttributes },
     { Plugin, PluginKey },
     { Decoration, DecorationSet },
@@ -121,31 +111,9 @@ async function mount(element: HTMLTextAreaElement, options: NuxtEditorOptions): 
     locales,
   ] = await Promise.all([
     // @ts-ignore
-    import('@nuxt/ui/components/App.vue'),
-    // @ts-ignore
-    import('@nuxt/ui/components/Editor.vue'),
-    // @ts-ignore
-    import('@nuxt/ui/components/EditorToolbar.vue'),
-    // @ts-ignore
-    import('@nuxt/ui/components/EditorDragHandle.vue'),
-    // @ts-ignore
-    import('@nuxt/ui/components/EditorSuggestionMenu.vue'),
-    // @ts-ignore
-    import('@nuxt/ui/components/DropdownMenu.vue'),
-    // @ts-ignore
-    import('@nuxt/ui/components/Button.vue'),
-    // @ts-ignore
     import('@nuxt/ui/components/FileUpload.vue'),
     // @ts-ignore
     import('@nuxt/ui/components/Avatar.vue'),
-    // @ts-ignore
-    import('@nuxt/ui/components/Popover.vue'),
-    // @ts-ignore
-    import('@nuxt/ui/components/Tooltip.vue'),
-    // @ts-ignore
-    import('@nuxt/ui/components/Input.vue'),
-    // @ts-ignore
-    import('@nuxt/ui/components/Separator.vue'),
     // @ts-ignore
     import('@tiptap/core'),
     // @ts-ignore
@@ -174,6 +142,8 @@ async function mount(element: HTMLTextAreaElement, options: NuxtEditorOptions): 
     throw e;
   }) as any;
 
+  const { default: NuxtEditorApp } = await import('../vue/components/NuxtEditor/NuxtEditorApp.vue');
+
   const opts: NuxtEditorOptions = mergeDeep({ format: 'html', props: {}, unicorn: {} }, options);
   const format = opts.format!;
 
@@ -182,33 +152,15 @@ async function mount(element: HTMLTextAreaElement, options: NuxtEditorOptions): 
   // The original textarea stays hidden (it remains in the form as the submitted value).
   loader.replaceWith(host);
 
-  // Reactive state: editor content, the TipTap instance and the editable flag.
-  const content = ref<any>(parseValue(element.value, format));
+  // Reactive state: editor content (synced with the textarea), the TipTap instance and the editable flag.
+  const { content, update, set } = useEditorSync(element, format, parseValue);
   const editor = shallowRef<any>(null);
   const editable = ref(!(opts.readonly || element.readOnly || element.disabled));
 
   const resolveItems = createItemsResolver({ ...globalToolbars, ...options.toolbars }, opts);
 
-  const syncing = { value: false };
-
-  // Convert editor content to the string stored in the textarea.
-  function serialize(value: any): string {
-    return format === 'json' ? JSON.stringify(value) : (value ?? '');
-  }
-
-  // Write editor content back to the textarea and fire input/change for form listeners.
-  function onUpdate() {
-    syncing.value = true;
-    element.value = serialize(content.value);
-    element.dispatchEvent(new Event('input', { bubbles: true }));
-    element.dispatchEvent(new Event('change', { bubbles: true }));
-    syncing.value = false;
-  }
-
   const uploadImage = createUploadImage(element, opts);
   const { toolbarItems, textBubbleItems, imageBubbleItems, suggestionItems, blockMenuItems: defaultBlockMenu } = createToolbars(opts, uploadImage);
-  const LinkPopover = createLinkPopover({ UButton, UPopover, UTooltip, UInput, USeparator });
-  const LinkBar = createLinkBar({ UButton, UInput, USeparator });
   const CaptionImage = createCaptionImage(TiptapImage, mergeAttributes, opts);
   const CodeBlock = createCodeBlock(TiptapCodeBlock, opts);
   const { ImageUpload, customHandlers } = createImageUpload({
@@ -216,135 +168,55 @@ async function mount(element: HTMLTextAreaElement, options: NuxtEditorOptions): 
   });
 
   // The block the drag handle currently points at, used by the block menu.
-  const selectedNode = shallowRef<{ node: any, pos: number } | undefined>();
+  const { selectedNode, items: blockMenuItems } = useBlockMenu(resolveItems, defaultBlockMenu, mapEditorItems);
 
-  const blockMenuItems = (ed: any) => selectedNode.value?.node?.type
-    ? mapEditorItems(ed, resolveItems('blockMenu', defaultBlockMenu(selectedNode.value), ed))
-    : [];
   // Pick the Nuxt UI locale from options, fallback to English.
   const localeKey = (opts.locale || '').replace('-', '_');
   const locale = locales[localeKey] ?? locales.en;
 
-  // Root Vue app: UApp > UEditor, with toolbar / slash menu / drag handle in the default slot.
+  const extensions = [
+    CaptionImage,
+    CodeBlock,
+    TextAlign.configure({ types: ['heading', 'paragraph'] }),
+    TiptapHighlight,
+    ...(opts.imageUploadUrl ? [ImageUpload, createImagePasteDrop(
+      { Extension, Plugin, PluginKey, Decoration, DecorationSet },
+      uploadImage,
+      opts,
+      opts.imageFetchUrl ? createFetchImage(element, opts) : undefined,
+    )] : []),
+  ];
 
+  const items = {
+    fixed: (ed: any) => resolveItems('fixed', toolbarItems(), ed),
+    text: (ed: any) => resolveItems('textBubble', textBubbleItems(), ed),
+    image: (ed: any) => resolveItems('imageBubble', imageBubbleItems(ed), ed),
+    slash: (ed: any) => resolveItems('slash', suggestionItems, ed),
+    blockMenu: blockMenuItems,
+  };
+
+  // Root Vue app: the NuxtEditorApp SFC, reactive to the state above.
   const app: App = createApp({
     setup() {
-      return () => h(UApp, { locale, portal }, () =>
-        h(UEditor, {
-          modelValue: content.value,
-          'onUpdate:modelValue': (v: any) => {
-            content.value = v;
-            onUpdate();
-          },
-          contentType: format,
-          handlers: customHandlers,
-          image: false,
-          starterKit: { codeBlock: false },
-          extensions: [
-            CaptionImage,
-            CodeBlock,
-            TextAlign.configure({ types: ['heading', 'paragraph'] }),
-            TiptapHighlight,
-            ...(opts.imageUploadUrl ? [ImageUpload, createImagePasteDrop(
-              { Extension, Plugin, PluginKey, Decoration, DecorationSet },
-              uploadImage,
-              opts,
-              opts.imageFetchUrl ? createFetchImage(element, opts) : undefined,
-            )] : []),
-          ],
-          placeholder: "Write, type '/' for commands...",
-          editable: editable.value,
-          class: 'w-full',
-          ui: { base: 'p-4 pl-16 sm:p-4 sm:pl-16 min-h-48 border border-default rounded-md' },
-          onCreate: ({ editor: ed }: any) => {
-            editor.value = ed;
-
-            element.dispatchEvent(new CustomEvent('nuxt-editor:create', { detail: ed }));
-          },
-          ...opts.props,
-        }, {
-          default: ({ editor: ed, handlers }: any) => {
-            if (!editable.value) {
-              return null;
-            }
-
-            const fixedItems = resolveItems('fixed', toolbarItems(), ed);
-            const textItems = resolveItems('textBubble', textBubbleItems(), ed);
-            const imageItems = resolveItems('imageBubble', imageBubbleItems(ed), ed);
-            const slashItems = resolveItems('slash', suggestionItems, ed);
-
-            return [
-                fixedItems.length && h(UEditorToolbar, {
-                  editor: ed,
-                  items: fixedItems,
-                  class: 'border-b border-default py-2 overflow-x-auto',
-                }, { link: () => h(LinkPopover, { editor: ed }) }),
-                slashItems.length && h(UEditorSuggestionMenu, { editor: ed, items: slashItems }),
-                // Floating toolbars: text selection and selected image.
-                textItems.length && h(UEditorToolbar, {
-                  editor: ed,
-                  items: textItems,
-                  layout: 'bubble',
-                  shouldShow: ({ editor: e, view, state }: any) =>
-                    view.hasFocus() && !state.selection.empty && !e.isActive('image') && !e.isActive('imageUpload') && !e.isActive('codeBlock'),
-                }, { link: () => h(LinkPopover, { editor: ed }) }),
-                // Link bar: URL field with apply / open / remove, shown when the caret is inside a link.
-                h(UEditorToolbar, {
-                  editor: ed,
-                  items: [[{ slot: 'linkbar' }]],
-                  layout: 'bubble',
-                  shouldShow: ({ editor: e, view, state }: any) =>
-                    (view.hasFocus() || !!(view.dom.getRootNode() as any).activeElement?.closest?.('[data-link-bar]'))
-                    && state.selection.empty && e.isActive('link'),
-                }, { linkbar: () => h(LinkBar, { editor: ed }) }),
-                imageItems.length && h(UEditorToolbar, {
-                  editor: ed,
-                  items: imageItems,
-                  layout: 'bubble',
-                  shouldShow: ({ editor: e, view }: any) => e.isActive('image') && view.hasFocus(),
-                }),
-                // Left-side handle: "+" opens the suggestion menu, grip opens the block menu (and drags).
-                h(UEditorDragHandle, {
-                  editor: ed,
-                  onNodeChange: (node: any) => {
-                    selectedNode.value = node;
-                  },
-                }, {
-                  default: ({ ui: handleUi, onClick }: any) => [
-                    h(UButton, {
-                      icon: 'i-lucide-plus',
-                      color: 'neutral',
-                      variant: 'ghost',
-                      size: 'sm',
-                      class: handleUi.handle(),
-                      onClick: (e: Event) => {
-                        e.stopPropagation();
-                        const selected = onClick();
-                        handlers.suggestion?.execute(ed, { pos: selected?.pos }).run();
-                      },
-                    }),
-                    h(UDropdownMenu, {
-                      modal: false,
-                      items: blockMenuItems(ed),
-                      content: { side: 'left' },
-                      ui: { content: 'w-48' },
-                      'onUpdate:open': (open: boolean) => ed.chain().setMeta('lockDragHandle', open).run(),
-                    }, {
-                      default: ({ open }: any) => h(UButton, {
-                        icon: 'i-lucide-grip-vertical',
-                        color: 'neutral',
-                        variant: 'ghost',
-                        activeVariant: 'soft',
-                        size: 'sm',
-                        active: open,
-                        class: handleUi.handle(),
-                      }),
-                    }),
-                  ],
-                }),
-            ];
-          },
-        }));
+      return () => h(NuxtEditorApp, {
+        modelValue: content.value,
+        format,
+        editable: editable.value,
+        locale,
+        portal,
+        extensions,
+        handlers: customHandlers,
+        editorProps: opts.props,
+        items,
+        'onUpdate:modelValue': update,
+        onNodeChange: (node: any) => {
+          selectedNode.value = node;
+        },
+        onCreate: (ed: any) => {
+          editor.value = ed;
+          element.dispatchEvent(new CustomEvent('nuxt-editor:create', { detail: ed }));
+        },
+      });
     },
   });
 
@@ -362,8 +234,7 @@ async function mount(element: HTMLTextAreaElement, options: NuxtEditorOptions): 
       return element.value;
     },
     setValue(value: string) {
-      content.value = parseValue(value, format);
-      element.value = value;
+      set(value);
     },
     insert(html: string) {
       editor.value?.chain().focus().insertContent(html).run();

@@ -1669,13 +1669,6 @@ export declare function watchAttributes<T extends HTMLElement>(el: T, callback?:
 export { }
 
 
-declare global {
-    interface Node {
-        __unicorn?: any;
-    }
-}
-
-
 declare module '@windwalker-io/unicorn-next' {
     interface UnicornApp {
         /** @deprecated Only for code generator use. */
@@ -1689,6 +1682,13 @@ declare global {
     var TomSelect: typeof TomSelectGlobal;
     var Spectrum: typeof SpectrumGlobal;
     var Mark: any;
+}
+
+
+declare global {
+    interface Node {
+        __unicorn?: any;
+    }
 }
 
 declare global {
@@ -1708,12 +1708,12 @@ declare module 'axios' {
 
 
 declare global {
-    var tinymce: TinyMCE;
+    export interface Window {
+        bootstrap: typeof bootstrap;
+    }
 }
 
 
 declare global {
-    export interface Window {
-        bootstrap: typeof bootstrap;
-    }
+    var tinymce: TinyMCE;
 }

@@ -2,6 +2,7 @@ import { t as data } from "./data.js";
 import { useCssImport, useHttpClient } from "../unicorn.js";
 import { t as cloneDeep } from "./cloneDeep.js";
 import { n as forceArray } from "./helper.js";
+import { t as _plugin_vue_export_helper_default } from "./_plugin-vue_export-helper.js";
 import { Modal } from "bootstrap";
 import { Fragment, Transition, TransitionGroup, computed, createApp, createBlock, createCommentVNode, createElementBlock, createElementVNode, createTextVNode, createVNode, defineComponent, h, inject, mergeProps, nextTick, normalizeClass, normalizeStyle, onBeforeUpdate, onMounted, onUnmounted, openBlock, provide, ref, renderList, toDisplayString, unref, useTemplateRef, vModelDynamic, vModelText, vShow, watch, withCtx, withDirectives, withModifiers } from "vue";
 // src/utilities/tree.ts
@@ -323,12 +324,6 @@ var TreeItem_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineC
 		return __returned__;
 	}
 });
-// \0plugin-vue:export-helper
-var _plugin_vue_export_helper_default = (sfc, props) => {
-	const target = sfc.__vccOpts || sfc;
-	for (const [key, val] of props) target[key] = val;
-	return target;
-};
 // src/vue/components/ModalTree/TreeItem.vue
 var _hoisted_1$2 = { class: "p-2 ms-2" };
 var _hoisted_2$2 = [

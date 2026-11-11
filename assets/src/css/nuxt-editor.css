@@ -8,6 +8,7 @@
 @import "tailwindcss/utilities.css" layer(utilities);
 @import "@nuxt/ui";
 @source "../module/nuxt-editor.ts";
+@source "../vue/components/NuxtEditor";
 
 /* Map Nuxt UI tokens to Bootstrap's CSS variables (they inherit through the shadow boundary). Fallbacks keep it working without Bootstrap. */
 :host {

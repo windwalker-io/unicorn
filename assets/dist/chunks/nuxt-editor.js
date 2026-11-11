@@ -1,7 +1,7 @@
 import { d as selectOne } from "./dom.js";
 import { t as mergeDeep } from "./arr.js";
 import { useHttpClient, useStack } from "../unicorn.js";
-import { createApp, defineComponent, h, onBeforeUnmount, ref, shallowRef, watch } from "vue";
+import { createApp, defineComponent, h, ref, shallowRef, watch } from "vue";
 import css from "@windwalker-io/unicorn-next/src/css/nuxt-editor.css?inline";
 // src/module/nuxt-editor-lib/caption-image.ts
 var imageOptions = {
@@ -117,6 +117,37 @@ function createCaptionImage(TiptapImage, mergeAttributes, opts) {
 			};
 		}
 	}).configure(imageOptions);
+}
+// src/composable/nuxt-editor/useBlockMenu.ts
+function useBlockMenu(resolveItems, defaultItems, mapEditorItems) {
+	const selectedNode = shallowRef();
+	const items = (ed) => selectedNode.value?.node?.type ? mapEditorItems(ed, resolveItems("blockMenu", defaultItems(selectedNode.value), ed)) : [];
+	return {
+		selectedNode,
+		items
+	};
+}
+// src/composable/nuxt-editor/useEditorSync.ts
+function useEditorSync(element, format, parse) {
+	const content = ref(parse(element.value, format));
+	function serialize(value) {
+		return format === "json" ? JSON.stringify(value) : value ?? "";
+	}
+	function update(value) {
+		content.value = value;
+		element.value = serialize(value);
+		element.dispatchEvent(new Event("input", { bubbles: true }));
+		element.dispatchEvent(new Event("change", { bubbles: true }));
+	}
+	function set(value) {
+		content.value = parse(value, format);
+		element.value = value;
+	}
+	return {
+		content,
+		update,
+		set
+	};
 }
 // src/module/nuxt-editor-lib/upload.ts
 function fileNameFromUrl(src) {
@@ -350,173 +381,6 @@ function createImageUpload(deps) {
 			isDisabled: void 0
 		} }
 	};
-}
-// src/module/nuxt-editor-lib/link-popover.ts
-function createLinkBar(c) {
-	const { UButton, UInput, USeparator } = c;
-	return defineComponent({
-		props: { editor: {
-			type: Object,
-			required: true
-		} },
-		setup(props) {
-			const url = ref("");
-			const input = ref();
-			let wasInLink = false;
-			const sync = () => {
-				url.value = props.editor.getAttributes("link").href || "";
-			};
-			const onTransaction = () => {
-				const inLink = props.editor.isActive("link") && props.editor.state.selection.empty;
-				if (inLink && !wasInLink && props.editor.view.hasFocus()) {
-					sync();
-					setTimeout(() => {
-						const el = input.value?.inputRef ?? input.value?.$el?.querySelector?.("input");
-						el?.focus();
-						el?.select();
-					}, 50);
-				}
-				wasInLink = inLink;
-			};
-			props.editor.on("selectionUpdate", sync);
-			props.editor.on("transaction", onTransaction);
-			onBeforeUnmount(() => {
-				props.editor.off("selectionUpdate", sync);
-				props.editor.off("transaction", onTransaction);
-			});
-			sync();
-			const apply = () => {
-				if (url.value) props.editor.chain().focus().extendMarkRange("link").setLink({ href: url.value }).run();
-			};
-			const remove = () => {
-				props.editor.chain().focus().extendMarkRange("link").unsetLink().setMeta("preventAutolink", true).run();
-			};
-			const btn = (icon, title, onClick) => h(UButton, {
-				icon,
-				title,
-				onClick,
-				color: "neutral",
-				variant: "ghost",
-				size: "sm"
-			});
-			return () => h(UInput, {
-				ref: input,
-				"data-link-bar": "",
-				modelValue: url.value,
-				"onUpdate:modelValue": (v) => url.value = v,
-				type: "url",
-				variant: "none",
-				placeholder: "Paste a link...",
-				onFocus: (e) => e.target.select(),
-				class: "min-w-72",
-				onKeydown: (e) => {
-					if (e.key === "Enter") {
-						e.preventDefault();
-						apply();
-					} else if (e.key === "Escape") props.editor.commands.focus();
-				}
-			}, { default: () => h("div", { class: "flex items-center mr-0.5" }, [
-				btn("i-lucide-corner-down-left", "Apply link", apply),
-				h(USeparator, {
-					orientation: "vertical",
-					class: "h-6 mx-1"
-				}),
-				btn("i-lucide-external-link", "Open in new window", () => window.open(url.value, "_blank", "noopener,noreferrer")),
-				btn("i-lucide-trash", "Remove link", remove)
-			]) });
-		}
-	});
-}
-function createLinkPopover(c) {
-	const { UButton, UPopover, UTooltip, UInput, USeparator } = c;
-	return defineComponent({
-		props: { editor: {
-			type: Object,
-			required: true
-		} },
-		setup(props) {
-			const open = ref(false);
-			const url = ref("");
-			const syncUrl = () => {
-				url.value = props.editor.getAttributes("link").href || "";
-			};
-			props.editor.on("selectionUpdate", syncUrl);
-			onBeforeUnmount(() => props.editor.off("selectionUpdate", syncUrl));
-			syncUrl();
-			const setLink = () => {
-				if (!url.value) return;
-				const empty = props.editor.state.selection.empty;
-				let chain = props.editor.chain().focus();
-				if (props.editor.isActive("code") && !empty) chain = chain.extendMarkRange("code").setLink({ href: url.value });
-				else {
-					chain = chain.extendMarkRange("link").setLink({ href: url.value });
-					if (empty) chain = chain.insertContent({
-						type: "text",
-						text: url.value
-					});
-				}
-				chain.run();
-				open.value = false;
-			};
-			const removeLink = () => {
-				props.editor.chain().focus().extendMarkRange("link").unsetLink().setMeta("preventAutolink", true).run();
-				url.value = "";
-				open.value = false;
-			};
-			const btn = (icon, title, onClick) => h(UButton, {
-				icon,
-				title,
-				onClick,
-				color: "neutral",
-				variant: "ghost",
-				size: "sm",
-				disabled: !url.value && !props.editor.isActive("link")
-			});
-			return () => {
-				const active = props.editor.isActive("link");
-				const disabled = !props.editor.isEditable || props.editor.state.selection.empty && !active;
-				return h(UPopover, {
-					open: open.value,
-					"onUpdate:open": (v) => open.value = v,
-					ui: { content: "p-0.5" }
-				}, {
-					default: () => h(UTooltip, { text: "Link" }, () => h(UButton, {
-						icon: "i-lucide-link",
-						color: "neutral",
-						activeColor: "primary",
-						variant: "ghost",
-						activeVariant: "soft",
-						size: "sm",
-						active,
-						disabled
-					})),
-					content: () => h(UInput, {
-						modelValue: url.value,
-						"onUpdate:modelValue": (v) => url.value = v,
-						autofocus: true,
-						type: "url",
-						variant: "none",
-						placeholder: "Paste a link...",
-						onFocus: (e) => e.target.select(),
-						onKeydown: (e) => {
-							if (e.key === "Enter") {
-								e.preventDefault();
-								setLink();
-							}
-						}
-					}, { default: () => h("div", { class: "flex items-center mr-0.5" }, [
-						btn("i-lucide-corner-down-left", "Apply link", setLink),
-						h(USeparator, {
-							orientation: "vertical",
-							class: "h-6 mx-1"
-						}),
-						btn("i-lucide-external-link", "Open in new window", () => window.open(url.value, "_blank", "noopener,noreferrer")),
-						btn("i-lucide-trash", "Remove link", removeLink)
-					]) })
-				});
-			};
-		}
-	});
 }
 // src/module/nuxt-editor-lib/shadow.ts
 function createShadowHost(css) {
@@ -1064,20 +928,9 @@ async function mount(element, options) {
 	loader.style.cssText = "display:flex;align-items:center;justify-content:center;gap:.5rem;min-height:8rem;border:1px solid var(--bs-border-color,#dee2e6);border-radius:.375rem;color:var(--bs-secondary-color,#6c757d);font-size:.875rem;";
 	loader.innerHTML = "<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"><path d=\"M21 12a9 9 0 1 1-6.2-8.55\"><animateTransform attributeName=\"transform\" type=\"rotate\" from=\"0 12 12\" to=\"360 12 12\" dur=\"1s\" repeatCount=\"indefinite\"/></path></svg><span>Loading editor...</span>";
 	element.after(loader);
-	const [{ default: UApp }, { default: UEditor }, { default: UEditorToolbar }, { default: UEditorDragHandle }, { default: UEditorSuggestionMenu }, { default: UDropdownMenu }, { default: UButton }, { default: UFileUpload }, { default: UAvatar }, { default: UPopover }, { default: UTooltip }, { default: UInput }, { default: USeparator }, { Node, Extension, mergeAttributes }, { Plugin, PluginKey }, { Decoration, DecorationSet }, { TextAlign }, { default: TiptapHighlight }, { default: TiptapImage }, { default: TiptapCodeBlock }, { VueNodeViewRenderer, NodeViewWrapper, nodeViewProps }, { mapEditorItems }, { default: ui }, locales] = await Promise.all([
-		import("@nuxt/ui/components/App.vue"),
-		import("@nuxt/ui/components/Editor.vue"),
-		import("@nuxt/ui/components/EditorToolbar.vue"),
-		import("@nuxt/ui/components/EditorDragHandle.vue"),
-		import("@nuxt/ui/components/EditorSuggestionMenu.vue"),
-		import("@nuxt/ui/components/DropdownMenu.vue"),
-		import("@nuxt/ui/components/Button.vue"),
+	const [{ default: UFileUpload }, { default: UAvatar }, { Node, Extension, mergeAttributes }, { Plugin, PluginKey }, { Decoration, DecorationSet }, { TextAlign }, { default: TiptapHighlight }, { default: TiptapImage }, { default: TiptapCodeBlock }, { VueNodeViewRenderer, NodeViewWrapper, nodeViewProps }, { mapEditorItems }, { default: ui }, locales] = await Promise.all([
 		import("@nuxt/ui/components/FileUpload.vue"),
 		import("@nuxt/ui/components/Avatar.vue"),
-		import("@nuxt/ui/components/Popover.vue"),
-		import("@nuxt/ui/components/Tooltip.vue"),
-		import("@nuxt/ui/components/Input.vue"),
-		import("@nuxt/ui/components/Separator.vue"),
 		import("@tiptap/core"),
 		import("@tiptap/pm/state"),
 		import("@tiptap/pm/view"),
@@ -1095,6 +948,7 @@ async function mount(element, options) {
 		element.style.visibility = "";
 		throw e;
 	});
+	const { default: NuxtEditorApp } = await import("./NuxtEditorApp.js");
 	const opts = mergeDeep({
 		format: "html",
 		props: {},
@@ -1103,38 +957,15 @@ async function mount(element, options) {
 	const format = opts.format;
 	const { host, root, portal } = createShadowHost(css);
 	loader.replaceWith(host);
-	const content = ref(parseValue(element.value, format));
+	const { content, update, set } = useEditorSync(element, format, parseValue);
 	const editor = shallowRef(null);
 	const editable = ref(!(opts.readonly || element.readOnly || element.disabled));
 	const resolveItems = createItemsResolver({
 		...globalToolbars,
 		...options.toolbars
 	}, opts);
-	const syncing = { value: false };
-	function serialize(value) {
-		return format === "json" ? JSON.stringify(value) : value ?? "";
-	}
-	function onUpdate() {
-		syncing.value = true;
-		element.value = serialize(content.value);
-		element.dispatchEvent(new Event("input", { bubbles: true }));
-		element.dispatchEvent(new Event("change", { bubbles: true }));
-		syncing.value = false;
-	}
 	const uploadImage = createUploadImage(element, opts);
 	const { toolbarItems, textBubbleItems, imageBubbleItems, suggestionItems, blockMenuItems: defaultBlockMenu } = createToolbars(opts, uploadImage);
-	const LinkPopover = createLinkPopover({
-		UButton,
-		UPopover,
-		UTooltip,
-		UInput,
-		USeparator
-	});
-	const LinkBar = createLinkBar({
-		UButton,
-		UInput,
-		USeparator
-	});
 	const CaptionImage = createCaptionImage(TiptapImage, mergeAttributes, opts);
 	const CodeBlock = createCodeBlock(TiptapCodeBlock, opts);
 	const { ImageUpload, customHandlers } = createImageUpload({
@@ -1147,112 +978,48 @@ async function mount(element, options) {
 		UAvatar,
 		uploadImage
 	});
-	const selectedNode = shallowRef();
-	const blockMenuItems = (ed) => selectedNode.value?.node?.type ? mapEditorItems(ed, resolveItems("blockMenu", defaultBlockMenu(selectedNode.value), ed)) : [];
+	const { selectedNode, items: blockMenuItems } = useBlockMenu(resolveItems, defaultBlockMenu, mapEditorItems);
 	const locale = locales[(opts.locale || "").replace("-", "_")] ?? locales.en;
+	const extensions = [
+		CaptionImage,
+		CodeBlock,
+		TextAlign.configure({ types: ["heading", "paragraph"] }),
+		TiptapHighlight,
+		...opts.imageUploadUrl ? [ImageUpload, createImagePasteDrop({
+			Extension,
+			Plugin,
+			PluginKey,
+			Decoration,
+			DecorationSet
+		}, uploadImage, opts, opts.imageFetchUrl ? createFetchImage(element, opts) : void 0)] : []
+	];
+	const items = {
+		fixed: (ed) => resolveItems("fixed", toolbarItems(), ed),
+		text: (ed) => resolveItems("textBubble", textBubbleItems(), ed),
+		image: (ed) => resolveItems("imageBubble", imageBubbleItems(ed), ed),
+		slash: (ed) => resolveItems("slash", suggestionItems, ed),
+		blockMenu: blockMenuItems
+	};
 	const app = createApp({ setup() {
-		return () => h(UApp, {
-			locale,
-			portal
-		}, () => h(UEditor, {
+		return () => h(NuxtEditorApp, {
 			modelValue: content.value,
-			"onUpdate:modelValue": (v) => {
-				content.value = v;
-				onUpdate();
-			},
-			contentType: format,
-			handlers: customHandlers,
-			image: false,
-			starterKit: { codeBlock: false },
-			extensions: [
-				CaptionImage,
-				CodeBlock,
-				TextAlign.configure({ types: ["heading", "paragraph"] }),
-				TiptapHighlight,
-				...opts.imageUploadUrl ? [ImageUpload, createImagePasteDrop({
-					Extension,
-					Plugin,
-					PluginKey,
-					Decoration,
-					DecorationSet
-				}, uploadImage, opts, opts.imageFetchUrl ? createFetchImage(element, opts) : void 0)] : []
-			],
-			placeholder: "Write, type '/' for commands...",
+			format,
 			editable: editable.value,
-			class: "w-full",
-			ui: { base: "p-4 pl-16 sm:p-4 sm:pl-16 min-h-48 border border-default rounded-md" },
-			onCreate: ({ editor: ed }) => {
+			locale,
+			portal,
+			extensions,
+			handlers: customHandlers,
+			editorProps: opts.props,
+			items,
+			"onUpdate:modelValue": update,
+			onNodeChange: (node) => {
+				selectedNode.value = node;
+			},
+			onCreate: (ed) => {
 				editor.value = ed;
 				element.dispatchEvent(new CustomEvent("nuxt-editor:create", { detail: ed }));
-			},
-			...opts.props
-		}, { default: ({ editor: ed, handlers }) => {
-			if (!editable.value) return null;
-			const fixedItems = resolveItems("fixed", toolbarItems(), ed);
-			const textItems = resolveItems("textBubble", textBubbleItems(), ed);
-			const imageItems = resolveItems("imageBubble", imageBubbleItems(ed), ed);
-			const slashItems = resolveItems("slash", suggestionItems, ed);
-			return [
-				fixedItems.length && h(UEditorToolbar, {
-					editor: ed,
-					items: fixedItems,
-					class: "border-b border-default py-2 overflow-x-auto"
-				}, { link: () => h(LinkPopover, { editor: ed }) }),
-				slashItems.length && h(UEditorSuggestionMenu, {
-					editor: ed,
-					items: slashItems
-				}),
-				textItems.length && h(UEditorToolbar, {
-					editor: ed,
-					items: textItems,
-					layout: "bubble",
-					shouldShow: ({ editor: e, view, state }) => view.hasFocus() && !state.selection.empty && !e.isActive("image") && !e.isActive("imageUpload") && !e.isActive("codeBlock")
-				}, { link: () => h(LinkPopover, { editor: ed }) }),
-				h(UEditorToolbar, {
-					editor: ed,
-					items: [[{ slot: "linkbar" }]],
-					layout: "bubble",
-					shouldShow: ({ editor: e, view, state }) => (view.hasFocus() || !!view.dom.getRootNode().activeElement?.closest?.("[data-link-bar]")) && state.selection.empty && e.isActive("link")
-				}, { linkbar: () => h(LinkBar, { editor: ed }) }),
-				imageItems.length && h(UEditorToolbar, {
-					editor: ed,
-					items: imageItems,
-					layout: "bubble",
-					shouldShow: ({ editor: e, view }) => e.isActive("image") && view.hasFocus()
-				}),
-				h(UEditorDragHandle, {
-					editor: ed,
-					onNodeChange: (node) => {
-						selectedNode.value = node;
-					}
-				}, { default: ({ ui: handleUi, onClick }) => [h(UButton, {
-					icon: "i-lucide-plus",
-					color: "neutral",
-					variant: "ghost",
-					size: "sm",
-					class: handleUi.handle(),
-					onClick: (e) => {
-						e.stopPropagation();
-						const selected = onClick();
-						handlers.suggestion?.execute(ed, { pos: selected?.pos }).run();
-					}
-				}), h(UDropdownMenu, {
-					modal: false,
-					items: blockMenuItems(ed),
-					content: { side: "left" },
-					ui: { content: "w-48" },
-					"onUpdate:open": (open) => ed.chain().setMeta("lockDragHandle", open).run()
-				}, { default: ({ open }) => h(UButton, {
-					icon: "i-lucide-grip-vertical",
-					color: "neutral",
-					variant: "ghost",
-					activeVariant: "soft",
-					size: "sm",
-					active: open,
-					class: handleUi.handle()
-				}) })] })
-			];
-		} }));
+			}
+		});
 	} });
 	app.use(ui);
 	app.mount(root);
@@ -1266,8 +1033,7 @@ async function mount(element, options) {
 			return element.value;
 		},
 		setValue(value) {
-			content.value = parseValue(value, format);
-			element.value = value;
+			set(value);
 		},
 		insert(html) {
 			editor.value?.chain().focus().insertContent(html).run();
