@@ -1,3 +1,4 @@
+import { trans } from '../../service/lang';
 import type { NuxtEditorOptions } from './types';
 
 const DEFAULT_LANGUAGES: Record<string, string> = {
@@ -43,7 +44,7 @@ export function createCodeBlock(CodeBlock: any, opts: NuxtEditorOptions) {
 
         const sync = () => {
           select.innerHTML = '';
-          select.add(new Option('Plain text', ''));
+          select.add(new Option(trans('unicorn.nuxt.editor.text.plain.text'), ''));
 
           for (const [value, label] of Object.entries(languages)) {
             select.add(new Option(label, value));

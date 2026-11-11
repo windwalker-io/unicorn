@@ -1,4 +1,5 @@
 import { defineComponent, h, ref, watch } from 'vue';
+import { trans } from '../../service/lang';
 import type { UploadImage } from './types';
 import { fileNameFromUrl } from './upload';
 
@@ -55,7 +56,7 @@ export function createImageUpload(deps: {
             file.value = v;
           },
           accept: 'image/*',
-          label: 'Upload an image',
+          label: trans('unicorn.nuxt.editor.action.upload.image'),
           description: 'SVG, PNG, JPG or GIF',
           preview: false,
           class: 'min-h-48',

@@ -1,4 +1,5 @@
 // Color palette, recent colors and the "Text Colors / Background Colors" menu shared by the table and text toolbars.
+import { trans } from '../../service/lang';
 
 export const DEFAULT_COLORS: Record<string, string> = {
   Primary: 'var(--bs-primary)',
@@ -90,16 +91,16 @@ export function createColorMenu(
     ));
 
     return [
-      ...(recent.length ? [[{ type: 'label', label: 'Recent colors' }, ...recent]] : []),
+      ...(recent.length ? [[{ type: 'label', label: trans('unicorn.nuxt.editor.text.recent.colors') }, ...recent]] : []),
       [
-        { icon: 'i-lucide-ban', label: 'Default', onSelect: () => { select(kind, null); } },
+        { icon: 'i-lucide-ban', label: trans('unicorn.nuxt.editor.action.default'), onSelect: () => { select(kind, null); } },
         ...Object.entries(colors).map(([label, color]) => colorItem(kind, label, color)),
       ],
     ];
   };
 
   return [
-    { icon: 'i-lucide-baseline', label: 'Text Colors', children: palette('text') },
-    { icon: 'i-lucide-paint-bucket', label: 'Background Colors', children: palette('background') },
+    { icon: 'i-lucide-baseline', label: trans('unicorn.nuxt.editor.action.text.colors'), children: palette('text') },
+    { icon: 'i-lucide-paint-bucket', label: trans('unicorn.nuxt.editor.action.background.colors'), children: palette('background') },
   ];
 }

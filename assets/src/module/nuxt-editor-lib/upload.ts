@@ -1,4 +1,5 @@
 import { useHttpClient, useStack } from '../../composable';
+import { trans } from '../../service/lang';
 import type { NuxtEditorOptions, UploadImage } from './types';
 
 // File name (without query / hash) of an uploaded URL, used as the default alt text.
@@ -195,7 +196,7 @@ function createPasteDropPlugins(
               + 'fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-6.2-8.55">'
               + '<animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" '
               + 'dur="1s" repeatCount="indefinite"/></path></svg></span>'
-              + '<span class="nuxt-upload-placeholder__label">Uploading...</span>';
+              + '<span class="nuxt-upload-placeholder__label">' + trans('unicorn.nuxt.editor.message.uploading') + '</span>';
 
             set = set.add(tr.doc, [Decoration.widget(meta.add.pos, el, { id: meta.add.id, side: -1 })]);
           }

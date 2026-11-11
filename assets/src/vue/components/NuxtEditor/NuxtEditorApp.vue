@@ -3,6 +3,7 @@
 import UApp from '@nuxt/ui/components/App.vue';
 // @ts-ignore
 import UEditor from '@nuxt/ui/components/Editor.vue';
+import { trans } from '../../../service/lang';
 import { useLinkAutoSelect } from '../../../composable/nuxt-editor/useLinkAutoSelect';
 import EditorDragHandle from './EditorDragHandle.vue';
 import EditorToolbars from './EditorToolbars.vue';
@@ -48,7 +49,7 @@ function onCreate({ editor }: { editor: Editor }) {
       :image="false"
       :starter-kit="{ codeBlock: false }"
       :extensions="extensions"
-      placeholder="Write, type '/' for commands..."
+      :placeholder="trans('unicorn.nuxt.editor.field.editor.placeholder')"
       :editable="editable"
       class="w-full"
       :ui="{ base: 'p-4 pl-16 sm:p-4 sm:pl-16 min-h-48 border border-default rounded-md' }"

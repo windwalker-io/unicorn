@@ -30,6 +30,8 @@ class EditorScript extends AbstractScript
     public function nuxtEditor(string $selector, array $options = []): void
     {
         if ($this->available($selector)) {
+            $this->unicornScript->translate('unicorn.nuxt.editor.*');
+
             $optionsString = static::getJSObject($options);
 
             $this->unicornScript->importMainThen(

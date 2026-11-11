@@ -9,6 +9,7 @@ import UPopover from '@nuxt/ui/components/Popover.vue';
 // @ts-ignore
 import UTooltip from '@nuxt/ui/components/Tooltip.vue';
 import { attrsOf, parseEmbedInput } from '../../../module/nuxt-editor-lib/video-embed';
+import { trans } from '../../../service/lang';
 import type { Editor } from './types';
 
 // Button in the selected-video bubble: pops up a URL / iframe field to change the source of the video.
@@ -58,8 +59,8 @@ function onFocusIn(e: FocusEvent) {
 
 <template>
   <UPopover v-model:open="open" :ui="{ content: 'p-0.5 w-[28rem] max-w-[90vw]' }">
-    <UTooltip text="Change source">
-      <UButton icon="i-lucide-pencil" color="neutral" variant="ghost" size="sm" aria-label="Change source" />
+    <UTooltip :text="trans('unicorn.nuxt.editor.action.change.source')">
+      <UButton icon="i-lucide-pencil" color="neutral" variant="ghost" size="sm" :aria-label="trans('unicorn.nuxt.editor.action.change.source')" />
     </UTooltip>
 
     <template #content>
@@ -71,14 +72,14 @@ function onFocusIn(e: FocusEvent) {
           variant="none"
           class="w-full"
           :color="invalid ? 'error' : undefined"
-          :placeholder="invalid ? 'Unsupported video URL or iframe' : 'Paste a video URL or <iframe> code...'"
+          :placeholder="invalid ? trans('unicorn.nuxt.editor.message.video.unsupported') : trans('unicorn.nuxt.editor.field.video.placeholder')"
           @input="invalid = false"
           @focusin="onFocusIn"
           @keydown="onKeydown"
         >
           <div class="flex items-center mr-0.5">
             <UButton
-              icon="i-lucide-corner-down-left" title="Apply" color="neutral" variant="ghost" size="sm"
+              icon="i-lucide-corner-down-left" :title="trans('unicorn.nuxt.editor.action.apply')" color="neutral" variant="ghost" size="sm"
               :disabled="!url" @click="apply"
             />
           </div>

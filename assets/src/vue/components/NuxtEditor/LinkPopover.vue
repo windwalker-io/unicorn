@@ -12,6 +12,7 @@ import USeparator from '@nuxt/ui/components/Separator.vue';
 import UTooltip from '@nuxt/ui/components/Tooltip.vue';
 
 // Link button + popover (port of the docs' EditorLinkPopover): set, open and remove a link on the selection.
+import { trans } from '../../../service/lang';
 import type { Editor } from './types';
 
 const props = defineProps<{ editor: Editor }>();
@@ -78,7 +79,7 @@ function onKeydown(e: KeyboardEvent) {
 
 <template>
   <UPopover v-model:open="open" :ui="{ content: 'p-0.5' }">
-    <UTooltip text="Link">
+    <UTooltip :text="trans('unicorn.nuxt.editor.action.link')">
       <UButton
         icon="i-lucide-link"
         color="neutral"
@@ -97,22 +98,22 @@ function onKeydown(e: KeyboardEvent) {
         autofocus
         type="url"
         variant="none"
-        placeholder="Paste a link..."
+        :placeholder="trans('unicorn.nuxt.editor.field.link.placeholder')"
         @focusin="onFocusIn"
         @keydown="onKeydown"
       >
         <div class="flex items-center mr-0.5">
           <UButton
-            icon="i-lucide-corner-down-left" title="Apply link" color="neutral" variant="ghost" size="sm"
+            icon="i-lucide-corner-down-left" :title="trans('unicorn.nuxt.editor.action.apply.link')" color="neutral" variant="ghost" size="sm"
             :disabled="!url && !editor.isActive('link')" @click="setLink"
           />
           <USeparator orientation="vertical" class="h-6 mx-1" />
           <UButton
-            icon="i-lucide-external-link" title="Open in new window" color="neutral" variant="ghost" size="sm"
+            icon="i-lucide-external-link" :title="trans('unicorn.nuxt.editor.action.open.in.new.window')" color="neutral" variant="ghost" size="sm"
             :disabled="!url && !editor.isActive('link')" @click="openLink"
           />
           <UButton
-            icon="i-lucide-unlink" title="Unlink" color="neutral" variant="ghost" size="sm"
+            icon="i-lucide-unlink" :title="trans('unicorn.nuxt.editor.action.unlink')" color="neutral" variant="ghost" size="sm"
             :disabled="!url && !editor.isActive('link')" @click="removeLink"
           />
         </div>

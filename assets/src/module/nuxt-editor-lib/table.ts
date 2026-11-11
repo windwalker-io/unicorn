@@ -1,4 +1,5 @@
 import { createColorMenu, resolveColors, toBackground } from './colors';
+import { trans } from '../../service/lang';
 import type { Editor } from '../../vue/components/NuxtEditor/types';
 
 // Table commands exposed as custom `kind` handlers, so toolbars/menus can reference them by name.
@@ -174,22 +175,22 @@ export function createTable(tableExt: any, pmTables: any, pmModel: any, tableOpt
   );
 
   const toolbarGroup = () => [
-    { kind: 'insertTable', icon: 'i-lucide-table', tooltip: { text: 'Insert Table' } },
+    { kind: 'insertTable', icon: 'i-lucide-table', tooltip: { text: trans('unicorn.nuxt.editor.action.insert.table') } },
     {
       icon: 'i-lucide-table-properties',
-      tooltip: { text: 'Table' },
+      tooltip: { text: trans('unicorn.nuxt.editor.action.table') },
       content: { align: 'start' },
       items: [
-        { kind: 'addRowBefore', icon: 'i-lucide-arrow-up-from-line', label: 'Add row above' },
-        { kind: 'addRowAfter', icon: 'i-lucide-arrow-down-from-line', label: 'Add row below' },
-        { kind: 'deleteRow', icon: 'i-lucide-table-rows-split', label: 'Delete row' },
-        { kind: 'addColumnBefore', icon: 'i-lucide-arrow-left-from-line', label: 'Add column before' },
-        { kind: 'addColumnAfter', icon: 'i-lucide-arrow-right-from-line', label: 'Add column after' },
-        { kind: 'deleteColumn', icon: 'i-lucide-table-columns-split', label: 'Delete column' },
-        { kind: 'toggleHeaderRow', icon: 'i-lucide-heading', label: 'Toggle header row' },
-        { kind: 'mergeCells', icon: 'i-lucide-table-cells-merge', label: 'Merge cells' },
-        { kind: 'splitCell', icon: 'i-lucide-table-cells-split', label: 'Split cell' },
-        { kind: 'deleteTable', icon: 'i-lucide-trash', label: 'Delete table', color: 'error' },
+        { kind: 'addRowBefore', icon: 'i-lucide-arrow-up-from-line', label: trans('unicorn.nuxt.editor.action.add.row.above') },
+        { kind: 'addRowAfter', icon: 'i-lucide-arrow-down-from-line', label: trans('unicorn.nuxt.editor.action.add.row.below') },
+        { kind: 'deleteRow', icon: 'i-lucide-table-rows-split', label: trans('unicorn.nuxt.editor.action.delete.row') },
+        { kind: 'addColumnBefore', icon: 'i-lucide-arrow-left-from-line', label: trans('unicorn.nuxt.editor.action.add.column.before') },
+        { kind: 'addColumnAfter', icon: 'i-lucide-arrow-right-from-line', label: trans('unicorn.nuxt.editor.action.add.column.after') },
+        { kind: 'deleteColumn', icon: 'i-lucide-table-columns-split', label: trans('unicorn.nuxt.editor.action.delete.column') },
+        { kind: 'toggleHeaderRow', icon: 'i-lucide-heading', label: trans('unicorn.nuxt.editor.action.toggle.header.row') },
+        { kind: 'mergeCells', icon: 'i-lucide-table-cells-merge', label: trans('unicorn.nuxt.editor.action.merge.cells') },
+        { kind: 'splitCell', icon: 'i-lucide-table-cells-split', label: trans('unicorn.nuxt.editor.action.split.cell') },
+        { kind: 'deleteTable', icon: 'i-lucide-trash', label: trans('unicorn.nuxt.editor.action.delete.table'), color: 'error' },
       ],
     },
   ];
@@ -197,53 +198,53 @@ export function createTable(tableExt: any, pmTables: any, pmModel: any, tableOpt
   // Menu for the floating cell handle; groups are separated by dividers.
   const menuGroups: [string, string, string, boolean?][][] = [
     [
-      ['addRowBefore', 'i-lucide-arrow-up-from-line', 'Add row above'],
-      ['addRowAfter', 'i-lucide-arrow-down-from-line', 'Add row below'],
-      ['deleteRow', 'i-lucide-table-rows-split', 'Delete row'],
-      ['toggleHeaderRow', 'i-lucide-heading', 'Toggle header row'],
+      ['addRowBefore', 'i-lucide-arrow-up-from-line', trans('unicorn.nuxt.editor.action.add.row.above')],
+      ['addRowAfter', 'i-lucide-arrow-down-from-line', trans('unicorn.nuxt.editor.action.add.row.below')],
+      ['deleteRow', 'i-lucide-table-rows-split', trans('unicorn.nuxt.editor.action.delete.row')],
+      ['toggleHeaderRow', 'i-lucide-heading', trans('unicorn.nuxt.editor.action.toggle.header.row')],
     ],
     [
-      ['addColumnBefore', 'i-lucide-arrow-left-from-line', 'Add column before'],
-      ['addColumnAfter', 'i-lucide-arrow-right-from-line', 'Add column after'],
-      ['deleteColumn', 'i-lucide-table-columns-split', 'Delete column'],
+      ['addColumnBefore', 'i-lucide-arrow-left-from-line', trans('unicorn.nuxt.editor.action.add.column.before')],
+      ['addColumnAfter', 'i-lucide-arrow-right-from-line', trans('unicorn.nuxt.editor.action.add.column.after')],
+      ['deleteColumn', 'i-lucide-table-columns-split', trans('unicorn.nuxt.editor.action.delete.column')],
     ],
     [
-      ['mergeCells', 'i-lucide-table-cells-merge', 'Merge cells'],
-      ['splitCell', 'i-lucide-table-cells-split', 'Split cell'],
+      ['mergeCells', 'i-lucide-table-cells-merge', trans('unicorn.nuxt.editor.action.merge.cells')],
+      ['splitCell', 'i-lucide-table-cells-split', trans('unicorn.nuxt.editor.action.split.cell')],
     ],
-    [['deleteTable', 'i-lucide-trash', 'Delete table', true]],
+    [['deleteTable', 'i-lucide-trash', trans('unicorn.nuxt.editor.action.delete.table'), true]],
   ];
 
   const scopes = { cell: [2], row: [0], column: [1] };
 
   const customGroups: Record<'row' | 'column', [string, string, string][]> = {
     row: [
-      ['moveRowUp', 'i-lucide-move-up', 'Move row up'],
-      ['moveRowDown', 'i-lucide-move-down', 'Move row down'],
-      ['duplicateRow', 'i-lucide-copy-plus', 'Duplicate row'],
+      ['moveRowUp', 'i-lucide-move-up', trans('unicorn.nuxt.editor.action.move.row.up')],
+      ['moveRowDown', 'i-lucide-move-down', trans('unicorn.nuxt.editor.action.move.row.down')],
+      ['duplicateRow', 'i-lucide-copy-plus', trans('unicorn.nuxt.editor.action.duplicate.row')],
     ],
     column: [
-      ['moveColumnLeft', 'i-lucide-move-left', 'Move column left'],
-      ['moveColumnRight', 'i-lucide-move-right', 'Move column right'],
-      ['duplicateColumn', 'i-lucide-copy-plus', 'Duplicate column'],
+      ['moveColumnLeft', 'i-lucide-move-left', trans('unicorn.nuxt.editor.action.move.column.left')],
+      ['moveColumnRight', 'i-lucide-move-right', trans('unicorn.nuxt.editor.action.move.column.right')],
+      ['duplicateColumn', 'i-lucide-copy-plus', trans('unicorn.nuxt.editor.action.duplicate.column')],
     ],
   };
 
   const alignmentMenu = (ed: Editor) => ({
     icon: 'i-lucide-align-center',
-    label: 'Alignment',
+    label: trans('unicorn.nuxt.editor.action.alignment'),
     children: [
       [
-        ['left', 'i-lucide-align-left', 'Align left'],
-        ['center', 'i-lucide-align-center', 'Align center'],
-        ['right', 'i-lucide-align-right', 'Align right'],
+        ['left', 'i-lucide-align-left', trans('unicorn.nuxt.editor.action.align.left')],
+        ['center', 'i-lucide-align-center', trans('unicorn.nuxt.editor.action.align.center')],
+        ['right', 'i-lucide-align-right', trans('unicorn.nuxt.editor.action.align.right')],
       ].map(([value, icon, label]) => ({
         icon, label, onSelect: () => { setCellAttrs(ed, 'cell', { textAlign: value }); },
       })),
       [
-        ['top', 'i-lucide-align-vertical-justify-start', 'Align top'],
-        ['middle', 'i-lucide-align-vertical-justify-center', 'Align middle'],
-        ['bottom', 'i-lucide-align-vertical-justify-end', 'Align bottom'],
+        ['top', 'i-lucide-align-vertical-justify-start', trans('unicorn.nuxt.editor.action.align.top')],
+        ['middle', 'i-lucide-align-vertical-justify-center', trans('unicorn.nuxt.editor.action.align.middle')],
+        ['bottom', 'i-lucide-align-vertical-justify-end', trans('unicorn.nuxt.editor.action.align.bottom')],
       ].map(([value, icon, label]) => ({
         icon, label, onSelect: () => { setCellAttrs(ed, 'cell', { verticalAlign: value }); },
       })),

@@ -1,6 +1,7 @@
 import { n as __exportAll } from "./rolldown-runtime.js";
 import { d as selectOne } from "./dom.js";
 import { t as mergeDeep } from "./arr.js";
+import { n as trans } from "./lang.js";
 import { useHttpClient, useStack } from "../unicorn.js";
 import { createApp, defineComponent, h, ref, shallowRef, watch } from "vue";
 import { convertUrlToEmbedUrl, getProviderFromUrl } from "@social-embed/lib";
@@ -76,7 +77,7 @@ function createCaptionImage(TiptapImage, mergeAttributes, opts) {
 				const wrap = document.createElement("div");
 				const input = document.createElement("input");
 				input.className = "nuxt-editor-caption";
-				input.placeholder = "Add a caption...";
+				input.placeholder = trans("unicorn.nuxt.editor.field.caption.placeholder");
 				input.value = readCaption(props.node);
 				const toggle = (selected = false) => {
 					input.style.display = selected || input.value ? "" : "none";
@@ -284,7 +285,7 @@ function createPasteDropPlugins(ed, { Plugin, key, Decoration, DecorationSet }, 
 					const el = document.createElement("div");
 					el.className = "nuxt-upload-placeholder";
 					el.setAttribute("contenteditable", "false");
-					el.innerHTML = "<span class=\"nuxt-upload-placeholder__icon\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"><path d=\"M21 12a9 9 0 1 1-6.2-8.55\"><animateTransform attributeName=\"transform\" type=\"rotate\" from=\"0 12 12\" to=\"360 12 12\" dur=\"1s\" repeatCount=\"indefinite\"/></path></svg></span><span class=\"nuxt-upload-placeholder__label\">Uploading...</span>";
+					el.innerHTML = "<span class=\"nuxt-upload-placeholder__icon\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"><path d=\"M21 12a9 9 0 1 1-6.2-8.55\"><animateTransform attributeName=\"transform\" type=\"rotate\" from=\"0 12 12\" to=\"360 12 12\" dur=\"1s\" repeatCount=\"indefinite\"/></path></svg></span><span class=\"nuxt-upload-placeholder__label\">" + trans("unicorn.nuxt.editor.message.uploading") + "</span>";
 					set = set.add(tr.doc, [Decoration.widget(meta.add.pos, el, {
 						id: meta.add.id,
 						side: -1
@@ -355,7 +356,7 @@ function createImageUpload(deps) {
 					file.value = v;
 				},
 				accept: "image/*",
-				label: "Upload an image",
+				label: trans("unicorn.nuxt.editor.action.upload.image"),
 				description: "SVG, PNG, JPG or GIF",
 				preview: false,
 				class: "min-h-48"
@@ -430,124 +431,140 @@ function createToolbars(opts, uploadImage) {
 		3,
 		4
 	];
+	const headingLabel = (level) => trans("unicorn.nuxt.editor.action.heading", level);
 	const marksGroup = [
 		{
 			kind: "mark",
 			mark: "bold",
 			icon: "i-lucide-bold",
-			tooltip: { text: "Bold" }
+			tooltip: { text: trans("unicorn.nuxt.editor.action.bold") }
 		},
 		{
 			kind: "mark",
 			mark: "italic",
 			icon: "i-lucide-italic",
-			tooltip: { text: "Italic" }
+			tooltip: { text: trans("unicorn.nuxt.editor.action.italic") }
 		},
 		{
 			kind: "mark",
 			mark: "underline",
 			icon: "i-lucide-underline",
-			tooltip: { text: "Underline" }
+			tooltip: { text: trans("unicorn.nuxt.editor.action.underline") }
 		},
 		{
 			kind: "mark",
 			mark: "strike",
 			icon: "i-lucide-strikethrough",
-			tooltip: { text: "Strikethrough" }
+			tooltip: { text: trans("unicorn.nuxt.editor.action.strikethrough") }
 		},
 		{
 			kind: "mark",
 			mark: "code",
 			icon: "i-lucide-code",
-			tooltip: { text: "Code" }
+			tooltip: { text: trans("unicorn.nuxt.editor.action.code") }
 		},
 		{
 			kind: "mark",
 			mark: "highlight",
 			icon: "i-lucide-highlighter",
-			tooltip: { text: "Highlight" }
+			tooltip: { text: trans("unicorn.nuxt.editor.action.highlight") }
 		}
 	];
 	const colorsButton = () => [{
 		slot: "colors",
 		colorKind: "text",
 		icon: "i-lucide-baseline",
-		tooltip: { text: "Text Colors" },
+		tooltip: { text: trans("unicorn.nuxt.editor.action.text.colors") },
 		colors: opts.tableColors
 	}, {
 		slot: "colors",
 		colorKind: "background",
 		icon: "i-lucide-paint-bucket",
-		tooltip: { text: "Background Colors" },
+		tooltip: { text: trans("unicorn.nuxt.editor.action.background.colors") },
 		colors: opts.tableColors
 	}];
 	const imageButton = () => opts.imageUploadUrl ? [{
 		kind: "uploadImage",
 		icon: "i-lucide-image",
-		tooltip: { text: "Image" }
+		tooltip: { text: trans("unicorn.nuxt.editor.action.image") }
 	}] : [];
 	const alignButtons = [
-		"left",
-		"center",
-		"right",
-		"justify"
-	].map((align) => ({
-		kind: "textAlign",
-		align,
-		icon: `i-lucide-align-${align}`,
-		tooltip: { text: `Align ${align[0].toUpperCase()}${align.slice(1)}` }
-	}));
+		{
+			kind: "textAlign",
+			align: "left",
+			icon: "i-lucide-align-left",
+			tooltip: { text: trans("unicorn.nuxt.editor.action.align.left") }
+		},
+		{
+			kind: "textAlign",
+			align: "center",
+			icon: "i-lucide-align-center",
+			tooltip: { text: trans("unicorn.nuxt.editor.action.align.center") }
+		},
+		{
+			kind: "textAlign",
+			align: "right",
+			icon: "i-lucide-align-right",
+			tooltip: { text: trans("unicorn.nuxt.editor.action.align.right") }
+		},
+		{
+			kind: "textAlign",
+			align: "justify",
+			icon: "i-lucide-align-justify",
+			tooltip: { text: trans("unicorn.nuxt.editor.action.align.justify") }
+		}
+	];
 	function toolbarItems() {
 		return [
 			[{
 				kind: "undo",
 				icon: "i-lucide-undo",
-				tooltip: { text: "Undo" }
+				tooltip: { text: trans("unicorn.nuxt.editor.action.undo") }
 			}, {
 				kind: "redo",
 				icon: "i-lucide-redo",
-				tooltip: { text: "Redo" }
+				tooltip: { text: trans("unicorn.nuxt.editor.action.redo") }
 			}],
 			[
 				{
 					icon: "i-lucide-heading",
-					tooltip: { text: "Headings" },
+					tooltip: { text: trans("unicorn.nuxt.editor.action.headings") },
 					content: { align: "start" },
 					items: headingLevels.map((level) => ({
 						kind: "heading",
 						level,
 						icon: `i-lucide-heading-${level}`,
-						label: `Heading ${level}`
+						label: headingLabel(level)
 					}))
 				},
 				{
 					icon: "i-lucide-list",
-					tooltip: { text: "Lists" },
+					tooltip: { text: trans("unicorn.nuxt.editor.action.lists") },
 					content: { align: "start" },
 					items: [{
 						kind: "bulletList",
 						icon: "i-lucide-list",
-						label: "Bullet List"
+						label: trans("unicorn.nuxt.editor.action.bullet.list")
 					}, {
 						kind: "orderedList",
 						icon: "i-lucide-list-ordered",
-						label: "Ordered List"
+						label: trans("unicorn.nuxt.editor.action.ordered.list")
 					}]
 				},
 				{
 					kind: "blockquote",
 					icon: "i-lucide-text-quote",
-					tooltip: { text: "Blockquote" }
+					tooltip: { text: trans("unicorn.nuxt.editor.action.blockquote") }
 				},
 				{
 					kind: "codeBlock",
 					icon: "i-lucide-square-code",
-					tooltip: { text: "Code Block" }
+					tooltip: { text: trans("unicorn.nuxt.editor.action.code.block") }
 				},
 				{
 					kind: "horizontalRule",
 					icon: "i-lucide-separator-horizontal",
-					tooltip: { text: "Horizontal Rule" }
+					tooltip: { text: trans("unicorn.nuxt.editor.action.horizontal.rule") }
 				}
 			],
 			[...marksGroup, ...colorsButton()],
@@ -568,48 +585,48 @@ function createToolbars(opts, uploadImage) {
 	function textBubbleItems() {
 		return [
 			[{
-				label: "Turn into",
+				label: trans("unicorn.nuxt.editor.action.turn.into"),
 				trailingIcon: "i-lucide-chevron-down",
 				activeColor: "neutral",
 				activeVariant: "ghost",
-				tooltip: { text: "Turn into" },
+				tooltip: { text: trans("unicorn.nuxt.editor.action.turn.into") },
 				content: { align: "start" },
 				ui: { label: "text-xs" },
 				items: [
 					{
 						type: "label",
-						label: "Turn into"
+						label: trans("unicorn.nuxt.editor.action.turn.into")
 					},
 					{
 						kind: "paragraph",
-						label: "Paragraph",
+						label: trans("unicorn.nuxt.editor.action.paragraph"),
 						icon: "i-lucide-type"
 					},
 					...headingLevels.map((level) => ({
 						kind: "heading",
 						level,
 						icon: `i-lucide-heading-${level}`,
-						label: `Heading ${level}`
+						label: headingLabel(level)
 					})),
 					{
 						kind: "bulletList",
 						icon: "i-lucide-list",
-						label: "Bullet List"
+						label: trans("unicorn.nuxt.editor.action.bullet.list")
 					},
 					{
 						kind: "orderedList",
 						icon: "i-lucide-list-ordered",
-						label: "Ordered List"
+						label: trans("unicorn.nuxt.editor.action.ordered.list")
 					},
 					{
 						kind: "blockquote",
 						icon: "i-lucide-text-quote",
-						label: "Blockquote"
+						label: trans("unicorn.nuxt.editor.action.blockquote")
 					},
 					{
 						kind: "codeBlock",
 						icon: "i-lucide-square-code",
-						label: "Code Block"
+						label: trans("unicorn.nuxt.editor.action.code.block")
 					}
 				]
 			}],
@@ -625,7 +642,7 @@ function createToolbars(opts, uploadImage) {
 		const src = ed.state.selection.node?.attrs?.src;
 		return [[{
 			icon: "i-lucide-external-link",
-			tooltip: { text: "Open in new window" },
+			tooltip: { text: trans("unicorn.nuxt.editor.action.open.in.new.window") },
 			onClick: () => window.open(src, "_blank", "noopener,noreferrer")
 		}, {
 			slot: "videosource",
@@ -633,7 +650,7 @@ function createToolbars(opts, uploadImage) {
 		}], [{
 			icon: "i-lucide-trash",
 			color: "error",
-			tooltip: { text: "Delete" },
+			tooltip: { text: trans("unicorn.nuxt.editor.action.delete") },
 			onClick: () => ed.chain().focus().deleteSelection().run()
 		}]];
 	}
@@ -663,22 +680,22 @@ function createToolbars(opts, uploadImage) {
 		return [
 			[{
 				icon: "i-lucide-external-link",
-				tooltip: { text: "Open in new window" },
+				tooltip: { text: trans("unicorn.nuxt.editor.action.open.in.new.window") },
 				onClick: () => window.open(node?.attrs?.src, "_blank", "noopener,noreferrer")
 			}, {
 				icon: "i-lucide-download",
-				tooltip: { text: "Download" },
+				tooltip: { text: trans("unicorn.nuxt.editor.action.download") },
 				onClick: download
 			}],
 			...opts.imageUploadUrl ? [[{
 				icon: "i-lucide-replace",
-				tooltip: { text: "Replace" },
+				tooltip: { text: trans("unicorn.nuxt.editor.action.replace") },
 				onClick: replace
 			}]] : [],
 			[{
 				icon: "i-lucide-trash",
 				color: "error",
-				tooltip: { text: "Delete" },
+				tooltip: { text: trans("unicorn.nuxt.editor.action.delete") },
 				onClick: () => ed.chain().focus().deleteSelection().run()
 			}]
 		];
@@ -686,11 +703,11 @@ function createToolbars(opts, uploadImage) {
 	const suggestionItems = [
 		{
 			type: "label",
-			label: "Style"
+			label: trans("unicorn.nuxt.editor.text.style")
 		},
 		{
 			kind: "paragraph",
-			label: "Paragraph",
+			label: trans("unicorn.nuxt.editor.action.paragraph"),
 			icon: "i-lucide-type"
 		},
 		...[
@@ -700,46 +717,46 @@ function createToolbars(opts, uploadImage) {
 		].map((level) => ({
 			kind: "heading",
 			level,
-			label: `Heading ${level}`,
+			label: headingLabel(level),
 			icon: `i-lucide-heading-${level}`
 		})),
 		{
 			kind: "bulletList",
-			label: "Bullet List",
+			label: trans("unicorn.nuxt.editor.action.bullet.list"),
 			icon: "i-lucide-list"
 		},
 		{
 			kind: "orderedList",
-			label: "Numbered List",
+			label: trans("unicorn.nuxt.editor.action.numbered.list"),
 			icon: "i-lucide-list-ordered"
 		},
 		{
 			kind: "blockquote",
-			label: "Blockquote",
+			label: trans("unicorn.nuxt.editor.action.blockquote"),
 			icon: "i-lucide-text-quote"
 		},
 		{
 			kind: "codeBlock",
-			label: "Code Block",
+			label: trans("unicorn.nuxt.editor.action.code.block"),
 			icon: "i-lucide-square-code"
 		},
 		{
 			type: "label",
-			label: "Insert"
+			label: trans("unicorn.nuxt.editor.text.insert")
 		},
 		...opts.imageUploadUrl ? [{
 			kind: "uploadImage",
-			label: "Image",
+			label: trans("unicorn.nuxt.editor.action.image"),
 			icon: "i-lucide-image"
 		}] : [],
 		{
 			kind: "insertTable",
-			label: "Table",
+			label: trans("unicorn.nuxt.editor.action.table"),
 			icon: "i-lucide-table"
 		},
 		{
 			kind: "horizontalRule",
-			label: "Horizontal Rule",
+			label: trans("unicorn.nuxt.editor.action.horizontal.rule"),
 			icon: "i-lucide-separator-horizontal"
 		}
 	].reduce((groups, item) => {
@@ -752,12 +769,12 @@ function createToolbars(opts, uploadImage) {
 		const pos = sel.pos;
 		return [
 			[{
-				label: "Turn into",
+				label: trans("unicorn.nuxt.editor.action.turn.into"),
 				icon: "i-lucide-repeat-2",
 				children: [
 					{
 						kind: "paragraph",
-						label: "Paragraph",
+						label: trans("unicorn.nuxt.editor.action.paragraph"),
 						icon: "i-lucide-type"
 					},
 					...[
@@ -768,61 +785,61 @@ function createToolbars(opts, uploadImage) {
 					].map((level) => ({
 						kind: "heading",
 						level,
-						label: `Heading ${level}`,
+						label: headingLabel(level),
 						icon: `i-lucide-heading-${level}`
 					})),
 					{
 						kind: "bulletList",
-						label: "Bullet List",
+						label: trans("unicorn.nuxt.editor.action.bullet.list"),
 						icon: "i-lucide-list"
 					},
 					{
 						kind: "orderedList",
-						label: "Ordered List",
+						label: trans("unicorn.nuxt.editor.action.ordered.list"),
 						icon: "i-lucide-list-ordered"
 					},
 					{
 						kind: "blockquote",
-						label: "Blockquote",
+						label: trans("unicorn.nuxt.editor.action.blockquote"),
 						icon: "i-lucide-text-quote"
 					},
 					{
 						kind: "codeBlock",
-						label: "Code Block",
+						label: trans("unicorn.nuxt.editor.action.code.block"),
 						icon: "i-lucide-square-code"
 					}
 				]
 			}, {
 				kind: "clearFormatting",
 				pos,
-				label: "Clear formatting",
+				label: trans("unicorn.nuxt.editor.action.clear.formatting"),
 				icon: "i-lucide-remove-formatting"
 			}],
 			[{
 				kind: "duplicate",
 				pos,
-				label: "Duplicate",
+				label: trans("unicorn.nuxt.editor.action.duplicate"),
 				icon: "i-lucide-copy"
 			}, {
-				label: "Copy to clipboard",
+				label: trans("unicorn.nuxt.editor.action.copy.to.clipboard"),
 				icon: "i-lucide-clipboard",
 				onSelect: () => navigator.clipboard.writeText(sel.node.textContent)
 			}],
 			[{
 				kind: "moveUp",
 				pos,
-				label: "Move up",
+				label: trans("unicorn.nuxt.editor.action.move.up"),
 				icon: "i-lucide-arrow-up"
 			}, {
 				kind: "moveDown",
 				pos,
-				label: "Move down",
+				label: trans("unicorn.nuxt.editor.action.move.down"),
 				icon: "i-lucide-arrow-down"
 			}],
 			[{
 				kind: "delete",
 				pos,
-				label: "Delete",
+				label: trans("unicorn.nuxt.editor.action.delete"),
 				icon: "i-lucide-trash"
 			}]
 		];
@@ -892,7 +909,7 @@ function createCodeBlock(CodeBlock, opts) {
 			select.setAttribute("contenteditable", "false");
 			const sync = () => {
 				select.innerHTML = "";
-				select.add(new Option("Plain text", ""));
+				select.add(new Option(trans("unicorn.nuxt.editor.text.plain.text"), ""));
 				for (const [value, label] of Object.entries(languages)) select.add(new Option(label, value));
 				const raw = current.attrs.language || "";
 				const lang = raw in languages ? raw : ALIASES[raw] ?? raw;
@@ -1007,10 +1024,10 @@ function createColorMenu(colors, apply) {
 		const recent = getRecentColors().filter((r) => r.kind === kind).map(({ color }) => colorItem(kind, Object.entries(colors).find(([, v]) => v === color)?.[0] ?? color, color));
 		return [...recent.length ? [[{
 			type: "label",
-			label: "Recent colors"
+			label: trans("unicorn.nuxt.editor.text.recent.colors")
 		}, ...recent]] : [], [{
 			icon: "i-lucide-ban",
-			label: "Default",
+			label: trans("unicorn.nuxt.editor.action.default"),
 			onSelect: () => {
 				select(kind, null);
 			}
@@ -1018,11 +1035,11 @@ function createColorMenu(colors, apply) {
 	};
 	return [{
 		icon: "i-lucide-baseline",
-		label: "Text Colors",
+		label: trans("unicorn.nuxt.editor.action.text.colors"),
 		children: palette("text")
 	}, {
 		icon: "i-lucide-paint-bucket",
-		label: "Background Colors",
+		label: trans("unicorn.nuxt.editor.action.background.colors"),
 		children: palette("background")
 	}];
 }
@@ -1189,61 +1206,61 @@ function createTable(tableExt, pmTables, pmModel, tableOptions = {}) {
 	const toolbarGroup = () => [{
 		kind: "insertTable",
 		icon: "i-lucide-table",
-		tooltip: { text: "Insert Table" }
+		tooltip: { text: trans("unicorn.nuxt.editor.action.insert.table") }
 	}, {
 		icon: "i-lucide-table-properties",
-		tooltip: { text: "Table" },
+		tooltip: { text: trans("unicorn.nuxt.editor.action.table") },
 		content: { align: "start" },
 		items: [
 			{
 				kind: "addRowBefore",
 				icon: "i-lucide-arrow-up-from-line",
-				label: "Add row above"
+				label: trans("unicorn.nuxt.editor.action.add.row.above")
 			},
 			{
 				kind: "addRowAfter",
 				icon: "i-lucide-arrow-down-from-line",
-				label: "Add row below"
+				label: trans("unicorn.nuxt.editor.action.add.row.below")
 			},
 			{
 				kind: "deleteRow",
 				icon: "i-lucide-table-rows-split",
-				label: "Delete row"
+				label: trans("unicorn.nuxt.editor.action.delete.row")
 			},
 			{
 				kind: "addColumnBefore",
 				icon: "i-lucide-arrow-left-from-line",
-				label: "Add column before"
+				label: trans("unicorn.nuxt.editor.action.add.column.before")
 			},
 			{
 				kind: "addColumnAfter",
 				icon: "i-lucide-arrow-right-from-line",
-				label: "Add column after"
+				label: trans("unicorn.nuxt.editor.action.add.column.after")
 			},
 			{
 				kind: "deleteColumn",
 				icon: "i-lucide-table-columns-split",
-				label: "Delete column"
+				label: trans("unicorn.nuxt.editor.action.delete.column")
 			},
 			{
 				kind: "toggleHeaderRow",
 				icon: "i-lucide-heading",
-				label: "Toggle header row"
+				label: trans("unicorn.nuxt.editor.action.toggle.header.row")
 			},
 			{
 				kind: "mergeCells",
 				icon: "i-lucide-table-cells-merge",
-				label: "Merge cells"
+				label: trans("unicorn.nuxt.editor.action.merge.cells")
 			},
 			{
 				kind: "splitCell",
 				icon: "i-lucide-table-cells-split",
-				label: "Split cell"
+				label: trans("unicorn.nuxt.editor.action.split.cell")
 			},
 			{
 				kind: "deleteTable",
 				icon: "i-lucide-trash",
-				label: "Delete table",
+				label: trans("unicorn.nuxt.editor.action.delete.table"),
 				color: "error"
 			}
 		]
@@ -1253,54 +1270,54 @@ function createTable(tableExt, pmTables, pmModel, tableOptions = {}) {
 			[
 				"addRowBefore",
 				"i-lucide-arrow-up-from-line",
-				"Add row above"
+				trans("unicorn.nuxt.editor.action.add.row.above")
 			],
 			[
 				"addRowAfter",
 				"i-lucide-arrow-down-from-line",
-				"Add row below"
+				trans("unicorn.nuxt.editor.action.add.row.below")
 			],
 			[
 				"deleteRow",
 				"i-lucide-table-rows-split",
-				"Delete row"
+				trans("unicorn.nuxt.editor.action.delete.row")
 			],
 			[
 				"toggleHeaderRow",
 				"i-lucide-heading",
-				"Toggle header row"
+				trans("unicorn.nuxt.editor.action.toggle.header.row")
 			]
 		],
 		[
 			[
 				"addColumnBefore",
 				"i-lucide-arrow-left-from-line",
-				"Add column before"
+				trans("unicorn.nuxt.editor.action.add.column.before")
 			],
 			[
 				"addColumnAfter",
 				"i-lucide-arrow-right-from-line",
-				"Add column after"
+				trans("unicorn.nuxt.editor.action.add.column.after")
 			],
 			[
 				"deleteColumn",
 				"i-lucide-table-columns-split",
-				"Delete column"
+				trans("unicorn.nuxt.editor.action.delete.column")
 			]
 		],
 		[[
 			"mergeCells",
 			"i-lucide-table-cells-merge",
-			"Merge cells"
+			trans("unicorn.nuxt.editor.action.merge.cells")
 		], [
 			"splitCell",
 			"i-lucide-table-cells-split",
-			"Split cell"
+			trans("unicorn.nuxt.editor.action.split.cell")
 		]],
 		[[
 			"deleteTable",
 			"i-lucide-trash",
-			"Delete table",
+			trans("unicorn.nuxt.editor.action.delete.table"),
 			true
 		]]
 	];
@@ -1314,55 +1331,55 @@ function createTable(tableExt, pmTables, pmModel, tableOptions = {}) {
 			[
 				"moveRowUp",
 				"i-lucide-move-up",
-				"Move row up"
+				trans("unicorn.nuxt.editor.action.move.row.up")
 			],
 			[
 				"moveRowDown",
 				"i-lucide-move-down",
-				"Move row down"
+				trans("unicorn.nuxt.editor.action.move.row.down")
 			],
 			[
 				"duplicateRow",
 				"i-lucide-copy-plus",
-				"Duplicate row"
+				trans("unicorn.nuxt.editor.action.duplicate.row")
 			]
 		],
 		column: [
 			[
 				"moveColumnLeft",
 				"i-lucide-move-left",
-				"Move column left"
+				trans("unicorn.nuxt.editor.action.move.column.left")
 			],
 			[
 				"moveColumnRight",
 				"i-lucide-move-right",
-				"Move column right"
+				trans("unicorn.nuxt.editor.action.move.column.right")
 			],
 			[
 				"duplicateColumn",
 				"i-lucide-copy-plus",
-				"Duplicate column"
+				trans("unicorn.nuxt.editor.action.duplicate.column")
 			]
 		]
 	};
 	const alignmentMenu = (ed) => ({
 		icon: "i-lucide-align-center",
-		label: "Alignment",
+		label: trans("unicorn.nuxt.editor.action.alignment"),
 		children: [[
 			[
 				"left",
 				"i-lucide-align-left",
-				"Align left"
+				trans("unicorn.nuxt.editor.action.align.left")
 			],
 			[
 				"center",
 				"i-lucide-align-center",
-				"Align center"
+				trans("unicorn.nuxt.editor.action.align.center")
 			],
 			[
 				"right",
 				"i-lucide-align-right",
-				"Align right"
+				trans("unicorn.nuxt.editor.action.align.right")
 			]
 		].map(([value, icon, label]) => ({
 			icon,
@@ -1374,17 +1391,17 @@ function createTable(tableExt, pmTables, pmModel, tableOptions = {}) {
 			[
 				"top",
 				"i-lucide-align-vertical-justify-start",
-				"Align top"
+				trans("unicorn.nuxt.editor.action.align.top")
 			],
 			[
 				"middle",
 				"i-lucide-align-vertical-justify-center",
-				"Align middle"
+				trans("unicorn.nuxt.editor.action.align.middle")
 			],
 			[
 				"bottom",
 				"i-lucide-align-vertical-justify-end",
-				"Align bottom"
+				trans("unicorn.nuxt.editor.action.align.bottom")
 			]
 		].map(([value, icon, label]) => ({
 			icon,

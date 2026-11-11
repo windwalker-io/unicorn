@@ -8,6 +8,7 @@ import UInput from '@nuxt/ui/components/Input.vue';
 import USeparator from '@nuxt/ui/components/Separator.vue';
 
 // Inline link editor shown in a bubble while the caret is inside a link: URL field, apply, open, remove.
+import { trans } from '../../../service/lang';
 import type { Editor } from './types';
 
 const props = defineProps<{ editor: Editor }>();
@@ -70,17 +71,17 @@ function onKeydown(e: KeyboardEvent) {
     data-link-bar
     type="url"
     variant="none"
-    placeholder="Paste a link..."
+    :placeholder="trans('unicorn.nuxt.editor.field.link.placeholder')"
     class="min-w-72"
     @focusin="onFocusIn"
     @keydown="onKeydown"
   >
     <div class="flex items-center mr-0.5">
-      <UButton icon="i-lucide-corner-down-left" title="Apply link" color="neutral" variant="ghost" size="sm" @click="apply" />
+      <UButton icon="i-lucide-corner-down-left" :title="trans('unicorn.nuxt.editor.action.apply.link')" color="neutral" variant="ghost" size="sm" @click="apply" />
       <USeparator orientation="vertical" class="h-6 mx-1" />
-      <UButton :icon="copied ? 'i-lucide-check' : 'i-lucide-copy'" title="Copy link" color="neutral" variant="ghost" size="sm" @click="copy" />
-      <UButton icon="i-lucide-external-link" title="Open in new window" color="neutral" variant="ghost" size="sm" @click="open" />
-      <UButton icon="i-lucide-unlink" title="Unlink" color="neutral" variant="ghost" size="sm" @click="remove" />
+      <UButton :icon="copied ? 'i-lucide-check' : 'i-lucide-copy'" :title="trans('unicorn.nuxt.editor.action.copy.link')" color="neutral" variant="ghost" size="sm" @click="copy" />
+      <UButton icon="i-lucide-external-link" :title="trans('unicorn.nuxt.editor.action.open.in.new.window')" color="neutral" variant="ghost" size="sm" @click="open" />
+      <UButton icon="i-lucide-unlink" :title="trans('unicorn.nuxt.editor.action.unlink')" color="neutral" variant="ghost" size="sm" @click="remove" />
     </div>
   </UInput>
 </template>

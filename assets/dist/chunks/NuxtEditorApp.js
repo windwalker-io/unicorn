@@ -1,6 +1,7 @@
+import { n as trans } from "./lang.js";
 import { t as _plugin_vue_export_helper_default } from "./_plugin-vue_export-helper.js";
 import { a as resolveColors, i as createColorMenu, n as attrsOf, o as toBackground, r as parseEmbedInput } from "./nuxt-editor.js";
-import { Fragment, createBlock, createCommentVNode, createElementBlock, createElementVNode, createVNode, defineComponent, mergeProps, normalizeClass, normalizeStyle, onBeforeUnmount, onMounted, openBlock, ref, watch, withCtx, withModifiers } from "vue";
+import { Fragment, createBlock, createCommentVNode, createElementBlock, createElementVNode, createVNode, defineComponent, mergeProps, normalizeClass, normalizeStyle, onBeforeUnmount, onMounted, openBlock, ref, toDisplayString, watch, withCtx, withModifiers } from "vue";
 import UApp from "@nuxt/ui/components/App.vue";
 import UEditor from "@nuxt/ui/components/Editor.vue";
 import UButton from "@nuxt/ui/components/Button.vue";
@@ -228,7 +229,10 @@ var LinkBar_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineCo
 			onKeydown,
 			UButton,
 			UInput,
-			USeparator
+			USeparator,
+			get trans() {
+				return trans;
+			}
 		};
 		Object.defineProperty(__returned__, "__isScriptSetup", {
 			enumerable: false,
@@ -246,7 +250,7 @@ function _sfc_render$7(_ctx, _cache, $props, $setup, $data, $options) {
 		"data-link-bar": "",
 		type: "url",
 		variant: "none",
-		placeholder: "Paste a link...",
+		placeholder: $setup.trans("unicorn.nuxt.editor.field.link.placeholder"),
 		class: "min-w-72",
 		onFocusin: $setup.onFocusIn,
 		onKeydown: $setup.onKeydown
@@ -254,43 +258,43 @@ function _sfc_render$7(_ctx, _cache, $props, $setup, $data, $options) {
 		default: withCtx(() => [createElementVNode("div", _hoisted_1$5, [
 			createVNode($setup["UButton"], {
 				icon: "i-lucide-corner-down-left",
-				title: "Apply link",
+				title: $setup.trans("unicorn.nuxt.editor.action.apply.link"),
 				color: "neutral",
 				variant: "ghost",
 				size: "sm",
 				onClick: $setup.apply
-			}),
+			}, null, 8, ["title"]),
 			createVNode($setup["USeparator"], {
 				orientation: "vertical",
 				class: "h-6 mx-1"
 			}),
 			createVNode($setup["UButton"], {
 				icon: $setup.copied ? "i-lucide-check" : "i-lucide-copy",
-				title: "Copy link",
+				title: $setup.trans("unicorn.nuxt.editor.action.copy.link"),
 				color: "neutral",
 				variant: "ghost",
 				size: "sm",
 				onClick: $setup.copy
-			}, null, 8, ["icon"]),
+			}, null, 8, ["icon", "title"]),
 			createVNode($setup["UButton"], {
 				icon: "i-lucide-external-link",
-				title: "Open in new window",
+				title: $setup.trans("unicorn.nuxt.editor.action.open.in.new.window"),
 				color: "neutral",
 				variant: "ghost",
 				size: "sm",
 				onClick: $setup.open
-			}),
+			}, null, 8, ["title"]),
 			createVNode($setup["UButton"], {
 				icon: "i-lucide-unlink",
-				title: "Remove link",
+				title: $setup.trans("unicorn.nuxt.editor.action.unlink"),
 				color: "neutral",
 				variant: "ghost",
 				size: "sm",
 				onClick: $setup.remove
-			})
+			}, null, 8, ["title"])
 		])]),
 		_: 1
-	}, 8, ["modelValue"]);
+	}, 8, ["modelValue", "placeholder"]);
 }
 var LinkBar_default = /*@__PURE__*/ _plugin_vue_export_helper_default(LinkBar_vue_vue_type_script_setup_true_lang_default, [["render", _sfc_render$7], ["__file", "LinkBar.vue"]]);
 // src/vue/components/NuxtEditor/LinkPopover.vue?vue&type=script&setup=true&lang.ts
@@ -357,7 +361,10 @@ var LinkPopover_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defi
 			UInput,
 			UPopover,
 			USeparator,
-			UTooltip
+			UTooltip,
+			get trans() {
+				return trans;
+			}
 		};
 		Object.defineProperty(__returned__, "__isScriptSetup", {
 			enumerable: false,
@@ -380,46 +387,46 @@ function _sfc_render$6(_ctx, _cache, $props, $setup, $data, $options) {
 			autofocus: "",
 			type: "url",
 			variant: "none",
-			placeholder: "Paste a link...",
+			placeholder: $setup.trans("unicorn.nuxt.editor.field.link.placeholder"),
 			onFocusin: $setup.onFocusIn,
 			onKeydown: $setup.onKeydown
 		}, {
 			default: withCtx(() => [createElementVNode("div", _hoisted_1$4, [
 				createVNode($setup["UButton"], {
 					icon: "i-lucide-corner-down-left",
-					title: "Apply link",
+					title: $setup.trans("unicorn.nuxt.editor.action.apply.link"),
 					color: "neutral",
 					variant: "ghost",
 					size: "sm",
 					disabled: !$setup.url && !$props.editor.isActive("link"),
 					onClick: $setup.setLink
-				}, null, 8, ["disabled"]),
+				}, null, 8, ["title", "disabled"]),
 				createVNode($setup["USeparator"], {
 					orientation: "vertical",
 					class: "h-6 mx-1"
 				}),
 				createVNode($setup["UButton"], {
 					icon: "i-lucide-external-link",
-					title: "Open in new window",
+					title: $setup.trans("unicorn.nuxt.editor.action.open.in.new.window"),
 					color: "neutral",
 					variant: "ghost",
 					size: "sm",
 					disabled: !$setup.url && !$props.editor.isActive("link"),
 					onClick: $setup.openLink
-				}, null, 8, ["disabled"]),
+				}, null, 8, ["title", "disabled"]),
 				createVNode($setup["UButton"], {
 					icon: "i-lucide-unlink",
-					title: "Remove link",
+					title: $setup.trans("unicorn.nuxt.editor.action.unlink"),
 					color: "neutral",
 					variant: "ghost",
 					size: "sm",
 					disabled: !$setup.url && !$props.editor.isActive("link"),
 					onClick: $setup.removeLink
-				}, null, 8, ["disabled"])
+				}, null, 8, ["title", "disabled"])
 			])]),
 			_: 1
-		}, 8, ["modelValue"])]),
-		default: withCtx(() => [createVNode($setup["UTooltip"], { text: "Link" }, {
+		}, 8, ["modelValue", "placeholder"])]),
+		default: withCtx(() => [createVNode($setup["UTooltip"], { text: $setup.trans("unicorn.nuxt.editor.action.link") }, {
 			default: withCtx(() => [createVNode($setup["UButton"], {
 				icon: "i-lucide-link",
 				color: "neutral",
@@ -431,7 +438,7 @@ function _sfc_render$6(_ctx, _cache, $props, $setup, $data, $options) {
 				disabled: ($setup.tick, !$props.editor.isEditable || $props.editor.state.selection.empty && !$props.editor.isActive("link"))
 			}, null, 8, ["active", "disabled"])]),
 			_: 1
-		})]),
+		}, 8, ["text"])]),
 		_: 1
 	}, 8, ["open"]);
 }
@@ -472,7 +479,10 @@ var VideoPopover_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ def
 			UButton,
 			UInput,
 			UPopover,
-			UTooltip
+			UTooltip,
+			get trans() {
+				return trans;
+			}
 		};
 		Object.defineProperty(__returned__, "__isScriptSetup", {
 			enumerable: false,
@@ -497,36 +507,36 @@ function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
 			variant: "none",
 			class: "w-full",
 			color: $setup.invalid ? "error" : void 0,
-			placeholder: $setup.invalid ? "Unsupported video URL or iframe" : "Paste a video URL or <iframe> code...",
+			placeholder: $setup.invalid ? $setup.trans("unicorn.nuxt.editor.message.video.unsupported") : $setup.trans("unicorn.nuxt.editor.field.video.placeholder"),
 			onInput: _cache[1] || (_cache[1] = ($event) => $setup.invalid = false),
 			onKeydown: $setup.onKeydown
 		}, {
 			default: withCtx(() => [createElementVNode("div", _hoisted_1$3, [createVNode($setup["UButton"], {
 				icon: "i-lucide-corner-down-left",
-				title: "Embed video",
+				title: $setup.trans("unicorn.nuxt.editor.action.embed.video"),
 				color: "neutral",
 				variant: "ghost",
 				size: "sm",
 				disabled: !$setup.url,
 				onClick: $setup.insert
-			}, null, 8, ["disabled"])])]),
+			}, null, 8, ["title", "disabled"])])]),
 			_: 1
 		}, 8, [
 			"modelValue",
 			"color",
 			"placeholder"
 		])]),
-		default: withCtx(() => [createVNode($setup["UTooltip"], { text: "Video" }, {
+		default: withCtx(() => [createVNode($setup["UTooltip"], { text: $setup.trans("unicorn.nuxt.editor.action.video") }, {
 			default: withCtx(() => [createVNode($setup["UButton"], {
 				icon: "i-lucide-video",
 				color: "neutral",
 				variant: "ghost",
 				size: "sm",
-				"aria-label": "Video",
+				"aria-label": $setup.trans("unicorn.nuxt.editor.action.video"),
 				disabled: !$props.editor.isEditable
-			}, null, 8, ["disabled"])]),
+			}, null, 8, ["aria-label", "disabled"])]),
 			_: 1
-		})]),
+		}, 8, ["text"])]),
 		_: 1
 	}, 8, ["open"]);
 }
@@ -579,7 +589,10 @@ var VideoSourcePopover_vue_vue_type_script_setup_true_lang_default = /*@__PURE__
 			UButton,
 			UInput,
 			UPopover,
-			UTooltip
+			UTooltip,
+			get trans() {
+				return trans;
+			}
 		};
 		Object.defineProperty(__returned__, "__isScriptSetup", {
 			enumerable: false,
@@ -590,7 +603,7 @@ var VideoSourcePopover_vue_vue_type_script_setup_true_lang_default = /*@__PURE__
 });
 // src/vue/components/NuxtEditor/VideoSourcePopover.vue
 var _hoisted_1$2 = { "data-video-source": "" };
-var _hoisted_2 = { class: "flex items-center mr-0.5" };
+var _hoisted_2$1 = { class: "flex items-center mr-0.5" };
 function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
 	return openBlock(), createBlock($setup["UPopover"], {
 		open: $setup.open,
@@ -605,36 +618,36 @@ function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
 			variant: "none",
 			class: "w-full",
 			color: $setup.invalid ? "error" : void 0,
-			placeholder: $setup.invalid ? "Unsupported video URL or iframe" : "Paste a video URL or <iframe> code...",
+			placeholder: $setup.invalid ? $setup.trans("unicorn.nuxt.editor.message.video.unsupported") : $setup.trans("unicorn.nuxt.editor.field.video.placeholder"),
 			onInput: _cache[1] || (_cache[1] = ($event) => $setup.invalid = false),
 			onFocusin: $setup.onFocusIn,
 			onKeydown: $setup.onKeydown
 		}, {
-			default: withCtx(() => [createElementVNode("div", _hoisted_2, [createVNode($setup["UButton"], {
+			default: withCtx(() => [createElementVNode("div", _hoisted_2$1, [createVNode($setup["UButton"], {
 				icon: "i-lucide-corner-down-left",
-				title: "Apply",
+				title: $setup.trans("unicorn.nuxt.editor.action.apply"),
 				color: "neutral",
 				variant: "ghost",
 				size: "sm",
 				disabled: !$setup.url,
 				onClick: $setup.apply
-			}, null, 8, ["disabled"])])]),
+			}, null, 8, ["title", "disabled"])])]),
 			_: 1
 		}, 8, [
 			"modelValue",
 			"color",
 			"placeholder"
 		])])]),
-		default: withCtx(() => [createVNode($setup["UTooltip"], { text: "Change source" }, {
+		default: withCtx(() => [createVNode($setup["UTooltip"], { text: $setup.trans("unicorn.nuxt.editor.action.change.source") }, {
 			default: withCtx(() => [createVNode($setup["UButton"], {
 				icon: "i-lucide-pencil",
 				color: "neutral",
 				variant: "ghost",
 				size: "sm",
-				"aria-label": "Change source"
-			})]),
+				"aria-label": $setup.trans("unicorn.nuxt.editor.action.change.source")
+			}, null, 8, ["aria-label"])]),
 			_: 1
-		})]),
+		}, 8, ["text"])]),
 		_: 1
 	}, 8, ["open"]);
 }
@@ -673,7 +686,10 @@ var VideoPastePrompt_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/
 			clear,
 			embed,
 			dismiss,
-			UButton
+			UButton,
+			get trans() {
+				return trans;
+			}
 		};
 		Object.defineProperty(__returned__, "__isScriptSetup", {
 			enumerable: false,
@@ -684,27 +700,28 @@ var VideoPastePrompt_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/
 });
 // src/vue/components/NuxtEditor/VideoPastePrompt.vue
 var _hoisted_1$1 = { class: "flex flex-col min-w-40 p-1" };
+var _hoisted_2 = { class: "px-2 py-1 text-xs font-medium text-muted" };
 function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
 	return openBlock(), createElementBlock("div", _hoisted_1$1, [
-		_cache[0] || (_cache[0] = createElementVNode("div", { class: "px-2 py-1 text-xs font-medium text-muted" }, "Paste as", -1)),
+		createElementVNode("div", _hoisted_2, toDisplayString($setup.trans("unicorn.nuxt.editor.text.paste.as")), 1),
 		createVNode($setup["UButton"], {
 			icon: "i-lucide-video",
-			label: "Embed",
+			label: $setup.trans("unicorn.nuxt.editor.action.embed"),
 			color: "neutral",
 			variant: "ghost",
 			size: "sm",
 			class: "justify-start",
 			onClick: $setup.embed
-		}),
+		}, null, 8, ["label"]),
 		createVNode($setup["UButton"], {
 			icon: "i-lucide-link",
-			label: "Link",
+			label: $setup.trans("unicorn.nuxt.editor.action.link"),
 			color: "neutral",
 			variant: "ghost",
 			size: "sm",
 			class: "justify-start",
 			onClick: $setup.dismiss
-		})
+		}, null, 8, ["label"])
 	]);
 }
 var VideoPastePrompt_default = /*@__PURE__*/ _plugin_vue_export_helper_default(VideoPastePrompt_vue_vue_type_script_setup_true_lang_default, [["render", _sfc_render$3], ["__file", "VideoPastePrompt.vue"]]);
@@ -1061,6 +1078,9 @@ var NuxtEditorApp_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ de
 			onCreate,
 			UApp,
 			UEditor,
+			get trans() {
+				return trans;
+			},
 			EditorDragHandle: EditorDragHandle_default,
 			EditorToolbars: EditorToolbars_default,
 			TableHandle: TableHandle_default
@@ -1085,7 +1105,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
 			image: false,
 			"starter-kit": { codeBlock: false },
 			extensions: $props.extensions,
-			placeholder: "Write, type '/' for commands...",
+			placeholder: $setup.trans("unicorn.nuxt.editor.field.editor.placeholder"),
 			editable: $props.editable,
 			class: "w-full",
 			ui: { base: "p-4 pl-16 sm:p-4 sm:pl-16 min-h-48 border border-default rounded-md" }
@@ -1130,6 +1150,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
 			"content-type",
 			"handlers",
 			"extensions",
+			"placeholder",
 			"editable"
 		])]),
 		_: 1

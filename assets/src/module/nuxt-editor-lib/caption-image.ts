@@ -1,3 +1,4 @@
+import { trans } from '../../service/lang';
 import type { NuxtEditorOptions } from './types';
 
 // Built-in TipTap Image extension options (passed to UEditor's `image` prop):
@@ -98,7 +99,7 @@ export function createCaptionImage(TiptapImage: any, mergeAttributes: any, opts:
         const input = document.createElement('input');
 
         input.className = 'nuxt-editor-caption';
-        input.placeholder = 'Add a caption...';
+        input.placeholder = trans('unicorn.nuxt.editor.field.caption.placeholder');
         input.value = readCaption(props.node);
 
         const toggle = (selected = false) => {

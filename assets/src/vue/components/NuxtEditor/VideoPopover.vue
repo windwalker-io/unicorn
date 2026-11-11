@@ -9,6 +9,7 @@ import UPopover from '@nuxt/ui/components/Popover.vue';
 // @ts-ignore
 import UTooltip from '@nuxt/ui/components/Tooltip.vue';
 import { parseEmbedInput } from '../../../module/nuxt-editor-lib/video-embed';
+import { trans } from '../../../service/lang';
 import type { Editor } from './types';
 
 // Toolbar button + popover: paste a video URL (YouTube / Vimeo / Bilibili / mp4...) to embed it.
@@ -41,9 +42,9 @@ function onKeydown(e: KeyboardEvent) {
 
 <template>
   <UPopover v-model:open="open" :ui="{ content: 'p-0.5 w-[28rem] max-w-[90vw]' }">
-    <UTooltip text="Video">
+    <UTooltip :text="trans('unicorn.nuxt.editor.action.video')">
       <UButton
-        icon="i-lucide-video" color="neutral" variant="ghost" size="sm" aria-label="Video"
+        icon="i-lucide-video" color="neutral" variant="ghost" size="sm" :aria-label="trans('unicorn.nuxt.editor.action.video')"
         :disabled="!editor.isEditable"
       />
     </UTooltip>
@@ -56,13 +57,13 @@ function onKeydown(e: KeyboardEvent) {
         variant="none"
         class="w-full"
         :color="invalid ? 'error' : undefined"
-        :placeholder="invalid ? 'Unsupported video URL or iframe' : 'Paste a video URL or <iframe> code...'"
+        :placeholder="invalid ? trans('unicorn.nuxt.editor.message.video.unsupported') : trans('unicorn.nuxt.editor.field.video.placeholder')"
         @input="invalid = false"
         @keydown="onKeydown"
       >
         <div class="flex items-center mr-0.5">
           <UButton
-            icon="i-lucide-corner-down-left" title="Embed video" color="neutral" variant="ghost" size="sm"
+            icon="i-lucide-corner-down-left" :title="trans('unicorn.nuxt.editor.action.embed.video')" color="neutral" variant="ghost" size="sm"
             :disabled="!url" @click="insert"
           />
         </div>
