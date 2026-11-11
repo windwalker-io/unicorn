@@ -8,7 +8,6 @@ use Unicorn\Script\EditorScript;
 use Windwalker\Core\Language\TranslatorTrait;
 use Windwalker\DI\Attributes\Inject;
 use Windwalker\DOM\HTMLElement;
-use Windwalker\Utilities\Arr;
 
 /**
  * Bridge to Nuxt UI `UEditor` (Tiptap) running in a pure Vue environment.
@@ -31,9 +30,10 @@ class NuxtEditorField extends AbstractEditorField
 
     public protected(set) ?\Closure $configureOptionsCallback = null;
 
-    public static array $defaultOptions = [
-        'props' => [],
-    ];
+    /**
+     * Global defaults. Accepts an array or a NuxtFieldOptions (only the set values are applied).
+     */
+    public static array|NuxtFieldOptions $defaultOptions = [];
 
     public function compileFieldElement(HTMLElement $input, array $options = []): string|HTMLElement
     {
@@ -44,28 +44,29 @@ class NuxtEditorField extends AbstractEditorField
 
     public function prepareEditorScript(): void
     {
-        $options = $this->getEditorOptions() ?? [];
-
-        $defaultOptions = [
-            // html | markdown | json
-            'format' => $this->getFormat() ?: 'html',
-            'locale' => $this->lang->getLocale() ?: $this->lang->getFallback(),
-            'readonly' => (bool) ($this->isReadonly() || $this->isDisabled()),
-        ];
+        $options = new NuxtFieldOptions(
+            format: $this->getFormat() ?: 'html',
+            locale: $this->lang->getLocale() ?: $this->lang->getFallback(),
+            readonly: (bool) ($this->isReadonly() || $this->isDisabled()),
+            captionSyncAttrs: ['alt', 'title'],
+            captionLive: true,
+        );
 
         if ($this->getEnableImageUpload() ?? true) {
             $profile = is_string($profile = $this->getEnableImageUpload()) ? $profile : null;
-            $defaultOptions['imageUploadUrl'] = $this->getImageUploadUrl($profile);
+            $options->imageUploadUrl = $this->getImageUploadUrl($profile);
         }
 
-        $options = Arr::mergeRecursive($defaultOptions, static::$defaultOptions, $options);
-
-        $options['unicorn'] = [
-            'stack_name' => $this->getStackName() ?: 'uploading',
-        ];
+        // Priority: field state < static defaults < editorOptions.
+        $options->merge(static::$defaultOptions, true)->merge($this->getEditorOptions() ?? [], true);
+        $options->unicorn = [...($options->unicorn ?? []), 'stack_name' => $this->getStackName() ?: 'uploading'];
 
         if ($this->configureOptionsCallback) {
-            $options = ($this->configureOptionsCallback)($options, $this);
+            $options = ($this->configureOptionsCallback)($options, $this) ?? $options;
+        }
+
+        if ($options instanceof NuxtFieldOptions) {
+            $options = $options->toArray();
         }
 
         $this->editorScript->nuxtEditor('#' . $this->getId(), $options);

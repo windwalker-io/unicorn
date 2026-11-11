@@ -611,15 +611,44 @@ declare interface NuxtEditorModule {
 }
 
 declare interface NuxtEditorOptions {
+    toolbars?: NuxtEditorToolbars;
     props?: Record<string, any>;
     format?: 'html' | 'markdown' | 'json';
     locale?: string;
     readonly?: boolean;
     imageUploadUrl?: string;
+    captionSyncAttrs?: string[];
+    captionLive?: boolean;
     unicorn?: {
         stack_name?: string;
     };
     [key: string]: any;
+}
+
+/**
+ * How to customize a toolbar:
+ * - `false`: hide it.
+ * - array: replace the default items.
+ * - function: receive the default items and return the new ones (add / remove / reorder).
+ * Items are Nuxt UI `UEditorToolbar` items (`kind`, `onClick`, `slot`...), so functions are only
+ * available from JS; PHP can only pass plain-data arrays or `false` (it is JSON).
+ */
+declare type NuxtEditorToolbarOverride = false | any[] | ((defaults: any[], ctx: {
+    editor: any;
+    options: NuxtEditorOptions;
+}) => any[] | void);
+
+declare interface NuxtEditorToolbars {
+    /** Fixed toolbar above the editor. */
+    fixed?: NuxtEditorToolbarOverride;
+    /** Floating toolbar on text selection. */
+    textBubble?: NuxtEditorToolbarOverride;
+    /** Floating toolbar of a selected image. */
+    imageBubble?: NuxtEditorToolbarOverride;
+    /** The "/" slash menu (grouped items). */
+    slash?: NuxtEditorToolbarOverride;
+    /** The drag handle's block menu. */
+    blockMenu?: NuxtEditorToolbarOverride;
 }
 
 export declare function parseQuery<T = Record<string, any>>(queryString: string): T;
@@ -1663,17 +1692,6 @@ declare global {
 }
 
 
-declare module 'axios' {
-    interface AxiosRequestConfig {
-        vars?: Record<string, any>;
-        methodSimulate?: string;
-        methodSimulateByHeader?: boolean;
-    }
-    interface CreateAxiosDefaults {
-    }
-}
-
-
 declare global {
     var tinymce: TinyMCE;
 }
@@ -1682,5 +1700,16 @@ declare global {
 declare global {
     export interface Window {
         bootstrap: typeof bootstrap;
+    }
+}
+
+
+declare module 'axios' {
+    interface AxiosRequestConfig {
+        vars?: Record<string, any>;
+        methodSimulate?: string;
+        methodSimulateByHeader?: boolean;
+    }
+    interface CreateAxiosDefaults {
     }
 }

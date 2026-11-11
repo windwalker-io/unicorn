@@ -6,12 +6,41 @@ import { mergeDeep } from '../utilities';
 // @ts-ignore
 import css from '@windwalker-io/unicorn-next/src/css/nuxt-editor.css?inline';
 
+/**
+ * How to customize a toolbar:
+ * - `false`: hide it.
+ * - array: replace the default items.
+ * - function: receive the default items and return the new ones (add / remove / reorder).
+ * Items are Nuxt UI `UEditorToolbar` items (`kind`, `onClick`, `slot`...), so functions are only
+ * available from JS; PHP can only pass plain-data arrays or `false` (it is JSON).
+ */
+export type NuxtEditorToolbarOverride =
+  | false
+  | any[]
+  | ((defaults: any[], ctx: { editor: any; options: NuxtEditorOptions }) => any[] | void);
+
+export interface NuxtEditorToolbars {
+  /** Fixed toolbar above the editor. */
+  fixed?: NuxtEditorToolbarOverride;
+  /** Floating toolbar on text selection. */
+  textBubble?: NuxtEditorToolbarOverride;
+  /** Floating toolbar of a selected image. */
+  imageBubble?: NuxtEditorToolbarOverride;
+  /** The "/" slash menu (grouped items). */
+  slash?: NuxtEditorToolbarOverride;
+  /** The drag handle's block menu. */
+  blockMenu?: NuxtEditorToolbarOverride;
+}
+
 export interface NuxtEditorOptions {
+  toolbars?: NuxtEditorToolbars;
   props?: Record<string, any>;
   format?: 'html' | 'markdown' | 'json';
   locale?: string;
   readonly?: boolean;
   imageUploadUrl?: string;
+  captionSyncAttrs?: string[];
+  captionLive?: boolean;
   unicorn?: { stack_name?: string };
   [key: string]: any;
 }
@@ -35,6 +64,14 @@ export interface NuxtEditorModule {
 
 // textarea element -> controller, so one textarea only has one editor.
 const instances = new WeakMap<HTMLElement, NuxtEditorController>();
+
+// Global toolbar overrides applied to every editor (per-editor `options.toolbars` win). Set via `configure()`.
+const globalToolbars: NuxtEditorToolbars = {};
+
+// Register global overrides, e.g. from a script loaded before the editors are created.
+export function configure(options: { toolbars?: NuxtEditorToolbars }) {
+  Object.assign(globalToolbars, options.toolbars);
+}
 
 // Return the existing editor of the textarea, or create a new one.
 export async function get(selector: string | HTMLElement, options: NuxtEditorOptions = {}) {
@@ -177,6 +214,26 @@ async function mount(element: HTMLTextAreaElement, options: NuxtEditorOptions): 
   const editor = shallowRef<any>(null);
   const editable = ref(!(opts.readonly || element.readOnly || element.disabled));
 
+  // Apply the user's toolbar override (hide / replace / transform) to the default items of `key`.
+  const toolbars: NuxtEditorToolbars = { ...globalToolbars, ...options.toolbars };
+  const resolveItems = (key: keyof NuxtEditorToolbars, defaults: any[], ed: any): any[] => {
+    const override = toolbars[key];
+
+    if (override === false) {
+      return [];
+    }
+
+    if (Array.isArray(override)) {
+      return override;
+    }
+
+    if (typeof override === 'function') {
+      return override(defaults, { editor: ed, options: opts }) ?? defaults;
+    }
+
+    return defaults;
+  };
+
   const syncing = { value: false };
 
   // Convert editor content to the string stored in the textarea.
@@ -318,7 +375,7 @@ async function mount(element: HTMLTextAreaElement, options: NuxtEditorOptions): 
   function imageBubbleItems(ed: any) {
     const node = ed.state.doc.nodeAt(ed.state.selection.from);
 
-    // The caption is stored in the image `title` attribute.
+    // The caption is stored in the image `caption` attribute (see CaptionImage).
     // Focus the caption input rendered under the selected image.
     const editCaption = () => {
       const pos = ed.state.selection.from;
@@ -401,7 +458,7 @@ async function mount(element: HTMLTextAreaElement, options: NuxtEditorOptions): 
 
     const pos = sel.pos;
 
-    return mapEditorItems(ed, [[
+    return mapEditorItems(ed, resolveItems('blockMenu', [[
       {
         label: 'Turn into',
         icon: 'i-lucide-repeat-2',
@@ -429,7 +486,7 @@ async function mount(element: HTMLTextAreaElement, options: NuxtEditorOptions): 
       { kind: 'moveDown', pos, label: 'Move down', icon: 'i-lucide-arrow-down' },
     ], [
       { kind: 'delete', pos, label: 'Delete', icon: 'i-lucide-trash' },
-    ]]);
+    ]], ed));
   }
 
   // Node view of the `imageUpload` placeholder: a dropzone that uploads the file,
@@ -585,9 +642,59 @@ async function mount(element: HTMLTextAreaElement, options: NuxtEditorOptions): 
     },
   };
 
-  // Image with an editable caption input under it (stored in the `title` attribute).
+  // Overridable through the `captionSyncAttrs` / `captionLive` options.
+  const captionOptions = {
+    // Image attrs that mirror the caption text.
+    syncAttrs: (opts.captionSyncAttrs ?? ['alt', 'title']) as string[],
+    // Reflect typing into the output HTML immediately (true) or on blur/Enter (false).
+    live: opts.captionLive ?? true,
+  };
+
+  // Image whose caption is output as <figure><img><figcaption>, plus an editable caption input under it.
   // Wraps TipTap's resizable node view so resize handles keep working.
   const CaptionImage = TiptapImage.extend({
+    addAttributes() {
+      return { ...(this as any).parent?.(), caption: { default: null, rendered: false } };
+    },
+    parseHTML() {
+      return [
+        {
+          tag: 'figure',
+          priority: 60,
+          getAttrs: (el: HTMLElement) => {
+            const img = el.querySelector('img');
+
+            if (!img) {
+              return false;
+            }
+
+            return {
+              src: img.getAttribute('src'),
+              alt: img.getAttribute('alt'),
+              title: img.getAttribute('title'),
+              width: img.getAttribute('width'),
+              height: img.getAttribute('height'),
+              caption: el.querySelector('figcaption')?.textContent || null,
+            };
+          },
+        },
+        ...((this as any).parent?.() ?? []),
+      ];
+    },
+    renderHTML({ node, HTMLAttributes }: any) {
+      const img = ['img', mergeAttributes((this as any).options.HTMLAttributes, HTMLAttributes)];
+
+      if (!node.attrs.caption) {
+        return img;
+      }
+
+      return [
+        'figure',
+        { style: 'margin:1em auto;text-align:center;' },
+        img,
+        ['figcaption', { style: 'font-size:.875em;color:var(--bs-secondary-color,#6c757d);margin-top:.25rem;' }, node.attrs.caption],
+      ];
+    },
     addNodeView() {
       const parent = (this as any).parent?.();
 
@@ -603,19 +710,33 @@ async function mount(element: HTMLTextAreaElement, options: NuxtEditorOptions): 
 
         input.className = 'nuxt-editor-caption';
         input.placeholder = 'Add a caption...';
-        input.value = current.attrs.title || '';
+        input.value = current.attrs.caption || '';
 
         const toggle = (selected = false) => {
           input.style.display = selected || input.value ? '' : 'none';
         };
 
-        input.addEventListener('input', () => {
+        // Write the caption (and the mirrored attrs) into the node. An empty caption keeps alt/title untouched.
+        const commit = () => {
           const pos = props.getPos();
 
-          if (typeof pos === 'number') {
-            props.view.dispatch(props.view.state.tr.setNodeAttribute(pos, 'title', input.value || null));
+          if (typeof pos !== 'number') {
+            return;
           }
-        });
+
+          const tr = props.view.state.tr.setNodeAttribute(pos, 'caption', input.value || null);
+
+          if (input.value) {
+            for (const attr of captionOptions.syncAttrs) {
+              tr.setNodeAttribute(pos, attr, input.value);
+            }
+          }
+
+          props.view.dispatch(tr);
+        };
+
+        // live: update the HTML on every keystroke; otherwise only when the input loses focus / Enter.
+        input.addEventListener(captionOptions.live ? 'input' : 'change', commit);
         input.addEventListener('keydown', (e) => {
           if (e.key === 'Enter') {
             e.preventDefault();
@@ -636,7 +757,7 @@ async function mount(element: HTMLTextAreaElement, options: NuxtEditorOptions): 
             current = node;
 
             if (document.activeElement !== input) {
-              input.value = node.attrs.title || '';
+              input.value = node.attrs.caption || '';
             }
 
             return true;
@@ -753,26 +874,34 @@ async function mount(element: HTMLTextAreaElement, options: NuxtEditorOptions): 
           },
           ...opts.props,
         }, {
-          default: ({ editor: ed, handlers }: any) =>
-            editable.value
-              ? [
-                h(UEditorToolbar, {
+          default: ({ editor: ed, handlers }: any) => {
+            if (!editable.value) {
+              return null;
+            }
+
+            const fixedItems = resolveItems('fixed', toolbarItems(), ed);
+            const textItems = resolveItems('textBubble', textBubbleItems(), ed);
+            const imageItems = resolveItems('imageBubble', imageBubbleItems(ed), ed);
+            const slashItems = resolveItems('slash', suggestionItems, ed);
+
+            return [
+                fixedItems.length && h(UEditorToolbar, {
                   editor: ed,
-                  items: toolbarItems(),
+                  items: fixedItems,
                   class: 'border-b border-default py-2 overflow-x-auto',
                 }, { link: () => h(LinkPopover, { editor: ed }) }),
-                h(UEditorSuggestionMenu, { editor: ed, items: suggestionItems }),
+                slashItems.length && h(UEditorSuggestionMenu, { editor: ed, items: slashItems }),
                 // Floating toolbars: text selection and selected image.
-                h(UEditorToolbar, {
+                textItems.length && h(UEditorToolbar, {
                   editor: ed,
-                  items: textBubbleItems(),
+                  items: textItems,
                   layout: 'bubble',
                   shouldShow: ({ editor: e, view, state }: any) =>
                     view.hasFocus() && !state.selection.empty && !e.isActive('image') && !e.isActive('imageUpload') && !e.isActive('codeBlock'),
                 }, { link: () => h(LinkPopover, { editor: ed }) }),
-                h(UEditorToolbar, {
+                imageItems.length && h(UEditorToolbar, {
                   editor: ed,
-                  items: imageBubbleItems(ed),
+                  items: imageItems,
                   layout: 'bubble',
                   shouldShow: ({ editor: e, view }: any) => e.isActive('image') && view.hasFocus(),
                 }),
@@ -815,8 +944,8 @@ async function mount(element: HTMLTextAreaElement, options: NuxtEditorOptions): 
                     }),
                   ],
                 }),
-              ]
-              : null,
+            ];
+          },
         }));
     },
   });

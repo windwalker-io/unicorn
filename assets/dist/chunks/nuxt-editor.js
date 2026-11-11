@@ -5,6 +5,10 @@ import { createApp, defineComponent, h, onBeforeUnmount, ref, shallowRef, watch 
 import css from "@windwalker-io/unicorn-next/src/css/nuxt-editor.css?inline";
 // src/module/nuxt-editor.ts
 var instances = /*@__PURE__*/ new WeakMap();
+var globalToolbars = {};
+function configure(options) {
+	Object.assign(globalToolbars, options.toolbars);
+}
 async function get(selector, options = {}) {
 	const element = selectOne(selector);
 	if (!element) throw new Error(`Nuxt editor element: ${selector} not found.`);
@@ -76,6 +80,20 @@ async function mount(element, options) {
 	const content = ref(parseValue(element.value, format));
 	const editor = shallowRef(null);
 	const editable = ref(!(opts.readonly || element.readOnly || element.disabled));
+	const toolbars = {
+		...globalToolbars,
+		...options.toolbars
+	};
+	const resolveItems = (key, defaults, ed) => {
+		const override = toolbars[key];
+		if (override === false) return [];
+		if (Array.isArray(override)) return override;
+		if (typeof override === "function") return override(defaults, {
+			editor: ed,
+			options: opts
+		}) ?? defaults;
+		return defaults;
+	};
 	const syncing = { value: false };
 	function serialize(value) {
 		return format === "json" ? JSON.stringify(value) : value ?? "";
@@ -402,7 +420,7 @@ async function mount(element, options) {
 		const sel = selectedNode.value;
 		if (!sel?.node?.type) return [];
 		const pos = sel.pos;
-		return mapEditorItems(ed, [
+		return mapEditorItems(ed, resolveItems("blockMenu", [
 			[{
 				label: "Turn into",
 				icon: "i-lucide-repeat-2",
@@ -477,7 +495,7 @@ async function mount(element, options) {
 				label: "Delete",
 				icon: "i-lucide-trash"
 			}]
-		]);
+		], ed));
 	}
 	const ImageUploadView = defineComponent({
 		props: nodeViewProps,
@@ -607,54 +625,7 @@ async function mount(element, options) {
 			};
 		}
 	});
-	const CaptionImage = TiptapImage.extend({ addNodeView() {
-		const parent = this.parent?.();
-		if (!parent) return null;
-		return (props) => {
-			const inner = parent(props);
-			const wrap = document.createElement("div");
-			const input = document.createElement("input");
-			let current = props.node;
-			input.className = "nuxt-editor-caption";
-			input.placeholder = "Add a caption...";
-			input.value = current.attrs.title || "";
-			const toggle = (selected = false) => {
-				input.style.display = selected || input.value ? "" : "none";
-			};
-			input.addEventListener("input", () => {
-				const pos = props.getPos();
-				if (typeof pos === "number") props.view.dispatch(props.view.state.tr.setNodeAttribute(pos, "title", input.value || null));
-			});
-			input.addEventListener("keydown", (e) => {
-				if (e.key === "Enter") {
-					e.preventDefault();
-					props.editor.commands.focus();
-				}
-			});
-			wrap.append(inner.dom, input);
-			toggle();
-			return {
-				dom: wrap,
-				update(node, ...rest) {
-					if (!inner.update(node, ...rest)) return false;
-					current = node;
-					if (document.activeElement !== input) input.value = node.attrs.title || "";
-					return true;
-				},
-				selectNode() {
-					inner.selectNode?.();
-					toggle(true);
-				},
-				deselectNode() {
-					inner.deselectNode?.();
-					toggle();
-				},
-				stopEvent: (e) => e.target === input || !!inner.stopEvent?.(e),
-				ignoreMutation: (m) => !inner.dom.contains(m.target) || !!inner.ignoreMutation?.(m),
-				destroy: () => inner.destroy?.()
-			};
-		};
-	} }).configure({
+	const imageOptions = {
 		resize: {
 			enabled: true,
 			directions: ["left", "right"],
@@ -662,7 +633,106 @@ async function mount(element, options) {
 			alwaysPreserveAspectRatio: true
 		},
 		HTMLAttributes: { style: "display:block;margin-left:auto;margin-right:auto;max-width:100%;height:auto;" }
-	});
+	};
+	const captionOptions = {
+		syncAttrs: opts.captionSyncAttrs ?? ["alt", "title"],
+		live: opts.captionLive ?? true
+	};
+	const CaptionImage = TiptapImage.extend({
+		addAttributes() {
+			return {
+				...this.parent?.(),
+				caption: {
+					default: null,
+					rendered: false
+				}
+			};
+		},
+		parseHTML() {
+			return [{
+				tag: "figure",
+				priority: 60,
+				getAttrs: (el) => {
+					const img = el.querySelector("img");
+					if (!img) return false;
+					return {
+						src: img.getAttribute("src"),
+						alt: img.getAttribute("alt"),
+						title: img.getAttribute("title"),
+						width: img.getAttribute("width"),
+						height: img.getAttribute("height"),
+						caption: el.querySelector("figcaption")?.textContent || null
+					};
+				}
+			}, ...this.parent?.() ?? []];
+		},
+		renderHTML({ node, HTMLAttributes }) {
+			const img = ["img", mergeAttributes(this.options.HTMLAttributes, HTMLAttributes)];
+			if (!node.attrs.caption) return img;
+			return [
+				"figure",
+				{ style: "margin:1em auto;text-align:center;" },
+				img,
+				[
+					"figcaption",
+					{ style: "font-size:.875em;color:var(--bs-secondary-color,#6c757d);margin-top:.25rem;" },
+					node.attrs.caption
+				]
+			];
+		},
+		addNodeView() {
+			const parent = this.parent?.();
+			if (!parent) return null;
+			return (props) => {
+				const inner = parent(props);
+				const wrap = document.createElement("div");
+				const input = document.createElement("input");
+				let current = props.node;
+				input.className = "nuxt-editor-caption";
+				input.placeholder = "Add a caption...";
+				input.value = current.attrs.caption || "";
+				const toggle = (selected = false) => {
+					input.style.display = selected || input.value ? "" : "none";
+				};
+				const commit = () => {
+					const pos = props.getPos();
+					if (typeof pos !== "number") return;
+					const tr = props.view.state.tr.setNodeAttribute(pos, "caption", input.value || null);
+					if (input.value) for (const attr of captionOptions.syncAttrs) tr.setNodeAttribute(pos, attr, input.value);
+					props.view.dispatch(tr);
+				};
+				input.addEventListener(captionOptions.live ? "input" : "change", commit);
+				input.addEventListener("keydown", (e) => {
+					if (e.key === "Enter") {
+						e.preventDefault();
+						props.editor.commands.focus();
+					}
+				});
+				wrap.append(inner.dom, input);
+				toggle();
+				return {
+					dom: wrap,
+					update(node, ...rest) {
+						if (!inner.update(node, ...rest)) return false;
+						current = node;
+						if (document.activeElement !== input) input.value = node.attrs.caption || "";
+						return true;
+					},
+					selectNode() {
+						inner.selectNode?.();
+						toggle(true);
+					},
+					deselectNode() {
+						inner.deselectNode?.();
+						toggle();
+					},
+					stopEvent: (e) => e.target === input || !!inner.stopEvent?.(e),
+					ignoreMutation: (m) => !inner.dom.contains(m.target) || !!inner.ignoreMutation?.(m),
+					destroy: () => inner.destroy?.()
+				};
+			};
+		}
+	}).configure(imageOptions);
 	const ImageUpload = Node.create({
 		name: "imageUpload",
 		group: "block",
@@ -742,60 +812,67 @@ async function mount(element, options) {
 				element.dispatchEvent(new CustomEvent("nuxt-editor:create", { detail: ed }));
 			},
 			...opts.props
-		}, { default: ({ editor: ed, handlers }) => editable.value ? [
-			h(UEditorToolbar, {
-				editor: ed,
-				items: toolbarItems(),
-				class: "border-b border-default py-2 overflow-x-auto"
-			}, { link: () => h(LinkPopover, { editor: ed }) }),
-			h(UEditorSuggestionMenu, {
-				editor: ed,
-				items: suggestionItems
-			}),
-			h(UEditorToolbar, {
-				editor: ed,
-				items: textBubbleItems(),
-				layout: "bubble",
-				shouldShow: ({ editor: e, view, state }) => view.hasFocus() && !state.selection.empty && !e.isActive("image") && !e.isActive("imageUpload") && !e.isActive("codeBlock")
-			}, { link: () => h(LinkPopover, { editor: ed }) }),
-			h(UEditorToolbar, {
-				editor: ed,
-				items: imageBubbleItems(ed),
-				layout: "bubble",
-				shouldShow: ({ editor: e, view }) => e.isActive("image") && view.hasFocus()
-			}),
-			h(UEditorDragHandle, {
-				editor: ed,
-				onNodeChange: (node) => {
-					selectedNode.value = node;
-				}
-			}, { default: ({ ui: handleUi, onClick }) => [h(UButton, {
-				icon: "i-lucide-plus",
-				color: "neutral",
-				variant: "ghost",
-				size: "sm",
-				class: handleUi.handle(),
-				onClick: (e) => {
-					e.stopPropagation();
-					const selected = onClick();
-					handlers.suggestion?.execute(ed, { pos: selected?.pos }).run();
-				}
-			}), h(UDropdownMenu, {
-				modal: false,
-				items: blockMenuItems(ed),
-				content: { side: "left" },
-				ui: { content: "w-48" },
-				"onUpdate:open": (open) => ed.chain().setMeta("lockDragHandle", open).run()
-			}, { default: ({ open }) => h(UButton, {
-				icon: "i-lucide-grip-vertical",
-				color: "neutral",
-				variant: "ghost",
-				activeVariant: "soft",
-				size: "sm",
-				active: open,
-				class: handleUi.handle()
-			}) })] })
-		] : null }));
+		}, { default: ({ editor: ed, handlers }) => {
+			if (!editable.value) return null;
+			const fixedItems = resolveItems("fixed", toolbarItems(), ed);
+			const textItems = resolveItems("textBubble", textBubbleItems(), ed);
+			const imageItems = resolveItems("imageBubble", imageBubbleItems(ed), ed);
+			const slashItems = resolveItems("slash", suggestionItems, ed);
+			return [
+				fixedItems.length && h(UEditorToolbar, {
+					editor: ed,
+					items: fixedItems,
+					class: "border-b border-default py-2 overflow-x-auto"
+				}, { link: () => h(LinkPopover, { editor: ed }) }),
+				slashItems.length && h(UEditorSuggestionMenu, {
+					editor: ed,
+					items: slashItems
+				}),
+				textItems.length && h(UEditorToolbar, {
+					editor: ed,
+					items: textItems,
+					layout: "bubble",
+					shouldShow: ({ editor: e, view, state }) => view.hasFocus() && !state.selection.empty && !e.isActive("image") && !e.isActive("imageUpload") && !e.isActive("codeBlock")
+				}, { link: () => h(LinkPopover, { editor: ed }) }),
+				imageItems.length && h(UEditorToolbar, {
+					editor: ed,
+					items: imageItems,
+					layout: "bubble",
+					shouldShow: ({ editor: e, view }) => e.isActive("image") && view.hasFocus()
+				}),
+				h(UEditorDragHandle, {
+					editor: ed,
+					onNodeChange: (node) => {
+						selectedNode.value = node;
+					}
+				}, { default: ({ ui: handleUi, onClick }) => [h(UButton, {
+					icon: "i-lucide-plus",
+					color: "neutral",
+					variant: "ghost",
+					size: "sm",
+					class: handleUi.handle(),
+					onClick: (e) => {
+						e.stopPropagation();
+						const selected = onClick();
+						handlers.suggestion?.execute(ed, { pos: selected?.pos }).run();
+					}
+				}), h(UDropdownMenu, {
+					modal: false,
+					items: blockMenuItems(ed),
+					content: { side: "left" },
+					ui: { content: "w-48" },
+					"onUpdate:open": (open) => ed.chain().setMeta("lockDragHandle", open).run()
+				}, { default: ({ open }) => h(UButton, {
+					icon: "i-lucide-grip-vertical",
+					color: "neutral",
+					variant: "ghost",
+					activeVariant: "soft",
+					size: "sm",
+					active: open,
+					class: handleUi.handle()
+				}) })] })
+			];
+		} }));
 	} });
 	app.use(ui);
 	app.mount(root);
@@ -839,6 +916,6 @@ function collectProperties(rule) {
 	const children = rule.cssRules;
 	return children ? Array.from(children).flatMap(collectProperties) : [];
 }
-export { create, destroy, get };
+export { configure, create, destroy, get };
 
 //# sourceMappingURL=nuxt-editor.js.map
