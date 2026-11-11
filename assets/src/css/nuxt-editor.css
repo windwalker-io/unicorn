@@ -45,11 +45,28 @@
   opacity: 0; transition: opacity .15s;
 }
 .nuxt-code-block:hover > select, .nuxt-code-block.is-active > select, .nuxt-code-block > select:focus { opacity: 1; }
-[data-resize-container] [data-resize-wrapper] { max-width: 100%; }
+/* Uploading placeholder, styled like UFileUpload's dropzone. */
+.nuxt-upload-placeholder {
+  display: flex; flex-direction: row; align-items: center; justify-content: center; gap: .75rem;
+  width: 100%; margin: .5rem 0; padding: .5rem 1rem; box-sizing: border-box;
+  border: 2px dashed var(--ui-border-accented, var(--ui-border)); border-radius: .5rem;
+  background: var(--ui-bg); color: var(--ui-text-muted);
+}
+.nuxt-upload-placeholder__icon {
+  display: inline-flex; align-items: center; justify-content: center; width: 2rem; height: 2rem;
+  border-radius: 9999px; background: var(--ui-bg-elevated); color: var(--ui-text-muted);
+}
+.nuxt-upload-placeholder__label { font-size: .875rem; font-weight: 500; color: var(--ui-text-highlighted, var(--ui-text)); }
+[data-resize-container] [data-resize-wrapper] { max-width: 100%; height: auto !important; }
+/* Past full width the container clamps the width; let the height follow so the image keeps its ratio. */
+[data-resize-container] [data-resize-wrapper] img { max-width: 100%; height: auto !important; }
 [data-resize-handle] { width: 8px; height: 48px !important; top: 50% !important; bottom: auto !important; transform: translateY(-50%); border-radius: 9999px; background: var(--ui-primary); border: 1px solid var(--bs-body-bg, #fff); cursor: ew-resize; opacity: 0; }
 [data-resize-container]:hover [data-resize-handle], [data-resize-container][data-resize-state=true] [data-resize-handle] { opacity: 1; }
 [data-resize-handle=left] { left: -4px !important; }
 [data-resize-handle=right] { right: -4px !important; }
+
+/* Highlight (<mark>) */
+.ProseMirror mark { background-color: #fff3a3; color: inherit; border-radius: .15em; padding: 0 .1em; }
 
 /* Caption input under an image. */
 .nuxt-editor-caption { display: block; width: 100%; margin-top: .25rem; text-align: center; font-size: .875rem; color: var(--ui-text-muted); background: transparent; outline: none; }

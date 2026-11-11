@@ -10,21 +10,17 @@ export function createToolbars(opts: NuxtEditorOptions, uploadImage: UploadImage
     { kind: 'mark', mark: 'underline', icon: 'i-lucide-underline', tooltip: { text: 'Underline' } },
     { kind: 'mark', mark: 'strike', icon: 'i-lucide-strikethrough', tooltip: { text: 'Strikethrough' } },
     { kind: 'mark', mark: 'code', icon: 'i-lucide-code', tooltip: { text: 'Code' } },
+    { kind: 'mark', mark: 'highlight', icon: 'i-lucide-highlighter', tooltip: { text: 'Highlight' } },
   ];
   const imageButton = () => opts.imageUploadUrl
     ? [{ kind: 'uploadImage', icon: 'i-lucide-image', tooltip: { text: 'Image' } }]
     : [];
-  const alignDropdown = {
-    icon: 'i-lucide-align-justify',
-    tooltip: { text: 'Text Align' },
-    content: { align: 'end' },
-    items: (['left', 'center', 'right', 'justify'] as const).map((align) => ({
-      kind: 'textAlign',
-      align,
-      icon: `i-lucide-align-${align}`,
-      label: `Align ${align[0].toUpperCase()}${align.slice(1)}`,
-    })),
-  };
+  const alignButtons = (['left', 'center', 'right', 'justify'] as const).map((align) => ({
+    kind: 'textAlign',
+    align,
+    icon: `i-lucide-align-${align}`,
+    tooltip: { text: `Align ${align[0].toUpperCase()}${align.slice(1)}` },
+  }));
 
   // Fixed toolbar above the editor: history, block types, marks, link/image, text align.
   function toolbarItems() {
@@ -57,7 +53,7 @@ export function createToolbars(opts: NuxtEditorOptions, uploadImage: UploadImage
       ],
       marksGroup,
       [{ slot: 'link', icon: 'i-lucide-link' }, ...imageButton()],
-      [alignDropdown],
+      alignButtons,
     ];
   }
 
@@ -86,7 +82,7 @@ export function createToolbars(opts: NuxtEditorOptions, uploadImage: UploadImage
       }],
       marksGroup,
       [{ slot: 'link', icon: 'i-lucide-link' }, ...imageButton()],
-      [alignDropdown],
+      alignButtons,
     ];
   }
 

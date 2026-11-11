@@ -3,7 +3,7 @@ import { selectOne } from '../service';
 import { mergeDeep } from '../utilities';
 import { createCaptionImage } from './nuxt-editor-lib/caption-image';
 import { createImageUpload } from './nuxt-editor-lib/image-upload';
-import { createLinkPopover } from './nuxt-editor-lib/link-popover';
+import { createLinkBar, createLinkPopover } from './nuxt-editor-lib/link-popover';
 import { createShadowHost } from './nuxt-editor-lib/shadow';
 import { createItemsResolver, createToolbars } from './nuxt-editor-lib/toolbars';
 import type { NuxtEditorOptions, NuxtEditorToolbars } from './nuxt-editor-lib/types';
@@ -81,6 +81,18 @@ export function destroy(selector: string | HTMLElement) {
 
 // Build the Vue app (Nuxt UI UEditor) next to the textarea and keep both in sync.
 async function mount(element: HTMLTextAreaElement, options: NuxtEditorOptions): Promise<NuxtEditorController> {
+  // Hide the textarea right away and show a simple loading box while the heavy modules are fetched.
+  element.style.display = 'none';
+
+  const loader = document.createElement('div');
+  loader.className = 'nuxt-editor-loading';
+  loader.style.cssText = 'display:flex;align-items:center;justify-content:center;gap:.5rem;min-height:8rem;'
+    + 'border:1px solid var(--bs-border-color,#dee2e6);border-radius:.375rem;color:var(--bs-secondary-color,#6c757d);font-size:.875rem;';
+  loader.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" '
+    + 'stroke-linecap="round"><path d="M21 12a9 9 0 1 1-6.2-8.55"><animateTransform attributeName="transform" type="rotate" '
+    + 'from="0 12 12" to="360 12 12" dur="1s" repeatCount="indefinite"/></path></svg><span>Loading editor...</span>';
+  element.after(loader);
+
   // Lazy-load Nuxt UI components, TipTap and the locale/plugin, so they are only fetched when an editor is used.
   const [
     { default: UApp },
@@ -100,6 +112,7 @@ async function mount(element: HTMLTextAreaElement, options: NuxtEditorOptions): 
     { Plugin, PluginKey },
     { Decoration, DecorationSet },
     { TextAlign },
+    { default: TiptapHighlight },
     { default: TiptapImage },
     { default: TiptapCodeBlock },
     { VueNodeViewRenderer, NodeViewWrapper, nodeViewProps },
@@ -142,6 +155,8 @@ async function mount(element: HTMLTextAreaElement, options: NuxtEditorOptions): 
     // @ts-ignore
     import('@tiptap/extension-text-align'),
     // @ts-ignore
+    import('@tiptap/extension-highlight'),
+    // @ts-ignore
     import('@tiptap/extension-image'),
     // @ts-ignore
     import('@tiptap/extension-code-block'),
@@ -152,16 +167,20 @@ async function mount(element: HTMLTextAreaElement, options: NuxtEditorOptions): 
     // @ts-ignore
     import('@nuxt/ui/vue-plugin'),
     import('@nuxt/ui/locale'),
-  ]) as any;
+  ]).catch((e) => {
+    loader.remove();
+    element.style.display = '';
+    element.style.visibility = '';
+    throw e;
+  }) as any;
 
   const opts: NuxtEditorOptions = mergeDeep({ format: 'html', props: {}, unicorn: {} }, options);
   const format = opts.format!;
 
   const { host, root, portal } = createShadowHost(css as string);
 
-  // Hide the original textarea (it stays in the form as the submitted value).
-  element.style.display = 'none';
-  element.after(host);
+  // The original textarea stays hidden (it remains in the form as the submitted value).
+  loader.replaceWith(host);
 
   // Reactive state: editor content, the TipTap instance and the editable flag.
   const content = ref<any>(parseValue(element.value, format));
@@ -189,6 +208,7 @@ async function mount(element: HTMLTextAreaElement, options: NuxtEditorOptions): 
   const uploadImage = createUploadImage(element, opts);
   const { toolbarItems, textBubbleItems, imageBubbleItems, suggestionItems, blockMenuItems: defaultBlockMenu } = createToolbars(opts, uploadImage);
   const LinkPopover = createLinkPopover({ UButton, UPopover, UTooltip, UInput, USeparator });
+  const LinkBar = createLinkBar({ UButton, UInput, USeparator });
   const CaptionImage = createCaptionImage(TiptapImage, mergeAttributes, opts);
   const CodeBlock = createCodeBlock(TiptapCodeBlock, opts);
   const { ImageUpload, customHandlers } = createImageUpload({
@@ -206,6 +226,7 @@ async function mount(element: HTMLTextAreaElement, options: NuxtEditorOptions): 
   const locale = locales[localeKey] ?? locales.en;
 
   // Root Vue app: UApp > UEditor, with toolbar / slash menu / drag handle in the default slot.
+
   const app: App = createApp({
     setup() {
       return () => h(UApp, { locale, portal }, () =>
@@ -223,6 +244,7 @@ async function mount(element: HTMLTextAreaElement, options: NuxtEditorOptions): 
             CaptionImage,
             CodeBlock,
             TextAlign.configure({ types: ['heading', 'paragraph'] }),
+            TiptapHighlight,
             ...(opts.imageUploadUrl ? [ImageUpload, createImagePasteDrop(
               { Extension, Plugin, PluginKey, Decoration, DecorationSet },
               uploadImage,
@@ -266,6 +288,15 @@ async function mount(element: HTMLTextAreaElement, options: NuxtEditorOptions): 
                   shouldShow: ({ editor: e, view, state }: any) =>
                     view.hasFocus() && !state.selection.empty && !e.isActive('image') && !e.isActive('imageUpload') && !e.isActive('codeBlock'),
                 }, { link: () => h(LinkPopover, { editor: ed }) }),
+                // Link bar: URL field with apply / open / remove, shown when the caret is inside a link.
+                h(UEditorToolbar, {
+                  editor: ed,
+                  items: [[{ slot: 'linkbar' }]],
+                  layout: 'bubble',
+                  shouldShow: ({ editor: e, view, state }: any) =>
+                    (view.hasFocus() || !!(view.dom.getRootNode() as any).activeElement?.closest?.('[data-link-bar]'))
+                    && state.selection.empty && e.isActive('link'),
+                }, { linkbar: () => h(LinkBar, { editor: ed }) }),
                 imageItems.length && h(UEditorToolbar, {
                   editor: ed,
                   items: imageItems,
@@ -344,6 +375,7 @@ async function mount(element: HTMLTextAreaElement, options: NuxtEditorOptions): 
       app.unmount();
       host.remove();
       element.style.display = '';
+      element.style.visibility = '';
       instances.delete(element);
     },
   };

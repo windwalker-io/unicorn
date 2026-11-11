@@ -188,14 +188,14 @@ function createPasteDropPlugins(
           const meta = tr.getMeta(key);
 
           if (meta?.add) {
-            const el = document.createElement('span');
+            const el = document.createElement('div');
+            el.className = 'nuxt-upload-placeholder';
             el.setAttribute('contenteditable', 'false');
-            el.style.cssText = 'display:inline-flex;align-items:center;gap:.5rem;padding:.5rem 1rem;margin:.25rem 0;'
-              + 'border:1px dashed currentColor;border-radius:.5rem;opacity:.7;font-size:.875rem;';
-            el.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
-              + 'stroke-width="2" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-6.2-8.55">'
+            el.innerHTML = '<span class="nuxt-upload-placeholder__icon"><svg width="24" height="24" viewBox="0 0 24 24" '
+              + 'fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-6.2-8.55">'
               + '<animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" '
-              + 'dur="1s" repeatCount="indefinite"/></path></svg><span>Uploading...</span>';
+              + 'dur="1s" repeatCount="indefinite"/></path></svg></span>'
+              + '<span class="nuxt-upload-placeholder__label">Uploading...</span>';
 
             set = set.add(tr.doc, [Decoration.widget(meta.add.pos, el, { id: meta.add.id, side: -1 })]);
           }

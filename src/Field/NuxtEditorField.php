@@ -42,6 +42,15 @@ class NuxtEditorField extends AbstractEditorField
         return parent::compileFieldElement($input, $options);
     }
 
+    public function prepareInput(HTMLElement $input): HTMLElement
+    {
+        $input = parent::prepareInput($input);
+
+        $input->style->setProperty('visibility', 'hidden');
+
+        return $input;
+    }
+
     public function prepareEditorScript(): void
     {
         $options = new NuxtFieldOptions(

@@ -248,10 +248,10 @@ function createPasteDropPlugins(ed, { Plugin, key, Decoration, DecorationSet }, 
 				set = set.map(tr.mapping, tr.doc);
 				const meta = tr.getMeta(key);
 				if (meta?.add) {
-					const el = document.createElement("span");
+					const el = document.createElement("div");
+					el.className = "nuxt-upload-placeholder";
 					el.setAttribute("contenteditable", "false");
-					el.style.cssText = "display:inline-flex;align-items:center;gap:.5rem;padding:.5rem 1rem;margin:.25rem 0;border:1px dashed currentColor;border-radius:.5rem;opacity:.7;font-size:.875rem;";
-					el.innerHTML = "<svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"><path d=\"M21 12a9 9 0 1 1-6.2-8.55\"><animateTransform attributeName=\"transform\" type=\"rotate\" from=\"0 12 12\" to=\"360 12 12\" dur=\"1s\" repeatCount=\"indefinite\"/></path></svg><span>Uploading...</span>";
+					el.innerHTML = "<span class=\"nuxt-upload-placeholder__icon\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"><path d=\"M21 12a9 9 0 1 1-6.2-8.55\"><animateTransform attributeName=\"transform\" type=\"rotate\" from=\"0 12 12\" to=\"360 12 12\" dur=\"1s\" repeatCount=\"indefinite\"/></path></svg></span><span class=\"nuxt-upload-placeholder__label\">Uploading...</span>";
 					set = set.add(tr.doc, [Decoration.widget(meta.add.pos, el, {
 						id: meta.add.id,
 						side: -1
@@ -352,6 +352,81 @@ function createImageUpload(deps) {
 	};
 }
 // src/module/nuxt-editor-lib/link-popover.ts
+function createLinkBar(c) {
+	const { UButton, UInput, USeparator } = c;
+	return defineComponent({
+		props: { editor: {
+			type: Object,
+			required: true
+		} },
+		setup(props) {
+			const url = ref("");
+			const input = ref();
+			let wasInLink = false;
+			const sync = () => {
+				url.value = props.editor.getAttributes("link").href || "";
+			};
+			const onTransaction = () => {
+				const inLink = props.editor.isActive("link") && props.editor.state.selection.empty;
+				if (inLink && !wasInLink && props.editor.view.hasFocus()) {
+					sync();
+					setTimeout(() => {
+						const el = input.value?.inputRef ?? input.value?.$el?.querySelector?.("input");
+						el?.focus();
+						el?.select();
+					}, 50);
+				}
+				wasInLink = inLink;
+			};
+			props.editor.on("selectionUpdate", sync);
+			props.editor.on("transaction", onTransaction);
+			onBeforeUnmount(() => {
+				props.editor.off("selectionUpdate", sync);
+				props.editor.off("transaction", onTransaction);
+			});
+			sync();
+			const apply = () => {
+				if (url.value) props.editor.chain().focus().extendMarkRange("link").setLink({ href: url.value }).run();
+			};
+			const remove = () => {
+				props.editor.chain().focus().extendMarkRange("link").unsetLink().setMeta("preventAutolink", true).run();
+			};
+			const btn = (icon, title, onClick) => h(UButton, {
+				icon,
+				title,
+				onClick,
+				color: "neutral",
+				variant: "ghost",
+				size: "sm"
+			});
+			return () => h(UInput, {
+				ref: input,
+				"data-link-bar": "",
+				modelValue: url.value,
+				"onUpdate:modelValue": (v) => url.value = v,
+				type: "url",
+				variant: "none",
+				placeholder: "Paste a link...",
+				onFocus: (e) => e.target.select(),
+				class: "min-w-72",
+				onKeydown: (e) => {
+					if (e.key === "Enter") {
+						e.preventDefault();
+						apply();
+					} else if (e.key === "Escape") props.editor.commands.focus();
+				}
+			}, { default: () => h("div", { class: "flex items-center mr-0.5" }, [
+				btn("i-lucide-corner-down-left", "Apply link", apply),
+				h(USeparator, {
+					orientation: "vertical",
+					class: "h-6 mx-1"
+				}),
+				btn("i-lucide-external-link", "Open in new window", () => window.open(url.value, "_blank", "noopener,noreferrer")),
+				btn("i-lucide-trash", "Remove link", remove)
+			]) });
+		}
+	});
+}
 function createLinkPopover(c) {
 	const { UButton, UPopover, UTooltip, UInput, USeparator } = c;
 	return defineComponent({
@@ -422,6 +497,7 @@ function createLinkPopover(c) {
 						type: "url",
 						variant: "none",
 						placeholder: "Paste a link...",
+						onFocus: (e) => e.target.select(),
 						onKeydown: (e) => {
 							if (e.key === "Enter") {
 								e.preventDefault();
@@ -518,6 +594,12 @@ function createToolbars(opts, uploadImage) {
 			mark: "code",
 			icon: "i-lucide-code",
 			tooltip: { text: "Code" }
+		},
+		{
+			kind: "mark",
+			mark: "highlight",
+			icon: "i-lucide-highlighter",
+			tooltip: { text: "Highlight" }
 		}
 	];
 	const imageButton = () => opts.imageUploadUrl ? [{
@@ -525,22 +607,17 @@ function createToolbars(opts, uploadImage) {
 		icon: "i-lucide-image",
 		tooltip: { text: "Image" }
 	}] : [];
-	const alignDropdown = {
-		icon: "i-lucide-align-justify",
-		tooltip: { text: "Text Align" },
-		content: { align: "end" },
-		items: [
-			"left",
-			"center",
-			"right",
-			"justify"
-		].map((align) => ({
-			kind: "textAlign",
-			align,
-			icon: `i-lucide-align-${align}`,
-			label: `Align ${align[0].toUpperCase()}${align.slice(1)}`
-		}))
-	};
+	const alignButtons = [
+		"left",
+		"center",
+		"right",
+		"justify"
+	].map((align) => ({
+		kind: "textAlign",
+		align,
+		icon: `i-lucide-align-${align}`,
+		tooltip: { text: `Align ${align[0].toUpperCase()}${align.slice(1)}` }
+	}));
 	function toolbarItems() {
 		return [
 			[{
@@ -599,7 +676,7 @@ function createToolbars(opts, uploadImage) {
 				slot: "link",
 				icon: "i-lucide-link"
 			}, ...imageButton()],
-			[alignDropdown]
+			alignButtons
 		];
 	}
 	function textBubbleItems() {
@@ -655,7 +732,7 @@ function createToolbars(opts, uploadImage) {
 				slot: "link",
 				icon: "i-lucide-link"
 			}, ...imageButton()],
-			[alignDropdown]
+			alignButtons
 		];
 	}
 	function imageBubbleItems(ed) {
@@ -981,7 +1058,13 @@ function destroy(selector) {
 	}
 }
 async function mount(element, options) {
-	const [{ default: UApp }, { default: UEditor }, { default: UEditorToolbar }, { default: UEditorDragHandle }, { default: UEditorSuggestionMenu }, { default: UDropdownMenu }, { default: UButton }, { default: UFileUpload }, { default: UAvatar }, { default: UPopover }, { default: UTooltip }, { default: UInput }, { default: USeparator }, { Node, Extension, mergeAttributes }, { Plugin, PluginKey }, { Decoration, DecorationSet }, { TextAlign }, { default: TiptapImage }, { default: TiptapCodeBlock }, { VueNodeViewRenderer, NodeViewWrapper, nodeViewProps }, { mapEditorItems }, { default: ui }, locales] = await Promise.all([
+	element.style.display = "none";
+	const loader = document.createElement("div");
+	loader.className = "nuxt-editor-loading";
+	loader.style.cssText = "display:flex;align-items:center;justify-content:center;gap:.5rem;min-height:8rem;border:1px solid var(--bs-border-color,#dee2e6);border-radius:.375rem;color:var(--bs-secondary-color,#6c757d);font-size:.875rem;";
+	loader.innerHTML = "<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"><path d=\"M21 12a9 9 0 1 1-6.2-8.55\"><animateTransform attributeName=\"transform\" type=\"rotate\" from=\"0 12 12\" to=\"360 12 12\" dur=\"1s\" repeatCount=\"indefinite\"/></path></svg><span>Loading editor...</span>";
+	element.after(loader);
+	const [{ default: UApp }, { default: UEditor }, { default: UEditorToolbar }, { default: UEditorDragHandle }, { default: UEditorSuggestionMenu }, { default: UDropdownMenu }, { default: UButton }, { default: UFileUpload }, { default: UAvatar }, { default: UPopover }, { default: UTooltip }, { default: UInput }, { default: USeparator }, { Node, Extension, mergeAttributes }, { Plugin, PluginKey }, { Decoration, DecorationSet }, { TextAlign }, { default: TiptapHighlight }, { default: TiptapImage }, { default: TiptapCodeBlock }, { VueNodeViewRenderer, NodeViewWrapper, nodeViewProps }, { mapEditorItems }, { default: ui }, locales] = await Promise.all([
 		import("@nuxt/ui/components/App.vue"),
 		import("@nuxt/ui/components/Editor.vue"),
 		import("@nuxt/ui/components/EditorToolbar.vue"),
@@ -999,13 +1082,19 @@ async function mount(element, options) {
 		import("@tiptap/pm/state"),
 		import("@tiptap/pm/view"),
 		import("@tiptap/extension-text-align"),
+		import("@tiptap/extension-highlight"),
 		import("@tiptap/extension-image"),
 		import("@tiptap/extension-code-block"),
 		import("@tiptap/vue-3"),
 		import("@nuxt/ui/utils/editor"),
 		import("@nuxt/ui/vue-plugin"),
 		import("@nuxt/ui/locale")
-	]);
+	]).catch((e) => {
+		loader.remove();
+		element.style.display = "";
+		element.style.visibility = "";
+		throw e;
+	});
 	const opts = mergeDeep({
 		format: "html",
 		props: {},
@@ -1013,8 +1102,7 @@ async function mount(element, options) {
 	}, options);
 	const format = opts.format;
 	const { host, root, portal } = createShadowHost(css);
-	element.style.display = "none";
-	element.after(host);
+	loader.replaceWith(host);
 	const content = ref(parseValue(element.value, format));
 	const editor = shallowRef(null);
 	const editable = ref(!(opts.readonly || element.readOnly || element.disabled));
@@ -1039,6 +1127,11 @@ async function mount(element, options) {
 		UButton,
 		UPopover,
 		UTooltip,
+		UInput,
+		USeparator
+	});
+	const LinkBar = createLinkBar({
+		UButton,
 		UInput,
 		USeparator
 	});
@@ -1075,6 +1168,7 @@ async function mount(element, options) {
 				CaptionImage,
 				CodeBlock,
 				TextAlign.configure({ types: ["heading", "paragraph"] }),
+				TiptapHighlight,
 				...opts.imageUploadUrl ? [ImageUpload, createImagePasteDrop({
 					Extension,
 					Plugin,
@@ -1114,6 +1208,12 @@ async function mount(element, options) {
 					layout: "bubble",
 					shouldShow: ({ editor: e, view, state }) => view.hasFocus() && !state.selection.empty && !e.isActive("image") && !e.isActive("imageUpload") && !e.isActive("codeBlock")
 				}, { link: () => h(LinkPopover, { editor: ed }) }),
+				h(UEditorToolbar, {
+					editor: ed,
+					items: [[{ slot: "linkbar" }]],
+					layout: "bubble",
+					shouldShow: ({ editor: e, view, state }) => (view.hasFocus() || !!view.dom.getRootNode().activeElement?.closest?.("[data-link-bar]")) && state.selection.empty && e.isActive("link")
+				}, { linkbar: () => h(LinkBar, { editor: ed }) }),
 				imageItems.length && h(UEditorToolbar, {
 					editor: ed,
 					items: imageItems,
@@ -1179,6 +1279,7 @@ async function mount(element, options) {
 			app.unmount();
 			host.remove();
 			element.style.display = "";
+			element.style.visibility = "";
 			instances.delete(element);
 		}
 	};

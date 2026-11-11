@@ -1670,14 +1670,6 @@ export { }
 
 
 declare global {
-    var Alpine: AlpineGlobal;
-    var TomSelect: typeof TomSelectGlobal;
-    var Spectrum: typeof SpectrumGlobal;
-    var Mark: any;
-}
-
-
-declare global {
     interface Node {
         __unicorn?: any;
     }
@@ -1689,6 +1681,14 @@ declare module '@windwalker-io/unicorn-next' {
         /** @deprecated Only for code generator use. */
         $ui: typeof methods;
     }
+}
+
+
+declare global {
+    var Alpine: AlpineGlobal;
+    var TomSelect: typeof TomSelectGlobal;
+    var Spectrum: typeof SpectrumGlobal;
+    var Mark: any;
 }
 
 declare global {
