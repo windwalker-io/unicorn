@@ -12,7 +12,9 @@ import USeparator from '@nuxt/ui/components/Separator.vue';
 import UTooltip from '@nuxt/ui/components/Tooltip.vue';
 
 // Link button + popover (port of the docs' EditorLinkPopover): set, open and remove a link on the selection.
-const props = defineProps<{ editor: any }>();
+import type { Editor } from './types';
+
+const props = defineProps<{ editor: Editor }>();
 
 const open = ref(false);
 const url = ref('');

@@ -8,6 +8,7 @@ import { createImageUpload } from './nuxt-editor-lib/image-upload';
 import { createShadowHost } from './nuxt-editor-lib/shadow';
 import { createItemsResolver, createToolbars } from './nuxt-editor-lib/toolbars';
 import type { NuxtEditorOptions, NuxtEditorToolbars } from './nuxt-editor-lib/types';
+import type { DragHandleNode, Editor } from '../vue/components/NuxtEditor/types';
 import { createCodeBlock } from './nuxt-editor-lib/code-block';
 import { createFetchImage, createImagePasteDrop, createUploadImage } from './nuxt-editor-lib/upload';
 // Resolved by the host Vite (@nuxt/ui/vite + Tailwind). Do not bundle here.
@@ -19,7 +20,7 @@ export type { NuxtEditorOptions, NuxtEditorToolbars, NuxtEditorToolbarOverride }
 export interface NuxtEditorController {
   element: HTMLTextAreaElement;
   options: NuxtEditorOptions;
-  readonly editor: any;
+  readonly editor: Editor | null;
   getValue(): string;
   setValue(value: string): void;
   insert(content: string): void;
@@ -154,7 +155,7 @@ async function mount(element: HTMLTextAreaElement, options: NuxtEditorOptions): 
 
   // Reactive state: editor content (synced with the textarea), the TipTap instance and the editable flag.
   const { content, update, set } = useEditorSync(element, format, parseValue);
-  const editor = shallowRef<any>(null);
+  const editor = shallowRef<Editor | null>(null);
   const editable = ref(!(opts.readonly || element.readOnly || element.disabled));
 
   const resolveItems = createItemsResolver({ ...globalToolbars, ...options.toolbars }, opts);
@@ -209,10 +210,10 @@ async function mount(element: HTMLTextAreaElement, options: NuxtEditorOptions): 
         editorProps: opts.props,
         items,
         'onUpdate:modelValue': update,
-        onNodeChange: (node: any) => {
+        onNodeChange: (node: DragHandleNode) => {
           selectedNode.value = node;
         },
-        onCreate: (ed: any) => {
+        onCreate: (ed: Editor) => {
           editor.value = ed;
           element.dispatchEvent(new CustomEvent('nuxt-editor:create', { detail: ed }));
         },

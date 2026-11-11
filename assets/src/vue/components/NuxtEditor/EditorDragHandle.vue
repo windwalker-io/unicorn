@@ -6,18 +6,21 @@ import UDropdownMenu from '@nuxt/ui/components/DropdownMenu.vue';
 // @ts-ignore
 import UEditorDragHandle from '@nuxt/ui/components/EditorDragHandle.vue';
 
+import type { EditorHandlers } from '@nuxt/ui';
+import type { DragHandleNode, Editor, NuxtEditorItems } from './types';
+
 // Left-side handle: "+" opens the suggestion menu, grip opens the block menu (and drags).
 const props = defineProps<{
-  editor: any;
-  handlers: any;
-  blockMenuItems: (editor: any) => any[];
+  editor: Editor;
+  handlers: EditorHandlers;
+  blockMenuItems: NuxtEditorItems['blockMenu'];
 }>();
 
 const emit = defineEmits<{
-  'node-change': [node: any];
+  'node-change': [node: DragHandleNode];
 }>();
 
-function addBlock(e: Event, onClick: () => any) {
+function addBlock(e: Event, onClick: () => DragHandleNode | undefined) {
   e.stopPropagation();
   const selected = onClick();
   props.handlers.suggestion?.execute(props.editor, { pos: selected?.pos }).run();

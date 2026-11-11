@@ -8,7 +8,9 @@ import UInput from '@nuxt/ui/components/Input.vue';
 import USeparator from '@nuxt/ui/components/Separator.vue';
 
 // Inline link editor shown in a bubble while the caret is inside a link: URL field, apply, open, remove.
-const props = defineProps<{ editor: any }>();
+import type { Editor } from './types';
+
+const props = defineProps<{ editor: Editor }>();
 
 const url = ref('');
 

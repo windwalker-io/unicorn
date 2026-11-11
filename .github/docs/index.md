@@ -8,6 +8,11 @@ Load only the topic needed for the current task.
 - [Package architecture](architecture.md): package layout, host-app integration,
   feature flows, and testing context.
 
+## Localization
+
+- [Locale key naming](locale-key-naming.md): **mandatory** key naming strategy
+  for `.ini` language files; read before touching any translation key.
+
 ## Templates
 
 - [`templates/`](templates/): documentation templates and conventions.

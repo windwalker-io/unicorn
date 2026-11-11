@@ -14,6 +14,10 @@ Load only the guidance needed for the task:
 - [`docs/architecture.md`](docs/architecture.md): package layout and host-app integration
 - [`instructions/architecture.instructions.md`](instructions/architecture.instructions.md):
   mandatory placement and integration rules
+- [`docs/locale-key-naming.md`](docs/locale-key-naming.md): **mandatory** to
+  read before adding, renaming, or reusing any translation key
+- [`instructions/i18n.instructions.md`](instructions/i18n.instructions.md):
+  locale files, backend and frontend translation
 - [`instructions/test-common.instructions.md`](instructions/test-common.instructions.md):
   test conventions
 - [`instructions/test-coverage.instructions.md`](instructions/test-coverage.instructions.md):

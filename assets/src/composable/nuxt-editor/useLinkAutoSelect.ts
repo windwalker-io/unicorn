@@ -1,7 +1,9 @@
+import type { Editor } from '../../vue/components/NuxtEditor/types';
+
 // Like Nuxt: on mouse up, a caret inside a link focuses the URL field with its text selected;
 // a drag that makes a range selection keeps the normal bubble toolbar.
 export function useLinkAutoSelect() {
-  function bind(editor: any) {
+  function bind(editor: Editor) {
     editor.view.dom.addEventListener('mouseup', () => {
       let tries = 0;
 

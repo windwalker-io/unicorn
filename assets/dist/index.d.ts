@@ -14,6 +14,7 @@ import { default as default_2 } from 'cropperjs';
 import { default as default_3 } from 'web-directive';
 import { deleteConfirm } from '@lyrasoft/ts-toolkit/generic';
 import { Editor } from 'tinymce';
+import { Editor as Editor_2 } from '@tiptap/core';
 import { EditorOptions } from 'tinymce';
 import { isAxiosError } from 'axios';
 import { isCancel } from 'axios';
@@ -567,15 +568,16 @@ declare interface ModalSelectModule {
     ready: typeof ready_2;
 }
 
-export declare function module<T = any, E extends Element = Element>(ele: string, name: string, callback?: ((el: E) => any)): (T | null)[];
+declare function module_2<T = any, E extends Element = Element>(ele: string, name: string, callback?: ((el: E) => any)): (T | null)[];
 
-export declare function module<T = any, E extends Element = Element>(ele: NodeListOf<E>, name: string, callback?: ((el: E) => any)): (T | null)[];
+declare function module_2<T = any, E extends Element = Element>(ele: NodeListOf<E>, name: string, callback?: ((el: E) => any)): (T | null)[];
 
-export declare function module<T = any, E extends Element = Element>(ele: E, name: string, callback?: ((el: E) => any)): T | null;
+declare function module_2<T = any, E extends Element = Element>(ele: E, name: string, callback?: ((el: E) => any)): T | null;
 
-export declare function module<T = any, E extends Element = Element>(ele: string | Element | NodeListOf<Element>, name: string, callback?: ((el: E) => any)): (T | null)[] | T | null;
+declare function module_2<T = any, E extends Element = Element>(ele: string | Element | NodeListOf<Element>, name: string, callback?: ((el: E) => any)): (T | null)[] | T | null;
 
-export declare function module<T = any, E extends Element = Element>(ele: string | Element | NodeListOf<Element>, name: string, callback: false): (T | null)[] | T | null;
+declare function module_2<T = any, E extends Element = Element>(ele: string | Element | NodeListOf<Element>, name: string, callback: false): (T | null)[] | T | null;
+export { module_2 as module }
 
 declare class MultiUploaderElement extends HTMLElement {
     static is: string;
@@ -596,7 +598,7 @@ declare type Nullable<T> = T | null | undefined;
 declare interface NuxtEditorController {
     element: HTMLTextAreaElement;
     options: NuxtEditorOptions;
-    readonly editor: any;
+    readonly editor: Editor_2 | null;
     getValue(): string;
     setValue(value: string): void;
     insert(content: string): void;
@@ -1669,6 +1671,13 @@ export declare function watchAttributes<T extends HTMLElement>(el: T, callback?:
 export { }
 
 
+declare global {
+    interface Node {
+        __unicorn?: any;
+    }
+}
+
+
 declare module '@windwalker-io/unicorn-next' {
     interface UnicornApp {
         /** @deprecated Only for code generator use. */
@@ -1685,17 +1694,6 @@ declare global {
 }
 
 
-declare global {
-    interface Node {
-        __unicorn?: any;
-    }
-}
-
-declare global {
-    var S: any;
-}
-
-
 declare module 'axios' {
     interface AxiosRequestConfig {
         vars?: Record<string, any>;
@@ -1706,14 +1704,18 @@ declare module 'axios' {
     }
 }
 
-
 declare global {
-    export interface Window {
-        bootstrap: typeof bootstrap;
-    }
+    var S: any;
 }
 
 
 declare global {
     var tinymce: TinyMCE;
+}
+
+
+declare global {
+    export interface Window {
+        bootstrap: typeof bootstrap;
+    }
 }

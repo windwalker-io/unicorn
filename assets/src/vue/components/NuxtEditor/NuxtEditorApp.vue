@@ -6,35 +6,32 @@ import UEditor from '@nuxt/ui/components/Editor.vue';
 import { useLinkAutoSelect } from '../../../composable/nuxt-editor/useLinkAutoSelect';
 import EditorDragHandle from './EditorDragHandle.vue';
 import EditorToolbars from './EditorToolbars.vue';
+import type { AnyExtension, Content } from '@tiptap/core';
+import type { EditorCustomHandlers } from '@nuxt/ui';
+import type { DragHandleNode, Editor, Locale, NuxtEditorItems } from './types';
 
 // Root of the Nuxt editor: UApp > UEditor, with toolbars and the drag handle in the editor slot.
 defineProps<{
-  modelValue: any;
-  format: string;
+  modelValue: Content;
+  format: 'html' | 'markdown' | 'json';
   editable: boolean;
-  locale: any;
-  portal: any;
-  extensions: any[];
-  handlers: Record<string, any>;
+  locale: Locale;
+  portal: boolean | string | HTMLElement;
+  extensions: AnyExtension[];
+  handlers: EditorCustomHandlers;
   editorProps?: Record<string, any>;
-  items: {
-    fixed: (editor: any) => any[];
-    text: (editor: any) => any[];
-    image: (editor: any) => any[];
-    slash: (editor: any) => any[];
-    blockMenu: (editor: any) => any[];
-  };
+  items: NuxtEditorItems;
 }>();
 
 const emit = defineEmits<{
-  'update:modelValue': [value: any];
-  'create': [editor: any];
-  'node-change': [node: any];
+  'update:modelValue': [value: Content];
+  'create': [editor: Editor];
+  'node-change': [node: DragHandleNode];
 }>();
 
 const linkAutoSelect = useLinkAutoSelect();
 
-function onCreate({ editor }: any) {
+function onCreate({ editor }: { editor: Editor }) {
   linkAutoSelect.bind(editor);
   emit('create', editor);
 }

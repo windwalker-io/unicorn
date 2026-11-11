@@ -104,7 +104,7 @@ var EditorDragHandle_default = /*@__PURE__*/ _plugin_vue_export_helper_default(E
 // src/composable/nuxt-editor/useBubbleVisibility.ts
 function useBubbleVisibility() {
 	const text = ({ editor, view, state }) => view.hasFocus() && !state.selection.empty && !editor.isActive("image") && !editor.isActive("imageUpload") && !editor.isActive("codeBlock");
-	const link = ({ editor, view, state }) => (view.hasFocus() || !!view.dom.getRootNode().activeElement?.closest?.("[data-link-bar]")) && state.selection.empty && editor.isActive("link");
+	const link = ({ editor, view, state }) => (view.hasFocus() || !!view.dom.getRootNode().activeElement?.closest("[data-link-bar]")) && state.selection.empty && editor.isActive("link");
 	const image = ({ editor, view }) => editor.isActive("image") && view.hasFocus();
 	return {
 		text,
@@ -444,7 +444,7 @@ var NuxtEditorApp_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ de
 		format: {},
 		editable: { type: Boolean },
 		locale: {},
-		portal: {},
+		portal: { type: [Boolean, String] },
 		extensions: {},
 		handlers: {},
 		editorProps: {},

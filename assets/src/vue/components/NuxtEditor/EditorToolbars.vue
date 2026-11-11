@@ -6,14 +6,15 @@ import UEditorSuggestionMenu from '@nuxt/ui/components/EditorSuggestionMenu.vue'
 import { useBubbleVisibility } from '../../../composable/nuxt-editor/useBubbleVisibility';
 import LinkBar from './LinkBar.vue';
 import LinkPopover from './LinkPopover.vue';
+import type { Editor, NuxtEditorItems, ToolbarItems } from './types';
 
 // Fixed toolbar, slash menu and the floating toolbars (text selection, link bar, selected image).
 defineProps<{
-  editor: any;
-  fixedItems: any[];
-  textItems: any[];
-  imageItems: any[];
-  slashItems: any[];
+  editor: Editor;
+  fixedItems: ToolbarItems;
+  textItems: ToolbarItems;
+  imageItems: ToolbarItems;
+  slashItems: ReturnType<NuxtEditorItems['slash']>;
 }>();
 
 const shouldShow = useBubbleVisibility();
