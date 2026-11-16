@@ -90,7 +90,7 @@ export default defineConfig(({ mode }) => {
     },
     plugins: [
       treeShakeable(),
-      ui(),
+      ui({ dts: false }),
       vuePlugin({
         features: {
           prodDevtools: true,
