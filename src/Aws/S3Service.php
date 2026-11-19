@@ -274,7 +274,7 @@ class S3Service
         $args['Prefix'] = $path;
 
         foreach ($this->client->getIterator('ListObjects', $args) as $k => $item) {
-            $item['Key'] = Str::removeLeft($item['Key'], $this->getSubfolder());
+            $item['Key'] = Str::removeStart($item['Key'], $this->getSubfolder() . '/');
             $item['Uri'] = $this->getUri($item['Key']);
 
             yield $k => $item;

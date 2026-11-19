@@ -231,7 +231,7 @@ final class S3ServiceTest extends TestCase
 
         self::assertSame('ListObjects', $handler->getLastCommand()->getName());
         self::assertSame('assets/images/', $handler->getLastCommand()['Prefix']);
-        self::assertSame('/images/photo.jpg', $objects[0]['Key']);
+        self::assertSame('images/photo.jpg', $objects[0]['Key']);
         self::assertSame('https://test-bucket.s3.us-east-1.amazonaws.com/assets/images/photo.jpg', (string) $objects[0]['Uri']);
     }
 
