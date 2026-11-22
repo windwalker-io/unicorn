@@ -392,11 +392,13 @@ export async function useColorPicker(
   if (typeof options.locale === 'string') {
     let ls: any = options.locale.split('-').map((l) => l.toLowerCase());
 
+    // Same-language locales (e.g. "de-DE") map to a single file, e.g. "de.js"
     if (ls[0] === ls[1]) {
-      ls = [ls];
+      ls = ls[0];
+    } else {
+      ls = ls.join('-');
     }
 
-    ls = ls.join('-');
     try {
       await useImport(`@spectrum/i18n/${ls}.js`);
     } catch (e) {

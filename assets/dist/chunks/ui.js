@@ -23,7 +23,7 @@ function animateTo(element, styles, options = {}) {
 	animation.addEventListener("finish", () => {
 		for (const name in styles) {
 			const value = styles[name];
-			element.style.setProperty(name, Array.isArray(value) ? value[value.length - 1] : value);
+			element.style.setProperty(name.replace(/[A-Z]/g, (m) => "-" + m.toLowerCase()), Array.isArray(value) ? value[value.length - 1] : value);
 		}
 		animation.cancel();
 	});
@@ -214,8 +214,8 @@ async function useColorPicker(selector, options = {}) {
 	const m = await useImport("@spectrum");
 	if (typeof options.locale === "string") {
 		let ls = options.locale.split("-").map((l) => l.toLowerCase());
-		if (ls[0] === ls[1]) ls = [ls];
-		ls = ls.join("-");
+		if (ls[0] === ls[1]) ls = ls[0];
+		else ls = ls.join("-");
 		try {
 			await useImport(`@spectrum/i18n/${ls}.js`);
 		} catch (e) {

@@ -1697,8 +1697,15 @@ declare global {
     var Mark: any;
 }
 
-declare global {
-    var S: any;
+
+declare module 'axios' {
+    interface AxiosRequestConfig {
+        vars?: Record<string, any>;
+        methodSimulate?: string;
+        methodSimulateByHeader?: boolean;
+    }
+    interface CreateAxiosDefaults {
+    }
 }
 
 
@@ -1713,13 +1720,6 @@ declare global {
     var tinymce: TinyMCE;
 }
 
-
-declare module 'axios' {
-    interface AxiosRequestConfig {
-        vars?: Record<string, any>;
-        methodSimulate?: string;
-        methodSimulateByHeader?: boolean;
-    }
-    interface CreateAxiosDefaults {
-    }
+declare global {
+    var S: any;
 }

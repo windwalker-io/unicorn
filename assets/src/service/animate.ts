@@ -43,8 +43,9 @@ export function animateTo(
     for (const name in styles) {
       const value = styles[name];
 
+      // setProperty() needs hyphenated CSS names, e.g. backgroundColor -> background-color
       element.style.setProperty(
-        name,
+        name.replace(/[A-Z]/g, (m) => '-' + m.toLowerCase()),
         Array.isArray(value)
           ? value[value.length - 1]
           : value
