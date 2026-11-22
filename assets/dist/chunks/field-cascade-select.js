@@ -105,7 +105,9 @@ var FieldCascadeSelect = class FieldCascadeSelect extends (() => import_alpineCo
 		});
 		this.el = this.$el;
 		module(this.$el, "cascade.select", () => this);
-		this.valueInit(this.$el, lastValue, values);
+		promise.then(() => {
+			this.valueInit(this.$el, lastValue, values);
+		});
 	}
 	getLabel(i) {
 		return this.options.labels[i] || `Level ${i + 1}`;
@@ -166,7 +168,7 @@ var FieldCascadeSelect = class FieldCascadeSelect extends (() => import_alpineCo
 			value,
 			path
 		} });
-		this.options.onSelectInit(event);
+		this.options.onValueInit(event);
 		this.$el.dispatchEvent(event);
 	}
 	selectInit($select) {

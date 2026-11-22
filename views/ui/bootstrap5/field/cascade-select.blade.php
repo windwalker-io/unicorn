@@ -73,7 +73,9 @@ $inputElement->setAttribute(':value', 'getFinalValue')
                 class="c-cascade-select__label mb-2"
                 :class="options.labelWidth || 'col-md-3'"></label>
 
-            <div class="col c-cascade-select__input">
+            <div class="c-cascade-select__input"
+                :class="options.fieldWidth || 'col'"
+            >
                 <select :id="getId(i)" :disabled="!canModify"
                     class="form-select custom-select"
                     x-init="selectInit($el)"

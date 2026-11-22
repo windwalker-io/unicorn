@@ -106,7 +106,9 @@ class FieldCascadeSelect extends AlpineComponent {
 
     module(this.$el, 'cascade.select', () => this);
 
-    this.valueInit(this.$el, lastValue, values);
+    promise.then(() => {
+      this.valueInit(this.$el, lastValue, values);
+    });
   }
 
   getLabel(i: number) {
@@ -223,7 +225,7 @@ class FieldCascadeSelect extends AlpineComponent {
       }
     });
 
-    this.options.onSelectInit(event);
+    this.options.onValueInit(event);
 
     this.$el.dispatchEvent(event);
   }

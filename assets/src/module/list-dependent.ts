@@ -310,8 +310,10 @@ export const ready = useUniDirective<HTMLSelectElement>('list-dependent', {
   },
   updated(el, binding) {
     const options = JSON.parse(binding.value);
+    const instance = ListDependent.handle(el);
 
-    ListDependent.handle(el).mergeOptions(options);
+    instance.options = instance.mergeOptions(options);
+    instance.changeList(instance.dependent.value, true);
   }
 });
 

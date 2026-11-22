@@ -189,7 +189,9 @@ var ready = /*@__PURE__*/ useUniDirective("list-dependent", {
 	},
 	updated(el, binding) {
 		const options = JSON.parse(binding.value);
-		ListDependent.handle(el).mergeOptions(options);
+		const instance = ListDependent.handle(el);
+		instance.options = instance.mergeOptions(options);
+		instance.changeList(instance.dependent.value, true);
 	}
 });
 //#endregion

@@ -133,18 +133,18 @@ $disabled = $field->isReadonly() || $field->isDisabled();
 
             @if ($field->isHasImage())
                 <div class="modal-list-item-image">
-                    <div style="height: 2em; width: 2em; border-radius: 2px; background: url(${item.image}) center center; background-size: cover">
+                    <div style="height: 2em; width: 2em; border-radius: 2px; background: url(<%- item.image %>) center center; background-size: cover">
 
                     </div>
                 </div>
             @endif
 
             <div class="modal-list-item-title flex-grow-1">
-                <a <% if (item.link) { %> href="${item.link ?? 'javascript://'}" target="_blank" <% } %>>
+                <a <% if (item.link) { %> href="<%- item.link ?? 'javascript://' %>" target="_blank" <% } %>>
                     <span class="badge bg-secondary">
-                    ${item.value}
+                    <%- item.value %>
                 </span>
-                ${item.title}
+                <%- item.title %>
                 </a>
             </div>
             <div class="modal-list-item-delete">
@@ -156,7 +156,7 @@ $disabled = $field->isReadonly() || $field->isDisabled();
                 </button>
 
                 <input data-field-input data-role="value" type="hidden" name="{{ $field->getInputName('[]') }}"
-                    value="${item.value}" />
+                    value="<%- item.value %>" />
             </div>
         </div>
     </div>
