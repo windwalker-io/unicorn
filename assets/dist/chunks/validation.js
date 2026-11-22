@@ -1,8 +1,9 @@
-import { useUITheme, useUniDirective } from "../unicorn.js";
-import { d as selectOne, o as html, r as getBoundedInstance, u as selectAll } from "./dom.js";
-import { n as trans } from "./lang.js";
 import { t as mergeDeep } from "./arr.js";
-// ../../../../node_modules/punycode/punycode.es6.js
+import { d as selectOne, o as html, r as getBoundedInstance, u as selectAll } from "./dom.js";
+import { E as useUITheme } from "./ui.js";
+import { n as trans } from "./lang.js";
+import { useUniDirective } from "../unicorn.js";
+//#region ../../../../node_modules/punycode/punycode.es6.js
 /** Highest positive signed 32-bit float value */
 var maxInt = 2147483647;
 /** Bootstring parameters */
@@ -23,7 +24,7 @@ var errors = {
 	"invalid-input": "Invalid input"
 };
 /** Convenience shortcuts */
-var baseMinusTMin = 35;
+var baseMinusTMin = base - tMin;
 var floor = /*@__PURE__*/ (() => Math.floor)();
 var stringFromCharCode = /*@__PURE__*/ (() => String.fromCharCode)();
 /**
@@ -190,7 +191,8 @@ var toASCII = function(input) {
 		return regexNonASCII.test(string) ? "xn--" + encode(string) : string;
 	});
 };
-// src/module/validation.ts
+//#endregion
+//#region src/module/validation.ts
 var validatorHandlers = {};
 var defaultOptions = {
 	scroll: false,
@@ -716,7 +718,9 @@ var UnicornFieldValidation = class {
 			case "[":
 				obj.attrs.push(token.slice(1, -1).split("="));
 				break;
-			default: obj.tags.push(token);
+			default:
+				obj.tags.push(token);
+				break;
 		}
 		return obj;
 	}
@@ -803,6 +807,7 @@ function handleParamValue(value) {
 	if (value === "false") return true;
 	return value;
 }
+//#endregion
 export { UnicornFieldValidation, UnicornFormValidation, ready, validatorHandlers as validators };
 
 //# sourceMappingURL=validation.js.map

@@ -1,8 +1,8 @@
-import { useUniDirective } from "../unicorn.js";
+import { t as mergeDeep } from "./arr.js";
 import { t as data } from "./data.js";
 import { a as h, d as selectOne, r as getBoundedInstance, u as selectAll } from "./dom.js";
-import { t as mergeDeep } from "./arr.js";
-// src/bootstrap/button-radio.ts
+import { useUniDirective } from "../unicorn.js";
+//#region src/bootstrap/button-radio.ts
 var defaultOptions = {
 	selector: ".btn-group .radio",
 	buttonClass: "btn",
@@ -73,7 +73,9 @@ var ButtonRadio = class {
 				case "0":
 					color = options.color.red || "";
 					break;
-				default: color = options.color.green || "";
+				default:
+					color = options.color.green || "";
+					break;
 			}
 			input.dataset.colorClass = color;
 		}
@@ -121,6 +123,7 @@ var ready = /*@__PURE__*/ useUniDirective("button-radio", { mounted(el, { value 
 	JSON.parse(value || "{}");
 	ButtonRadio.handle(el, value || {});
 } });
+//#endregion
 export { ButtonRadio, ready };
 
 //# sourceMappingURL=button-radio.js.map

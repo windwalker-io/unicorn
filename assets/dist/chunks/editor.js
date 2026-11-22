@@ -1,6 +1,6 @@
 import { n as __exportAll } from "./rolldown-runtime.js";
-import { n as isArrayOfArray } from "./utils.js";
-// ../../../../node_modules/@floating-ui/utils/dist/floating-ui.utils.mjs
+import { n as isArrayOfArray } from "./utils2.js";
+//#region ../../../../node_modules/@floating-ui/utils/dist/floating-ui.utils.mjs
 /**
 * Custom positioning reference element.
 * @see https://floating-ui.com/docs/virtual-elements
@@ -130,7 +130,8 @@ function rectToClientRect(rect) {
 		y
 	};
 }
-// ../../../../node_modules/@floating-ui/core/dist/floating-ui.core.mjs
+//#endregion
+//#region ../../../../node_modules/@floating-ui/core/dist/floating-ui.core.mjs
 function computeCoordsFromPlacement(_ref, placement, rtl) {
 	let { reference, floating } = _ref;
 	const sideAxis = getSideAxis(placement);
@@ -468,7 +469,9 @@ var flip$1 = function(options) {
 						if (placement) resetPlacement = placement;
 						break;
 					}
-					case "initialPlacement": resetPlacement = initialPlacement;
+					case "initialPlacement":
+						resetPlacement = initialPlacement;
+						break;
 				}
 				if (placement !== resetPlacement) return { reset: { placement: resetPlacement } };
 			}
@@ -804,10 +807,8 @@ var size$1 = function(options) {
 			let availableWidth = overflowAvailableWidth;
 			if (shiftData != null && shiftData.enabled.x) availableWidth = maximumClippingWidth;
 			if (shiftData != null && shiftData.enabled.y) availableHeight = maximumClippingHeight;
-			if (noShift && !alignment) {
-				if (isYAxis) availableWidth = width - 2 * max(overflow.left, overflow.right);
-				else availableHeight = height - 2 * max(overflow.top, overflow.bottom);
-			}
+			if (noShift && !alignment) if (isYAxis) availableWidth = width - 2 * max(overflow.left, overflow.right);
+			else availableHeight = height - 2 * max(overflow.top, overflow.bottom);
 			await apply({
 				...state,
 				availableWidth,
@@ -819,7 +820,8 @@ var size$1 = function(options) {
 		}
 	};
 };
-// ../../../../node_modules/@floating-ui/utils/dist/floating-ui.utils.dom.mjs
+//#endregion
+//#region ../../../../node_modules/@floating-ui/utils/dist/floating-ui.utils.dom.mjs
 function hasWindow() {
 	return typeof window !== "undefined";
 }
@@ -931,7 +933,8 @@ function getOverflowAncestors(node, list, traverseIframes) {
 function getFrameElement(win) {
 	return win.parent && Object.getPrototypeOf(win.parent) ? win.frameElement : null;
 }
-// ../../../../node_modules/@floating-ui/dom/dist/floating-ui.dom.mjs
+//#endregion
+//#region ../../../../node_modules/@floating-ui/dom/dist/floating-ui.dom.mjs
 function getCssDimensions(element) {
 	const css = getComputedStyle$1(element);
 	let width = parseFloat(css.width) || 0;
@@ -986,11 +989,9 @@ function getBoundingClientRect(element, includeScale, isFixedStrategy, offsetPar
 	const clientRect = element.getBoundingClientRect();
 	const domElement = unwrapElement(element);
 	let scale = createCoords(1);
-	if (includeScale) {
-		if (offsetParent) {
-			if (isElement(offsetParent)) scale = getScale(offsetParent);
-		} else scale = getScale(element);
-	}
+	if (includeScale) if (offsetParent) {
+		if (isElement(offsetParent)) scale = getScale(offsetParent);
+	} else scale = getScale(element);
 	const visualOffsets = shouldAddVisualOffsets(domElement, isFixedStrategy, offsetParent) ? getVisualOffsets(domElement) : createCoords(0);
 	let x = (clientRect.left + visualOffsets.x) / scale.x;
 	let y = (clientRect.top + visualOffsets.y) / scale.y;
@@ -1477,7 +1478,8 @@ var computePosition = (reference, floating, options) => {
 		platform: platformWithCache
 	});
 };
-// ../../../../node_modules/@nuxt/ui/dist/runtime/utils/editor.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/utils/editor.js
 var editor_exports = /*@__PURE__*/ __exportAll({
 	buildFloatingUIMiddleware: () => buildFloatingUIMiddleware,
 	createHandlers: () => createHandlers,
@@ -1867,6 +1869,7 @@ function buildFloatingUIMiddleware(options) {
 	if (options.inline) middleware.push(inline(typeof options.inline !== "boolean" ? options.inline : void 0));
 	return middleware;
 }
+//#endregion
 export { autoUpdate as a, hide as c, shift as d, size as f, arrow as i, limitShift as l, isNode as m, createHandlers as n, computePosition as o, getNodeName as p, editor_exports as r, flip as s, buildFloatingUIMiddleware as t, offset as u };
 
 //# sourceMappingURL=editor.js.map

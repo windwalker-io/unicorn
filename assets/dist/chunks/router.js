@@ -1,16 +1,14 @@
 import { t as data } from "./data.js";
-// ../../../../node_modules/qss/dist/qss.mjs
+//#region ../../../../node_modules/qss/dist/qss.mjs
 function encode(obj, pfx) {
 	var k, i, tmp, str = "";
-	for (k in obj) if ((tmp = obj[k]) !== void 0) {
-		if (Array.isArray(tmp)) for (i = 0; i < tmp.length; i++) {
-			str && (str += "&");
-			str += encodeURIComponent(k) + "=" + encodeURIComponent(tmp[i]);
-		}
-		else {
-			str && (str += "&");
-			str += encodeURIComponent(k) + "=" + encodeURIComponent(tmp);
-		}
+	for (k in obj) if ((tmp = obj[k]) !== void 0) if (Array.isArray(tmp)) for (i = 0; i < tmp.length; i++) {
+		str && (str += "&");
+		str += encodeURIComponent(k) + "=" + encodeURIComponent(tmp[i]);
+	}
+	else {
+		str && (str += "&");
+		str += encodeURIComponent(k) + "=" + encodeURIComponent(tmp);
 	}
 	return (pfx || "") + str;
 }
@@ -31,7 +29,8 @@ function decode(str) {
 	}
 	return out;
 }
-// src/service/router.ts
+//#endregion
+//#region src/service/router.ts
 /**
 * Add a route.
 */
@@ -50,10 +49,8 @@ function route(route, query) {
 	let path = extract.path;
 	const routes = data("unicorn.routes") || {};
 	let url = routes[route];
-	if (url == null) {
-		if (!route.startsWith("@")) route = "@" + route;
-		else route = route.substring(1);
-	}
+	if (url == null) if (!route.startsWith("@")) route = "@" + route;
+	else route = route.substring(1);
 	url = routes[route];
 	if (url == null) throw new Error(`Route: "${source}" not found`);
 	if (path) {
@@ -81,25 +78,28 @@ function extractRoute(route, sep = "/") {
 	};
 }
 function hasRoute(route) {
-	return void 0 !== data("unicorn.routes")[route];
+	const routes = data("unicorn.routes") || {};
+	if (routes[route] != null) return true;
+	return routes[route.startsWith("@") ? route.substring(1) : "@" + route] != null;
 }
 function addQuery(url, query) {
 	if (query == null) return url;
-	for (let k in query) {
-		const v = query[k];
+	const params = structuredClone(query);
+	for (let k in params) {
+		const v = params[k];
 		const placeholder = `{${k}}`;
 		if (url.indexOf(placeholder) !== -1) {
 			url = url.replace(new RegExp(`${placeholder}`, "g"), v);
-			delete query[k];
+			delete params[k];
 		}
 		const encodedPlaceholder = encodeURIComponent(`{${k}}`);
 		if (url.indexOf(encodedPlaceholder) !== -1) {
 			url = url.replace(new RegExp(`${encodedPlaceholder}`, "g"), v);
-			delete query[k];
+			delete params[k];
 		}
 	}
-	if (Object.keys(query).length === 0) return url;
-	const queryString = encode(query);
+	if (Object.keys(params).length === 0) return url;
+	const queryString = encode(params);
 	return url + (/\?/.test(url) ? `&${queryString}` : `?${queryString}`);
 }
 function parseQuery(queryString) {
@@ -108,6 +108,7 @@ function parseQuery(queryString) {
 function buildQuery(query) {
 	return encode(query);
 }
+//#endregion
 export { parseQuery as a, hasRoute as i, addRoute as n, route as o, buildQuery as r, addQuery as t };
 
 //# sourceMappingURL=router.js.map

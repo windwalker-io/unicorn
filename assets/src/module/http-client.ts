@@ -1,5 +1,5 @@
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, CreateAxiosDefaults } from 'axios';
-import AxiosStatic, { AxiosError, isAxiosError, isCancel } from 'axios';
+import Axios, { AxiosError, type AxiosStatic } from 'axios';
 import { parseTemplate } from 'url-template';
 import { data } from '../data';
 import { route } from '../service';
@@ -63,10 +63,20 @@ function prepareAxios(axios: AxiosInstance): AxiosInstance {
 
 export type UnicornHttpClient = ReturnType<typeof createHttpClient>;
 
+export interface UnicornAxiosHelpers {
+  isCancel: AxiosStatic['isCancel'];
+  isAxiosError: AxiosStatic['isAxiosError'];
+}
+
+const axiosHelpers: UnicornAxiosHelpers = {
+  isCancel: Axios.isCancel,
+  isAxiosError: Axios.isAxiosError,
+};
+
 export function createHttpClient(config?: CreateAxiosDefaults | AxiosInstance) {
   const axios = config && 'interceptors' in config
     ? config
-    : AxiosStatic.create(config ?? {});
+    : Axios.create(config ?? {});
 
   prepareAxios(axios);
 
@@ -236,9 +246,8 @@ export function createHttpClient(config?: CreateAxiosDefaults | AxiosInstance) {
     options,
     requestMiddleware,
     responseMiddleware,
-    isCancel,
+    ...axiosHelpers,
     AxiosError,
-    isAxiosError,
   };
 }
 

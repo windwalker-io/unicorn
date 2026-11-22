@@ -1,5 +1,5 @@
 import { defineComponent, h, nextTick, onMounted, onUnmounted, reactive, ref, shallowRef, watch } from "vue";
-// virtual:nuxt-ui-app-config
+//#region virtual:nuxt-ui-app-config
 var virtual_nuxt_ui_app_config_default = {
 	"ui": {
 		"colors": {
@@ -61,10 +61,12 @@ var virtual_nuxt_ui_app_config_default = {
 	"colorMode": true,
 	"icon": {}
 };
-// ../../../../node_modules/@nuxt/ui/dist/runtime/vue/composables/useAppConfig.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/vue/composables/useAppConfig.js
 var _appConfig = /*@__PURE__*/ reactive(virtual_nuxt_ui_app_config_default);
 var useAppConfig = () => _appConfig;
-// ../../../../node_modules/@iconify/vue/dist/iconify.mjs
+//#endregion
+//#region ../../../../node_modules/@iconify/vue/dist/iconify.mjs
 /**
 * Expression to test part of icon name.
 *
@@ -458,14 +460,13 @@ function iconToSVG(icon, customisations) {
 		const hFlip = props.hFlip;
 		const vFlip = props.vFlip;
 		let rotation = props.rotate;
-		if (hFlip) {
-			if (vFlip) rotation += 2;
-			else {
-				transformations.push("translate(" + (box.width + box.left).toString() + " " + (0 - box.top).toString() + ")");
-				transformations.push("scale(-1 1)");
-				box.top = box.left = 0;
-			}
-		} else if (vFlip) {
+		if (hFlip) if (vFlip) rotation += 2;
+		else {
+			transformations.push("translate(" + (box.width + box.left).toString() + " " + (0 - box.top).toString() + ")");
+			transformations.push("scale(-1 1)");
+			box.top = box.left = 0;
+		}
+		else if (vFlip) {
 			transformations.push("translate(" + (0 - box.left).toString() + " " + (box.height + box.top).toString() + ")");
 			transformations.push("scale(1 -1)");
 			box.top = box.left = 0;
@@ -858,10 +859,8 @@ function sendQuery(config, payload, query, done) {
 		}
 		if (isError) {
 			lastError = data;
-			if (!queue.length) {
-				if (!resources.length) failQuery();
-				else execNext();
-			}
+			if (!queue.length) if (!resources.length) failQuery();
+			else execNext();
 			return;
 		}
 		resetTimer();
@@ -1410,13 +1409,11 @@ var Icon = /*@__PURE__*/ defineComponent((props, { emit }) => {
 		let data = getIconData(iconName);
 		if (!data) {
 			const oldState = loader.value;
-			if (!oldState || oldState.name !== icon) {
-				if (data === null) loader.value = { name: icon };
-				else loader.value = {
-					name: icon,
-					abort: loadIcons([iconName], updateIconData)
-				};
-			}
+			if (!oldState || oldState.name !== icon) if (data === null) loader.value = { name: icon };
+			else loader.value = {
+				name: icon,
+				abort: loadIcons([iconName], updateIconData)
+			};
 			return null;
 		}
 		abortLoading();
@@ -1494,6 +1491,7 @@ var Icon = /*@__PURE__*/ defineComponent((props, { emit }) => {
 	},
 	emits: ["load"]
 });
+//#endregion
 export { virtual_nuxt_ui_app_config_default as a, useAppConfig as i, addIcon as n, iconLoaded as r, Icon as t };
 
 //# sourceMappingURL=iconify.js.map

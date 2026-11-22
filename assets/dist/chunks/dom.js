@@ -1,5 +1,5 @@
 import { n as removeData, r as defData } from "./data.js";
-// src/service/dom.ts
+//#region src/service/dom.ts
 /**
 * @see https://stackoverflow.com/a/9899701
 */
@@ -39,7 +39,11 @@ function removeBoundedInstance(selector, name) {
 }
 function module(ele, name, callback = () => null) {
 	if (callback === false) {
-		if (typeof ele === "string" || ele instanceof Element) {
+		if (typeof ele === "string") {
+			document.querySelectorAll(ele).forEach((el) => removeBoundedInstance(el, name));
+			return null;
+		}
+		if (ele instanceof Element) {
 			removeBoundedInstance(ele, name);
 			return null;
 		}
@@ -56,11 +60,11 @@ function h(element, attrs = {}, content = void 0) {
 		const v = attrs[i];
 		ele.setAttribute(i, v);
 	}
-	if (content !== null) ele.innerHTML = content;
+	if (content !== void 0 && content !== null) ele.innerHTML = content;
 	return ele;
 }
-function html(html) {
-	const div = document.createElement("div");
+function html(html, wrapper = "div") {
+	const div = document.createElement(wrapper);
 	div.innerHTML = html;
 	return div.children[0];
 }
@@ -102,10 +106,9 @@ function delegate(wrapper, selector, eventName, callback) {
 	};
 }
 async function injectCssToDocument(doc, ...css) {
-	if (!(doc instanceof Document)) {
-		css.push(doc);
-		doc = document;
-	}
+	let target = document;
+	if (doc instanceof Document || doc instanceof ShadowRoot) target = doc;
+	else css.push(doc);
 	const promises = [];
 	for (let cssItem of css) promises.push(new Promise((resolve, reject) => {
 		if (cssItem instanceof CSSStyleSheet) resolve(cssItem);
@@ -119,9 +122,10 @@ async function injectCssToDocument(doc, ...css) {
 		else reject(/* @__PURE__ */ new Error("Invalid CSS source"));
 	}));
 	const styles = await Promise.all(promises);
-	doc.adoptedStyleSheets = [...doc.adoptedStyleSheets, ...styles];
+	target.adoptedStyleSheets = [...target.adoptedStyleSheets, ...styles];
 	return styles;
 }
+//#endregion
 export { h as a, module as c, selectOne as d, getBoundedInstanceList as i, removeBoundedInstance as l, domready as n, html as o, getBoundedInstance as r, injectCssToDocument as s, delegate as t, selectAll as u };
 
 //# sourceMappingURL=dom.js.map

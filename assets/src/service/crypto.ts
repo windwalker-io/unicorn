@@ -2,8 +2,8 @@ import { uid, tid, randomBytes, randomBytesString } from '@lyrasoft/ts-toolkit/g
 
 export function base64UrlEncode(string: string): string {
   return btoa(String(string))
-    .replace(/\+/, '-')
-    .replace(new RegExp('\\/'), '_')
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
     .replace(/=+$/, '');
 }
 
@@ -13,8 +13,8 @@ export function base64UrlEncode(string: string): string {
 export function base64UrlDecode(string: string): string {
   return atob(
     String(string)
-      .replace(/-/, '+')
-      .replace(/_/, '/')
+      .replace(/-/g, '+')
+      .replace(/_/g, '/')
   );
 }
 

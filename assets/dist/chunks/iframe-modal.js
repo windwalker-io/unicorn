@@ -1,6 +1,6 @@
-import { useUniDirective } from "../unicorn.js";
 import { t as mergeDeep } from "./arr.js";
-// src/module/iframe-modal.ts
+import { useUniDirective } from "../unicorn.js";
+//#region src/module/iframe-modal.ts
 var IFrameModalElement = class extends HTMLElement {
 	static is = "uni-iframe-modal";
 	options;
@@ -101,6 +101,7 @@ async function init() {
 	} });
 }
 var ready = /*@__PURE__*/ init();
+//#endregion
 export { IFrameModalElement, ready };
 
 //# sourceMappingURL=iframe-modal.js.map

@@ -1,4 +1,4 @@
-// src/utilities/arr.ts
+//#region src/utilities/arr.ts
 function isPlainObject(val) {
 	return val && typeof val === "object" && !Array.isArray(val);
 }
@@ -18,6 +18,7 @@ function mergeDeep(target, ...sources) {
 	}
 	return out;
 }
+//#endregion
 export { mergeDeep as t };
 
 //# sourceMappingURL=arr.js.map

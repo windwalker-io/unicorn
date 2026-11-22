@@ -1,8 +1,8 @@
-import { useHttpClient } from "../unicorn.js";
-import { t as data } from "./data.js";
 import { n as Mixin, t as EventMixin } from "./events.js";
 import { t as mergeDeep } from "./arr.js";
-// src/module/s3-uploader.ts
+import { t as data } from "./data.js";
+import { useHttpClient } from "../unicorn.js";
+//#region src/module/s3-uploader.ts
 var instances = {};
 function get(name, options = {}) {
 	return instances[name] ??= create(name, options);
@@ -29,7 +29,7 @@ var defaultOptions = {
 		"X-Amz-Signature": ""
 	}
 };
-var S3Uploader = class extends (/*@__PURE__*/ Mixin(EventMixin)) {
+var S3Uploader = class extends Mixin(EventMixin) {
 	name;
 	options;
 	http;
@@ -111,6 +111,7 @@ var S3Uploader = class extends (/*@__PURE__*/ Mixin(EventMixin)) {
 function trimSlashes(str) {
 	return str.replace(/^\/+|\/+$/g, "");
 }
+//#endregion
 export { S3Uploader, create, destroy, get };
 
 //# sourceMappingURL=s3-uploader.js.map

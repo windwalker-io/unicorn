@@ -1,11 +1,13 @@
-import { i as require_sprintf, t as __ } from "./lang.js";
-import { addGlobalValidator, animateTo, base64UrlDecode, base64UrlEncode, clearMessages, clearNotifies, fadeIn, fadeOut, highlight, initAlpineComponent, loadAlpine, mark, prepareAlpine, renderMessage, serial, simpleAlert, simpleConfirm, simpleNotify, slideDown, slideToggle, slideUp, tid, uid, useAssetUri, useBs5ButtonRadio, useBs5KeepTab, useBs5Tooltip, useCheckboxesMultiSelect, useColorPicker, useDisableIfStackNotEmpty, useDisableOnSubmit, useFieldValidationInstance, useForm, useFormAsync, useFormValidation, useFormValidationInstance, useGrid, useGridAsync, useHttpClient, useKeepAlive, useQueue, useStack, useSystemUri, useTomSelect, useUniDirective } from "../unicorn.js";
-import { r as isDebug, s as throttle, t as debounce } from "./helper.js";
 import { a as h, c as module, d as selectOne, i as getBoundedInstanceList, n as domready, o as html, r as getBoundedInstance, t as delegate, u as selectAll } from "./dom.js";
+import { C as useDisableOnSubmit, O as animateTo, S as useDisableIfStackNotEmpty, _ as slideDown, a as fadeIn, c as initAlpineComponent, d as prepareAlpine, g as simpleNotify, h as simpleConfirm, l as loadAlpine, m as simpleAlert, n as clearMessages, o as fadeOut, p as renderMessage, r as clearNotifies, s as highlight, u as mark, v as slideToggle, w as useKeepAlive, x as useColorPicker, y as slideUp } from "./ui.js";
+import { r as isDebug, s as throttle, t as debounce } from "./helper.js";
+import { i as require_sprintf, t as __ } from "./lang.js";
+import { n as useStack } from "./useStack.js";
 import { o as route } from "./router.js";
+import { addGlobalValidator, base64UrlDecode, base64UrlEncode, serial, tid, uid, useAssetUri, useBs5ButtonRadio, useBs5KeepTab, useBs5Tooltip, useCheckboxesMultiSelect, useFieldValidationInstance, useForm, useFormAsync, useFormValidation, useFormValidationInstance, useGrid, useGridAsync, useHttpClient, useQueue, useSystemUri, useTomSelect, useUniDirective } from "../unicorn.js";
 import { numberFormat } from "@lyrasoft/ts-toolkit/generic";
 import { Modal } from "bootstrap";
-// src/legacy/loader.ts
+//#region src/legacy/loader.ts
 var import_sprintf = /*@__PURE__*/ require_sprintf();
 var imports = {};
 var LegacyLoader = class {
@@ -89,7 +91,8 @@ var LegacyLoader = class {
 		return imports[name].promise;
 	}
 };
-// src/legacy/legacy.ts
+//#endregion
+//#region src/legacy/legacy.ts
 async function useLegacyMethods(app) {
 	const http = await useHttpClient();
 	app.use(LegacyLoader);
@@ -192,6 +195,7 @@ async function handleFormGrid(app) {
 	app.form = useForm;
 	app.grid = useGrid;
 }
+//#endregion
 export { useLegacyMethods };
 
 //# sourceMappingURL=legacy.js.map

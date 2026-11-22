@@ -1,4 +1,4 @@
-// src/utilities/data.ts
+//#region src/utilities/data.ts
 function getData(element, name) {
 	prepareData(element);
 	if (name === void 0) return element.__unicorn;
@@ -24,7 +24,8 @@ function prepareData(element) {
 	element.__unicorn = element.__unicorn || {};
 	return element;
 }
-// src/data.ts
+//#endregion
+//#region src/data.ts
 function data(ele, name, value) {
 	if (!(ele instanceof HTMLElement)) {
 		value = name;
@@ -42,6 +43,7 @@ function removeData(ele, name = void 0) {
 	}
 	removeData$1(ele, name);
 }
+//#endregion
 export { removeData as n, defData as r, data as t };
 
 //# sourceMappingURL=data.js.map

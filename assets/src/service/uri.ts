@@ -40,7 +40,7 @@ export function addUriBase(uri: string, type = 'path') {
     return uri;
   }
 
-  return asset(type) + '/' + uri;
+  return asset(type).replace(/\/+$/, '') + '/' + uri.replace(/^\/+/, '');
 }
 
 export class UnicornSystemUri extends URL {

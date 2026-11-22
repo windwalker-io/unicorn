@@ -1,51 +1,30 @@
 import { n as Mixin, t as EventMixin } from "./chunks/events.js";
+import { t as mergeDeep } from "./chunks/arr.js";
 import { n as removeData, t as data } from "./chunks/data.js";
 import { a as h, c as module, d as selectOne, i as getBoundedInstanceList, l as removeBoundedInstance, n as domready, o as html, r as getBoundedInstance, s as injectCssToDocument, t as delegate, u as selectAll } from "./chunks/dom.js";
+import { C as useDisableOnSubmit, D as useVueComponentField, E as useUITheme, O as animateTo, S as useDisableIfStackNotEmpty, T as useUI, _ as slideDown, a as fadeIn, b as useAlertAdapter, c as initAlpineComponent, d as prepareAlpine, f as prepareAlpineDefer, g as simpleNotify, h as simpleConfirm, i as deleteConfirm, l as loadAlpine, m as simpleAlert, n as clearMessages, o as fadeOut, p as renderMessage, r as clearNotifies, s as highlight, t as UnicornUI, u as mark, v as slideToggle, w as useKeepAlive, x as useColorPicker, y as slideUp } from "./chunks/ui.js";
 import { a as nextTick, c as wait, i as isError, n as forceArray, o as sleep, r as isDebug, s as throttle, t as debounce } from "./chunks/helper.js";
-import { t as mergeDeep } from "./chunks/arr.js";
 import { n as trans, r as useLang, t as __ } from "./chunks/lang.js";
+import { a as useScriptImport, i as useImport, n as useCssImport, o as useSeriesImport, r as useCssIncludes, t as doImport } from "./chunks/loader.js";
+import { n as useStack, t as createStack } from "./chunks/useStack.js";
 import { a as parseQuery, i as hasRoute, n as addRoute, o as route, r as buildQuery, t as addQuery } from "./chunks/router.js";
-import { AlertAdapter, clearNotifies, deleteConfirm, promiseWithResolvers, queue, randomBytes, randomBytesString, simpleAlert, simpleConfirm, simpleNotify, stack, tid, uid } from "@lyrasoft/ts-toolkit/generic";
-// src/service/animate.ts
-function animateTo(element, styles, options = {}) {
-	element = selectOne(element);
-	const currentStyles = window.getComputedStyle(element);
-	const transitions = {};
-	for (const name in styles) {
-		const value = styles[name];
-		transitions[name] = Array.isArray(value) ? value : [currentStyles.getPropertyValue(name), value];
-	}
-	if (typeof options === "number") options = { duration: options };
-	options = Object.assign({
-		duration: 400,
-		easing: "linear",
-		fill: "both"
-	}, options);
-	const animation = element.animate(transitions, options);
-	animation.addEventListener("finish", () => {
-		for (const name in styles) {
-			const value = styles[name];
-			element.style.setProperty(name, Array.isArray(value) ? value[value.length - 1] : value);
-		}
-		animation.cancel();
-	});
-	return animation;
-}
-// src/service/crypto.ts
+import { promiseWithResolvers, queue, randomBytes, randomBytesString, tid, uid } from "@lyrasoft/ts-toolkit/generic";
+//#region src/service/crypto.ts
 function base64UrlEncode(string) {
-	return btoa(String(string)).replace(/\+/, "-").replace(/* @__PURE__ */ new RegExp("\\/"), "_").replace(/=+$/, "");
+	return btoa(String(string)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }
 /**
 * Base64 URL decode
 */
 function base64UrlDecode(string) {
-	return atob(String(string).replace(/-/, "+").replace(/_/, "/"));
+	return atob(String(string).replace(/-/g, "+").replace(/_/g, "/"));
 }
 var globalSerial = 1;
 function serial() {
 	return globalSerial++;
 }
-// src/service/dom-watcher.ts
+//#endregion
+//#region src/service/dom-watcher.ts
 function watchAttributes(el, callback) {
 	return new AttributeMutationObserver(el, callback);
 }
@@ -86,109 +65,8 @@ var AttributeMutationObserver = class {
 		this.observer.disconnect();
 	}
 };
-// src/service/loader.ts
-async function useScriptImport(src, attrs = {}) {
-	if (typeof src === "function") src = (await src()).default;
-	const script = document.createElement("script");
-	script.src = resolveUrl(src);
-	for (const key in attrs) script.setAttribute(key, attrs[key]);
-	return new Promise((resolve, reject) => {
-		script.onload = () => {
-			resolve();
-			document.body.removeChild(script);
-		};
-		script.onerror = (e) => {
-			reject(e);
-			document.body.removeChild(script);
-		};
-		document.body.appendChild(script);
-	});
-}
-function doImport(src) {
-	return import(
-		/* @vite-ignore */
-		src
-);
-}
-async function useImport(...src) {
-	if (src.length === 1) return doImport(src[0]);
-	const promises = [];
-	src.forEach((link) => {
-		promises.push(link instanceof Promise ? link : doImport(link));
-	});
-	return Promise.all(promises);
-}
-async function useSeriesImport(...src) {
-	const modules = [];
-	for (const source of src) {
-		if (Array.isArray(source)) {
-			const m = await useImport(...source);
-			modules.push(m);
-			continue;
-		}
-		const m = await useImport(source);
-		modules.push(m);
-	}
-	return modules;
-}
-async function useCssIncludes(...hrefs) {
-	const promises = hrefs.map((href) => {
-		return new Promise((resolve, reject) => {
-			resolveSource(href).then((href) => {
-				href = resolveUrl(href);
-				const link = document.createElement("link");
-				link.rel = "stylesheet";
-				link.href = href;
-				link.onload = () => resolve();
-				link.onerror = (e) => reject(e);
-				document.head.appendChild(link);
-			});
-		});
-	});
-	return Promise.all(promises);
-}
-var importedSheets = {};
-async function useCssImport(...hrefs) {
-	const styles = (await Promise.all(hrefs.map((href) => {
-		return new Promise((resolve) => {
-			resolveSource(href).then((href) => {
-				href = resolveUrl(href);
-				if (!importedSheets[href]) importedSheets[href] = simulateCssImport(href);
-				resolve(importedSheets[href]);
-			});
-		});
-	}))).map((module) => module.default);
-	return injectCssToDocument(...styles);
-}
-async function simulateCssImport(href) {
-	const response = await fetch(href);
-	if (!response.ok) throw new Error(`Failed to load CSS: ${href}`);
-	const cssText = await response.text();
-	const sheet = new CSSStyleSheet();
-	await sheet.replace(cssText);
-	return { default: sheet };
-}
-var importMap;
-function parseImportMap() {
-	const importMapScript = document.querySelector("script[type=\"importmap\"]");
-	if (importMapScript) try {
-		return JSON.parse(importMapScript.textContent || "{}").imports || {};
-	} catch (e) {
-		console.error("Failed to parse import map:", e);
-	}
-	return {};
-}
-function resolveUrl(specifier) {
-	importMap ??= parseImportMap();
-	for (const [prefix, target] of Object.entries(importMap)) if (specifier === prefix) return target;
-	for (const [prefix, target] of Object.entries(importMap)) if (specifier.startsWith(prefix)) return specifier.replace(prefix, target);
-	return specifier;
-}
-async function resolveSource(src) {
-	if (typeof src === "function") return (await src()).default;
-	return src;
-}
-// src/composable/useUIBootstrap5.ts
+//#endregion
+//#region src/composable/useUIBootstrap5.ts
 async function useUIBootstrap5(install = false, pushToGlobal = false) {
 	const { UIBootstrap5 } = await import("./chunks/ui-bootstrap5.js");
 	const theme = UIBootstrap5.get();
@@ -207,7 +85,8 @@ var useBs5KeepTab = async (selector, options = {}) => {
 var useBs5ButtonRadio = async (selector, options = {}) => {
 	return (await useUIBootstrap5()).buttonRadio(selector, options);
 };
-// src/composable/useBsModalAlert.ts
+//#endregion
+//#region src/composable/useBsModalAlert.ts
 var currentOpenedModals = {};
 var defaultOptions = { buttons: ["OK"] };
 async function useBsModalAlert(id, options) {
@@ -392,49 +271,58 @@ async function createButton(buttonOption, handler, isConfirm) {
 	}
 	return button;
 }
-// src/composable/useCheckboxesMultiSelect.ts
+//#endregion
+//#region src/composable/useCheckboxesMultiSelect.ts
 async function useCheckboxesMultiSelect(selector, options = {}) {
 	const m = await import("./chunks/checkboxes-multi-select.js");
 	if (selector) m.CheckboxesMultiSelect.handle(selector, options);
 	return m;
 }
-// src/composable/useFieldCascadeSelect.ts
+//#endregion
+//#region src/composable/useFieldCascadeSelect.ts
 async function useFieldCascadeSelect() {
 	const module = await import("./chunks/field-cascade-select.js");
 	await module.ready;
 	return module;
 }
-// src/composable/useFieldFileDrag.ts
+//#endregion
+//#region src/composable/useFieldFileDrag.ts
 async function useFieldFileDrag() {
 	const module = await import("./chunks/field-file-drag.js");
 	await module.ready;
 	return module;
 }
-// src/composable/useFieldFlatpickr.ts
+//#endregion
+//#region src/composable/useFieldFlatpickr.ts
 function useFieldFlatpickr() {
 	return import("./chunks/field-flatpickr.js");
 }
-// src/composable/useFieldModalSelect.ts
+//#endregion
+//#region src/composable/useFieldModalSelect.ts
 function useFieldModalSelect() {
 	return import("./chunks/field-modal-select.js");
 }
-// src/composable/useFieldModalTree.ts
+//#endregion
+//#region src/composable/useFieldModalTree.ts
 function useFieldModalTree() {
 	return import("./chunks/field-modal-tree.js");
 }
-// src/composable/useFieldRepeatable.ts
+//#endregion
+//#region src/composable/useFieldRepeatable.ts
 async function useFieldRepeatable() {
 	const module = await import("./chunks/field-repeatable.js");
 	await module.ready;
 	return module;
 }
-// src/composable/useFieldSingleImageDrag.ts
+//#endregion
+//#region src/composable/useFieldSingleImageDrag.ts
 async function useFieldSingleImageDrag() {
 	const module = await import("./chunks/field-single-image-drag.js");
 	await module.ready;
 	return module;
 }
-// src/composable/useForm.ts
+//#endregion
+//#region src/composable/useForm.ts
 var formElement;
 function useFormAsync(ele, options = {}) {
 	const promise = import("./chunks/form.js").then(({ UnicornFormElement }) => {
@@ -490,7 +378,8 @@ async function useFormSubmit(...args) {
 	}
 	return (await useFormAsync(options.form))[options.method?.toLowerCase() || "post"](options.url, options.data);
 }
-// src/composable/useGrid.ts
+//#endregion
+//#region src/composable/useGrid.ts
 var gridElement;
 async function useGridAsync(ele, options = {}) {
 	await useFormAsync();
@@ -512,7 +401,8 @@ async function useGridComponent(ele, options = {}) {
 	await grid?.initComponent();
 	return grid;
 }
-// src/composable/useHttp.ts
+//#endregion
+//#region src/composable/useHttp.ts
 function useHttpClient(config) {
 	const promise = import("./chunks/http-client.js").then(({ createHttpClient }) => {
 		return createHttpClient(config);
@@ -557,13 +447,15 @@ function useHttpClient(config) {
 	});
 	return data;
 }
-// src/composable/useIframeModal.ts
+//#endregion
+//#region src/composable/useIframeModal.ts
 async function useIframeModal() {
 	const module = await import("./chunks/iframe-modal.js");
 	await module.ready;
 	return module;
 }
-// src/composable/useListDependent.ts
+//#endregion
+//#region src/composable/useListDependent.ts
 async function useListDependent(element, dependent, options = {}) {
 	const module = await import("./chunks/list-dependent.js");
 	await module.ready;
@@ -573,7 +465,8 @@ async function useListDependent(element, dependent, options = {}) {
 	}
 	return module;
 }
-// src/composable/useQueue.ts
+//#endregion
+//#region src/composable/useQueue.ts
 var queues = {};
 function useQueue(name = "default", maxRunning = 1) {
 	return queues[name] ??= createQueue(maxRunning);
@@ -581,7 +474,8 @@ function useQueue(name = "default", maxRunning = 1) {
 function createQueue(maxRunning = 1) {
 	return queue(maxRunning);
 }
-// src/composable/useS3Uploader.ts
+//#endregion
+//#region src/composable/useS3Uploader.ts
 async function useS3Uploader(name, options = {}) {
 	const module = await import("./chunks/s3-uploader.js");
 	if (!name) return module;
@@ -593,21 +487,15 @@ async function useS3MultipartUploader(options) {
 	if (options != null) return new module.S3MultipartUploader(options);
 	return module;
 }
-// src/composable/useShowOn.ts
+//#endregion
+//#region src/composable/useShowOn.ts
 async function useShowOn() {
 	const module = await import("./chunks/show-on.js");
 	await module.ready;
 	return module;
 }
-// src/composable/useStack.ts
-var stacks = {};
-function useStack(name = "default", store = []) {
-	return stacks[name] ??= createStack(store);
-}
-function createStack(store = []) {
-	return stack(store);
-}
-// src/composable/useTomSelect.ts
+//#endregion
+//#region src/composable/useTomSelect.ts
 /**
 * @see https://tom-select.js.org/
 */
@@ -641,7 +529,8 @@ async function useTomSelect(selector, options = {}, theme = "bootstrap5") {
 	});
 	return m;
 }
-// src/composable/useTinymce.ts
+//#endregion
+//#region src/composable/useTinymce.ts
 async function useTinymce(selector, options = {}) {
 	const module = await import("./chunks/tinymce.js");
 	if (selector) return module.get(selector, options);
@@ -651,13 +540,15 @@ async function useTinymceHook(handler) {
 	const { addHook } = await import("./chunks/tinymce.js");
 	return addHook(handler);
 }
-// src/composable/useNuxtEditor.ts
+//#endregion
+//#region src/composable/useNuxtEditor.ts
 async function useNuxtEditor(selector, options = {}) {
-	const module = await import("./chunks/nuxt-editor.js").then((n) => n.t);
+	const module = await import("./chunks/nuxt-editor.js");
 	if (selector) return module.get(selector, options);
 	return module;
 }
-// src/composable/useUniDirective.ts
+//#endregion
+//#region src/composable/useUniDirective.ts
 var instances = {};
 async function useWebDirective(name = "unicorn", options = {}) {
 	if (options === false) {
@@ -675,7 +566,8 @@ async function createWebDirective(options = {}) {
 	wd.listen();
 	return wd;
 }
-// src/composable/useValidation.ts
+//#endregion
+//#region src/composable/useValidation.ts
 async function useFormValidation(selector) {
 	const module = await import("./chunks/validation.js");
 	await module.ready;
@@ -692,277 +584,8 @@ async function addGlobalValidator(name, validator, options = {}) {
 	const { UnicornFormValidation } = await useFormValidation();
 	UnicornFormValidation.addGlobalValidator(name, validator, options);
 }
-// src/service/ui.ts
-var ui;
-AlertAdapter.alert = (title, text = "", type = "info") => {
-	if (text) title += " | " + text;
-	window.alert(title);
-	return Promise.resolve();
-};
-AlertAdapter.confirm = (message, text = "", type = "info") => {
-	message = message || "Are you sure?";
-	if (text) message += " | " + text;
-	return new Promise((resolve) => {
-		resolve(window.confirm(message));
-	});
-};
-AlertAdapter.notify = async (title, text, type = "log") => {
-	if (text) title += " | " + text;
-	return ui.theme?.renderMessage(title, type) ?? (() => null);
-};
-AlertAdapter.clearNotifies = async () => {
-	ui.theme?.clearMessages();
-};
-AlertAdapter.confirmText = () => "OK";
-AlertAdapter.cancelText = () => "Cancel";
-AlertAdapter.deleteText = () => "Delete";
-function useAlertAdapter(config) {
-	if (config) Object.assign(AlertAdapter, config);
-	return AlertAdapter;
-}
-function useUI(instance) {
-	if (instance) ui = instance;
-	return ui ??= new UnicornUI();
-}
-function useUITheme(theme) {
-	const ui = useUI();
-	if (ui.theme && !theme) return ui.theme;
-	if (typeof theme === "function") theme = new theme();
-	ui.installTheme(theme);
-	return ui.theme;
-}
-var UnicornUI = class {
-	theme;
-	static get defaultOptions() {
-		return { messageSelector: ".message-wrap" };
-	}
-	installTheme(theme) {
-		this.theme = theme;
-	}
-};
-var prepares = [];
-var { promise: alpineLoaded, resolve: alpineResolve } = /*@__PURE__*/ promiseWithResolvers();
-async function loadAlpine(callback) {
-	if (callback && !window.Alpine) prepares.push(callback);
-	const { default: Alpine } = await useImport("@alpinejs");
-	if (!window.Alpine) {
-		await Promise.all(prepares.map((callback) => Promise.resolve(callback(Alpine))));
-		Alpine.start();
-		window.Alpine = Alpine;
-		alpineResolve(Alpine);
-	} else if (callback) await callback(Alpine);
-	return Alpine;
-}
-async function initAlpineComponent(directive) {
-	const Alpine = await alpineLoaded;
-	await nextTick();
-	selectAll(`[${directive}]`, (el) => {
-		const code = el.getAttribute(directive) || "";
-		el.removeAttribute(directive);
-		Alpine.mutateDom(() => {
-			el.setAttribute("x-data", code);
-		});
-		Alpine.initTree(el);
-	});
-}
-/**
-* Before Alpine init
-*/
-async function prepareAlpine(callback) {
-	if (window.Alpine) await callback(window.Alpine);
-	else prepares.push(callback);
-}
-async function prepareAlpineDefer(callback) {
-	await alpineLoaded;
-	await callback(window.Alpine);
-}
-/**
-* Render Messages.
-*/
-function renderMessage(messages, type = "info") {
-	return ui.theme?.renderMessage(messages, type);
-}
-/**
-* Clear messages.
-*/
-function clearMessages() {
-	ui.theme?.clearMessages();
-}
-async function mark(selector, keyword = "", options = {}) {
-	const modules = await useImport("@vendor/mark.js/dist/mark.min.js");
-	if (selector != null) new Mark(selector).mark(keyword, options);
-	return modules;
-}
-async function slideUp(target, duration = 300) {
-	const ele = selectOne(target);
-	if (!ele) return Promise.resolve();
-	ele.style.overflow = "hidden";
-	const animation = animateTo(ele, {
-		height: 0,
-		paddingTop: 0,
-		paddingBottom: 0
-	}, {
-		duration,
-		easing: "ease-out"
-	});
-	data(ele, "animation.sliding.up", true);
-	const r = await animation.finished;
-	if (!data(ele, "animation.sliding.down")) ele.style.display = "none";
-	removeData(ele, "animation.sliding.up");
-	return r;
-}
-function slideDown(target, duration = 300, display = "block") {
-	const ele = selectOne(target);
-	if (!ele) return Promise.resolve();
-	data(ele, "animation.sliding.down", true);
-	ele.style.display = display;
-	ele.style.overflow = "hidden";
-	let maxHeight = 0;
-	for (const child of Array.from(ele.children)) maxHeight = Math.max(child.offsetHeight, maxHeight);
-	const animation = animateTo(ele, { height: [0, maxHeight + "px"] }, {
-		duration,
-		easing: "ease-out"
-	});
-	animation.addEventListener("finish", () => {
-		ele.style.height = "";
-		if (!data(ele, "animation.sliding.up")) ele.style.overflow = "visible";
-		removeData(ele, "animation.sliding.down");
-	});
-	return animation.finished;
-}
-/**
-* slideToggle
-*/
-function slideToggle(target, duration = 500, display = "block") {
-	const ele = selectOne(target);
-	if (!ele) return Promise.resolve();
-	if (window.getComputedStyle(ele).display === "none") return slideDown(ele, duration, display);
-	else return slideUp(ele, duration);
-}
-async function fadeOut(selector, duration = 500) {
-	const el = selectOne(selector);
-	if (!el) return;
-	const p = await animateTo(el, { opacity: 0 }, {
-		duration,
-		easing: "ease-out"
-	}).finished;
-	el.style.display = "none";
-	return p;
-}
-async function fadeIn(selector, duration = 500, display = "block") {
-	const el = selectOne(selector);
-	if (!el) return;
-	el.style.display = "";
-	if (window.getComputedStyle(el).display !== display) el.style.display = display;
-	return animateTo(el, { opacity: 1 }, {
-		duration,
-		easing: "ease-out"
-	}).finished;
-}
-async function highlight(selector, color = "#ffff99", duration = 600) {
-	const ele = selectOne(selector);
-	if (!ele) return;
-	duration /= 2;
-	const bg = window.getComputedStyle(ele).backgroundColor;
-	await animateTo(ele, { backgroundColor: color }, { duration }).finished;
-	return animateTo(ele, { backgroundColor: bg }, { duration });
-}
-/**
-* Color Picker.
-*/
-async function useColorPicker(selector, options = {}) {
-	if (options?.theme === "dark") useCssImport("@spectrum/spectrum-dark.min.css");
-	else if (!options?.theme) useCssImport("@spectrum/spectrum.min.css");
-	const m = await useImport("@spectrum");
-	if (typeof options.locale === "string") {
-		let ls = options.locale.split("-").map((l) => l.toLowerCase());
-		if (ls[0] === ls[1]) ls = [ls];
-		ls = ls.join("-");
-		try {
-			await useImport(`@spectrum/i18n/${ls}.js`);
-		} catch (e) {
-			console.warn(`Unable to load Spectrum locale "${ls}" (${options.locale})`);
-		}
-	}
-	if (selector) return module(selector, "spectrum", (ele) => Spectrum.getInstance(ele, options));
-	return m;
-}
-function useDisableOnSubmit(formSelector = "#admin-form", buttonSelector = "", options = {}) {
-	buttonSelector = buttonSelector || [
-		"#admin-toolbar button",
-		"#admin-toolbar a",
-		formSelector + " .disable-on-submit",
-		formSelector + " .js-dos",
-		formSelector + " [data-dos]"
-	].join(",");
-	const iconSelector = options.iconSelector || [
-		"[class*=\"fa-\"]",
-		"[data-spin]",
-		"[data-spinner]"
-	].join(",");
-	const event = options.event || "submit";
-	const spinnerClass = options.spinnerClass || "spinner-border spinner-border-sm";
-	const loadingClass = options.loadingCass || "is-uni-loading";
-	selectAll(buttonSelector, (button) => {
-		button.addEventListener("click", (e) => {
-			button.dataset.clicked = "1";
-			setTimeout(() => {
-				delete button.dataset.clicked;
-			}, 1500);
-		});
-	});
-	const form = selectOne(formSelector);
-	form?.addEventListener(event, (e) => {
-		setTimeout(() => {
-			if (!form.checkValidity()) return;
-			selectAll(buttonSelector, (button) => {
-				button.style.pointerEvents = "none";
-				button.setAttribute("disabled", "disabled");
-				button.classList.add("disabled");
-				if (button.dataset.clicked) makeButtonLoading(button);
-			});
-			if (e instanceof SubmitEvent && e.submitter) makeButtonLoading(e.submitter);
-		}, 0);
-	});
-	function makeButtonLoading(button) {
-		let icon = button.querySelector(iconSelector);
-		button.classList.add(loadingClass);
-		if (icon) {
-			const i = html("<i></i>");
-			icon.parentNode?.replaceChild(i, icon);
-			i.setAttribute("class", spinnerClass);
-		}
-	}
-}
-function useDisableIfStackNotEmpty(buttonSelector = "[data-task=save]", stackName = "uploading") {
-	useStack(stackName).observe((stack, length) => {
-		for (const button of selectAll(buttonSelector)) if (length > 0) {
-			button.setAttribute("disabled", "disabled");
-			button.classList.add("disabled");
-		} else {
-			button.removeAttribute("disabled");
-			button.classList.remove("disabled");
-		}
-	});
-}
-/**
-* Keep alive.
-*/
-function useKeepAlive(url, time = 6e4) {
-	const aliveHandle = window.setInterval(() => fetch(url), time);
-	return () => {
-		clearInterval(aliveHandle);
-	};
-}
-/**
-* Vue component field.
-*/
-async function useVueComponentField(selector, value, options = {}) {
-	const m = await useImport("@unicorn/field/vue-component-field.js");
-	if (selector) m.VueComponentField.init(selector, value, options);
-	return m;
-}
-// src/service/uri.ts
+//#endregion
+//#region src/service/uri.ts
 function useSystemUri(type, path) {
 	const uri = UnicornSystemUri.get();
 	if (type) return uri[type](path);
@@ -981,7 +604,7 @@ function asset(type) {
 }
 function addUriBase(uri, type = "path") {
 	if (uri.substring(0, 2) === "//" || uri.substring(0, 4) === "http") return uri;
-	return asset(type) + "/" + uri;
+	return asset(type).replace(/\/+$/, "") + "/" + uri.replace(/^\/+/, "");
 }
 var UnicornSystemUri = class extends URL {
 	static instance;
@@ -1027,13 +650,15 @@ var UnicornAssetUri = class {
 		return asset("root") + path;
 	}
 };
-// src/utilities/base.ts
+//#endregion
+//#region src/utilities/base.ts
 function removeCloak() {
 	if (globalThis.document == null) return;
 	selectAll("[uni-cloak]", (el) => el.removeAttribute("uni-cloak"));
 }
-// src/app.ts
-var UnicornApp = class extends (/*@__PURE__*/ Mixin(EventMixin)) {
+//#endregion
+//#region src/app.ts
+var UnicornApp = class extends Mixin(EventMixin) {
 	registry = /* @__PURE__ */ new Map();
 	plugins = /* @__PURE__ */ new Map();
 	waits = [];
@@ -1098,7 +723,8 @@ var UnicornApp = class extends (/*@__PURE__*/ Mixin(EventMixin)) {
 		return this;
 	}
 };
-// src/polyfill/form-request-submit.ts
+//#endregion
+//#region src/polyfill/form-request-submit.ts
 function formRequestSubmit(prototype) {
 	if (typeof prototype.requestSubmit == "function") return;
 	prototype.requestSubmit = function(submitter) {
@@ -1123,17 +749,20 @@ function formRequestSubmit(prototype) {
 		throw new errorConstructor("Failed to execute 'requestSubmit' on 'HTMLFormElement': " + message + ".", name);
 	}
 }
-// src/polyfill/index.ts
+//#endregion
+//#region src/polyfill/index.ts
 function polyfill() {
 	if (typeof window !== "undefined") formRequestSubmit(HTMLFormElement.prototype);
 }
-// src/composable/useFieldMultiUploader.ts
+//#endregion
+//#region src/composable/useFieldMultiUploader.ts
 async function useFieldMultiUploader() {
 	const module = await import("./chunks/field-multi-uploader.js");
 	await module.ready;
 	return module;
 }
-// src/plugin/php-adapter.ts
+//#endregion
+//#region src/plugin/php-adapter.ts
 function useUnicornPhpAdapter(app) {
 	app ??= useUnicorn();
 	app.use(UnicornPhpAdapter);
@@ -1170,7 +799,8 @@ var UnicornPhpAdapter = class {
 		else app.$ui = methods;
 	}
 };
-// src/unicorn.ts
+//#endregion
+//#region src/unicorn.ts
 var app;
 function createUnicorn() {
 	polyfill();
@@ -1203,6 +833,7 @@ async function useLegacy(app) {
 	await useLegacyMethods(app);
 	return app;
 }
+//#endregion
 export { AttributeMutationObserver, EventMixin, UnicornAssetUri, UnicornPhpAdapter, UnicornSystemUri, UnicornUI, __, addGlobalValidator, addQuery, addRoute, addUriBase, animateTo, base64UrlDecode, base64UrlEncode, buildQuery, clearMessages, clearNotifies, createQueue, createStack, createUnicorn, createUnicornWithPlugins, data, debounce, delegate, deleteConfirm, doImport, domready, fadeIn, fadeOut, forceArray, getBoundedInstance, getBoundedInstanceList, h, hasRoute, highlight, html, initAlpineComponent, injectCssToDocument, isDebug, isError, loadAlpine, mark, module, nextTick, parseQuery, prepareAlpine, prepareAlpineDefer, pushUnicornToGlobal, randomBytes, randomBytesString, removeBoundedInstance, removeData, renderMessage, route, selectAll, selectOne, serial, simpleAlert, simpleConfirm, simpleNotify, sleep, slideDown, slideToggle, slideUp, throttle, tid, trans, uid, useAlertAdapter, useAssetUri, useBs5ButtonRadio, useBs5KeepTab, useBs5Tooltip, useBsModalAlert, useCheckboxesMultiSelect, useColorPicker, useCssImport, useCssIncludes, useDisableIfStackNotEmpty, useDisableOnSubmit, useFieldCascadeSelect, useFieldFileDrag, useFieldFlatpickr, useFieldModalSelect, useFieldModalTree, useFieldRepeatable, useFieldSingleImageDrag, useFieldValidationInstance, useForm, useFormAsync, useFormComponent, useFormSubmit, useFormValidation, useFormValidationInstance, useGrid, useGridAsync, useGridComponent, useHttpClient, useIframeModal, useImport, useInject, useKeepAlive, useLang, useLegacy, useListDependent, useMacro, useNuxtEditor, useQueue, useS3MultipartUploader, useS3Uploader, useScriptImport, useSeriesImport, useShowOn, useStack, useSystemUri, useTinymce, useTinymceHook, useTomSelect, useUI, useUIBootstrap5, useUITheme, useUniDirective, useUnicorn, useUnicornPhpAdapter, useVueComponentField, useWebDirective, wait, watchAttributes };
 
 //# sourceMappingURL=unicorn.js.map

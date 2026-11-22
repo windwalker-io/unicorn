@@ -1,10 +1,10 @@
 import { n as __exportAll } from "./rolldown-runtime.js";
-import { a as virtual_nuxt_ui_app_config_default, i as useAppConfig, r as iconLoaded, t as Icon } from "./iconify.js";
 import { t as defu } from "./defu.js";
-import { c as resolveAs, t as get } from "./utils.js";
+import { a as virtual_nuxt_ui_app_config_default, i as useAppConfig, r as iconLoaded, t as Icon } from "./iconify.js";
+import { c as resolveAs, t as get } from "./utils2.js";
 import { t as _plugin_vue_export_helper_default } from "./_plugin-vue_export-helper.js";
 import { Comment, Fragment, cloneVNode, computed, createBlock, createCommentVNode, createElementBlock, createTextVNode, createVNode, defineComponent, getCurrentInstance, guardReactiveProps, h, inject, mergeModels, mergeProps, normalizeClass, normalizeProps, openBlock, provide, ref, renderSlot, resolveDynamicComponent, toDisplayString, useModel, watch, withCtx } from "vue";
-// ../../../../node_modules/reka-ui/dist/shared/createContext.js
+//#region ../../../../node_modules/reka-ui/dist/shared/createContext.js
 /**
 * @param providerComponentName - The name(s) of the component(s) providing the context.
 *
@@ -33,7 +33,8 @@ function createContext(providerComponentName, contextName) {
 	};
 	return [injectContext, provideContext];
 }
-// ../../../../node_modules/reka-ui/dist/shared/renderSlotFragments.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/shared/renderSlotFragments.js
 function renderSlotFragments(children) {
 	if (!children) return [];
 	return children.flatMap((child) => {
@@ -41,7 +42,8 @@ function renderSlotFragments(children) {
 		return [child];
 	});
 }
-// ../../../../node_modules/reka-ui/dist/Primitive/Slot.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/Primitive/Slot.js
 var Slot = /*@__PURE__*/ defineComponent({
 	name: "PrimitiveSlot",
 	inheritAttrs: false,
@@ -64,7 +66,8 @@ var Slot = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/Primitive/Primitive.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/Primitive/Primitive.js
 var SELF_CLOSING_TAGS = [
 	"area",
 	"img",
@@ -90,7 +93,8 @@ var Primitive = /*@__PURE__*/ defineComponent({
 		return () => h(Slot, attrs, { default: slots.default });
 	}
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/composables/useComponentProps.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/composables/useComponentProps.js
 var [_injectThemeContext, provideThemeContext] = /*@__PURE__*/ createContext("UTheme", "RootContext");
 var defaultThemeContext = { defaults: /*@__PURE__*/ computed(() => ({})) };
 function injectThemeContext(fallback = defaultThemeContext) {
@@ -142,7 +146,8 @@ function useComponentProps(name, props) {
 		getOwnPropertyDescriptor: (t, p) => Reflect.getOwnPropertyDescriptor(t, p)
 	});
 }
-// ../../../../node_modules/@nuxt/ui/dist/runtime/composables/useAvatarGroup.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/composables/useAvatarGroup.js
 var avatarGroupInjectionKey = /*@__PURE__*/ Symbol("nuxt-ui.avatar-group");
 function useAvatarGroup(props) {
 	const avatarGroup = inject(avatarGroupInjectionKey, void 0);
@@ -157,7 +162,8 @@ function useAvatarGroup(props) {
 		color
 	};
 }
-// ../../../../node_modules/tailwind-variants/dist/chunk-OYFAXDFZ.js
+//#endregion
+//#region ../../../../node_modules/tailwind-variants/dist/chunk-OYFAXDFZ.js
 var isArray = /*@__PURE__*/ (() => Array.isArray)();
 var joinClassValue = (value) => {
 	if (!value && value !== 0 && value !== 0n) return "";
@@ -273,7 +279,8 @@ var mergeObjects = (obj1, obj2) => {
 	for (const key in record2) if (!(key in record1)) result[key] = record2[key];
 	return result;
 };
-// ../../../../node_modules/tailwind-variants/dist/chunk-SUL6UUW2.js
+//#endregion
+//#region ../../../../node_modules/tailwind-variants/dist/chunk-SUL6UUW2.js
 var defaultConfig = {
 	twMerge: true,
 	twMergeConfig: {}
@@ -876,7 +883,8 @@ var getTailwindVariants = (cn) => {
 		createTV
 	};
 };
-// ../../../../node_modules/tailwind-variants/dist/index.js
+//#endregion
+//#region ../../../../node_modules/tailwind-variants/dist/index.js
 var concatArrays = (array1, array2) => {
 	const length1 = array1.length;
 	const length2 = array2.length;
@@ -4455,7 +4463,8 @@ var cnMerge = (...classnames) => {
 };
 var runtime = /*@__PURE__*/ getTailwindVariants(cnAdapter);
 var createTV = /*@__PURE__*/ (() => runtime.createTV)();
-// ../../../../node_modules/@nuxt/ui/dist/runtime/utils/tv.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/utils/tv.js
 var config = /*@__PURE__*/ (() => virtual_nuxt_ui_app_config_default.ui?.tv)();
 var baseTv = /*@__PURE__*/ createTV(config);
 function findReplacer(value) {
@@ -4579,7 +4588,8 @@ var tv = ((componentConfig) => {
 		return result;
 	} });
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/vue/components/Icon.vue
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/vue/components/Icon.vue
 var _sfc_main$2 = {
 	__name: "Icon",
 	props: {
@@ -4667,7 +4677,8 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
 	])) : (openBlock(), createBlock(resolveDynamicComponent($props.name), { key: 1 }));
 }
 var Icon_default = /*@__PURE__*/ _plugin_vue_export_helper_default(_sfc_main$2, [["render", _sfc_render$2], ["__file", "Icon.vue"]]);
-// virtual:nuxt-ui-templates/ui/chip.ts
+//#endregion
+//#region virtual:nuxt-ui-templates/ui/chip.ts
 var chip_default = {
 	"slots": {
 		"root": "relative inline-flex items-center justify-center shrink-0",
@@ -4731,7 +4742,8 @@ var chip_default = {
 		"position": "top-right"
 	}
 };
-// ../../../../node_modules/@nuxt/ui/dist/runtime/components/Chip.vue
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/components/Chip.vue
 var _sfc_main$1 = /*@__PURE__*/ Object.assign({ inheritAttrs: false }, {
 	__name: "Chip",
 	props: /*@__PURE__*/ mergeModels({
@@ -4862,7 +4874,8 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
 	]);
 }
 var Chip_default = /*@__PURE__*/ _plugin_vue_export_helper_default(_sfc_main$1, [["render", _sfc_render$1], ["__file", "Chip.vue"]]);
-// virtual:nuxt-ui-templates/ui/avatar.ts
+//#endregion
+//#region virtual:nuxt-ui-templates/ui/avatar.ts
 var avatar_default = {
 	"slots": {
 		"root": "inline-flex items-center justify-center shrink-0 select-none rounded-full align-middle",
@@ -4925,7 +4938,8 @@ var avatar_default = {
 		"color": "neutral"
 	}
 };
-// ../../../../node_modules/@nuxt/ui/dist/runtime/components/Avatar.vue
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/components/Avatar.vue
 var Avatar_exports = /*@__PURE__*/ __exportAll({ default: () => Avatar_default });
 var _sfc_main = /*@__PURE__*/ Object.assign({ inheritAttrs: false }, {
 	__name: "Avatar",
@@ -5109,6 +5123,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
 	]);
 }
 var Avatar_default = /*@__PURE__*/ _plugin_vue_export_helper_default(_sfc_main, [["render", _sfc_render], ["__file", "Avatar.vue"]]);
+//#endregion
 export { useComponentProps as a, renderSlotFragments as c, tv as i, createContext as l, Avatar_exports as n, Primitive as o, Icon_default as r, Slot as s, Avatar_default as t };
 
 //# sourceMappingURL=Avatar.js.map

@@ -1,5 +1,5 @@
 import { n as defineLocale, t as en_default } from "./en.js";
-// ../../../../node_modules/@nuxt/ui/dist/runtime/locale/ar.js
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/locale/ar.js
 var ar_default = /*@__PURE__*/ defineLocale({
 	name: "العربية",
 	code: "ar",
@@ -174,7 +174,8 @@ var ar_default = /*@__PURE__*/ defineLocale({
 		}
 	}
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/locale/az.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/locale/az.js
 var az_default = /*@__PURE__*/ defineLocale({
 	name: "Azərbaycanca",
 	code: "az",
@@ -348,7 +349,8 @@ var az_default = /*@__PURE__*/ defineLocale({
 		}
 	}
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/locale/be.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/locale/be.js
 var be_default = /*@__PURE__*/ defineLocale({
 	name: "Беларуская",
 	code: "be",
@@ -522,7 +524,8 @@ var be_default = /*@__PURE__*/ defineLocale({
 		}
 	}
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/locale/bg.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/locale/bg.js
 var bg_default = /*@__PURE__*/ defineLocale({
 	name: "Български",
 	code: "bg",
@@ -696,7 +699,8 @@ var bg_default = /*@__PURE__*/ defineLocale({
 		}
 	}
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/locale/bn.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/locale/bn.js
 var bn_default = /*@__PURE__*/ defineLocale({
 	name: "বাংলা",
 	code: "bn",
@@ -870,7 +874,8 @@ var bn_default = /*@__PURE__*/ defineLocale({
 		}
 	}
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/locale/ca.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/locale/ca.js
 var ca_default = /*@__PURE__*/ defineLocale({
 	name: "Català",
 	code: "ca",
@@ -1044,7 +1049,8 @@ var ca_default = /*@__PURE__*/ defineLocale({
 		}
 	}
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/locale/ckb.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/locale/ckb.js
 var ckb_default = /*@__PURE__*/ defineLocale({
 	name: "کوردی",
 	code: "ckb",
@@ -1219,7 +1225,8 @@ var ckb_default = /*@__PURE__*/ defineLocale({
 		}
 	}
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/locale/cs.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/locale/cs.js
 var cs_default = /*@__PURE__*/ defineLocale({
 	name: "Čeština",
 	code: "cs",
@@ -1393,7 +1400,8 @@ var cs_default = /*@__PURE__*/ defineLocale({
 		}
 	}
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/locale/da.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/locale/da.js
 var da_default = /*@__PURE__*/ defineLocale({
 	name: "Dansk",
 	code: "da",
@@ -1567,7 +1575,8 @@ var da_default = /*@__PURE__*/ defineLocale({
 		}
 	}
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/locale/de.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/locale/de.js
 var de_default = /*@__PURE__*/ defineLocale({
 	name: "Deutsch",
 	code: "de",
@@ -1741,13 +1750,15 @@ var de_default = /*@__PURE__*/ defineLocale({
 		}
 	}
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/locale/de_at.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/locale/de_at.js
 var de_at_default = /*@__PURE__*/ defineLocale({
 	name: "Deutsch (Österreich)",
 	code: "de-AT",
 	messages: /*@__PURE__*/ (() => de_default.messages)()
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/locale/de_ch.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/locale/de_ch.js
 var de_ch_default = /*@__PURE__*/ defineLocale({
 	name: "Schweizer Hochdeutsch",
 	code: "de-CH",
@@ -1921,7 +1932,8 @@ var de_ch_default = /*@__PURE__*/ defineLocale({
 		}
 	}
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/locale/el.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/locale/el.js
 var el_default = /*@__PURE__*/ defineLocale({
 	name: "Ελληνικά",
 	code: "el",
@@ -2095,13 +2107,15 @@ var el_default = /*@__PURE__*/ defineLocale({
 		}
 	}
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/locale/en_gb.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/locale/en_gb.js
 var en_gb_default = /*@__PURE__*/ defineLocale({
 	name: "English (United Kingdom)",
 	code: "en-GB",
 	messages: /*@__PURE__*/ (() => en_default.messages)()
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/locale/es.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/locale/es.js
 var es_default = /*@__PURE__*/ defineLocale({
 	name: "Español",
 	code: "es",
@@ -2275,7 +2289,8 @@ var es_default = /*@__PURE__*/ defineLocale({
 		}
 	}
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/locale/et.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/locale/et.js
 var et_default = /*@__PURE__*/ defineLocale({
 	name: "Eesti",
 	code: "et",
@@ -2449,7 +2464,8 @@ var et_default = /*@__PURE__*/ defineLocale({
 		}
 	}
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/locale/eu.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/locale/eu.js
 var eu_default = /*@__PURE__*/ defineLocale({
 	name: "Euskara",
 	code: "eu",
@@ -2623,7 +2639,8 @@ var eu_default = /*@__PURE__*/ defineLocale({
 		}
 	}
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/locale/fa_ir.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/locale/fa_ir.js
 var fa_ir_default = /*@__PURE__*/ defineLocale({
 	name: "فارسی",
 	code: "fa-IR",
@@ -2798,7 +2815,8 @@ var fa_ir_default = /*@__PURE__*/ defineLocale({
 		}
 	}
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/locale/fi.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/locale/fi.js
 var fi_default = /*@__PURE__*/ defineLocale({
 	name: "Suomi",
 	code: "fi",
@@ -2972,7 +2990,8 @@ var fi_default = /*@__PURE__*/ defineLocale({
 		}
 	}
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/locale/fr.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/locale/fr.js
 var fr_default = /*@__PURE__*/ defineLocale({
 	name: "Français",
 	code: "fr",
@@ -3146,7 +3165,8 @@ var fr_default = /*@__PURE__*/ defineLocale({
 		}
 	}
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/locale/gl.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/locale/gl.js
 var gl_default = /*@__PURE__*/ defineLocale({
 	name: "Galego",
 	code: "gl",
@@ -3320,7 +3340,8 @@ var gl_default = /*@__PURE__*/ defineLocale({
 		}
 	}
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/locale/he.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/locale/he.js
 var he_default = /*@__PURE__*/ defineLocale({
 	name: "עברית",
 	code: "he",
@@ -3495,7 +3516,8 @@ var he_default = /*@__PURE__*/ defineLocale({
 		}
 	}
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/locale/hi.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/locale/hi.js
 var hi_default = /*@__PURE__*/ defineLocale({
 	name: "हिन्दी",
 	code: "hi",
@@ -3669,7 +3691,8 @@ var hi_default = /*@__PURE__*/ defineLocale({
 		}
 	}
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/locale/hr.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/locale/hr.js
 var hr_default = /*@__PURE__*/ defineLocale({
 	name: "Hrvatski",
 	code: "hr",
@@ -3843,7 +3866,8 @@ var hr_default = /*@__PURE__*/ defineLocale({
 		}
 	}
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/locale/hu.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/locale/hu.js
 var hu_default = /*@__PURE__*/ defineLocale({
 	name: "Magyar",
 	code: "hu",
@@ -4017,7 +4041,8 @@ var hu_default = /*@__PURE__*/ defineLocale({
 		}
 	}
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/locale/hy.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/locale/hy.js
 var hy_default = /*@__PURE__*/ defineLocale({
 	name: "Հայերեն",
 	code: "hy",
@@ -4191,7 +4216,8 @@ var hy_default = /*@__PURE__*/ defineLocale({
 		}
 	}
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/locale/id.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/locale/id.js
 var id_default = /*@__PURE__*/ defineLocale({
 	name: "Bahasa Indonesia",
 	code: "id",
@@ -4365,7 +4391,8 @@ var id_default = /*@__PURE__*/ defineLocale({
 		}
 	}
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/locale/is.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/locale/is.js
 var is_default = /*@__PURE__*/ defineLocale({
 	name: "Íslenska",
 	code: "is",
@@ -4539,7 +4566,8 @@ var is_default = /*@__PURE__*/ defineLocale({
 		}
 	}
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/locale/it.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/locale/it.js
 var it_default = /*@__PURE__*/ defineLocale({
 	name: "Italiano",
 	code: "it",
@@ -4713,7 +4741,8 @@ var it_default = /*@__PURE__*/ defineLocale({
 		}
 	}
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/locale/ja.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/locale/ja.js
 var ja_default = /*@__PURE__*/ defineLocale({
 	name: "日本語",
 	code: "ja",
@@ -4887,7 +4916,8 @@ var ja_default = /*@__PURE__*/ defineLocale({
 		}
 	}
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/locale/ka.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/locale/ka.js
 var ka_default = /*@__PURE__*/ defineLocale({
 	name: "ქართული",
 	code: "ka",
@@ -5061,7 +5091,8 @@ var ka_default = /*@__PURE__*/ defineLocale({
 		}
 	}
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/locale/kk.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/locale/kk.js
 var kk_default = /*@__PURE__*/ defineLocale({
 	name: "Қазақша",
 	code: "kk",
@@ -5235,7 +5266,8 @@ var kk_default = /*@__PURE__*/ defineLocale({
 		}
 	}
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/locale/km.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/locale/km.js
 var km_default = /*@__PURE__*/ defineLocale({
 	name: "ភាសាខ្មែរ",
 	code: "km",
@@ -5409,7 +5441,8 @@ var km_default = /*@__PURE__*/ defineLocale({
 		}
 	}
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/locale/ko.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/locale/ko.js
 var ko_default = /*@__PURE__*/ defineLocale({
 	name: "한국어",
 	code: "ko",
@@ -5583,7 +5616,8 @@ var ko_default = /*@__PURE__*/ defineLocale({
 		}
 	}
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/locale/ky.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/locale/ky.js
 var ky_default = /*@__PURE__*/ defineLocale({
 	name: "Кыргызча",
 	code: "ky",
@@ -5757,7 +5791,8 @@ var ky_default = /*@__PURE__*/ defineLocale({
 		}
 	}
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/locale/lb.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/locale/lb.js
 var lb_default = /*@__PURE__*/ defineLocale({
 	name: "Lëtzebuergesch",
 	code: "lb",
@@ -5931,7 +5966,8 @@ var lb_default = /*@__PURE__*/ defineLocale({
 		}
 	}
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/locale/lo.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/locale/lo.js
 var lo_default = /*@__PURE__*/ defineLocale({
 	name: "ລາວ",
 	code: "lo",
@@ -6105,7 +6141,8 @@ var lo_default = /*@__PURE__*/ defineLocale({
 		}
 	}
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/locale/lt.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/locale/lt.js
 var lt_default = /*@__PURE__*/ defineLocale({
 	name: "Lietuvių",
 	code: "lt",
@@ -6279,7 +6316,8 @@ var lt_default = /*@__PURE__*/ defineLocale({
 		}
 	}
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/locale/lv.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/locale/lv.js
 var lv_default = /*@__PURE__*/ defineLocale({
 	name: "Latviešu",
 	code: "lv",
@@ -6453,7 +6491,8 @@ var lv_default = /*@__PURE__*/ defineLocale({
 		}
 	}
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/locale/mn.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/locale/mn.js
 var mn_default = /*@__PURE__*/ defineLocale({
 	name: "Монгол",
 	code: "mn",
@@ -6627,7 +6666,8 @@ var mn_default = /*@__PURE__*/ defineLocale({
 		}
 	}
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/locale/ms.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/locale/ms.js
 var ms_default = /*@__PURE__*/ defineLocale({
 	name: "Melayu",
 	code: "ms",
@@ -6801,7 +6841,8 @@ var ms_default = /*@__PURE__*/ defineLocale({
 		}
 	}
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/locale/nb_no.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/locale/nb_no.js
 var nb_no_default = /*@__PURE__*/ defineLocale({
 	name: "Norsk Bokmål",
 	code: "nb-NO",
@@ -6975,7 +7016,8 @@ var nb_no_default = /*@__PURE__*/ defineLocale({
 		}
 	}
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/locale/nl.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/locale/nl.js
 var nl_default = /*@__PURE__*/ defineLocale({
 	name: "Nederlands",
 	code: "nl",
@@ -7149,7 +7191,8 @@ var nl_default = /*@__PURE__*/ defineLocale({
 		}
 	}
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/locale/pl.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/locale/pl.js
 var pl_default = /*@__PURE__*/ defineLocale({
 	name: "Polski",
 	code: "pl",
@@ -7323,7 +7366,8 @@ var pl_default = /*@__PURE__*/ defineLocale({
 		}
 	}
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/locale/pt.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/locale/pt.js
 var pt_default = /*@__PURE__*/ defineLocale({
 	name: "Português",
 	code: "pt",
@@ -7497,7 +7541,8 @@ var pt_default = /*@__PURE__*/ defineLocale({
 		}
 	}
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/locale/pt_br.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/locale/pt_br.js
 var pt_br_default = /*@__PURE__*/ defineLocale({
 	name: "Português (Brasil)",
 	code: "pt-BR",
@@ -7671,7 +7716,8 @@ var pt_br_default = /*@__PURE__*/ defineLocale({
 		}
 	}
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/locale/ro.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/locale/ro.js
 var ro_default = /*@__PURE__*/ defineLocale({
 	name: "Română",
 	code: "ro",
@@ -7845,7 +7891,8 @@ var ro_default = /*@__PURE__*/ defineLocale({
 		}
 	}
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/locale/ru.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/locale/ru.js
 var ru_default = /*@__PURE__*/ defineLocale({
 	name: "Русский",
 	code: "ru",
@@ -8019,7 +8066,8 @@ var ru_default = /*@__PURE__*/ defineLocale({
 		}
 	}
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/locale/sk.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/locale/sk.js
 var sk_default = /*@__PURE__*/ defineLocale({
 	name: "Slovenčina",
 	code: "sk",
@@ -8193,7 +8241,8 @@ var sk_default = /*@__PURE__*/ defineLocale({
 		}
 	}
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/locale/sl.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/locale/sl.js
 var sl_default = /*@__PURE__*/ defineLocale({
 	name: "Slovenščina",
 	code: "sl",
@@ -8367,7 +8416,8 @@ var sl_default = /*@__PURE__*/ defineLocale({
 		}
 	}
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/locale/sq.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/locale/sq.js
 var sq_default = /*@__PURE__*/ defineLocale({
 	name: "Shqip",
 	code: "sq",
@@ -8541,7 +8591,8 @@ var sq_default = /*@__PURE__*/ defineLocale({
 		}
 	}
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/locale/sv.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/locale/sv.js
 var sv_default = /*@__PURE__*/ defineLocale({
 	name: "Svenska",
 	code: "sv",
@@ -8715,7 +8766,8 @@ var sv_default = /*@__PURE__*/ defineLocale({
 		}
 	}
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/locale/tg.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/locale/tg.js
 var tg_default = /*@__PURE__*/ defineLocale({
 	name: "Тоҷикӣ",
 	code: "tg",
@@ -8889,7 +8941,8 @@ var tg_default = /*@__PURE__*/ defineLocale({
 		}
 	}
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/locale/th.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/locale/th.js
 var th_default = /*@__PURE__*/ defineLocale({
 	name: "ไทย",
 	code: "th",
@@ -9063,7 +9116,8 @@ var th_default = /*@__PURE__*/ defineLocale({
 		}
 	}
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/locale/tr.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/locale/tr.js
 var tr_default = /*@__PURE__*/ defineLocale({
 	name: "Türkçe",
 	code: "tr",
@@ -9237,7 +9291,8 @@ var tr_default = /*@__PURE__*/ defineLocale({
 		}
 	}
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/locale/ug_cn.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/locale/ug_cn.js
 var ug_cn_default = /*@__PURE__*/ defineLocale({
 	name: "ئۇيغۇرچە",
 	code: "ug-CN",
@@ -9412,7 +9467,8 @@ var ug_cn_default = /*@__PURE__*/ defineLocale({
 		}
 	}
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/locale/uk.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/locale/uk.js
 var uk_default = /*@__PURE__*/ defineLocale({
 	name: "Українська",
 	code: "uk",
@@ -9586,7 +9642,8 @@ var uk_default = /*@__PURE__*/ defineLocale({
 		}
 	}
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/locale/ur.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/locale/ur.js
 var ur_default = /*@__PURE__*/ defineLocale({
 	name: "اردو",
 	code: "ur",
@@ -9761,7 +9818,8 @@ var ur_default = /*@__PURE__*/ defineLocale({
 		}
 	}
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/locale/uz.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/locale/uz.js
 var uz_default = /*@__PURE__*/ defineLocale({
 	name: "Oʻzbek",
 	code: "uz",
@@ -9935,7 +9993,8 @@ var uz_default = /*@__PURE__*/ defineLocale({
 		}
 	}
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/locale/vi.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/locale/vi.js
 var vi_default = /*@__PURE__*/ defineLocale({
 	name: "Tiếng Việt",
 	code: "vi",
@@ -10109,7 +10168,8 @@ var vi_default = /*@__PURE__*/ defineLocale({
 		}
 	}
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/locale/zh_cn.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/locale/zh_cn.js
 var zh_cn_default = /*@__PURE__*/ defineLocale({
 	name: "简体中文",
 	code: "zh-CN",
@@ -10283,7 +10343,8 @@ var zh_cn_default = /*@__PURE__*/ defineLocale({
 		}
 	}
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/locale/zh_tw.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/locale/zh_tw.js
 var zh_tw_default = /*@__PURE__*/ defineLocale({
 	name: "繁體中文",
 	code: "zh-TW",
@@ -10457,6 +10518,7 @@ var zh_tw_default = /*@__PURE__*/ defineLocale({
 		}
 	}
 });
+//#endregion
 export { ar_default as ar, az_default as az, be_default as be, bg_default as bg, bn_default as bn, ca_default as ca, ckb_default as ckb, cs_default as cs, da_default as da, de_default as de, de_at_default as de_at, de_ch_default as de_ch, el_default as el, en_default as en, en_gb_default as en_gb, es_default as es, et_default as et, eu_default as eu, fa_ir_default as fa_ir, fi_default as fi, fr_default as fr, gl_default as gl, he_default as he, hi_default as hi, hr_default as hr, hu_default as hu, hy_default as hy, id_default as id, is_default as is, it_default as it, ja_default as ja, ka_default as ka, kk_default as kk, km_default as km, ko_default as ko, ky_default as ky, lb_default as lb, lo_default as lo, lt_default as lt, lv_default as lv, mn_default as mn, ms_default as ms, nb_no_default as nb_no, nl_default as nl, pl_default as pl, pt_default as pt, pt_br_default as pt_br, ro_default as ro, ru_default as ru, sk_default as sk, sl_default as sl, sq_default as sq, sv_default as sv, tg_default as tg, th_default as th, tr_default as tr, ug_cn_default as ug_cn, uk_default as uk, ur_default as ur, uz_default as uz, vi_default as vi, zh_cn_default as zh_cn, zh_tw_default as zh_tw };
 
 //# sourceMappingURL=locale.js.map

@@ -138,7 +138,12 @@ export function module<T = any, E extends Element = Element>(
   callback: ((el: E) => any) | false = () => null
 ): (T | null)[] | T | null {
   if (callback === false) {
-    if (typeof ele === 'string' || ele instanceof Element) {
+    if (typeof ele === 'string') {
+      document.querySelectorAll<Element>(ele).forEach((el) => removeBoundedInstance(el, name));
+      return null;
+    }
+
+    if (ele instanceof Element) {
       removeBoundedInstance(ele, name);
       return null;
     }
@@ -172,15 +177,15 @@ export function h(element: string, attrs: Record<string, any> = {}, content: any
     ele.setAttribute(i, v);
   }
 
-  if (content !== null) {
+  if (content !== undefined && content !== null) {
     ele.innerHTML = content;
   }
 
   return ele;
 }
 
-export function html<T extends Element = HTMLElement>(html: string): T {
-  const div = document.createElement('div');
+export function html<T extends Element = HTMLElement>(html: string, wrapper: keyof HTMLElementTagNameMap = 'div'): T {
+  const div = document.createElement(wrapper);
   div.innerHTML = html;
   return div.children[0] as T;
 }
@@ -266,15 +271,18 @@ export function delegate(
 
 type CssSource = string | (() => Promise<{ default: string }>);
 
-export function injectCssToDocument(doc: Document, ...css: (CssSource | CSSStyleSheet)[]): Promise<CSSStyleSheet[]>;
+export function injectCssToDocument(doc: Document | ShadowRoot, ...css: (CssSource | CSSStyleSheet)[]): Promise<CSSStyleSheet[]>;
 export function injectCssToDocument(...css: (CssSource | CSSStyleSheet)[]): Promise<CSSStyleSheet[]>;
 export async function injectCssToDocument(
-  doc: Document | CssSource | CSSStyleSheet,
+  doc: Document | ShadowRoot | CssSource | CSSStyleSheet,
   ...css: (CssSource | CSSStyleSheet)[]
 ): Promise<CSSStyleSheet[]> {
-  if (!(doc instanceof Document)) {
+  let target: Document | ShadowRoot = document;
+
+  if (doc instanceof Document || doc instanceof ShadowRoot) {
+    target = doc;
+  } else {
     css.push(doc);
-    doc = document;
   }
 
   const promises: Promise<any>[] = [];
@@ -303,7 +311,7 @@ export async function injectCssToDocument(
 
   const styles = await Promise.all(promises);
 
-  doc.adoptedStyleSheets = [...doc.adoptedStyleSheets, ...styles];
+  target.adoptedStyleSheets = [...target.adoptedStyleSheets, ...styles];
 
   return styles;
 }

@@ -1,5 +1,5 @@
 import { a as eq, d as isObjectLike, f as baseGetTag, h as freeGlobal, i as isLength, m as root, n as isArguments, o as defineProperty, r as isArrayLike, t as baseUnary, u as isArray } from "./_baseUnary.js";
-// ../../../../node_modules/lodash-es/_arrayEach.js
+//#region ../../../../node_modules/lodash-es/_arrayEach.js
 /**
 * A specialized version of `_.forEach` for arrays without support for
 * iteratee shorthands.
@@ -14,7 +14,8 @@ function arrayEach(array, iteratee) {
 	while (++index < length) if (iteratee(array[index], index, array) === false) break;
 	return array;
 }
-// ../../../../node_modules/lodash-es/_isIndex.js
+//#endregion
+//#region ../../../../node_modules/lodash-es/_isIndex.js
 /** Used as references for various `Number` constants. */
 var MAX_SAFE_INTEGER = 9007199254740991;
 /** Used to detect unsigned integer values. */
@@ -32,7 +33,8 @@ function isIndex(value, length) {
 	length = length == null ? MAX_SAFE_INTEGER : length;
 	return !!length && (type == "number" || type != "symbol" && reIsUint.test(value)) && value > -1 && value % 1 == 0 && value < length;
 }
-// ../../../../node_modules/lodash-es/_baseAssignValue.js
+//#endregion
+//#region ../../../../node_modules/lodash-es/_baseAssignValue.js
 /**
 * The base implementation of `assignValue` and `assignMergeValue` without
 * value checks.
@@ -51,7 +53,8 @@ function baseAssignValue(object, key, value) {
 	});
 	else object[key] = value;
 }
-// ../../../../node_modules/lodash-es/_assignValue.js
+//#endregion
+//#region ../../../../node_modules/lodash-es/_assignValue.js
 /** Used to check objects for own properties. */
 var hasOwnProperty$2 = /*@__PURE__*/ (() => Object.prototype.hasOwnProperty)();
 /**
@@ -68,7 +71,8 @@ function assignValue(object, key, value) {
 	var objValue = object[key];
 	if (!(hasOwnProperty$2.call(object, key) && eq(objValue, value)) || value === void 0 && !(key in object)) baseAssignValue(object, key, value);
 }
-// ../../../../node_modules/lodash-es/_copyObject.js
+//#endregion
+//#region ../../../../node_modules/lodash-es/_copyObject.js
 /**
 * Copies properties of `source` to `object`.
 *
@@ -92,7 +96,8 @@ function copyObject(source, props, object, customizer) {
 	}
 	return object;
 }
-// ../../../../node_modules/lodash-es/_isPrototype.js
+//#endregion
+//#region ../../../../node_modules/lodash-es/_isPrototype.js
 /** Used for built-in method references. */
 var objectProto = /*@__PURE__*/ (() => Object.prototype)();
 /**
@@ -106,7 +111,8 @@ function isPrototype(value) {
 	var Ctor = value && value.constructor;
 	return value === (typeof Ctor == "function" && Ctor.prototype || objectProto);
 }
-// ../../../../node_modules/lodash-es/_baseTimes.js
+//#endregion
+//#region ../../../../node_modules/lodash-es/_baseTimes.js
 /**
 * The base implementation of `_.times` without support for iteratee shorthands
 * or max array length checks.
@@ -121,7 +127,8 @@ function baseTimes(n, iteratee) {
 	while (++index < n) result[index] = iteratee(index);
 	return result;
 }
-// ../../../../node_modules/lodash-es/stubFalse.js
+//#endregion
+//#region ../../../../node_modules/lodash-es/stubFalse.js
 /**
 * This method returns `false`.
 *
@@ -138,7 +145,8 @@ function baseTimes(n, iteratee) {
 function stubFalse() {
 	return false;
 }
-// ../../../../node_modules/lodash-es/isBuffer.js
+//#endregion
+//#region ../../../../node_modules/lodash-es/isBuffer.js
 /** Detect free variable `exports`. */
 var freeExports$1 = typeof exports == "object" && exports && !/*@__PURE__*/ (() => exports.nodeType)() && exports;
 /** Detect free variable `module`. */
@@ -163,7 +171,8 @@ var Buffer = freeModule$1 && /*@__PURE__*/ (() => freeModule$1.exports)() === fr
 * // => false
 */
 var isBuffer = (Buffer ? /*@__PURE__*/ (() => Buffer.isBuffer)() : void 0) || stubFalse;
-// ../../../../node_modules/lodash-es/_baseIsTypedArray.js
+//#endregion
+//#region ../../../../node_modules/lodash-es/_baseIsTypedArray.js
 /** `Object#toString` result references. */
 var argsTag = "[object Arguments]";
 var arrayTag = "[object Array]";
@@ -203,7 +212,8 @@ typedArrayTags[argsTag] = typedArrayTags[arrayTag] = typedArrayTags[arrayBufferT
 function baseIsTypedArray(value) {
 	return isObjectLike(value) && isLength(value.length) && !!typedArrayTags[baseGetTag(value)];
 }
-// ../../../../node_modules/lodash-es/_nodeUtil.js
+//#endregion
+//#region ../../../../node_modules/lodash-es/_nodeUtil.js
 /** Detect free variable `exports`. */
 var freeExports = typeof exports == "object" && exports && !/*@__PURE__*/ (() => exports.nodeType)() && exports;
 /** Detect free variable `module`. */
@@ -218,7 +228,8 @@ var nodeUtil = /*@__PURE__*/ function() {
 		return freeProcess && freeProcess.binding && freeProcess.binding("util");
 	} catch (e) {}
 }();
-// ../../../../node_modules/lodash-es/isTypedArray.js
+//#endregion
+//#region ../../../../node_modules/lodash-es/isTypedArray.js
 var nodeIsTypedArray = nodeUtil && /*@__PURE__*/ (() => nodeUtil.isTypedArray)();
 /**
 * Checks if `value` is classified as a typed array.
@@ -238,7 +249,8 @@ var nodeIsTypedArray = nodeUtil && /*@__PURE__*/ (() => nodeUtil.isTypedArray)()
 * // => false
 */
 var isTypedArray = nodeIsTypedArray ? /*@__PURE__*/ baseUnary(nodeIsTypedArray) : baseIsTypedArray;
-// ../../../../node_modules/lodash-es/_arrayLikeKeys.js
+//#endregion
+//#region ../../../../node_modules/lodash-es/_arrayLikeKeys.js
 /** Used to check objects for own properties. */
 var hasOwnProperty$1 = /*@__PURE__*/ (() => Object.prototype.hasOwnProperty)();
 /**
@@ -254,7 +266,8 @@ function arrayLikeKeys(value, inherited) {
 	for (var key in value) if ((inherited || hasOwnProperty$1.call(value, key)) && !(skipIndexes && (key == "length" || isBuff && (key == "offset" || key == "parent") || isType && (key == "buffer" || key == "byteLength" || key == "byteOffset") || isIndex(key, length)))) result.push(key);
 	return result;
 }
-// ../../../../node_modules/lodash-es/_overArg.js
+//#endregion
+//#region ../../../../node_modules/lodash-es/_overArg.js
 /**
 * Creates a unary function that invokes `func` with its argument transformed.
 *
@@ -268,9 +281,11 @@ function overArg(func, transform) {
 		return func(transform(arg));
 	};
 }
-// ../../../../node_modules/lodash-es/_nativeKeys.js
+//#endregion
+//#region ../../../../node_modules/lodash-es/_nativeKeys.js
 var nativeKeys = /*@__PURE__*/ overArg(/*@__PURE__*/ (() => Object.keys)(), Object);
-// ../../../../node_modules/lodash-es/_baseKeys.js
+//#endregion
+//#region ../../../../node_modules/lodash-es/_baseKeys.js
 /** Used to check objects for own properties. */
 var hasOwnProperty = /*@__PURE__*/ (() => Object.prototype.hasOwnProperty)();
 /**
@@ -286,7 +301,8 @@ function baseKeys(object) {
 	for (var key in Object(object)) if (hasOwnProperty.call(object, key) && key != "constructor") result.push(key);
 	return result;
 }
-// ../../../../node_modules/lodash-es/keys.js
+//#endregion
+//#region ../../../../node_modules/lodash-es/keys.js
 /**
 * Creates an array of the own enumerable property names of `object`.
 *
@@ -318,9 +334,11 @@ function baseKeys(object) {
 function keys(object) {
 	return isArrayLike(object) ? arrayLikeKeys(object) : baseKeys(object);
 }
-// ../../../../node_modules/lodash-es/_getPrototype.js
+//#endregion
+//#region ../../../../node_modules/lodash-es/_getPrototype.js
 /** Built-in value references. */
 var getPrototype = /*@__PURE__*/ overArg(/*@__PURE__*/ (() => Object.getPrototypeOf)(), Object);
+//#endregion
 export { isBuffer as a, assignValue as c, nodeUtil as i, isIndex as l, keys as n, isPrototype as o, arrayLikeKeys as r, copyObject as s, getPrototype as t, arrayEach as u };
 
 //# sourceMappingURL=_getPrototype.js.map

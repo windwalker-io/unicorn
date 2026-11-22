@@ -68,7 +68,15 @@ function extractRoute(route: string, sep: string = '/'): { path: string; route: 
 }
 
 export function hasRoute(route: string): boolean {
-  return undefined !== data('unicorn.routes')[route];
+  const routes = data('unicorn.routes') || {};
+
+  if (routes[route] != null) {
+    return true;
+  }
+
+  const alt = route.startsWith('@') ? route.substring(1) : '@' + route;
+
+  return routes[alt] != null;
 }
 
 export function addQuery(url: string, query?: Record<string, any>): string {
@@ -76,8 +84,11 @@ export function addQuery(url: string, query?: Record<string, any>): string {
     return url;
   }
 
-  for (let k in query) {
-    const v = query[k];
+  // Work on a copy so the caller's object is not mutated (placeholders consumed below).
+  const params: Record<string, any> = structuredClone(query);
+
+  for (let k in params) {
+    const v = params[k];
 
     const placeholder = `{${k}}`;
 
@@ -86,7 +97,7 @@ export function addQuery(url: string, query?: Record<string, any>): string {
         new RegExp(`${placeholder}`, 'g'),
         v
       );
-      delete query[k];
+      delete params[k];
     }
 
     const encodedPlaceholder = encodeURIComponent(`{${k}}`);
@@ -96,15 +107,15 @@ export function addQuery(url: string, query?: Record<string, any>): string {
         new RegExp(`${encodedPlaceholder}`, 'g'),
         v
       );
-      delete query[k];
+      delete params[k];
     }
   }
 
-  if (Object.keys(query).length === 0) {
+  if (Object.keys(params).length === 0) {
     return url;
   }
 
-  const queryString = encode(query);
+  const queryString = encode(params);
 
   return url + (/\?/.test(url) ? `&${queryString}` : `?${queryString}`);
 }

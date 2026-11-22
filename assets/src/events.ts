@@ -21,13 +21,18 @@ export abstract class EventMixin implements EventAwareInterface {
   once<T extends any[]>(event: string, handler: EventHandler<T>): this;
   once(event: string | string[], handler: EventHandler): this;
   once(event: string | string[], handler: EventHandler): this {
-    handler.once = true;
-    return this.on(event, handler);
+    // Wrap instead of flagging `handler`, so the same function can also be registered with on().
+    const wrapper: EventHandler = (...args: any[]) => handler(...args);
+    wrapper.once = true;
+    wrapper.original = handler;
+
+    return this.on(event, wrapper);
   }
 
   off(event: string, handler?: EventHandler): this {
     if (handler) {
-      this._listeners[event] = this.listeners(event).filter((listener) => listener !== handler);
+      this._listeners[event] = this.listeners(event)
+        .filter((listener) => listener !== handler && listener.original !== handler);
       return this;
     }
 
@@ -41,17 +46,19 @@ export abstract class EventMixin implements EventAwareInterface {
   trigger(event: string | string[], ...args: any[]): this {
     if (Array.isArray(event)) {
       for (const e of event) {
-        this.trigger(e);
+        this.trigger(e, ...args);
       }
       return this;
     }
 
-    for (const listener of this.listeners(event)) {
+    const listeners = this.listeners(event);
+
+    // Remove once before calling, so a once listener re-triggering its own event does not run again.
+    this._listeners[event] = listeners.filter((listener) => listener?.once !== true);
+
+    for (const listener of listeners) {
       listener(...args);
     }
-
-    // Remove once
-    this._listeners[event] = this.listeners(event).filter((listener) => listener?.once !== true);
 
     return this;
   }
@@ -64,7 +71,10 @@ export abstract class EventMixin implements EventAwareInterface {
 // export class EventBus extends Mixin(EventMixin) {
 // }
 
-export type EventHandler<T extends any[] = any[]> = ((...event: T) => void) & { once?: boolean };
+export type EventHandler<T extends any[] = any[]> = ((...event: T) => void) & {
+  once?: boolean;
+  original?: EventHandler;
+};
 
 export interface EventAwareInterface {
   on<T extends any[]>(event: string, handler: EventHandler<T>): this;

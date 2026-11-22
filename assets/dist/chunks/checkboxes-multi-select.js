@@ -1,5 +1,5 @@
 import { d as selectOne, u as selectAll } from "./dom.js";
-// src/module/checkboxes-multi-select.ts
+//#region src/module/checkboxes-multi-select.ts
 var CheckboxesMultiSelect = class {
 	defaultOptions = {
 		duration: 100,
@@ -39,6 +39,7 @@ var CheckboxesMultiSelect = class {
 		this.last = box;
 	}
 };
+//#endregion
 export { CheckboxesMultiSelect };
 
 //# sourceMappingURL=checkboxes-multi-select.js.map

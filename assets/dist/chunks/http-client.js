@@ -1,7 +1,7 @@
 import { t as data } from "./data.js";
 import { o as route } from "./router.js";
-import AxiosStatic, { AxiosError, isAxiosError, isCancel } from "axios";
-// ../../../../node_modules/url-template/lib/url-template.js
+import Axios, { AxiosError } from "axios";
+//#region ../../../../node_modules/url-template/lib/url-template.js
 function encodeReserved(str) {
 	return str.split(/(%[0-9A-Fa-f]{2})/g).map(function(part) {
 		if (!/%[0-9A-Fa-f]/.test(part)) part = encodeURI(part).replace(/%5B/g, "[").replace(/%5D/g, "]");
@@ -26,33 +26,31 @@ function isKeyOperator(operator) {
 }
 function getValues(context, operator, key, modifier) {
 	var value = context[key], result = [];
-	if (isDefined(value) && value !== "") {
-		if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
-			value = value.toString();
-			if (modifier && modifier !== "*") value = value.substring(0, parseInt(modifier, 10));
-			result.push(encodeValue(operator, value, isKeyOperator(operator) ? key : null));
-		} else if (modifier === "*") {
-			if (Array.isArray(value)) value.filter(isDefined).forEach(function(value) {
-				result.push(encodeValue(operator, value, isKeyOperator(operator) ? key : null));
-			});
-			else Object.keys(value).forEach(function(k) {
-				if (isDefined(value[k])) result.push(encodeValue(operator, value[k], k));
-			});
-		} else {
-			var tmp = [];
-			if (Array.isArray(value)) value.filter(isDefined).forEach(function(value) {
-				tmp.push(encodeValue(operator, value));
-			});
-			else Object.keys(value).forEach(function(k) {
-				if (isDefined(value[k])) {
-					tmp.push(encodeUnreserved(k));
-					tmp.push(encodeValue(operator, value[k].toString()));
-				}
-			});
-			if (isKeyOperator(operator)) result.push(encodeUnreserved(key) + "=" + tmp.join(","));
-			else if (tmp.length !== 0) result.push(tmp.join(","));
-		}
-	} else if (operator === ";") {
+	if (isDefined(value) && value !== "") if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
+		value = value.toString();
+		if (modifier && modifier !== "*") value = value.substring(0, parseInt(modifier, 10));
+		result.push(encodeValue(operator, value, isKeyOperator(operator) ? key : null));
+	} else if (modifier === "*") if (Array.isArray(value)) value.filter(isDefined).forEach(function(value) {
+		result.push(encodeValue(operator, value, isKeyOperator(operator) ? key : null));
+	});
+	else Object.keys(value).forEach(function(k) {
+		if (isDefined(value[k])) result.push(encodeValue(operator, value[k], k));
+	});
+	else {
+		var tmp = [];
+		if (Array.isArray(value)) value.filter(isDefined).forEach(function(value) {
+			tmp.push(encodeValue(operator, value));
+		});
+		else Object.keys(value).forEach(function(k) {
+			if (isDefined(value[k])) {
+				tmp.push(encodeUnreserved(k));
+				tmp.push(encodeValue(operator, value[k].toString()));
+			}
+		});
+		if (isKeyOperator(operator)) result.push(encodeUnreserved(key) + "=" + tmp.join(","));
+		else if (tmp.length !== 0) result.push(tmp.join(","));
+	}
+	else if (operator === ";") {
 		if (isDefined(value)) result.push(encodeUnreserved(key));
 	} else if (value === "" && (operator === "&" || operator === "?")) result.push(encodeUnreserved(key) + "=");
 	else if (value === "") result.push("");
@@ -90,7 +88,8 @@ function parseTemplate(template) {
 		});
 	} };
 }
-// src/module/http-client.ts
+//#endregion
+//#region src/module/http-client.ts
 function prepareAxios(axios) {
 	axios.interceptors.request.use((config) => {
 		config.headers["X-CSRF-Token"] = data("csrf-token");
@@ -99,18 +98,20 @@ function prepareAxios(axios) {
 		if (config.methodSimulate) {
 			if (config.methodSimulateByHeader) config.headers["X-HTTP-Method-Override"] = config;
 			else if (typeof config.data === "object") config.data["_method"] = config.method;
-			else if (typeof config.data === "string") {
-				if (config.data.includes("?")) config.data += "&_method=" + config.method;
-				else config.data += "?_method=" + config.method;
-			}
+			else if (typeof config.data === "string") if (config.data.includes("?")) config.data += "&_method=" + config.method;
+			else config.data += "?_method=" + config.method;
 			if (config.method?.toLowerCase() !== "get") config.method = "POST";
 		}
 		return config;
 	});
 	return axios;
 }
+var axiosHelpers = {
+	isCancel: /*@__PURE__*/ (() => Axios.isCancel)(),
+	isAxiosError: /*@__PURE__*/ (() => Axios.isAxiosError)()
+};
 function createHttpClient(config) {
-	const axios = config && "interceptors" in config ? config : AxiosStatic.create(config ?? {});
+	const axios = config && "interceptors" in config ? config : Axios.create(config ?? {});
 	prepareAxios(axios);
 	function requestMiddleware(callback) {
 		return axios.interceptors.request.use(callback);
@@ -231,11 +232,11 @@ function createHttpClient(config) {
 		options,
 		requestMiddleware,
 		responseMiddleware,
-		isCancel,
-		AxiosError,
-		isAxiosError
+		...axiosHelpers,
+		AxiosError
 	};
 }
+//#endregion
 export { createHttpClient };
 
 //# sourceMappingURL=http-client.js.map

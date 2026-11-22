@@ -1,15 +1,16 @@
-import { a as VIEWPORT_PAUSE, c as handleAndDispatchCustomEvent, d as useCollection, f as Presence_default, l as isDeltaInDirection, m as getActiveElement, o as VIEWPORT_RESUME, p as useForwardExpose, s as getAnnounceTextContent, u as injectToastProviderContext } from "./NuxtEditorApp.js";
-import { a as useComponentProps, i as tv, l as createContext, o as Primitive, r as Icon_default, t as Avatar_default } from "./Avatar.js";
 import { c as useForwardProps, d as useLocale, f as VisuallyHidden_default, t as Button_default } from "./Button.js";
+import { a as useComponentProps, i as tv, l as createContext, o as Primitive, r as Icon_default, t as Avatar_default } from "./Avatar.js";
+import { a as VIEWPORT_PAUSE, c as handleAndDispatchCustomEvent, d as injectToastProviderContext, f as useCollection, g as getActiveElement, h as useForwardExpose, l as isDeltaInDirection, m as Presence_default, o as VIEWPORT_RESUME, s as getAnnounceTextContent } from "./utils.js";
 import { T as useTimeout, d as useResizeObserver, f as useVModel, g as isClient, r as onKeyStroke, u as useRafFn, y as reactivePick } from "./dist.js";
 import { i as useAppConfig } from "./iconify.js";
 import { t as _plugin_vue_export_helper_default } from "./_plugin-vue_export-helper.js";
 import { Fragment, Teleport, computed, createBlock, createCommentVNode, createElementBlock, createElementVNode, createTextVNode, createVNode, defineComponent, mergeProps, nextTick, normalizeClass, normalizeProps, normalizeStyle, onMounted, onScopeDispose, onUnmounted, openBlock, reactive, ref, renderList, renderSlot, resolveDynamicComponent, shallowRef, toDisplayString, toRef, unref, useSlots, useTemplateRef, watch, watchEffect, withCtx, withModifiers } from "vue";
-// ../../../../node_modules/reka-ui/dist/shared/nullish.js
+//#region ../../../../node_modules/reka-ui/dist/shared/nullish.js
 function isNullish(value) {
 	return value === null || value === void 0;
 }
-// ../../../../node_modules/reka-ui/dist/Progress/ProgressRoot.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/Progress/ProgressRoot.js
 var DEFAULT_MAX = 100;
 var [injectProgressRootContext, provideProgressRootContext] = /*@__PURE__*/ createContext("ProgressRoot");
 var isNumber = (v) => typeof v === "number";
@@ -116,7 +117,8 @@ var ProgressRoot_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/Progress/ProgressIndicator.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/Progress/ProgressIndicator.js
 var ProgressIndicator_default = /*@__PURE__*/ defineComponent({
 	__name: "ProgressIndicator",
 	props: {
@@ -149,7 +151,8 @@ var ProgressIndicator_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/Toast/ToastAnnounceExclude.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/Toast/ToastAnnounceExclude.js
 var ToastAnnounceExclude_default = /*@__PURE__*/ defineComponent({
 	__name: "ToastAnnounceExclude",
 	props: {
@@ -184,7 +187,8 @@ var ToastAnnounceExclude_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/Toast/ToastAnnounce.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/Toast/ToastAnnounce.js
 var ToastAnnounce_default = /*@__PURE__*/ defineComponent({
 	__name: "ToastAnnounce",
 	setup(__props) {
@@ -215,9 +219,11 @@ var ToastAnnounce_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/Toast/ToastPositioner.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/Toast/ToastPositioner.js
 var [injectToastPositionerContext, provideToastPositionerContext] = /*@__PURE__*/ createContext("ToastPositioner");
-// ../../../../node_modules/reka-ui/dist/Toast/ToastRootImpl.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/Toast/ToastRootImpl.js
 var [injectToastRootContext, provideToastRootContext] = /*@__PURE__*/ createContext("ToastRoot");
 var ToastRootImpl_default = /*@__PURE__*/ defineComponent({
 	inheritAttrs: false,
@@ -342,11 +348,10 @@ var ToastRootImpl_default = /*@__PURE__*/ defineComponent({
 				});
 			}
 		});
-		const restartKey = computed(() => props.toast ? providerContext.toastStore.getRestartKey(props.toast.id) : 0);
 		watch([
 			() => props.open,
 			duration,
-			restartKey
+			computed(() => props.toast ? providerContext.toastStore.getRestartKey(props.toast.id) : 0)
 		], () => {
 			closeTimerRemainingTimeRef.value = duration.value;
 			if (props.open && !providerContext.isClosePausedRef.value) startTimer(duration.value);
@@ -482,7 +487,8 @@ var ToastRootImpl_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/Toast/ToastAction.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/Toast/ToastAction.js
 var ToastAction_default = /*@__PURE__*/ defineComponent({
 	__name: "ToastAction",
 	props: {
@@ -543,7 +549,8 @@ var ToastAction_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/Toast/ToastClose.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/Toast/ToastClose.js
 var ToastClose_default = /*@__PURE__*/ defineComponent({
 	__name: "ToastClose",
 	props: {
@@ -576,7 +583,8 @@ var ToastClose_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/Toast/ToastDescription.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/Toast/ToastDescription.js
 var ToastDescription_default = /*@__PURE__*/ defineComponent({
 	__name: "ToastDescription",
 	props: {
@@ -601,7 +609,8 @@ var ToastDescription_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/Toast/ToastRoot.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/Toast/ToastRoot.js
 var ToastRoot_default = /*@__PURE__*/ defineComponent({
 	__name: "ToastRoot",
 	props: {
@@ -749,7 +758,8 @@ var ToastRoot_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/Toast/ToastTitle.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/Toast/ToastTitle.js
 var ToastTitle_default = /*@__PURE__*/ defineComponent({
 	__name: "ToastTitle",
 	props: {
@@ -774,7 +784,8 @@ var ToastTitle_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// virtual:nuxt-ui-templates/ui/progress.ts
+//#endregion
+//#region virtual:nuxt-ui-templates/ui/progress.ts
 var progress_default = {
 	"slots": {
 		"root": "gap-2",
@@ -1005,7 +1016,8 @@ var progress_default = {
 		"size": "md"
 	}
 };
-// ../../../../node_modules/@nuxt/ui/dist/runtime/components/Progress.vue
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/components/Progress.vue
 var _sfc_main$1 = {
 	__name: "Progress",
 	props: {
@@ -1238,7 +1250,8 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
 	]);
 }
 var Progress_default = /*@__PURE__*/ _plugin_vue_export_helper_default(_sfc_main$1, [["render", _sfc_render$1], ["__file", "Progress.vue"]]);
-// virtual:nuxt-ui-templates/ui/toast.ts
+//#endregion
+//#region virtual:nuxt-ui-templates/ui/toast.ts
 var toast_default = {
 	"slots": {
 		"root": "relative group overflow-hidden bg-default shadow-lg rounded-lg ring ring-default p-4 flex gap-2.5",
@@ -1297,7 +1310,8 @@ var toast_default = {
 	},
 	"defaultVariants": { "color": "primary" }
 };
-// ../../../../node_modules/@nuxt/ui/dist/runtime/components/Toast.vue
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/components/Toast.vue
 var _sfc_main = {
 	__name: "Toast",
 	props: {
@@ -1544,7 +1558,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
 					class: $setup.props.ui?.actions,
 					orientation: "horizontal"
 				}))
-			}, [$setup.props.orientation === "horizontal" && ($setup.props.actions?.length || !!$setup.slots.actions) ? renderSlot(_ctx.$slots, "actions", {}, () => [(openBlock(true), createElementBlock(Fragment, null, renderList($setup.props.actions, ({ closeOnClick, ...action }, index) => {
+			}, [$setup.props.orientation === "horizontal" && ($setup.props.actions?.length || !!$setup.slots.actions) ? renderSlot(_ctx.$slots, "actions", { key: 0 }, () => [(openBlock(true), createElementBlock(Fragment, null, renderList($setup.props.actions, ({ closeOnClick, ...action }, index) => {
 				return openBlock(), createBlock($setup["ToastAction"], {
 					key: index,
 					"alt-text": action.label || "Action",
@@ -1558,7 +1572,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
 					}, { ref_for: true }, action), null, 16, ["color"])]),
 					_: 2
 				}, 1032, ["alt-text", "close-on-click"]);
-			}), 128))], void 0, 0) : createCommentVNode("", true), $setup.props.close || !!$setup.slots.close ? (openBlock(), createBlock($setup["ToastClose"], {
+			}), 128))]) : createCommentVNode("", true), $setup.props.close || !!$setup.slots.close ? (openBlock(), createBlock($setup["ToastClose"], {
 				key: 1,
 				"as-child": ""
 			}, {
@@ -1601,6 +1615,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
 	]);
 }
 var Toast_default = /*@__PURE__*/ _plugin_vue_export_helper_default(_sfc_main, [["render", _sfc_render], ["__file", "Toast.vue"]]);
+//#endregion
 export { Toast_default as default };
 
 //# sourceMappingURL=Toast.js.map

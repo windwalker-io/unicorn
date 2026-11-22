@@ -1,5 +1,5 @@
 import { getCurrentInstance, getCurrentScope, hasInjectionContext, inject, isRef, onActivated, onBeforeUnmount, onDeactivated, onScopeDispose, ref, toValue, watchEffect } from "vue";
-// ../../../../node_modules/hookable/dist/index.mjs
+//#region ../../../../node_modules/hookable/dist/index.mjs
 function flatHooks(configHooks, hooks = {}, parentName) {
 	for (const key in configHooks) {
 		const subHook = configHooks[key];
@@ -202,7 +202,8 @@ var HookableCore = class {
 		return callHooks(hooks.slice(), args, 0);
 	}
 };
-// ../../../../node_modules/unhead/dist/shared/unhead.CGPOfp5O.mjs
+//#endregion
+//#region ../../../../node_modules/unhead/dist/shared/unhead.CGPOfp5O.mjs
 var DupeableTags = /*@__PURE__*/ new Set([
 	"link",
 	"style",
@@ -281,7 +282,8 @@ var hasContent = (value) => typeof value === "number" ? Number.isFinite(value) :
 function isUnsafeKey(key) {
 	return key === "__proto__" || key === "constructor" || key === "prototype";
 }
-// ../../../../node_modules/unhead/dist/shared/unhead.Bm4Y6XQI.mjs
+//#endregion
+//#region ../../../../node_modules/unhead/dist/shared/unhead.Bm4Y6XQI.mjs
 function createHooks(hooks) {
 	const instance = new HookableCore();
 	for (const key in hooks || {}) instance.hook(key, hooks[key]);
@@ -291,7 +293,8 @@ function callHook(head, hook, ctx) {
 	if (!(head.hooks?._hooks?.[hook])?.length) return;
 	return head.hooks?.callHook(hook, ctx);
 }
-// ../../../../node_modules/unhead/dist/shared/unhead.DJuZwX9c.mjs
+//#endregion
+//#region ../../../../node_modules/unhead/dist/shared/unhead.DJuZwX9c.mjs
 var META_NOREWRITE_RE = /^(?:viewport|description|keywords|robots)$/;
 var META_KEY_ATTRS = [
 	"name",
@@ -403,15 +406,14 @@ function normalizeProps$1(tag, input) {
 		const value = input[prop];
 		if (value === null) tag.props[key] = null;
 		else if (prop === "class" || prop === "style") tag.props[prop] = normalizeStyleClassProps(prop, value);
-		else if (TagConfigKeys.has(prop)) {
-			if ((prop === "textContent" || prop === "innerHTML") && typeof value === "object") {
-				const type = input.type || "application/json";
-				if (type.endsWith("json") || type === "speculationrules" || type === "importmap") {
-					tag.props.type = type;
-					tag[prop] = JSON.stringify(value);
-				}
-			} else tag[prop] = value;
-		} else if (value !== void 0) {
+		else if (TagConfigKeys.has(prop)) if ((prop === "textContent" || prop === "innerHTML") && typeof value === "object") {
+			const type = input.type || "application/json";
+			if (type.endsWith("json") || type === "speculationrules" || type === "importmap") {
+				tag.props.type = type;
+				tag[prop] = JSON.stringify(value);
+			}
+		} else tag[prop] = value;
+		else if (value !== void 0) {
 			const str = String(value);
 			const isMeta = tag.tag === "meta" && key === "content";
 			tag.props[key] = str === "true" || str === "" ? isData || isMeta ? str : true : !value && isData && str === "false" ? "false" : value;
@@ -464,10 +466,8 @@ function normalizeEntryToTags(input, propResolvers) {
 	const tags = [];
 	for (const key in input) {
 		const value = input[key];
-		if (value !== void 0) {
-			if (Array.isArray(value)) for (const v of value) pushNormalizedTag(tags, normalizeTag(key, v));
-			else pushNormalizedTag(tags, normalizeTag(key, value));
-		}
+		if (value !== void 0) if (Array.isArray(value)) for (const v of value) pushNormalizedTag(tags, normalizeTag(key, v));
+		else pushNormalizedTag(tags, normalizeTag(key, value));
 	}
 	return tags;
 }
@@ -598,28 +598,26 @@ function resolveTags(head, options) {
 	syncEntryHookCache(head, hooks);
 	for (const e of entries || head.entries.values()) {
 		let tags = e._tags;
-		if (!tags) {
-			if (e._precomputedTags && weightFn === head.resolvedOptions._tagWeight && !hooks["entries:normalize"]?.length && !hooks["entries:resolve"]?.length && (!e.options || isEmptyProps(e.options))) tags = e._precomputedTags;
-			else {
-				tags = normalizeEntryToTags(e.input, head.resolvedOptions.propResolvers || []);
-				if (e.options && !isEmptyProps(e.options)) for (const t of tags) Object.assign(t, e.options);
-				if (hooks["entries:normalize"]?.length) {
-					const normalizeCtx = {
-						tags,
-						entry: e
-					};
-					callHook(head, "entries:normalize", normalizeCtx);
-					tags = normalizeCtx.tags;
-				}
-				for (let i = 0; i < tags.length; i++) {
-					const t = tags[i];
-					t._w = weightFn(t);
-					t._p = (e._i << 10) + i;
-					t._d = dedupeKey(t);
-					if (!t._d) t._h = hashTag(t);
-				}
-				e._tags = tags;
+		if (!tags) if (e._precomputedTags && weightFn === head.resolvedOptions._tagWeight && !hooks["entries:normalize"]?.length && !hooks["entries:resolve"]?.length && (!e.options || isEmptyProps(e.options))) tags = e._precomputedTags;
+		else {
+			tags = normalizeEntryToTags(e.input, head.resolvedOptions.propResolvers || []);
+			if (e.options && !isEmptyProps(e.options)) for (const t of tags) Object.assign(t, e.options);
+			if (hooks["entries:normalize"]?.length) {
+				const normalizeCtx = {
+					tags,
+					entry: e
+				};
+				callHook(head, "entries:normalize", normalizeCtx);
+				tags = normalizeCtx.tags;
 			}
+			for (let i = 0; i < tags.length; i++) {
+				const t = tags[i];
+				t._w = weightFn(t);
+				t._p = (e._i << 10) + i;
+				t._d = dedupeKey(t);
+				if (!t._d) t._h = hashTag(t);
+			}
+			e._tags = tags;
 		}
 		ctx.tags.push(...tags);
 	}
@@ -635,7 +633,8 @@ function resolveTags(head, options) {
 	callHook(head, "tags:afterResolve", ctx);
 	return sanitizeTagsInPlace(ctx.tags);
 }
-// ../../../../node_modules/@unhead/vue/dist/shared/vue.DKb5ZKVl.mjs
+//#endregion
+//#region ../../../../node_modules/@unhead/vue/dist/shared/vue.DKb5ZKVl.mjs
 var headSymbol = "usehead";
 // @__NO_SIDE_EFFECTS__
 function injectHead() {
@@ -653,9 +652,11 @@ function vueInstall(head) {
 		app.provide(headSymbol, head);
 	} }.install;
 }
-// ../../../../node_modules/@unhead/vue/dist/shared/vue.D2XR8FqS.mjs
+//#endregion
+//#region ../../../../node_modules/@unhead/vue/dist/shared/vue.D2XR8FqS.mjs
 var VueResolver = /*@__PURE__*/ Object.assign((_, value) => isRef(value) ? toValue(value) : value, { _static: true });
-// ../../../../node_modules/@unhead/vue/dist/shared/vue.CXwiCT15.mjs
+//#endregion
+//#region ../../../../node_modules/@unhead/vue/dist/shared/vue.CXwiCT15.mjs
 function useHead(input, options = {}) {
 	const head = options.head || /* @__PURE__ */ injectHead();
 	return head.ssr ? head.push(input || {}, options) : clientUseHead(head, input, options);
@@ -694,7 +695,8 @@ function clientUseHead(head, input, options = {}) {
 	} else if (scope) onScopeDispose(() => entry.dispose());
 	return entry;
 }
-// ../../../../node_modules/@nuxt/ui/dist/runtime/vue/stubs/base.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/vue/stubs/base.js
 var state = {};
 var useState = (key, init) => {
 	if (state[key]) return state[key];
@@ -716,6 +718,7 @@ function defineNuxtPlugin(plugin) {
 		app.runWithContext(() => plugin({ vueApp: app }));
 	} };
 }
+//#endregion
 export { injectHead as a, hashTag as c, resolveTags as d, callHook as f, TagPriorityAliases as h, useHead as i, isMetaArrayDupeKey as l, HasElementTags as m, useNuxtApp as n, vueInstall as o, createHooks as p, useState as r, dedupeKey as s, defineNuxtPlugin as t, normalizeProps$1 as u };
 
 //# sourceMappingURL=base.js.map

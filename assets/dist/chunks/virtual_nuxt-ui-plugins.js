@@ -1,8 +1,8 @@
-import { i as useAppConfig } from "./iconify.js";
-import { a as injectHead, c as hashTag, d as resolveTags, f as callHook, h as TagPriorityAliases, i as useHead, l as isMetaArrayDupeKey, m as HasElementTags, n as useNuxtApp, o as vueInstall, p as createHooks, s as dedupeKey, t as defineNuxtPlugin, u as normalizeProps$1 } from "./base.js";
 import { a as useDark } from "./dist.js";
+import { a as injectHead, c as hashTag, d as resolveTags, f as callHook, h as TagPriorityAliases, i as useHead, l as isMetaArrayDupeKey, m as HasElementTags, n as useNuxtApp, o as vueInstall, p as createHooks, s as dedupeKey, t as defineNuxtPlugin, u as normalizeProps$1 } from "./base.js";
+import { i as useAppConfig } from "./iconify.js";
 import { computed } from "vue";
-// ../../../../node_modules/unhead/dist/shared/unhead.D7HkBzZn.mjs
+//#region ../../../../node_modules/unhead/dist/shared/unhead.D7HkBzZn.mjs
 function registerPlugin(head, p) {
 	if (typeof p === "function" && p.key && head.plugins.has(p.key)) return;
 	const plugin = typeof p === "function" ? p(head) : p;
@@ -56,9 +56,11 @@ function createUnhead(renderer, resolvedOptions = {}) {
 	resolvedOptions.init?.forEach((e) => e && head.push(e));
 	return head;
 }
-// ../../../../node_modules/@nuxt/ui/dist/runtime/vue/plugins/icons.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/vue/plugins/icons.js
 var icons_default = { install() {} };
-// ../../../../node_modules/unhead/dist/shared/unhead.C5Bksi2B.mjs
+//#endregion
+//#region ../../../../node_modules/unhead/dist/shared/unhead.C5Bksi2B.mjs
 function createClientHeadAdapter(core, hooks, render) {
 	const corePush = core.push;
 	const head = core;
@@ -101,7 +103,8 @@ function createClientHeadAdapter(core, hooks, render) {
 	};
 	return head;
 }
-// ../../../../node_modules/unhead/dist/shared/unhead.DD4N5B4k.mjs
+//#endregion
+//#region ../../../../node_modules/unhead/dist/shared/unhead.DD4N5B4k.mjs
 var WHITESPACE_RE = /\s+/;
 // @__NO_SIDE_EFFECTS__
 function createDomRenderer(options = {}) {
@@ -304,7 +307,8 @@ function _renderDOMHead(head, options = {}) {
 	if (didRender && (head.dirty || hasPendingEntries(head))) _renderDOMHead(head, options);
 	return didRender;
 }
-// ../../../../node_modules/unhead/dist/shared/unhead.CaeaMM5q.mjs
+//#endregion
+//#region ../../../../node_modules/unhead/dist/shared/unhead.CaeaMM5q.mjs
 var tagWeight = (tag) => typeof tag.tagPriority === "number" ? tag.tagPriority : 100 + (TagPriorityAliases[tag.tagPriority] || 0);
 function createHead$1(options = {}) {
 	options.document = options.document || (typeof window !== "undefined" ? document : void 0);
@@ -319,7 +323,8 @@ function createHead$1(options = {}) {
 	options.init?.forEach((e) => e && head.push(e));
 	return head;
 }
-// ../../../../node_modules/@unhead/vue/dist/client.mjs
+//#endregion
+//#region ../../../../node_modules/@unhead/vue/dist/client.mjs
 // @__NO_SIDE_EFFECTS__
 function createHead(options = {}) {
 	const domRenderer = /* @__PURE__ */ createDomRenderer();
@@ -338,17 +343,20 @@ function createHead(options = {}) {
 	head.install = vueInstall(head);
 	return head;
 }
-// ../../../../node_modules/@nuxt/ui/dist/runtime/vue/plugins/head.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/vue/plugins/head.js
 var head_default = { install(app) {
 	if (app._context.provides.usehead) return;
 	const head = /* @__PURE__ */ createHead();
 	app.use(head);
 } };
-// ../../../../node_modules/@nuxt/ui/dist/runtime/vue/plugins/router.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/vue/plugins/router.js
 var router_default = { install(app, options) {
 	if (options?.router && typeof options.router === "function") app.provide("nuxtui:router", options.router);
 } };
-// ../../../../node_modules/tailwindcss/dist/chunk-DCG7AFIE.mjs
+//#endregion
+//#region ../../../../node_modules/tailwindcss/dist/chunk-DCG7AFIE.mjs
 var o = {
 	inherit: "inherit",
 	current: "currentcolor",
@@ -694,7 +702,8 @@ var o = {
 		950: "oklch(27.1% 0.105 12.094)"
 	}
 };
-// ../../../../node_modules/@nuxt/ui/dist/runtime/plugins/colors.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/plugins/colors.js
 var shades = [
 	50,
 	100,
@@ -757,11 +766,13 @@ var colors_default = /*@__PURE__*/ defineNuxtPlugin(() => {
 	}
 	useHead(headData);
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/vue/plugins/color-mode.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/vue/plugins/color-mode.js
 var color_mode_default = { install() {
 	useDark();
 } };
-// virtual:nuxt-ui-plugins
+//#endregion
+//#region virtual:nuxt-ui-plugins
 var virtual_nuxt_ui_plugins_default = { install(app, pluginOptions = {}) {
 	app.use(icons_default, pluginOptions);
 	app.use(head_default, pluginOptions);
@@ -769,6 +780,7 @@ var virtual_nuxt_ui_plugins_default = { install(app, pluginOptions = {}) {
 	app.use(colors_default, pluginOptions);
 	app.use(color_mode_default, pluginOptions);
 } };
+//#endregion
 export { virtual_nuxt_ui_plugins_default as default };
 
 //# sourceMappingURL=virtual_nuxt-ui-plugins.js.map

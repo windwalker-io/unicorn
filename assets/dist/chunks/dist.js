@@ -1,5 +1,5 @@
 import { computed, customRef, defineComponent, effectScope, getCurrentInstance, getCurrentScope, hasInjectionContext, inject, isRef, nextTick, onBeforeUnmount, onMounted, onScopeDispose, reactive, readonly, ref, shallowReadonly, shallowRef, toRef, toRefs, toValue, unref, watch, watchEffect } from "vue";
-// ../../../../node_modules/@vueuse/shared/dist/index.js
+//#region ../../../../node_modules/@vueuse/shared/dist/index.js
 /**
 * Call onScopeDispose() if it's inside an effect scope lifecycle, if not, do nothing
 *
@@ -96,7 +96,7 @@ function getIsIOS() {
 	var _window, _window2, _window3;
 	return isClient && !!((_window = window) === null || _window === void 0 || (_window = _window.navigator) === null || _window === void 0 ? void 0 : _window.userAgent) && (/iP(?:ad|hone|od)/.test(window.navigator.userAgent) || ((_window2 = window) === null || _window2 === void 0 || (_window2 = _window2.navigator) === null || _window2 === void 0 ? void 0 : _window2.maxTouchPoints) > 2 && /iPad|Macintosh/.test((_window3 = window) === null || _window3 === void 0 ? void 0 : _window3.navigator.userAgent));
 }
-function toRef$2(...args) {
+function toRef$1(...args) {
 	if (args.length !== 1) return toRef(...args);
 	const r = args[0];
 	return typeof r === "function" ? readonly(customRef(() => ({
@@ -211,7 +211,7 @@ function debounceFilter(ms, options = {}) {
 */
 function pausableFilter(extendFilter = bypassFilter, options = {}) {
 	const { initialState = "active" } = options;
-	const isActive = toRef$2(initialState === "active");
+	const isActive = toRef$1(initialState === "active");
 	function pause() {
 		isActive.value = false;
 	}
@@ -355,7 +355,7 @@ function reactiveOmit(obj, ...keys) {
 function reactivePick(obj, ...keys) {
 	const flatKeys = keys.flat();
 	const predicate = flatKeys[0];
-	return reactiveComputed(() => typeof predicate === "function" ? Object.fromEntries(Object.entries(toRefs(obj)).filter(([k, v]) => predicate(toValue(v), k))) : Object.fromEntries(flatKeys.map((k) => [k, toRef$2(obj, k)])));
+	return reactiveComputed(() => typeof predicate === "function" ? Object.fromEntries(Object.entries(toRefs(obj)).filter(([k, v]) => predicate(toValue(v), k))) : Object.fromEntries(flatKeys.map((k) => [k, toRef$1(obj, k)])));
 }
 /**
 * Create a ref which will be reset to the default value after some time.
@@ -541,7 +541,8 @@ function watchImmediate(source, cb, options) {
 		immediate: true
 	});
 }
-// ../../../../node_modules/@vueuse/core/dist/index.js
+//#endregion
+//#region ../../../../node_modules/@vueuse/core/dist/index.js
 /**
 * This function creates `define` and `reuse` components in pair,
 * It also allow to pass a generic to bind with type.
@@ -979,7 +980,7 @@ function useColorMode(options = {}) {
 	};
 	const preferredDark = usePreferredDark({ window });
 	const system = computed(() => preferredDark.value ? "dark" : "light");
-	const store = storageRef || (storageKey == null ? toRef$2(initialValue) : useStorage(storageKey, initialValue, storage, {
+	const store = storageRef || (storageKey == null ? toRef$1(initialValue) : useStorage(storageKey, initialValue, storage, {
 		window,
 		listenToStorageChanges
 	}));
@@ -1141,6 +1142,7 @@ function useDropZone(target, options = {}) {
 						files.value = currentFiles;
 						(_options$onDrop = _options.onDrop) === null || _options$onDrop === void 0 || _options$onDrop.call(_options, currentFiles, event);
 					}
+					break;
 			}
 		};
 		useEventListener(target, "dragenter", (event) => handleDragEvent(event, "enter"));
@@ -1321,6 +1323,7 @@ function useVModel(props, key, emit, options = {}) {
 		}
 	});
 }
+//#endregion
 export { tryOnScopeDispose as C, useTimeoutFn as E, tryOnBeforeUnmount as S, useTimeout as T, isIOS as _, useDark as a, refAutoReset as b, useFileDialog as c, useResizeObserver as d, useVModel as f, isClient as g, createSharedComposable as h, unrefElement as i, useMounted as l, createGlobalState as m, defaultWindow as n, useDropZone as o, createEventHook as p, onKeyStroke as r, useEventListener as s, createReusableTemplate as t, useRafFn as u, reactiveOmit as v, useDebounceFn as w, syncRef as x, reactivePick as y };
 
 //# sourceMappingURL=dist.js.map

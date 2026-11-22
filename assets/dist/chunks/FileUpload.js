@@ -1,10 +1,10 @@
-import { a as useComponentProps, i as tv, o as Primitive, r as Icon_default, t as Avatar_default } from "./Avatar.js";
 import { d as useLocale, f as VisuallyHidden_default, l as useFormField, t as Button_default } from "./Button.js";
+import { a as useComponentProps, i as tv, o as Primitive, r as Icon_default, t as Avatar_default } from "./Avatar.js";
 import { c as useFileDialog, o as useDropZone, t as createReusableTemplate } from "./dist.js";
 import { i as useAppConfig } from "./iconify.js";
 import { t as _plugin_vue_export_helper_default } from "./_plugin-vue_export-helper.js";
 import { Fragment, computed, createBlock, createCommentVNode, createElementBlock, createElementVNode, createTextVNode, createVNode, effectScope, mergeModels, mergeProps, normalizeClass, onMounted, openBlock, reactive, ref, renderList, renderSlot, resolveDynamicComponent, toDisplayString, toRef, toRefs, unref, useModel, useSlots, watch, withCtx, withKeys, withModifiers } from "vue";
-// ../../../../node_modules/@nuxt/ui/dist/runtime/composables/useFileUpload.js
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/composables/useFileUpload.js
 function isFileAccepted(file, accept) {
 	const types = accept.split(",").map((type) => type.trim().toLowerCase()).filter(Boolean);
 	if (!types.length) return true;
@@ -80,7 +80,8 @@ function useFileUpload(options) {
 		dropzoneRef
 	};
 }
-// virtual:nuxt-ui-templates/ui/file-upload.ts
+//#endregion
+//#region virtual:nuxt-ui-templates/ui/file-upload.ts
 var file_upload_default = {
 	"slots": {
 		"root": "relative flex flex-col",
@@ -308,7 +309,8 @@ var file_upload_default = {
 		"size": "md"
 	}
 };
-// ../../../../node_modules/@nuxt/ui/dist/runtime/components/FileUpload.vue
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/components/FileUpload.vue
 var _sfc_main = /*@__PURE__*/ Object.assign({ inheritAttrs: false }, {
 	__name: "FileUpload",
 	props: /*@__PURE__*/ mergeModels({
@@ -826,6 +828,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
 	])], 64);
 }
 var FileUpload_default = /*@__PURE__*/ _plugin_vue_export_helper_default(_sfc_main, [["render", _sfc_render], ["__file", "FileUpload.vue"]]);
+//#endregion
 export { FileUpload_default as default };
 
 //# sourceMappingURL=FileUpload.js.map

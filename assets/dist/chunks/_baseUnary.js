@@ -1,12 +1,14 @@
-// ../../../../node_modules/lodash-es/_freeGlobal.js
+//#region ../../../../node_modules/lodash-es/_freeGlobal.js
 /** Detect free variable `global` from Node.js. */
 var freeGlobal = typeof global == "object" && global && /*@__PURE__*/ (() => global.Object)() === Object && global;
 /** Used as a reference to the global object. */
 var root = freeGlobal || typeof self == "object" && self && /*@__PURE__*/ (() => self.Object)() === Object && self || /*@__PURE__*/ Function("return this")();
-// ../../../../node_modules/lodash-es/_Symbol.js
+//#endregion
+//#region ../../../../node_modules/lodash-es/_Symbol.js
 /** Built-in value references. */
 var Symbol = /*@__PURE__*/ (() => root.Symbol)();
-// ../../../../node_modules/lodash-es/_getRawTag.js
+//#endregion
+//#region ../../../../node_modules/lodash-es/_getRawTag.js
 /** Used for built-in method references. */
 var objectProto$2 = /*@__PURE__*/ (() => Object.prototype)();
 /** Used to check objects for own properties. */
@@ -33,13 +35,12 @@ function getRawTag(value) {
 		var unmasked = true;
 	} catch (e) {}
 	var result = nativeObjectToString$1.call(value);
-	if (unmasked) {
-		if (isOwn) value[symToStringTag$1] = tag;
-		else delete value[symToStringTag$1];
-	}
+	if (unmasked) if (isOwn) value[symToStringTag$1] = tag;
+	else delete value[symToStringTag$1];
 	return result;
 }
-// ../../../../node_modules/lodash-es/_objectToString.js
+//#endregion
+//#region ../../../../node_modules/lodash-es/_objectToString.js
 /**
 * Used to resolve the
 * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
@@ -56,7 +57,8 @@ var nativeObjectToString = /*@__PURE__*/ (() => Object.prototype.toString)();
 function objectToString(value) {
 	return nativeObjectToString.call(value);
 }
-// ../../../../node_modules/lodash-es/_baseGetTag.js
+//#endregion
+//#region ../../../../node_modules/lodash-es/_baseGetTag.js
 /** `Object#toString` result references. */
 var nullTag = "[object Null]";
 var undefinedTag = "[object Undefined]";
@@ -73,7 +75,8 @@ function baseGetTag(value) {
 	if (value == null) return value === void 0 ? undefinedTag : nullTag;
 	return symToStringTag && symToStringTag in Object(value) ? getRawTag(value) : objectToString(value);
 }
-// ../../../../node_modules/lodash-es/isObjectLike.js
+//#endregion
+//#region ../../../../node_modules/lodash-es/isObjectLike.js
 /**
 * Checks if `value` is object-like. A value is object-like if it's not `null`
 * and has a `typeof` result of "object".
@@ -101,7 +104,8 @@ function baseGetTag(value) {
 function isObjectLike(value) {
 	return value != null && typeof value == "object";
 }
-// ../../../../node_modules/lodash-es/isArray.js
+//#endregion
+//#region ../../../../node_modules/lodash-es/isArray.js
 /**
 * Checks if `value` is classified as an `Array` object.
 *
@@ -126,7 +130,8 @@ function isObjectLike(value) {
 * // => false
 */
 var isArray = /*@__PURE__*/ (() => Array.isArray)();
-// ../../../../node_modules/lodash-es/isObject.js
+//#endregion
+//#region ../../../../node_modules/lodash-es/isObject.js
 /**
 * Checks if `value` is the
 * [language type](http://www.ecma-international.org/ecma-262/7.0/#sec-ecmascript-language-types)
@@ -156,7 +161,8 @@ function isObject(value) {
 	var type = typeof value;
 	return value != null && (type == "object" || type == "function");
 }
-// ../../../../node_modules/lodash-es/isFunction.js
+//#endregion
+//#region ../../../../node_modules/lodash-es/isFunction.js
 /** `Object#toString` result references. */
 var asyncTag = "[object AsyncFunction]";
 var funcTag = "[object Function]";
@@ -184,10 +190,12 @@ function isFunction(value) {
 	var tag = baseGetTag(value);
 	return tag == funcTag || tag == genTag || tag == asyncTag || tag == proxyTag;
 }
-// ../../../../node_modules/lodash-es/_coreJsData.js
+//#endregion
+//#region ../../../../node_modules/lodash-es/_coreJsData.js
 /** Used to detect overreaching core-js shims. */
 var coreJsData = /*@__PURE__*/ (() => root["__core-js_shared__"])();
-// ../../../../node_modules/lodash-es/_isMasked.js
+//#endregion
+//#region ../../../../node_modules/lodash-es/_isMasked.js
 /** Used to detect methods masquerading as native. */
 var maskSrcKey = /*@__PURE__*/ function() {
 	var uid = /[^.]+$/.exec(coreJsData && coreJsData.keys && coreJsData.keys.IE_PROTO || "");
@@ -203,7 +211,8 @@ var maskSrcKey = /*@__PURE__*/ function() {
 function isMasked(func) {
 	return !!maskSrcKey && maskSrcKey in func;
 }
-// ../../../../node_modules/lodash-es/_toSource.js
+//#endregion
+//#region ../../../../node_modules/lodash-es/_toSource.js
 /** Used to resolve the decompiled source of functions. */
 var funcToString$1 = /*@__PURE__*/ (() => Function.prototype.toString)();
 /**
@@ -224,7 +233,8 @@ function toSource(func) {
 	}
 	return "";
 }
-// ../../../../node_modules/lodash-es/_baseIsNative.js
+//#endregion
+//#region ../../../../node_modules/lodash-es/_baseIsNative.js
 /**
 * Used to match `RegExp`
 * [syntax characters](http://ecma-international.org/ecma-262/7.0/#sec-patterns).
@@ -253,7 +263,8 @@ function baseIsNative(value) {
 	if (!isObject(value) || isMasked(value)) return false;
 	return (isFunction(value) ? reIsNative : reIsHostCtor).test(toSource(value));
 }
-// ../../../../node_modules/lodash-es/_getValue.js
+//#endregion
+//#region ../../../../node_modules/lodash-es/_getValue.js
 /**
 * Gets the value at `key` of `object`.
 *
@@ -265,7 +276,8 @@ function baseIsNative(value) {
 function getValue(object, key) {
 	return object == null ? void 0 : object[key];
 }
-// ../../../../node_modules/lodash-es/_getNative.js
+//#endregion
+//#region ../../../../node_modules/lodash-es/_getNative.js
 /**
 * Gets the native function at `key` of `object`.
 *
@@ -278,7 +290,8 @@ function getNative(object, key) {
 	var value = getValue(object, key);
 	return baseIsNative(value) ? value : void 0;
 }
-// ../../../../node_modules/lodash-es/_defineProperty.js
+//#endregion
+//#region ../../../../node_modules/lodash-es/_defineProperty.js
 var defineProperty = /*@__PURE__*/ function() {
 	try {
 		var func = getNative(Object, "defineProperty");
@@ -286,7 +299,8 @@ var defineProperty = /*@__PURE__*/ function() {
 		return func;
 	} catch (e) {}
 }();
-// ../../../../node_modules/lodash-es/eq.js
+//#endregion
+//#region ../../../../node_modules/lodash-es/eq.js
 /**
 * Performs a
 * [`SameValueZero`](http://ecma-international.org/ecma-262/7.0/#sec-samevaluezero)
@@ -322,7 +336,8 @@ var defineProperty = /*@__PURE__*/ function() {
 function eq(value, other) {
 	return value === other || value !== value && other !== other;
 }
-// ../../../../node_modules/lodash-es/isLength.js
+//#endregion
+//#region ../../../../node_modules/lodash-es/isLength.js
 /** Used as references for various `Number` constants. */
 var MAX_SAFE_INTEGER = 9007199254740991;
 /**
@@ -354,7 +369,8 @@ var MAX_SAFE_INTEGER = 9007199254740991;
 function isLength(value) {
 	return typeof value == "number" && value > -1 && value % 1 == 0 && value <= MAX_SAFE_INTEGER;
 }
-// ../../../../node_modules/lodash-es/isArrayLike.js
+//#endregion
+//#region ../../../../node_modules/lodash-es/isArrayLike.js
 /**
 * Checks if `value` is array-like. A value is considered array-like if it's
 * not a function and has a `value.length` that's an integer greater than or
@@ -383,7 +399,8 @@ function isLength(value) {
 function isArrayLike(value) {
 	return value != null && isLength(value.length) && !isFunction(value);
 }
-// ../../../../node_modules/lodash-es/_baseIsArguments.js
+//#endregion
+//#region ../../../../node_modules/lodash-es/_baseIsArguments.js
 /** `Object#toString` result references. */
 var argsTag = "[object Arguments]";
 /**
@@ -396,7 +413,8 @@ var argsTag = "[object Arguments]";
 function baseIsArguments(value) {
 	return isObjectLike(value) && baseGetTag(value) == argsTag;
 }
-// ../../../../node_modules/lodash-es/isArguments.js
+//#endregion
+//#region ../../../../node_modules/lodash-es/isArguments.js
 /** Used for built-in method references. */
 var objectProto = /*@__PURE__*/ (() => Object.prototype)();
 /** Used to check objects for own properties. */
@@ -426,7 +444,8 @@ var isArguments = /*@__PURE__*/ baseIsArguments(/*@__PURE__*/ function() {
 }()) ? baseIsArguments : function(value) {
 	return isObjectLike(value) && hasOwnProperty.call(value, "callee") && !propertyIsEnumerable.call(value, "callee");
 };
-// ../../../../node_modules/lodash-es/_baseUnary.js
+//#endregion
+//#region ../../../../node_modules/lodash-es/_baseUnary.js
 /**
 * The base implementation of `_.unary` without support for storing metadata.
 *
@@ -439,6 +458,7 @@ function baseUnary(func) {
 		return func(value);
 	};
 }
+//#endregion
 export { eq as a, toSource as c, isObjectLike as d, baseGetTag as f, freeGlobal as h, isLength as i, isObject as l, root as m, isArguments as n, defineProperty as o, Symbol as p, isArrayLike as r, getNative as s, baseUnary as t, isArray as u };
 
 //# sourceMappingURL=_baseUnary.js.map

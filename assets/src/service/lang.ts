@@ -98,10 +98,10 @@ export default class UnicornLang {
   }
 
   /**
-   * Replace all symbols to dot(.).
+   * Replace all non-alphanumeric symbols to dot(.), lowercase, and trim dots (same as PHP LanguageNormalizer).
    */
   protected normalize(text: string): string {
-    return text.replace(/[^A-Z0-9]+/ig, '.');
+    return text.replace(/[^A-Z0-9]+/ig, '.').toLowerCase().replace(/^\.+|\.+$/g, '');
   }
 
   protected wrapDebug(text: string, success: boolean): string {

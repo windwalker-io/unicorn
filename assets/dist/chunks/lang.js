@@ -1,7 +1,7 @@
 import { t as __commonJSMin } from "./rolldown-runtime.js";
 import { t as data } from "./data.js";
 import { r as isDebug } from "./helper.js";
-// ../../../../node_modules/sprintf-js/src/sprintf.js
+//#region ../../../../node_modules/sprintf-js/src/sprintf.js
 var require_sprintf = /*@__PURE__*/ __commonJSMin(((exports) => {
 	(function() {
 		"use strict";
@@ -29,8 +29,8 @@ var require_sprintf = /*@__PURE__*/ __commonJSMin(((exports) => {
 			return sprintf.apply(null, [fmt].concat(argv || []));
 		}
 		function sprintf_format(parse_tree, argv) {
-			var cursor = 1, tree_length = parse_tree.length, arg, output = "", i = 0, k, ph, pad, pad_character, pad_length, is_positive, sign;
-			for (; i < tree_length; i++) if (typeof parse_tree[i] === "string") output += parse_tree[i];
+			var cursor = 1, tree_length = parse_tree.length, arg, output = "", i, k, ph, pad, pad_character, pad_length, is_positive, sign;
+			for (i = 0; i < tree_length; i++) if (typeof parse_tree[i] === "string") output += parse_tree[i];
 			else if (typeof parse_tree[i] === "object") {
 				ph = parse_tree[i];
 				if (ph.keys) {
@@ -92,7 +92,9 @@ var require_sprintf = /*@__PURE__*/ __commonJSMin(((exports) => {
 					case "x":
 						arg = (parseInt(arg, 10) >>> 0).toString(16);
 						break;
-					case "X": arg = (parseInt(arg, 10) >>> 0).toString(16).toUpperCase();
+					case "X":
+						arg = (parseInt(arg, 10) >>> 0).toString(16).toUpperCase();
+						break;
 				}
 				if (re.json.test(ph.type)) output += arg;
 				else {
@@ -163,7 +165,8 @@ var require_sprintf = /*@__PURE__*/ __commonJSMin(((exports) => {
 		}
 	})();
 }));
-// src/service/lang.ts
+//#endregion
+//#region src/service/lang.ts
 var import_sprintf = /*@__PURE__*/ require_sprintf();
 var lang;
 function useLang() {
@@ -225,10 +228,10 @@ var UnicornLang = class {
 		return this;
 	}
 	/**
-	* Replace all symbols to dot(.).
+	* Replace all non-alphanumeric symbols to dot(.), lowercase, and trim dots (same as PHP LanguageNormalizer).
 	*/
 	normalize(text) {
-		return text.replace(/[^A-Z0-9]+/gi, ".");
+		return text.replace(/[^A-Z0-9]+/gi, ".").toLowerCase().replace(/^\.+|\.+$/g, "");
 	}
 	wrapDebug(text, success) {
 		if (isDebug()) {
@@ -241,6 +244,7 @@ var UnicornLang = class {
 		return data("unicorn.languages") || {};
 	}
 };
+//#endregion
 export { require_sprintf as i, trans as n, useLang as r, __ as t };
 
 //# sourceMappingURL=lang.js.map

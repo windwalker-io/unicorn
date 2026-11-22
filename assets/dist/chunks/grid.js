@@ -1,7 +1,7 @@
-import { t as __ } from "./lang.js";
 import { a as h, t as delegate } from "./dom.js";
-import { deleteConfirm, loadAlpine, simpleAlert, simpleConfirm, slideDown, slideUp } from "../unicorn.js";
-// src/module/grid.ts
+import { _ as slideDown, h as simpleConfirm, i as deleteConfirm, l as loadAlpine, m as simpleAlert, y as slideUp } from "./ui.js";
+import { t as __ } from "./lang.js";
+//#region src/module/grid.ts
 var UnicornGridElement = class {
 	element;
 	form;
@@ -348,6 +348,7 @@ var UnicornGridElement = class {
 		return this.form.element?.id + suffix;
 	}
 };
+//#endregion
 export { UnicornGridElement };
 
 //# sourceMappingURL=grid.js.map

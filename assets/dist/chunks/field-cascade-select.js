@@ -1,14 +1,16 @@
 import { r as __toESM, t as __commonJSMin } from "./rolldown-runtime.js";
-import { initAlpineComponent, prepareAlpineDefer, uid, useHttpClient } from "../unicorn.js";
-import { c as module } from "./dom.js";
 import { t as mergeDeep } from "./arr.js";
-// ../../../../node_modules/@rubenbimmel/alpine-class-component/dist/alpineComponent.js
+import { c as module } from "./dom.js";
+import { c as initAlpineComponent, f as prepareAlpineDefer } from "./ui.js";
+import { uid, useHttpClient } from "../unicorn.js";
+//#region ../../../../node_modules/@rubenbimmel/alpine-class-component/dist/alpineComponent.js
 var require_alpineComponent = /*@__PURE__*/ __commonJSMin(((exports) => {
 	Object.defineProperty(exports, "__esModule", { value: true });
 	var AlpineComponent = class {};
 	exports.default = AlpineComponent;
 }));
-// ../../../../node_modules/@rubenbimmel/alpine-class-component/dist/decorators/component.js
+//#endregion
+//#region ../../../../node_modules/@rubenbimmel/alpine-class-component/dist/decorators/component.js
 var require_component = /*@__PURE__*/ __commonJSMin(((exports) => {
 	Object.defineProperty(exports, "__esModule", { value: true });
 	function Component(component) {
@@ -31,20 +33,23 @@ var require_component = /*@__PURE__*/ __commonJSMin(((exports) => {
 	}
 	exports.default = Component;
 }));
-// \0@oxc-project+runtime@0.156.0/helpers/esm/decorateMetadata.js
+//#endregion
+//#region \0@oxc-project+runtime@0.139.0/helpers/esm/decorateMetadata.js
 var import_alpineComponent = /*@__PURE__*/ __toESM(/*@__PURE__*/ require_alpineComponent(), 1);
 var import_component = /*@__PURE__*/ __toESM(/*@__PURE__*/ require_component(), 1);
 function __decorateMetadata(k, v) {
 	if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 }
-// \0@oxc-project+runtime@0.156.0/helpers/esm/decorate.js
+//#endregion
+//#region \0@oxc-project+runtime@0.139.0/helpers/esm/decorate.js
 function __decorate(decorators, target, key, desc) {
 	var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
 	if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
 	else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
 	return c > 3 && r && Object.defineProperty(target, key, r), r;
 }
-// src/module/field-cascade-select.ts
+//#endregion
+//#region src/module/field-cascade-select.ts
 var defaultOptions = {
 	id: "",
 	selected: "",
@@ -69,7 +74,7 @@ var defaultOptions = {
 	onChange: () => {},
 	onValueInit: () => {}
 };
-var FieldCascadeSelect = class FieldCascadeSelect extends (/*@__PURE__*/ (() => import_alpineComponent.default)()) {
+var FieldCascadeSelect = class FieldCascadeSelect extends (() => import_alpineComponent.default)() {
 	options;
 	el;
 	canModify = false;
@@ -200,6 +205,7 @@ async function init() {
 	await initAlpineComponent("data-cascade-select");
 }
 var ready = /*@__PURE__*/ init();
+//#endregion
 export { ready };
 
 //# sourceMappingURL=field-cascade-select.js.map

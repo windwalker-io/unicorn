@@ -39,7 +39,7 @@ export async function useImport<T = any>(src: string): Promise<{ default: T }>;
 export async function useImport<D = any, C = any>(src: string): Promise<{ default: D } & Dictionary<C>>;
 export async function useImport(...src: any[]): Promise<any> {
   if (src.length === 1) {
-    return doImport(src[0]);
+    return src[0] instanceof Promise ? src[0] : doImport(src[0]);
   }
 
   const promises: Promise<any>[] = [];
@@ -101,23 +101,30 @@ const importedSheets: Record<string, Promise<{ default: CSSStyleSheet }>> = {};
 export async function useCssImport(...hrefs: Source[]): Promise<CSSStyleSheet[]> {
   // Todo: Use `{ assert: { type: "css" }` after all browsers support it.
   const modules = await Promise.all(
-    hrefs.map((href) => {
-      return new Promise<{ default: CSSStyleSheet }>((resolve) => {
-        resolveSource(href).then((href) => {
-          href = resolveUrl(href);
+    hrefs.map(async (href) => {
+      href = resolveUrl(await resolveSource(href));
 
-          if (!importedSheets[href]) {
-            importedSheets[href] = simulateCssImport(href);
-          }
-
-          resolve(importedSheets[href]);
-        });
+      // Drop failed requests from the cache so they can be retried.
+      importedSheets[href] ??= simulateCssImport(href).catch((e) => {
+        delete importedSheets[href];
+        throw e;
       });
+
+      return importedSheets[href];
     })
   );
-  const styles = modules.map(module => module.default);
 
-  return injectCssToDocument(...styles);
+  // Skip sheets already adopted, and duplicates within this call.
+  const styles = [...new Set(modules.map(module => module.default))]
+    .filter((sheet) => !document.adoptedStyleSheets.includes(sheet));
+
+  if (styles.length === 0) {
+    return modules.map(module => module.default);
+  }
+
+  await injectCssToDocument(...styles);
+
+  return modules.map(module => module.default);
 }
 
 async function simulateCssImport(href: string) {

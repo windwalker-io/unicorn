@@ -1,4 +1,4 @@
-// ../../../../node_modules/defu/dist/defu.mjs
+//#region ../../../../node_modules/defu/dist/defu.mjs
 function isPlainObject(value) {
 	if (value === null || typeof value !== "object") return false;
 	const prototype = Object.getPrototypeOf(value);
@@ -25,6 +25,7 @@ function createDefu(merger) {
 	return (...arguments_) => arguments_.reduce((p, c) => _defu(p, c, "", merger), {});
 }
 var defu = /*@__PURE__*/ createDefu();
+//#endregion
 export { defu as t };
 
 //# sourceMappingURL=defu.js.map

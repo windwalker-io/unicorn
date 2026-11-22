@@ -3,10 +3,10 @@ import { h as createSharedComposable, v as reactiveOmit, w as useDebounceFn } fr
 import { t as defu } from "./defu.js";
 import { i as useAppConfig } from "./iconify.js";
 import { t as en_default } from "./en.js";
-import { a as mergeClasses, o as omit, t as get } from "./utils.js";
+import { a as mergeClasses, o as omit, t as get } from "./utils2.js";
 import { t as _plugin_vue_export_helper_default } from "./_plugin-vue_export-helper.js";
 import { camelize, computed, createBlock, createCommentVNode, createElementBlock, createVNode, defineComponent, getCurrentInstance, getCurrentScope, guardReactiveProps, h, inject, isRef, mergeProps, normalizeClass, normalizeProps, onScopeDispose, openBlock, provide, reactive, ref, renderSlot, toDisplayString, toHandlerKey, toRef, toValue, unref, useSlots, watchEffect, withCtx } from "vue";
-// ../../../../node_modules/ohash/dist/_chunks/is-equal.mjs
+//#region ../../../../node_modules/ohash/dist/_chunks/is-equal.mjs
 function serialize(input) {
 	if (typeof input === "string") return `'${input}'`;
 	return new Serializer().serialize(input);
@@ -158,7 +158,8 @@ function isEqual(object1, object2) {
 	if (serialize(object1) === serialize(object2)) return true;
 	return false;
 }
-// ../../../../node_modules/reka-ui/dist/shared/useEmitAsProps.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/shared/useEmitAsProps.js
 /**
 * The `useEmitAsProps` function is a TypeScript utility that converts emitted events into props for a
 * Vue component.
@@ -183,7 +184,8 @@ function useEmitAsProps(emit) {
 	});
 	return result;
 }
-// ../../../../node_modules/reka-ui/dist/shared/useForwardProps.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/shared/useForwardProps.js
 /**
 * The `useForwardProps` function in TypeScript takes in a set of props and returns a computed value
 * that combines default props with assigned props from the current instance.
@@ -214,7 +216,8 @@ function useForwardProps$1(props) {
 		}, {});
 	});
 }
-// ../../../../node_modules/reka-ui/dist/VisuallyHidden/VisuallyHidden.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/VisuallyHidden/VisuallyHidden.js
 var VisuallyHidden_default = /*@__PURE__*/ defineComponent({
 	__name: "VisuallyHidden",
 	props: {
@@ -269,7 +272,8 @@ var VisuallyHidden_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/ohash/dist/utils/index.mjs
+//#endregion
+//#region ../../../../node_modules/ohash/dist/utils/index.mjs
 var PROTO_KEY = "__proto__";
 function diff(obj1, obj2) {
 	const diffs = [];
@@ -385,7 +389,8 @@ function hasProtocol(inputString, opts = {}) {
 	if (opts.strict) return PROTOCOL_STRICT_REGEX.test(inputString);
 	return PROTOCOL_REGEX.test(inputString) || (opts.acceptRelative ? PROTOCOL_RELATIVE_REGEX.test(inputString) : false);
 }
-// ../../../../node_modules/@nuxt/ui/dist/runtime/utils/locale.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/utils/locale.js
 function buildTranslator(locale) {
 	return (path, option) => translate(path, option, unref(locale));
 }
@@ -401,14 +406,16 @@ function buildLocaleContext(locale) {
 		t: buildTranslator(locale)
 	};
 }
-// ../../../../node_modules/@nuxt/ui/dist/runtime/composables/useLocale.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/composables/useLocale.js
 var localeContextInjectionKey = /*@__PURE__*/ Symbol.for("nuxt-ui.locale-context");
 var _useLocale = (localeOverrides) => {
 	const locale = localeOverrides || toRef(inject(localeContextInjectionKey, en_default));
 	return buildLocaleContext(computed(() => locale.value || en_default));
 };
 var useLocale = /*@__PURE__*/ createSharedComposable(_useLocale);
-// ../../../../node_modules/vue-router/dist/devtools-EWN81iOl.mjs
+//#endregion
+//#region ../../../../node_modules/vue-router/dist/devtools-EWN81iOl.mjs
 /*!
 * vue-router v4.6.4
 * (c) 2025 Eduardo San Martin Morote
@@ -637,7 +644,8 @@ var getLinkClass = (propClass, globalClass, defaultClass) => propClass != null ?
 function useRoute(_name) {
 	return inject(routeLocationKey);
 }
-// ../../../../node_modules/@nuxt/ui/dist/runtime/composables/useFormField.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/composables/useFormField.js
 var formOptionsInjectionKey = /*@__PURE__*/ Symbol("nuxt-ui.form-options");
 var formBusInjectionKey = /*@__PURE__*/ Symbol("nuxt-ui.form-events");
 var formFieldInjectionKey = /*@__PURE__*/ Symbol("nuxt-ui.form-field");
@@ -710,7 +718,8 @@ function useFormField(props, opts) {
 		})
 	};
 }
-// ../../../../node_modules/@nuxt/ui/dist/runtime/composables/useForwardProps.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/composables/useForwardProps.js
 function useForwardProps(source, emits) {
 	const emitAsProps = emits ? useEmitAsProps(emits) : {};
 	return computed(() => {
@@ -723,7 +732,8 @@ function useForwardProps(source, emits) {
 		return out;
 	});
 }
-// ../../../../node_modules/@nuxt/ui/dist/runtime/composables/useComponentIcons.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/composables/useComponentIcons.js
 function useComponentIcons(componentProps) {
 	const appConfig = useAppConfig();
 	const props = computed(() => toValue(componentProps));
@@ -741,7 +751,8 @@ function useComponentIcons(componentProps) {
 		})
 	};
 }
-// ../../../../node_modules/@nuxt/ui/dist/runtime/composables/useFieldGroup.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/composables/useFieldGroup.js
 var fieldGroupInjectionKey = /*@__PURE__*/ Symbol("nuxt-ui.field-group");
 function useFieldGroup(props) {
 	const fieldGroup = inject(fieldGroupInjectionKey, void 0);
@@ -760,7 +771,8 @@ var FieldGroupReset = /*@__PURE__*/ defineComponent({
 		return () => slots.default?.();
 	}
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/utils/link.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/utils/link.js
 var linkKeySet = /*@__PURE__*/ new Set([
 	"active",
 	"activeClass",
@@ -813,7 +825,8 @@ function isPartiallyEqual(item1, item2) {
 	}, /* @__PURE__ */ new Set());
 	return isEqual(Object.fromEntries(Object.entries(item1).filter(([key]) => !diffedKeys.has(key))), Object.fromEntries(Object.entries(item2).filter(([key]) => !diffedKeys.has(key))));
 }
-// ../../../../node_modules/@nuxt/ui/dist/runtime/components/LinkBase.vue
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/components/LinkBase.vue
 var _sfc_main$2 = {
 	__name: "LinkBase",
 	props: {
@@ -917,7 +930,8 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
 	}, 16, ["rel", "target"]);
 }
 var LinkBase_default = /*@__PURE__*/ _plugin_vue_export_helper_default(_sfc_main$2, [["render", _sfc_render$2], ["__file", "LinkBase.vue"]]);
-// virtual:nuxt-ui-templates/ui/link.ts
+//#endregion
+//#region virtual:nuxt-ui-templates/ui/link.ts
 var link_default = {
 	"base": "outline-primary/25 focus-visible:outline-3 rounded-md",
 	"variants": {
@@ -933,7 +947,8 @@ var link_default = {
 		"class": ["hover:text-default", "transition-colors"]
 	}]
 };
-// ../../../../node_modules/@nuxt/ui/dist/runtime/vue/overrides/vue-router/Link.vue
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/vue/overrides/vue-router/Link.vue
 var _sfc_main$1 = /*@__PURE__*/ Object.assign({ inheritAttrs: false }, {
 	__name: "Link",
 	props: {
@@ -1227,7 +1242,8 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
 	}, 16, ["class"]));
 }
 var Link_default = /*@__PURE__*/ _plugin_vue_export_helper_default(_sfc_main$1, [["render", _sfc_render$1], ["__file", "Link.vue"]]);
-// virtual:nuxt-ui-templates/ui/button.ts
+//#endregion
+//#region virtual:nuxt-ui-templates/ui/button.ts
 var button_default = {
 	"slots": {
 		"base": ["rounded-md font-medium inline-flex items-center disabled:cursor-not-allowed aria-disabled:cursor-not-allowed disabled:opacity-75 aria-disabled:opacity-75", "transition-colors"],
@@ -1558,7 +1574,8 @@ var button_default = {
 		"size": "md"
 	}
 };
-// ../../../../node_modules/@nuxt/ui/dist/runtime/components/Button.vue
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/components/Button.vue
 var _sfc_main = {
 	__name: "Button",
 	props: {
@@ -1929,6 +1946,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
 	}, 16, ["type", "disabled"]);
 }
 var Button_default = /*@__PURE__*/ _plugin_vue_export_helper_default(_sfc_main, [["render", _sfc_render], ["__file", "Button.vue"]]);
+//#endregion
 export { FieldGroupReset as a, useForwardProps as c, useLocale as d, VisuallyHidden_default as f, pickLinkProps as i, useFormField as l, useEmitAsProps as m, Link_default as n, useFieldGroup as o, useForwardProps$1 as p, LinkBase_default as r, useComponentIcons as s, Button_default as t, localeContextInjectionKey as u };
 
 //# sourceMappingURL=Button.js.map

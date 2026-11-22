@@ -5,6 +5,7 @@ import { AxiosInstance } from 'axios';
 import { AxiosProgressEvent } from 'axios';
 import { AxiosRequestConfig } from 'axios';
 import { AxiosResponse } from 'axios';
+import { AxiosStatic } from 'axios';
 import * as bootstrap_2 from 'bootstrap';
 import { Class } from 'ts-mixer/dist/types/types';
 import { clearNotifies } from '@lyrasoft/ts-toolkit/generic';
@@ -16,8 +17,6 @@ import { deleteConfirm } from '@lyrasoft/ts-toolkit/generic';
 import { Editor } from 'tinymce';
 import { Editor as Editor_2 } from '@tiptap/core';
 import { EditorOptions } from 'tinymce';
-import { isAxiosError } from 'axios';
-import { isCancel } from 'axios';
 import { Modal } from 'bootstrap';
 import { randomBytes } from '@lyrasoft/ts-toolkit/generic';
 import { randomBytesString } from '@lyrasoft/ts-toolkit/generic';
@@ -207,6 +206,9 @@ declare function create(selector: string | HTMLElement, options?: Record<string,
 declare function createCallback(type: 'list' | 'single', selector: string, modalSelector: string): ModalSelectCallback;
 
 declare function createHttpClient(config?: CreateAxiosDefaults | AxiosInstance): {
+    AxiosError: typeof AxiosError;
+    isCancel: AxiosStatic["isCancel"];
+    isAxiosError: AxiosStatic["isAxiosError"];
     axios: AxiosInstance;
     request: <T = any, D = any>(options: AxiosRequestConfig) => Promise<AxiosResponse<T, D>>;
     get: <T = any, D = any>(url: string, options?: Partial<AxiosRequestConfig>) => Promise<AxiosResponse<T, D>>;
@@ -218,9 +220,6 @@ declare function createHttpClient(config?: CreateAxiosDefaults | AxiosInstance):
     options: <T = any, D = any>(url: string, options?: Partial<AxiosRequestConfig>) => Promise<AxiosResponse<T, D>>;
     requestMiddleware: (callback: Parameters<AxiosInstance["interceptors"]["request"]["use"]>[0]) => number;
     responseMiddleware: (callback: Parameters<AxiosInstance["interceptors"]["response"]["use"]>[0]) => number;
-    isCancel: typeof isCancel;
-    AxiosError: typeof AxiosError;
-    isAxiosError: typeof isAxiosError;
 };
 
 export declare function createQueue(maxRunning?: number): TaskQueue;
@@ -289,6 +288,7 @@ export declare interface EventAwareInterface {
 
 export declare type EventHandler<T extends any[] = any[]> = ((...event: T) => void) & {
     once?: boolean;
+    original?: EventHandler;
 };
 
 export declare abstract class EventMixin implements EventAwareInterface {
@@ -391,7 +391,7 @@ export declare function hasRoute(route: string): boolean;
 
 export declare function highlight(selector: string | HTMLElement, color?: string, duration?: number): Promise<Animation | void>;
 
-export declare function html<T extends Element = HTMLElement>(html: string): T;
+export declare function html<T extends Element = HTMLElement>(html: string, wrapper?: keyof HTMLElementTagNameMap): T;
 
 declare type HTMLInputTypes = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
 
@@ -426,7 +426,7 @@ declare interface IFrameModalOptions {
 
 export declare function initAlpineComponent(directive: string): Promise<void>;
 
-export declare function injectCssToDocument(doc: Document, ...css: (CssSource | CSSStyleSheet)[]): Promise<CSSStyleSheet[]>;
+export declare function injectCssToDocument(doc: Document | ShadowRoot, ...css: (CssSource | CSSStyleSheet)[]): Promise<CSSStyleSheet[]>;
 
 export declare function injectCssToDocument(...css: (CssSource | CSSStyleSheet)[]): Promise<CSSStyleSheet[]>;
 
@@ -819,6 +819,9 @@ declare class S3Uploader extends S3Uploader_base implements EventAwareInterface 
     http?: UnicornHttpClient;
     constructor(name: string, options?: Partial<S3UploaderGlobalOptions>);
     getHttpClient(): Promise<{
+        AxiosError: AxiosError;
+        isCancel: AxiosStatic["isCancel"];
+        isAxiosError: AxiosStatic["isAxiosError"];
         axios: AxiosInstance;
         request: <T = any, D = any>(options: AxiosRequestConfig) => Promise<AxiosResponse<T, D>>;
         get: <T = any, D = any>(url: string, options?: Partial< AxiosRequestConfig>) => Promise<AxiosResponse<T, D>>;
@@ -830,9 +833,6 @@ declare class S3Uploader extends S3Uploader_base implements EventAwareInterface 
         options: <T = any, D = any>(url: string, options?: Partial< AxiosRequestConfig>) => Promise<AxiosResponse<T, D>>;
         requestMiddleware: (callback: Parameters< AxiosInstance["interceptors"]["request"]["use"]>[0]) => number;
         responseMiddleware: (callback: Parameters< AxiosInstance["interceptors"]["response"]["use"]>[0]) => number;
-        isCancel: typeof isCancel;
-        AxiosError: typeof AxiosError;
-        isAxiosError: typeof isAxiosError;
     }>;
     /**
      * Do upload.
@@ -977,7 +977,7 @@ declare class SingleImageDragElement extends HTMLElement {
     saveImage(file: File): Promise<void>;
     uploadImage(file: File): Promise< AxiosResponse<ApiReturn<{
         url: string;
-    }>, any, {}, any>>;
+    }>, any, {}>>;
     storeValue(url: string, preview: string): void;
 }
 
@@ -1362,8 +1362,8 @@ declare type UnicornHttpClientProxy = {
     head: UnicornHttpClient['head'];
     options: UnicornHttpClient['options'];
     http: Promise<UnicornHttpClient>;
-    isAxiosError: typeof isAxiosError;
-    isCancel: typeof isCancel;
+    isAxiosError: AxiosStatic['isAxiosError'];
+    isCancel: AxiosStatic['isCancel'];
 };
 
 declare class UnicornLang {
@@ -1385,7 +1385,7 @@ declare class UnicornLang {
      */
     add(key: string, value: string): this;
     /**
-     * Replace all symbols to dot(.).
+     * Replace all non-alphanumeric symbols to dot(.), lowercase, and trim dots (same as PHP LanguageNormalizer).
      */
     protected normalize(text: string): string;
     protected wrapDebug(text: string, success: boolean): string;
@@ -1675,6 +1675,14 @@ export declare function watchAttributes<T extends HTMLElement>(el: T, callback?:
 export { }
 
 
+declare module '@windwalker-io/unicorn-next' {
+    interface UnicornApp {
+        /** @deprecated Only for code generator use. */
+        $ui: typeof methods;
+    }
+}
+
+
 declare global {
     interface Node {
         __unicorn?: any;
@@ -1689,16 +1697,20 @@ declare global {
     var Mark: any;
 }
 
+declare global {
+    var S: any;
+}
 
-declare module '@windwalker-io/unicorn-next' {
-    interface UnicornApp {
-        /** @deprecated Only for code generator use. */
-        $ui: typeof methods;
+
+declare global {
+    export interface Window {
+        bootstrap: typeof bootstrap;
     }
 }
 
+
 declare global {
-    var S: any;
+    var tinymce: TinyMCE;
 }
 
 
@@ -1709,17 +1721,5 @@ declare module 'axios' {
         methodSimulateByHeader?: boolean;
     }
     interface CreateAxiosDefaults {
-    }
-}
-
-
-declare global {
-    var tinymce: TinyMCE;
-}
-
-
-declare global {
-    export interface Window {
-        bootstrap: typeof bootstrap;
     }
 }

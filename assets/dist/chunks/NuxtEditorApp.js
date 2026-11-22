@@ -1,17 +1,18 @@
-import { a as useComponentProps, c as renderSlotFragments, i as tv, l as createContext, o as Primitive, r as Icon_default, s as Slot, t as Avatar_default } from "./Avatar.js";
-import { C as tryOnScopeDispose, E as useTimeoutFn, S as tryOnBeforeUnmount, _ as isIOS, b as refAutoReset, f as useVModel, g as isClient, h as createSharedComposable, i as unrefElement, l as useMounted, m as createGlobalState, n as defaultWindow, p as createEventHook, r as onKeyStroke, s as useEventListener, t as createReusableTemplate, v as reactiveOmit, x as syncRef, y as reactivePick } from "./dist.js";
-import { a as FieldGroupReset, c as useForwardProps$1, d as useLocale, f as VisuallyHidden_default, i as pickLinkProps, l as useFormField, m as useEmitAsProps, n as Link_default, o as useFieldGroup, p as useForwardProps, r as LinkBase_default, s as useComponentIcons, t as Button_default, u as localeContextInjectionKey } from "./Button.js";
-import { i as useAppConfig } from "./iconify.js";
-import { i as useHead, r as useState } from "./base.js";
-import { i as looseToNumber, l as transformUI, n as isArrayOfArray, o as omit, r as isEmpty, s as pick, t as get } from "./utils.js";
-import { t as _plugin_vue_export_helper_default } from "./_plugin-vue_export-helper.js";
-import { t as en_default } from "./en.js";
-import { t as defu } from "./defu.js";
-import { a as autoUpdate, c as hide, d as shift, f as size, i as arrow$2, l as limitShift, m as isNode, n as createHandlers, o as computePosition, p as getNodeName, s as flip, t as buildFloatingUIMiddleware, u as offset } from "./editor.js";
 import { n as trans } from "./lang.js";
-import { a as resolveColors, i as createColorMenu, n as attrsOf, o as toBackground, r as parseEmbedInput } from "./nuxt-editor.js";
+import { a as FieldGroupReset, c as useForwardProps$1, d as useLocale, f as VisuallyHidden_default, i as pickLinkProps, l as useFormField, m as useEmitAsProps, n as Link_default, o as useFieldGroup, p as useForwardProps, r as LinkBase_default, s as useComponentIcons, t as Button_default, u as localeContextInjectionKey } from "./Button.js";
+import { a as useComponentProps, i as tv, l as createContext, o as Primitive, r as Icon_default, t as Avatar_default } from "./Avatar.js";
+import { a as VIEWPORT_PAUSE, d as injectToastProviderContext, f as useCollection, g as getActiveElement, h as useForwardExpose, m as Presence_default, o as VIEWPORT_RESUME, p as usePrimitiveElement, u as ToastProvider_default } from "./utils.js";
+import { C as tryOnScopeDispose, E as useTimeoutFn, S as tryOnBeforeUnmount, _ as isIOS, b as refAutoReset, f as useVModel, g as isClient, h as createSharedComposable, i as unrefElement, l as useMounted, m as createGlobalState, p as createEventHook, r as onKeyStroke, s as useEventListener, t as createReusableTemplate, v as reactiveOmit, x as syncRef, y as reactivePick } from "./dist.js";
+import { t as defu } from "./defu.js";
+import { a as autoUpdate, c as hide, d as shift, f as size, i as arrow$1, l as limitShift, m as isNode, n as createHandlers, o as computePosition, p as getNodeName, s as flip, t as buildFloatingUIMiddleware, u as offset } from "./editor.js";
+import { i as useHead, r as useState } from "./base.js";
+import { i as useAppConfig } from "./iconify.js";
+import { t as en_default } from "./en.js";
+import { i as looseToNumber, l as transformUI, n as isArrayOfArray, o as omit, r as isEmpty, s as pick, t as get } from "./utils2.js";
+import { t as _plugin_vue_export_helper_default } from "./_plugin-vue_export-helper.js";
+import { a as resolveColors, i as createColorMenu, o as toBackground, r as parseEmbedInput, t as attrsOf } from "./video-embed.js";
 import * as vue from "vue";
-import { Fragment, Teleport, computed, createBlock, createCommentVNode, createElementBlock, createElementVNode, createSlots, createTextVNode, createVNode, defineAsyncComponent, defineComponent, getCurrentInstance, getCurrentScope, guardReactiveProps, h, inject, isRef, markRaw, mergeDefaults, mergeModels, mergeProps, nextTick, normalizeClass, normalizeProps, normalizeStyle, onBeforeMount, onBeforeUnmount, onMounted, onScopeDispose, onUnmounted, onUpdated, openBlock, provide, reactive, ref, renderList, renderSlot, resolveDynamicComponent, shallowReactive, shallowReadonly, shallowRef, toDisplayString, toHandlers, toRef, toRefs, toValue, triggerRef, unref, useAttrs, useId, useModel, useSlots, useTemplateRef, watch, watchEffect, watchPostEffect, watchSyncEffect, withCtx, withKeys, withMemo, withModifiers } from "vue";
+import { Fragment, Teleport, computed, createBlock, createCommentVNode, createElementBlock, createElementVNode, createSlots, createTextVNode, createVNode, defineAsyncComponent, defineComponent, getCurrentInstance, getCurrentScope, guardReactiveProps, h, inject, isRef, markRaw, mergeDefaults, mergeModels, mergeProps, nextTick, normalizeClass, normalizeProps, normalizeStyle, onBeforeMount, onBeforeUnmount, onMounted, onScopeDispose, onUnmounted, openBlock, provide, reactive, ref, renderList, renderSlot, resolveDynamicComponent, shallowReactive, shallowReadonly, shallowRef, toDisplayString, toHandlers, toRef, toRefs, toValue, unref, useAttrs, useId, useModel, useSlots, useTemplateRef, watch, watchEffect, watchPostEffect, watchSyncEffect, withCtx, withKeys, withMemo, withModifiers } from "vue";
 import { mergeAttributes } from "@tiptap/core";
 import Code from "@tiptap/extension-code";
 import HorizontalRule from "@tiptap/extension-horizontal-rule";
@@ -25,15 +26,8 @@ import DragHandle from "@tiptap/extension-drag-handle-vue-3";
 import { BubbleMenu, FloatingMenu } from "@tiptap/vue-3/menus";
 import Suggestion from "@tiptap/suggestion";
 import { PluginKey } from "@tiptap/pm/state";
-// ../../../../node_modules/reka-ui/dist/shared/getActiveElement.js
-function getActiveElement() {
-	let activeElement = document.activeElement;
-	if (activeElement == null) return null;
-	while (activeElement != null && activeElement.shadowRoot != null && activeElement.shadowRoot.activeElement != null) activeElement = activeElement.shadowRoot.activeElement;
-	return activeElement;
-}
-// ../../../../node_modules/reka-ui/dist/shared/handleAndDispatchCustomEvent.js
-function handleAndDispatchCustomEvent$1(name, handler, detail) {
+//#region ../../../../node_modules/reka-ui/dist/shared/handleAndDispatchCustomEvent.js
+function handleAndDispatchCustomEvent(name, handler, detail) {
 	const target = detail.originalEvent.target;
 	const event = new CustomEvent(name, {
 		bubbles: false,
@@ -43,13 +37,8 @@ function handleAndDispatchCustomEvent$1(name, handler, detail) {
 	if (handler) target.addEventListener(name, handler, { once: true });
 	target.dispatchEvent(event);
 }
-// ../../../../node_modules/reka-ui/dist/shared/isHTMLElement.js
-function isHTMLElement(node) {
-	if (typeof window === "undefined" || typeof node !== "object" || node === null) return false;
-	const ownerWindow = node.ownerDocument?.defaultView ?? window;
-	return node instanceof HTMLElement || node instanceof ownerWindow.HTMLElement;
-}
-// ../../../../node_modules/reka-ui/dist/shared/useArrowNavigation.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/shared/useArrowNavigation.js
 var ignoredElement = ["INPUT", "TEXTAREA"];
 /**
 * Allow arrow navigation for every html element with data-reka-collection-item tag
@@ -107,7 +96,8 @@ function findNextFocusableElement(elements, currentElement, options, iterations 
 	if (candidate.hasAttribute("disabled") && candidate.getAttribute("disabled") !== "false") return findNextFocusableElement(elements, candidate, options, iterations);
 	return candidate;
 }
-// ../../../../node_modules/reka-ui/dist/ConfigProvider/ConfigProvider.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/ConfigProvider/ConfigProvider.js
 var [injectConfigProviderContext, provideConfigProviderContext] = /*@__PURE__*/ createContext("ConfigProvider");
 var ConfigProvider_default = /*@__PURE__*/ defineComponent({
 	inheritAttrs: false,
@@ -160,7 +150,8 @@ var ConfigProvider_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/shared/bodyPointerEvents.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/shared/bodyPointerEvents.js
 var locks = /*@__PURE__*/ new WeakMap();
 /**
 * Adds `owner` to the body `pointer-events` lock of `doc` and sets it to `none`.
@@ -190,7 +181,8 @@ function releaseBodyPointerEvents(doc, owner) {
 		doc.body.style.pointerEvents = lock.original;
 	}
 }
-// ../../../../node_modules/reka-ui/dist/shared/useBodyScrollLock.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/shared/useBodyScrollLock.js
 var pointerEventsOwner = /*@__PURE__*/ Symbol("useBodyScrollLock");
 var useBodyLockStackCount = /*@__PURE__*/ createSharedComposable(() => {
 	const map = ref(/* @__PURE__ */ new Map());
@@ -277,7 +269,8 @@ function preventDefault(rawEvent) {
 	if (e.preventDefault && e.cancelable) e.preventDefault();
 	return false;
 }
-// ../../../../node_modules/reka-ui/dist/shared/useComposing.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/shared/useComposing.js
 var imeScriptRE = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}\p{Script=Bopomofo}]/u;
 var androidRE = /android/i;
 function isAndroid() {
@@ -314,7 +307,8 @@ function useComposing(onEnd) {
 		handleCompositionEnd
 	};
 }
-// ../../../../node_modules/reka-ui/dist/shared/useDirection.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/shared/useDirection.js
 /**
 * The `useDirection` function provides a way to access the current direction in your application.
 * @param {Ref<Direction | undefined>} [dir] - An optional ref containing the direction (ltr or rtl).
@@ -324,7 +318,8 @@ function useDirection(dir) {
 	const context = injectConfigProviderContext({ dir: ref("ltr") });
 	return computed(() => dir?.value || context.dir?.value || "ltr");
 }
-// ../../../../node_modules/reka-ui/dist/shared/useFilter.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/shared/useFilter.js
 /**
 * Provides locale-aware string filtering functions.
 * Uses `Intl.Collator` for comparison to ensure proper Unicode handling.
@@ -375,9 +370,10 @@ function useFilter$1(options) {
 		contains
 	};
 }
-// ../../../../node_modules/reka-ui/dist/shared/useFocusGuards.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/shared/useFocusGuards.js
 /** Number of components which have requested interest to have focus guards */
-var count$2 = 0;
+var count$1 = 0;
 /**
 * Injects a pair of focus guards at the edges of the whole DOM tree
 * to ensure `focusin` & `focusout` events can be caught consistently.
@@ -388,10 +384,10 @@ function useFocusGuards() {
 		const edgeGuards = document.querySelectorAll("[data-reka-focus-guard]");
 		document.body.insertAdjacentElement("afterbegin", edgeGuards[0] ?? createFocusGuard());
 		document.body.insertAdjacentElement("beforeend", edgeGuards[1] ?? createFocusGuard());
-		count$2++;
+		count$1++;
 		cleanupFn(() => {
-			if (count$2 === 1) document.querySelectorAll("[data-reka-focus-guard]").forEach((node) => node.remove());
-			count$2--;
+			if (count$1 === 1) document.querySelectorAll("[data-reka-focus-guard]").forEach((node) => node.remove());
+			count$1--;
 		});
 	});
 }
@@ -405,61 +401,8 @@ function createFocusGuard() {
 	element.style.pointerEvents = "none";
 	return element;
 }
-// ../../../../node_modules/reka-ui/dist/shared/useForwardExpose.js
-function useForwardExpose() {
-	const instance = getCurrentInstance();
-	const currentRef = ref();
-	const currentElement = computed(() => resolveCurrentElement());
-	onUpdated(() => {
-		if (currentElement.value !== resolveCurrentElement()) triggerRef(currentRef);
-	});
-	function resolveCurrentElement() {
-		return currentRef.value && "$el" in currentRef.value && ["#text", "#comment"].includes(currentRef.value.$el.nodeName) ? currentRef.value.$el.nextElementSibling : unrefElement(currentRef);
-	}
-	const localExpose = Object.assign({}, instance.exposed);
-	const ret = {};
-	for (const key in instance.props) Object.defineProperty(ret, key, {
-		enumerable: true,
-		configurable: true,
-		get: () => instance.props[key]
-	});
-	if (Object.keys(localExpose).length > 0) for (const key in localExpose) Object.defineProperty(ret, key, {
-		enumerable: true,
-		configurable: true,
-		get: () => localExpose[key]
-	});
-	Object.defineProperty(ret, "$el", {
-		enumerable: true,
-		configurable: true,
-		get: () => instance.vnode.el
-	});
-	instance.exposed = ret;
-	function forwardRef(ref$1) {
-		currentRef.value = ref$1;
-		if (!ref$1) return;
-		Object.defineProperty(ret, "$el", {
-			enumerable: true,
-			configurable: true,
-			get: () => ref$1 instanceof Element ? ref$1 : ref$1.$el
-		});
-		if (!(ref$1 instanceof Element) && !Object.hasOwn(ref$1, "$el")) {
-			const childExposed = ref$1.$.exposed;
-			const merged = Object.assign({}, ret);
-			for (const key in childExposed) Object.defineProperty(merged, key, {
-				enumerable: true,
-				configurable: true,
-				get: () => childExposed[key]
-			});
-			instance.exposed = merged;
-		}
-	}
-	return {
-		forwardRef,
-		currentRef,
-		currentElement
-	};
-}
-// ../../../../node_modules/reka-ui/dist/shared/useForwardPropsEmits.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/shared/useForwardPropsEmits.js
 function useForwardPropsEmits(props, emit) {
 	const parsedProps = useForwardProps(props);
 	const emitsAsProps = emit ? useEmitAsProps(emit) : {};
@@ -468,7 +411,8 @@ function useForwardPropsEmits(props, emit) {
 		...emitsAsProps
 	}));
 }
-// ../../../../node_modules/reka-ui/dist/shared/useGraceArea.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/shared/useGraceArea.js
 function useGraceArea(triggerElement, containerElement) {
 	const isPointerInTransit = refAutoReset(false, 300);
 	tryOnScopeDispose(() => {
@@ -578,13 +522,15 @@ function getPaddedExitPoints(exitPoint, exitSide, padding = 5) {
 				y: exitPoint.y + padding
 			});
 			break;
-		case "right": paddedExitPoints.push({
-			x: exitPoint.x - padding,
-			y: exitPoint.y - padding
-		}, {
-			x: exitPoint.x - padding,
-			y: exitPoint.y + padding
-		});
+		case "right":
+			paddedExitPoints.push({
+				x: exitPoint.x - padding,
+				y: exitPoint.y - padding
+			}, {
+				x: exitPoint.x - padding,
+				y: exitPoint.y + padding
+			});
+			break;
 	}
 	return paddedExitPoints;
 }
@@ -661,7 +607,8 @@ function getHullPresorted(points) {
 	if (upperHull.length === 1 && lowerHull.length === 1 && upperHull[0].x === lowerHull[0].x && upperHull[0].y === lowerHull[0].y) return upperHull;
 	else return upperHull.concat(lowerHull);
 }
-// ../../../../node_modules/aria-hidden/dist/es2015/index.js
+//#endregion
+//#region ../../../../node_modules/aria-hidden/dist/es2015/index.js
 var getDefaultParent = function(originalTarget) {
 	if (typeof document === "undefined") return null;
 	return (Array.isArray(originalTarget) ? originalTarget[0] : originalTarget).ownerDocument.body;
@@ -766,7 +713,8 @@ var hideOthers = function(originalTarget, parentNode, markerName) {
 	targets.push.apply(targets, Array.from(activeParentNode.querySelectorAll("[aria-live], script")));
 	return applyAttributeToOthers(targets, activeParentNode, markerName, "aria-hidden");
 };
-// ../../../../node_modules/reka-ui/dist/shared/useHideOthers.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/shared/useHideOthers.js
 /**
 * The `useHideOthers` function is a TypeScript function that takes a target element reference and
 * hides all other elements in ARIA when the target element is present, and restores the visibility of the
@@ -788,8 +736,9 @@ function useHideOthers(target) {
 		if (undo) undo();
 	});
 }
-// ../../../../node_modules/reka-ui/dist/shared/useId.js
-var count$1 = 0;
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/shared/useId.js
+var count = 0;
 /**
 * The `useId` function generates a unique identifier using a provided deterministic ID,
 * a configured `<ConfigProvider>` ID source, Vue's native `useId`, or a fallback counter.
@@ -804,10 +753,11 @@ function useId$1(deterministicId, prefix = "reka") {
 	const configProviderContext = injectConfigProviderContext({ useId: void 0 });
 	if (configProviderContext.useId) id = configProviderContext.useId();
 	else if ("useId" in vue) id = vue.useId?.();
-	else id = `${++count$1}`;
+	else id = `${++count}`;
 	return prefix ? `${prefix}-${id}` : id;
 }
-// ../../../../node_modules/reka-ui/dist/shared/useSize.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/shared/useSize.js
 function useSize(element) {
 	const size = ref();
 	const width = computed(() => size.value?.width ?? 0);
@@ -852,32 +802,8 @@ function useSize(element) {
 		height
 	};
 }
-// ../../../../node_modules/reka-ui/dist/shared/useStateMachine.js
-/**
-* The `useStateMachine` function is a TypeScript function that creates a state machine and returns the
-* current state and a dispatch function to update the state based on events.
-* @param initialState - The `initialState` parameter is the initial state of the state machine. It
-* represents the starting point of the state machine's state.
-* @param machine - The `machine` parameter is an object that represents a state machine. It should
-* have keys that correspond to the possible states of the machine, and the values should be objects
-* that represent the possible events and their corresponding next states.
-* @returns The `useStateMachine` function returns an object with two properties: `state` and
-* `dispatch`.
-*/
-function useStateMachine(initialState, machine) {
-	const state = ref(initialState);
-	function reducer(event) {
-		return machine[state.value][event] ?? state.value;
-	}
-	const dispatch = (event) => {
-		state.value = reducer(event);
-	};
-	return {
-		state,
-		dispatch
-	};
-}
-// ../../../../node_modules/reka-ui/dist/shared/useTypeahead.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/shared/useTypeahead.js
 function useTypeahead(callback) {
 	const search = refAutoReset("", 1e3);
 	const handleTypeaheadSearch = (key, items) => {
@@ -937,166 +863,8 @@ function getNextMatch(values, search, currentMatch) {
 	const nextMatch = wrappedValues.find((value) => value.toLowerCase().startsWith(normalizedSearch.toLowerCase()));
 	return nextMatch !== currentMatch ? nextMatch : void 0;
 }
-// ../../../../node_modules/reka-ui/dist/Presence/usePresence.js
-function usePresence(present, node) {
-	const stylesRef = ref({});
-	const prevAnimationNameRef = ref("none");
-	const prevPresentRef = ref(present);
-	const initialState = present.value ? "mounted" : "unmounted";
-	let timeoutId;
-	const ownerWindow = node.value?.ownerDocument.defaultView ?? defaultWindow;
-	const { state, dispatch } = useStateMachine(initialState, {
-		mounted: {
-			UNMOUNT: "unmounted",
-			ANIMATION_OUT: "unmountSuspended"
-		},
-		unmountSuspended: {
-			MOUNT: "mounted",
-			ANIMATION_END: "unmounted"
-		},
-		unmounted: { MOUNT: "mounted" }
-	});
-	const dispatchCustomEvent = (name) => {
-		if (isClient) {
-			const customEvent = new CustomEvent(name, {
-				bubbles: false,
-				cancelable: false
-			});
-			node.value?.dispatchEvent(customEvent);
-		}
-	};
-	watch(present, async (currentPresent, prevPresent) => {
-		const hasPresentChanged = prevPresent !== currentPresent;
-		await nextTick();
-		if (hasPresentChanged) {
-			const prevAnimationName = prevAnimationNameRef.value;
-			const currentAnimationName = getAnimationName(node.value);
-			if (currentPresent) {
-				dispatch("MOUNT");
-				dispatchCustomEvent("enter");
-				if (currentAnimationName === "none") dispatchCustomEvent("after-enter");
-			} else if (currentAnimationName === "none" || currentAnimationName === "undefined" || stylesRef.value?.display === "none") {
-				dispatch("UNMOUNT");
-				dispatchCustomEvent("leave");
-				dispatchCustomEvent("after-leave");
-			} else if (prevPresent && prevAnimationName !== currentAnimationName) {
-				dispatch("ANIMATION_OUT");
-				dispatchCustomEvent("leave");
-			} else {
-				dispatch("UNMOUNT");
-				dispatchCustomEvent("after-leave");
-			}
-		}
-	}, { immediate: true });
-	/**
-	* Triggering an ANIMATION_OUT during an ANIMATION_IN will fire an `animationcancel`
-	* event for ANIMATION_IN after we have entered `unmountSuspended` state. So, we
-	* make sure we only trigger ANIMATION_END for the currently active animation.
-	*/
-	const handleAnimationEnd = (event) => {
-		if (event.target !== node.value) return;
-		const currentAnimationName = getAnimationName(node.value);
-		const isCurrentAnimation = currentAnimationName.includes(CSS.escape(event.animationName));
-		const directionName = state.value === "mounted" ? "enter" : "leave";
-		if (isCurrentAnimation) {
-			dispatchCustomEvent(`after-${directionName}`);
-			dispatch("ANIMATION_END");
-			if (!prevPresentRef.value) {
-				const currentFillMode = node.value.style.animationFillMode;
-				node.value.style.animationFillMode = "forwards";
-				timeoutId = ownerWindow?.setTimeout(() => {
-					if (node.value?.style.animationFillMode === "forwards") node.value.style.animationFillMode = currentFillMode;
-				});
-			}
-		}
-		if (currentAnimationName === "none") dispatch("ANIMATION_END");
-	};
-	const handleAnimationStart = (event) => {
-		if (event.target === node.value) prevAnimationNameRef.value = getAnimationName(node.value);
-	};
-	const watcher = watch(node, (newNode, oldNode) => {
-		if (newNode) {
-			stylesRef.value = getComputedStyle(newNode);
-			newNode.addEventListener("animationstart", handleAnimationStart);
-			newNode.addEventListener("animationcancel", handleAnimationEnd);
-			newNode.addEventListener("animationend", handleAnimationEnd);
-		} else {
-			dispatch("ANIMATION_END");
-			if (timeoutId !== void 0) ownerWindow?.clearTimeout(timeoutId);
-			oldNode?.removeEventListener("animationstart", handleAnimationStart);
-			oldNode?.removeEventListener("animationcancel", handleAnimationEnd);
-			oldNode?.removeEventListener("animationend", handleAnimationEnd);
-		}
-	}, { immediate: true });
-	const stateWatcher = watch(state, () => {
-		const currentAnimationName = getAnimationName(node.value);
-		prevAnimationNameRef.value = state.value === "mounted" ? currentAnimationName : "none";
-	});
-	onUnmounted(() => {
-		watcher();
-		stateWatcher();
-		if (node.value) {
-			node.value.removeEventListener("animationstart", handleAnimationStart);
-			node.value.removeEventListener("animationcancel", handleAnimationEnd);
-			node.value.removeEventListener("animationend", handleAnimationEnd);
-		}
-		if (timeoutId !== void 0) ownerWindow?.clearTimeout(timeoutId);
-	});
-	return { isPresent: computed(() => ["mounted", "unmountSuspended"].includes(state.value)) };
-}
-function getAnimationName(node) {
-	return node ? getComputedStyle(node).animationName || "none" : "none";
-}
-// ../../../../node_modules/reka-ui/dist/Presence/Presence.js
-var Presence_default = /*@__PURE__*/ defineComponent({
-	name: "Presence",
-	props: {
-		present: {
-			type: Boolean,
-			required: true
-		},
-		forceMount: { type: Boolean }
-	},
-	slots: {},
-	setup(props, { slots, expose }) {
-		const { present, forceMount } = toRefs(props);
-		const node = ref();
-		const { isPresent } = usePresence(present, node);
-		expose({ present: isPresent });
-		let children = slots.default({ present: isPresent.value });
-		children = renderSlotFragments(children || []);
-		const instance = getCurrentInstance();
-		if (children && children?.length > 1) {
-			const componentName = instance?.parent?.type.name ? `<${instance.parent.type.name} />` : "component";
-			throw new Error([
-				`Detected an invalid children for \`${componentName}\` for  \`Presence\` component.`,
-				"",
-				"Note: Presence works similarly to `v-if` directly, but it waits for animation/transition to finished before unmounting. So it expect only one direct child of valid VNode type.",
-				"You can apply a few solutions:",
-				["Provide a single child element so that `presence` directive attach correctly.", "Ensure the first child is an actual element instead of a raw text node or comment node."].map((line) => `  - ${line}`).join("\n")
-			].join("\n"));
-		}
-		return () => {
-			if (forceMount.value || present.value || isPresent.value) return h(slots.default({ present: isPresent.value })[0], { ref: (v) => {
-				const el = unrefElement(v);
-				if (typeof el?.hasAttribute === "undefined") return el;
-				if (el?.hasAttribute("data-reka-popper-content-wrapper")) node.value = el.firstElementChild;
-				else node.value = el;
-				return el;
-			} });
-			else return null;
-		};
-	}
-});
-// ../../../../node_modules/reka-ui/dist/Primitive/usePrimitiveElement.js
-function usePrimitiveElement() {
-	const primitiveElement = ref();
-	return {
-		primitiveElement,
-		currentElement: computed(() => ["#text", "#comment"].includes(primitiveElement.value?.$el.nodeName) ? primitiveElement.value?.$el.nextElementSibling : unrefElement(primitiveElement))
-	};
-}
-// ../../../../node_modules/reka-ui/dist/DismissableLayer/utils.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/DismissableLayer/utils.js
 var POINTER_DOWN_OUTSIDE = "dismissableLayer.pointerDownOutside";
 var FOCUS_OUTSIDE = "dismissableLayer.focusOutside";
 function isElement(node) {
@@ -1135,7 +903,7 @@ function usePointerDownOutside(onPointerDownOutside, element, enabled = true) {
 			if (event.target && !isPointerInsideDOMTree.value) {
 				const eventDetail = { originalEvent: event };
 				function handleAndDispatchPointerDownOutsideEvent() {
-					handleAndDispatchCustomEvent$1(POINTER_DOWN_OUTSIDE, onPointerDownOutside, eventDetail);
+					handleAndDispatchCustomEvent(POINTER_DOWN_OUTSIDE, onPointerDownOutside, eventDetail);
 				}
 				/**
 				* On touch devices, we need to wait for a click event because browsers implement
@@ -1199,7 +967,7 @@ function useFocusOutside(onFocusOutside, element, enabled = true) {
 			await nextTick();
 			const target = event.target;
 			if (!element.value || !target || isLayerExist(element.value, target)) return;
-			if (event.target && !isFocusInsideDOMTree.value) handleAndDispatchCustomEvent$1(FOCUS_OUTSIDE, onFocusOutside, { originalEvent: event });
+			if (event.target && !isFocusInsideDOMTree.value) handleAndDispatchCustomEvent(FOCUS_OUTSIDE, onFocusOutside, { originalEvent: event });
 		};
 		ownerDocument.addEventListener("focusin", handleFocus);
 		cleanupFn(() => ownerDocument.removeEventListener("focusin", handleFocus));
@@ -1215,13 +983,15 @@ function useFocusOutside(onFocusOutside, element, enabled = true) {
 		}
 	};
 }
-// ../../../../node_modules/reka-ui/dist/DismissableLayer/context.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/DismissableLayer/context.js
 var context = /*@__PURE__*/ reactive({
 	layersRoot: /*@__PURE__*/ new Set(),
 	layersWithOutsidePointerEventsDisabled: /*@__PURE__*/ new Set(),
 	branches: /*@__PURE__*/ new Set()
 });
-// ../../../../node_modules/reka-ui/dist/DismissableLayer/DismissableLayer.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/DismissableLayer/DismissableLayer.js
 var DismissableLayer_default = /*@__PURE__*/ defineComponent({
 	__name: "DismissableLayer",
 	props: {
@@ -1344,7 +1114,8 @@ var DismissableLayer_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/DismissableLayer/DismissableLayerBranch.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/DismissableLayer/DismissableLayerBranch.js
 var DismissableLayerBranch_default = /*@__PURE__*/ defineComponent({
 	__name: "DismissableLayerBranch",
 	props: {
@@ -1379,7 +1150,8 @@ var DismissableLayerBranch_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/FocusScope/stack.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/FocusScope/stack.js
 var useFocusStackState = /*@__PURE__*/ createGlobalState(() => {
 	return ref([]);
 });
@@ -1405,7 +1177,8 @@ function arrayRemove(array, item) {
 	if (index !== -1) updatedArray.splice(index, 1);
 	return updatedArray;
 }
-// ../../../../node_modules/reka-ui/dist/FocusScope/utils.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/FocusScope/utils.js
 var AUTOFOCUS_ON_MOUNT = "focusScope.autoFocusOnMount";
 var AUTOFOCUS_ON_UNMOUNT = "focusScope.autoFocusOnUnmount";
 var EVENT_OPTIONS$1 = {
@@ -1490,7 +1263,8 @@ function focus(element, { select = false } = {}) {
 		if (element !== previouslyFocusedElement && isSelectableInput(element) && select) element.select();
 	}
 }
-// ../../../../node_modules/reka-ui/dist/FocusScope/FocusScope.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/FocusScope/FocusScope.js
 var FocusScope_default = /*@__PURE__*/ defineComponent({
 	__name: "FocusScope",
 	props: {
@@ -1662,7 +1436,8 @@ var FocusScope_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/Menu/utils.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/Menu/utils.js
 var ITEM_SELECT = "menu.itemSelect";
 var SELECTION_KEYS = ["Enter", " "];
 var FIRST_KEYS = [
@@ -1731,7 +1506,8 @@ function isPointerInGraceArea(event, area) {
 function isMouseEvent(event) {
 	return event.pointerType === "mouse";
 }
-// ../../../../node_modules/reka-ui/dist/Teleport/Teleport.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/Teleport/Teleport.js
 var Teleport_default = /*@__PURE__*/ defineComponent({
 	__name: "Teleport",
 	props: {
@@ -1771,81 +1547,8 @@ var Teleport_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/Collection/Collection.js
-var ITEM_DATA_ATTR = "data-reka-collection-item";
-function useCollection(options = {}) {
-	const { key = "", isProvider = false } = options;
-	const injectionKey = `${key}CollectionProvider`;
-	let context;
-	if (isProvider) {
-		const itemMap = ref(/* @__PURE__ */ new Map());
-		context = {
-			collectionRef: ref(),
-			itemMap
-		};
-		provide(injectionKey, context);
-	} else context = inject(injectionKey);
-	const getItem = (element, includeDisabledItem = false) => {
-		if (!context.collectionRef.value) return void 0;
-		const item = context.itemMap.value.get(element);
-		return item && (includeDisabledItem || item.ref.dataset.disabled !== "") ? item : void 0;
-	};
-	const getItems = (includeDisabledItem = false) => {
-		const collectionNode = context.collectionRef.value;
-		if (!collectionNode) return [];
-		const orderedNodes = Array.from(collectionNode.querySelectorAll(`[${ITEM_DATA_ATTR}]`));
-		const orderMap = new Map(orderedNodes.map((node, index) => [node, index]));
-		const orderedItems = Array.from(context.itemMap.value.values()).sort((a, b) => (orderMap.get(a.ref) ?? -1) - (orderMap.get(b.ref) ?? -1));
-		if (includeDisabledItem) return orderedItems;
-		else return orderedItems.filter((i) => i.ref.dataset.disabled !== "");
-	};
-	const CollectionSlot = /*#__PURE__*/ defineComponent({
-		name: "CollectionSlot",
-		inheritAttrs: false,
-		setup(_, { slots, attrs }) {
-			const { primitiveElement, currentElement } = usePrimitiveElement();
-			watch(currentElement, () => {
-				context.collectionRef.value = currentElement.value;
-			});
-			return () => h(Slot, {
-				ref: primitiveElement,
-				...attrs
-			}, slots);
-		}
-	});
-	const CollectionItem = /*#__PURE__*/ defineComponent({
-		name: "CollectionItem",
-		inheritAttrs: false,
-		props: { value: { validator: () => true } },
-		setup(props, { slots, attrs }) {
-			const { primitiveElement, currentElement } = usePrimitiveElement();
-			watchEffect((cleanupFn) => {
-				if (currentElement.value) {
-					const key$1 = markRaw(currentElement.value);
-					context.itemMap.value.set(key$1, {
-						ref: currentElement.value,
-						value: props.value
-					});
-					cleanupFn(() => context.itemMap.value.delete(key$1));
-				}
-			});
-			return () => h(Slot, {
-				...attrs,
-				[ITEM_DATA_ATTR]: "",
-				ref: primitiveElement
-			}, slots);
-		}
-	});
-	return {
-		getItems,
-		getItem,
-		reactiveItems: computed(() => Array.from(context.itemMap.value.values())),
-		itemMapSize: computed(() => context.itemMap.value.size),
-		CollectionSlot,
-		CollectionItem
-	};
-}
-// ../../../../node_modules/reka-ui/dist/RovingFocus/utils.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/RovingFocus/utils.js
 var ENTRY_FOCUS = "rovingFocusGroup.onEntryFocus";
 var EVENT_OPTIONS = {
 	bubbles: false,
@@ -1859,7 +1562,8 @@ function focusFirst(candidates, preventScroll = false) {
 		if (getActiveElement() !== PREVIOUSLY_FOCUSED_ELEMENT) return;
 	}
 }
-// ../../../../node_modules/reka-ui/dist/Popper/PopperRoot.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/Popper/PopperRoot.js
 var [injectPopperRootContext, providePopperRootContext] = /*@__PURE__*/ createContext("PopperRoot");
 var PopperRoot_default = /*@__PURE__*/ defineComponent({
 	inheritAttrs: false,
@@ -1875,7 +1579,8 @@ var PopperRoot_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/Popper/PopperAnchor.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/Popper/PopperAnchor.js
 var PopperAnchor_default = /*@__PURE__*/ defineComponent({
 	__name: "PopperAnchor",
 	props: {
@@ -1911,7 +1616,8 @@ var PopperAnchor_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/component/Arrow.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/component/Arrow.js
 var _hoisted_1$8 = {
 	key: 0,
 	d: "M0 0L6 6L12 0"
@@ -1968,7 +1674,8 @@ var Arrow_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/Popper/utils.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/Popper/utils.js
 function isNotNull(value) {
 	return value !== null;
 }
@@ -2020,7 +1727,8 @@ function getSideAndAlignFromPlacement(placement) {
 	const [side, align = "center"] = placement.split("-");
 	return [side, align];
 }
-// ../../../../node_modules/@floating-ui/vue/dist/floating-ui.vue.mjs
+//#endregion
+//#region ../../../../node_modules/@floating-ui/vue/dist/floating-ui.vue.mjs
 function isComponentPublicInstance(target) {
 	return target != null && typeof target === "object" && "$el" in target;
 }
@@ -2043,7 +1751,7 @@ function arrow(options) {
 		fn(args) {
 			const element = unwrapElement(toValue(options.element));
 			if (element == null) return {};
-			return arrow$2({
+			return arrow$1({
 				element,
 				padding: options.padding
 			}).fn(args);
@@ -2176,7 +1884,8 @@ function useFloating(reference, floating, options) {
 		update
 	};
 }
-// ../../../../node_modules/reka-ui/dist/Popper/PopperContent.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/Popper/PopperContent.js
 var _hoisted_1$7 = ["dir"];
 var PopperContentPropsDefaultValue = {
 	side: "bottom",
@@ -2470,7 +2179,8 @@ var PopperContent_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/Popper/PopperArrow.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/Popper/PopperArrow.js
 var OPPOSITE_SIDE = {
 	top: "bottom",
 	right: "left",
@@ -2552,7 +2262,8 @@ var PopperArrow_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/RovingFocus/RovingFocusGroup.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/RovingFocus/RovingFocusGroup.js
 var [injectRovingFocusGroupContext, provideRovingFocusGroupContext] = /*@__PURE__*/ createContext("RovingFocusGroup");
 var RovingFocusGroup_default = /*@__PURE__*/ defineComponent({
 	__name: "RovingFocusGroup",
@@ -2677,7 +2388,8 @@ var RovingFocusGroup_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/Menu/MenuAnchor.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/Menu/MenuAnchor.js
 var MenuAnchor_default = /*@__PURE__*/ defineComponent({
 	__name: "MenuAnchor",
 	props: {
@@ -2704,7 +2416,8 @@ var MenuAnchor_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/Menu/MenuArrow.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/Menu/MenuArrow.js
 var MenuArrow_default = /*@__PURE__*/ defineComponent({
 	__name: "MenuArrow",
 	props: {
@@ -2739,7 +2452,8 @@ var MenuArrow_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/shared/useIsUsingKeyboard.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/shared/useIsUsingKeyboard.js
 function useIsUsingKeyboardImpl() {
 	const isUsingKeyboard = ref(false);
 	onMounted(() => {
@@ -2759,7 +2473,8 @@ function useIsUsingKeyboardImpl() {
 	return isUsingKeyboard;
 }
 var useIsUsingKeyboard = /*@__PURE__*/ createSharedComposable(useIsUsingKeyboardImpl);
-// ../../../../node_modules/reka-ui/dist/Menu/MenuRoot.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/Menu/MenuRoot.js
 var [injectMenuContext, provideMenuContext] = /*@__PURE__*/ createContext(["MenuRoot", "MenuSub"], "MenuContext");
 var [injectMenuRootContext, provideMenuRootContext] = /*@__PURE__*/ createContext("MenuRoot");
 var MenuRoot_default = /*@__PURE__*/ defineComponent({
@@ -2815,7 +2530,8 @@ var MenuRoot_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/Menu/MenuContentImpl.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/Menu/MenuContentImpl.js
 var [injectMenuContentContext, provideMenuContentContext] = /*@__PURE__*/ createContext("MenuContent");
 var MenuContentImpl_default = /*@__PURE__*/ defineComponent({
 	__name: "MenuContentImpl",
@@ -3160,7 +2876,8 @@ var MenuContentImpl_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/Menu/MenuItemImpl.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/Menu/MenuItemImpl.js
 var MenuItemImpl_default = /*@__PURE__*/ defineComponent({
 	inheritAttrs: false,
 	__name: "MenuItemImpl",
@@ -3246,7 +2963,8 @@ var MenuItemImpl_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/Menu/MenuItem.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/Menu/MenuItem.js
 var MenuItem_default = /*@__PURE__*/ defineComponent({
 	__name: "MenuItem",
 	props: {
@@ -3321,7 +3039,8 @@ var MenuItem_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/Menu/MenuItemIndicator.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/Menu/MenuItemIndicator.js
 var [injectMenuItemIndicatorContext, provideMenuItemIndicatorContext] = /*@__PURE__*/ createContext(["MenuCheckboxItem", "MenuRadioItem"], "MenuItemIndicatorContext");
 var MenuItemIndicator_default = /*@__PURE__*/ defineComponent({
 	__name: "MenuItemIndicator",
@@ -3361,7 +3080,8 @@ var MenuItemIndicator_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/Menu/MenuCheckboxItem.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/Menu/MenuCheckboxItem.js
 var MenuCheckboxItem_default = /*@__PURE__*/ defineComponent({
 	__name: "MenuCheckboxItem",
 	props: {
@@ -3391,8 +3111,7 @@ var MenuCheckboxItem_default = /*@__PURE__*/ defineComponent({
 	setup(__props, { emit: __emit }) {
 		const props = __props;
 		const emits = __emit;
-		const delegatedProps = reactiveOmit(props, ["modelValue"]);
-		const forwarded = useForwardProps(delegatedProps);
+		const forwarded = useForwardProps(reactiveOmit(props, ["modelValue"]));
 		const modelValue = useVModel(props, "modelValue", emits);
 		provideMenuItemIndicatorContext({ modelValue });
 		return (_ctx, _cache) => {
@@ -3414,7 +3133,8 @@ var MenuCheckboxItem_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/Menu/MenuRootContentModal.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/Menu/MenuRootContentModal.js
 var MenuRootContentModal_default = /*@__PURE__*/ defineComponent({
 	__name: "MenuRootContentModal",
 	props: {
@@ -3538,7 +3258,8 @@ var MenuRootContentModal_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/Menu/MenuRootContentNonModal.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/Menu/MenuRootContentNonModal.js
 var MenuRootContentNonModal_default = /*@__PURE__*/ defineComponent({
 	__name: "MenuRootContentNonModal",
 	props: {
@@ -3656,7 +3377,8 @@ var MenuRootContentNonModal_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/Menu/MenuContent.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/Menu/MenuContent.js
 var MenuContent_default = /*@__PURE__*/ defineComponent({
 	__name: "MenuContent",
 	props: {
@@ -3786,7 +3508,8 @@ var MenuContent_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/Menu/MenuGroup.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/Menu/MenuGroup.js
 var [injectMenuGroupContext, provideMenuGroupContext] = /*@__PURE__*/ createContext("MenuGroup");
 var MenuGroup_default = /*@__PURE__*/ defineComponent({
 	__name: "MenuGroup",
@@ -3812,7 +3535,8 @@ var MenuGroup_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/Menu/MenuLabel.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/Menu/MenuLabel.js
 var MenuLabel_default = /*@__PURE__*/ defineComponent({
 	__name: "MenuLabel",
 	props: {
@@ -3837,7 +3561,8 @@ var MenuLabel_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/Menu/MenuPortal.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/Menu/MenuPortal.js
 var MenuPortal_default = /*@__PURE__*/ defineComponent({
 	__name: "MenuPortal",
 	props: {
@@ -3868,7 +3593,8 @@ var MenuPortal_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/Menu/MenuSeparator.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/Menu/MenuSeparator.js
 var MenuSeparator_default = /*@__PURE__*/ defineComponent({
 	__name: "MenuSeparator",
 	props: {
@@ -3894,7 +3620,8 @@ var MenuSeparator_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/Menu/MenuSub.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/Menu/MenuSub.js
 var [injectMenuSubContext, provideMenuSubContext] = /*@__PURE__*/ createContext("MenuSub");
 var MenuSub_default = /*@__PURE__*/ defineComponent({
 	__name: "MenuSub",
@@ -3943,7 +3670,8 @@ var MenuSub_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/Menu/MenuSubContent.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/Menu/MenuSubContent.js
 var MenuSubContent_default = /*@__PURE__*/ defineComponent({
 	__name: "MenuSubContent",
 	props: {
@@ -4100,7 +3828,8 @@ var MenuSubContent_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/Menu/MenuSubTrigger.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/Menu/MenuSubTrigger.js
 var MenuSubTrigger_default = /*@__PURE__*/ defineComponent({
 	__name: "MenuSubTrigger",
 	props: {
@@ -4251,7 +3980,8 @@ var MenuSubTrigger_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/Popover/PopoverRoot.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/Popover/PopoverRoot.js
 var [injectPopoverRootContext, providePopoverRootContext] = /*@__PURE__*/ createContext("PopoverRoot");
 var PopoverRoot_default = /*@__PURE__*/ defineComponent({
 	__name: "PopoverRoot",
@@ -4306,7 +4036,8 @@ var PopoverRoot_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/Popover/PopoverAnchor.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/Popover/PopoverAnchor.js
 var PopoverAnchor_default = /*@__PURE__*/ defineComponent({
 	__name: "PopoverAnchor",
 	props: {
@@ -4341,7 +4072,8 @@ var PopoverAnchor_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/Popover/PopoverArrow.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/Popover/PopoverArrow.js
 var PopoverArrow_default = /*@__PURE__*/ defineComponent({
 	__name: "PopoverArrow",
 	props: {
@@ -4380,7 +4112,8 @@ var PopoverArrow_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/Popover/PopoverContentImpl.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/Popover/PopoverContentImpl.js
 var PopoverContentImpl_default = /*@__PURE__*/ defineComponent({
 	__name: "PopoverContentImpl",
 	props: {
@@ -4541,7 +4274,8 @@ var PopoverContentImpl_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/Popover/PopoverContentModal.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/Popover/PopoverContentModal.js
 var PopoverContentModal_default = /*@__PURE__*/ defineComponent({
 	__name: "PopoverContentModal",
 	props: {
@@ -4679,7 +4413,8 @@ var PopoverContentModal_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/Popover/PopoverContentNonModal.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/Popover/PopoverContentNonModal.js
 var PopoverContentNonModal_default = /*@__PURE__*/ defineComponent({
 	__name: "PopoverContentNonModal",
 	props: {
@@ -4821,7 +4556,8 @@ var PopoverContentNonModal_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/Popover/PopoverContent.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/Popover/PopoverContent.js
 var PopoverContent_default = /*@__PURE__*/ defineComponent({
 	__name: "PopoverContent",
 	props: {
@@ -4951,7 +4687,8 @@ var PopoverContent_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/Popover/PopoverPortal.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/Popover/PopoverPortal.js
 var PopoverPortal_default = /*@__PURE__*/ defineComponent({
 	__name: "PopoverPortal",
 	props: {
@@ -4982,7 +4719,8 @@ var PopoverPortal_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/Popover/PopoverTrigger.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/Popover/PopoverTrigger.js
 var PopoverTrigger_default = /*@__PURE__*/ defineComponent({
 	__name: "PopoverTrigger",
 	props: {
@@ -5036,7 +4774,8 @@ var PopoverTrigger_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/DropdownMenu/DropdownMenuArrow.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/DropdownMenu/DropdownMenuArrow.js
 var DropdownMenuArrow_default = /*@__PURE__*/ defineComponent({
 	__name: "DropdownMenuArrow",
 	props: {
@@ -5075,7 +4814,8 @@ var DropdownMenuArrow_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/DropdownMenu/DropdownMenuCheckboxItem.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/DropdownMenu/DropdownMenuCheckboxItem.js
 var DropdownMenuCheckboxItem_default = /*@__PURE__*/ defineComponent({
 	__name: "DropdownMenuCheckboxItem",
 	props: {
@@ -5116,7 +4856,8 @@ var DropdownMenuCheckboxItem_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/DropdownMenu/DropdownMenuRoot.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/DropdownMenu/DropdownMenuRoot.js
 var [injectDropdownMenuRootContext, provideDropdownMenuRootContext] = /*@__PURE__*/ createContext("DropdownMenuRoot");
 var DropdownMenuRoot_default = /*@__PURE__*/ defineComponent({
 	__name: "DropdownMenuRoot",
@@ -5183,7 +4924,8 @@ var DropdownMenuRoot_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/DropdownMenu/DropdownMenuContent.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/DropdownMenu/DropdownMenuContent.js
 var DropdownMenuContent_default$1 = /*@__PURE__*/ defineComponent({
 	inheritAttrs: false,
 	__name: "DropdownMenuContent",
@@ -5334,7 +5076,8 @@ var DropdownMenuContent_default$1 = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/DropdownMenu/DropdownMenuFilter.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/DropdownMenu/DropdownMenuFilter.js
 var DropdownMenuFilter_default = /*@__PURE__*/ defineComponent({
 	__name: "DropdownMenuFilter",
 	props: {
@@ -5462,7 +5205,8 @@ var DropdownMenuFilter_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/DropdownMenu/DropdownMenuGroup.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/DropdownMenu/DropdownMenuGroup.js
 var DropdownMenuGroup_default = /*@__PURE__*/ defineComponent({
 	__name: "DropdownMenuGroup",
 	props: {
@@ -5486,7 +5230,8 @@ var DropdownMenuGroup_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/DropdownMenu/DropdownMenuItem.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/DropdownMenu/DropdownMenuItem.js
 var DropdownMenuItem_default = /*@__PURE__*/ defineComponent({
 	__name: "DropdownMenuItem",
 	props: {
@@ -5523,7 +5268,8 @@ var DropdownMenuItem_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/DropdownMenu/DropdownMenuItemIndicator.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/DropdownMenu/DropdownMenuItemIndicator.js
 var DropdownMenuItemIndicator_default = /*@__PURE__*/ defineComponent({
 	__name: "DropdownMenuItemIndicator",
 	props: {
@@ -5551,7 +5297,8 @@ var DropdownMenuItemIndicator_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/DropdownMenu/DropdownMenuLabel.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/DropdownMenu/DropdownMenuLabel.js
 var DropdownMenuLabel_default = /*@__PURE__*/ defineComponent({
 	__name: "DropdownMenuLabel",
 	props: {
@@ -5575,7 +5322,8 @@ var DropdownMenuLabel_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/DropdownMenu/DropdownMenuPortal.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/DropdownMenu/DropdownMenuPortal.js
 var DropdownMenuPortal_default = /*@__PURE__*/ defineComponent({
 	__name: "DropdownMenuPortal",
 	props: {
@@ -5606,7 +5354,8 @@ var DropdownMenuPortal_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/DropdownMenu/DropdownMenuSeparator.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/DropdownMenu/DropdownMenuSeparator.js
 var DropdownMenuSeparator_default = /*@__PURE__*/ defineComponent({
 	__name: "DropdownMenuSeparator",
 	props: {
@@ -5630,7 +5379,8 @@ var DropdownMenuSeparator_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/DropdownMenu/DropdownMenuSub.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/DropdownMenu/DropdownMenuSub.js
 var DropdownMenuSub_default = /*@__PURE__*/ defineComponent({
 	__name: "DropdownMenuSub",
 	props: {
@@ -5663,7 +5413,8 @@ var DropdownMenuSub_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/DropdownMenu/DropdownMenuSubContent.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/DropdownMenu/DropdownMenuSubContent.js
 var DropdownMenuSubContent_default = /*@__PURE__*/ defineComponent({
 	__name: "DropdownMenuSubContent",
 	props: {
@@ -5778,7 +5529,8 @@ var DropdownMenuSubContent_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/DropdownMenu/DropdownMenuSubTrigger.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/DropdownMenu/DropdownMenuSubTrigger.js
 var DropdownMenuSubTrigger_default = /*@__PURE__*/ defineComponent({
 	__name: "DropdownMenuSubTrigger",
 	props: {
@@ -5814,7 +5566,8 @@ var DropdownMenuSubTrigger_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/DropdownMenu/DropdownMenuTrigger.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/DropdownMenu/DropdownMenuTrigger.js
 var DropdownMenuTrigger_default = /*@__PURE__*/ defineComponent({
 	__name: "DropdownMenuTrigger",
 	props: {
@@ -5895,7 +5648,8 @@ var DropdownMenuTrigger_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/HoverCard/HoverCardArrow.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/HoverCard/HoverCardArrow.js
 var HoverCardArrow_default = /*@__PURE__*/ defineComponent({
 	__name: "HoverCardArrow",
 	props: {
@@ -5934,7 +5688,8 @@ var HoverCardArrow_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/HoverCard/HoverCardRoot.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/HoverCard/HoverCardRoot.js
 var [injectHoverCardRootContext, provideHoverCardRootContext] = /*@__PURE__*/ createContext("HoverCardRoot");
 var HoverCardRoot_default = /*@__PURE__*/ defineComponent({
 	__name: "HoverCardRoot",
@@ -6015,7 +5770,8 @@ var HoverCardRoot_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/HoverCard/utils.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/HoverCard/utils.js
 function excludeTouch(eventHandler) {
 	return (event) => event.pointerType === "touch" ? void 0 : eventHandler();
 }
@@ -6031,7 +5787,8 @@ function getTabbableNodes(container) {
 	while (walker.nextNode()) nodes.push(walker.currentNode);
 	return nodes;
 }
-// ../../../../node_modules/reka-ui/dist/HoverCard/HoverCardContentImpl.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/HoverCard/HoverCardContentImpl.js
 var HoverCardContentImpl_default = /*@__PURE__*/ defineComponent({
 	__name: "HoverCardContentImpl",
 	props: {
@@ -6214,7 +5971,8 @@ var HoverCardContentImpl_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/HoverCard/HoverCardContent.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/HoverCard/HoverCardContent.js
 var HoverCardContent_default = /*@__PURE__*/ defineComponent({
 	__name: "HoverCardContent",
 	props: {
@@ -6335,7 +6093,8 @@ var HoverCardContent_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/HoverCard/HoverCardPortal.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/HoverCard/HoverCardPortal.js
 var HoverCardPortal_default = /*@__PURE__*/ defineComponent({
 	__name: "HoverCardPortal",
 	props: {
@@ -6366,7 +6125,8 @@ var HoverCardPortal_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/HoverCard/HoverCardTrigger.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/HoverCard/HoverCardTrigger.js
 var HoverCardTrigger_default = /*@__PURE__*/ defineComponent({
 	__name: "HoverCardTrigger",
 	props: {
@@ -6427,7 +6187,8 @@ var HoverCardTrigger_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/component/BaseSeparator.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/component/BaseSeparator.js
 var BaseSeparator_default = /*@__PURE__*/ defineComponent({
 	__name: "BaseSeparator",
 	props: {
@@ -6477,7 +6238,8 @@ var BaseSeparator_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/Separator/Separator.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/Separator/Separator.js
 var Separator_default$1 = /*@__PURE__*/ defineComponent({
 	__name: "Separator",
 	props: {
@@ -6509,282 +6271,8 @@ var Separator_default$1 = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/Toast/createToastManager.js
-var TOAST_MANAGER_SUBSCRIBE = /*@__PURE__*/ Symbol("ToastManagerSubscribe");
-var count = 0;
-function generateToastId() {
-	count = (count + 1) % Number.MAX_SAFE_INTEGER;
-	return `reka-toast-${count}`;
-}
-function resolvePromiseState(state, value) {
-	const resolved = typeof state === "function" ? state(value) : state;
-	return typeof resolved === "string" ? { description: resolved } : resolved;
-}
-function runToastPromise(promise, options, add, update) {
-	const id = add({
-		...typeof options.loading === "string" ? { description: options.loading } : options.loading,
-		status: "loading"
-	});
-	return promise.then((value) => {
-		update(id, {
-			...resolvePromiseState(options.success, value),
-			status: "success"
-		});
-		return value;
-	}, (error) => {
-		update(id, {
-			...resolvePromiseState(options.error, error),
-			status: "error"
-		});
-		throw error;
-	});
-}
-// ../../../../node_modules/reka-ui/dist/Toast/useToastStore.js
-function useToastStore() {
-	const toasts = shallowRef([]);
-	const restartKeys = /*#__PURE__*/ reactive(/* @__PURE__ */ new Map());
-	function find(id) {
-		return toasts.value.find((toast) => toast.id === id);
-	}
-	function replace(id, next) {
-		toasts.value = toasts.value.map((toast) => toast.id === id ? next : toast);
-	}
-	function remove(id) {
-		const toast = find(id);
-		if (!toast || toast.open) return;
-		toasts.value = toasts.value.filter((item) => item.id !== id);
-		restartKeys.delete(id);
-		toast.onRemove?.();
-	}
-	function add(options) {
-		const id = options.id ?? generateToastId();
-		const existing = find(id);
-		if (existing?.open) {
-			const { id: _id, ...updates } = options;
-			replace(id, {
-				...existing,
-				...updates,
-				updateKey: existing.updateKey + 1
-			});
-			restartKeys.set(id, (restartKeys.get(id) ?? 0) + 1);
-			return id;
-		}
-		const rest = existing ? toasts.value.filter((toast) => toast.id !== id) : toasts.value;
-		toasts.value = [{
-			...options,
-			id,
-			open: true,
-			updateKey: 0
-		}, ...rest];
-		return id;
-	}
-	function close(id) {
-		const closing = toasts.value.filter((toast) => toast.open && (id === void 0 || toast.id === id));
-		if (!closing.length) return;
-		toasts.value = toasts.value.map((toast) => closing.includes(toast) ? {
-			...toast,
-			open: false
-		} : toast);
-		closing.forEach((toast) => toast.onClose?.());
-	}
-	function update(id, updates) {
-		const prevToast = find(id);
-		if (!prevToast?.open) return;
-		const patch = typeof updates === "function" ? updates(prevToast) : updates;
-		const current = find(id);
-		if (!current?.open) return;
-		replace(id, {
-			...current,
-			...patch,
-			id,
-			open: true,
-			updateKey: current.updateKey + 1
-		});
-	}
-	return {
-		toasts,
-		add,
-		close,
-		update,
-		promise: (promise, options) => runToastPromise(promise, options, add, update),
-		remove,
-		getRestartKey: (id) => restartKeys.get(id) ?? 0
-	};
-}
-// ../../../../node_modules/reka-ui/dist/Toast/ToastProvider.js
-var [injectToastProviderContext, provideToastProviderContext] = /*@__PURE__*/ createContext("ToastProvider");
-var ToastProvider_default = /*@__PURE__*/ defineComponent({
-	inheritAttrs: false,
-	__name: "ToastProvider",
-	props: {
-		label: {
-			type: String,
-			required: false,
-			default: "Notification"
-		},
-		duration: {
-			type: Number,
-			required: false,
-			default: 5e3
-		},
-		disableSwipe: {
-			type: Boolean,
-			required: false
-		},
-		swipeDirection: {
-			type: String,
-			required: false,
-			default: "right"
-		},
-		swipeThreshold: {
-			type: Number,
-			required: false,
-			default: 50
-		},
-		limit: {
-			type: Number,
-			required: false
-		},
-		toastManager: {
-			type: Object,
-			required: false
-		}
-	},
-	setup(__props) {
-		const props = __props;
-		const { label, duration, disableSwipe, swipeDirection, swipeThreshold } = toRefs(props);
-		useCollection({ isProvider: true });
-		const viewport = ref();
-		const toastCount = ref(0);
-		const isFocusedToastEscapeKeyDownRef = ref(false);
-		const isClosePausedRef = ref(false);
-		const toastStore = useToastStore();
-		onMounted(() => {
-			watch(() => props.toastManager, (manager, _, onCleanup) => {
-				if (!manager) return;
-				onCleanup(manager[TOAST_MANAGER_SUBSCRIBE]((event) => {
-					if (event.action === "add") toastStore.add(event.options);
-					else if (event.action === "close") toastStore.close(event.id);
-					else toastStore.update(event.id, event.updates);
-				}));
-			}, { immediate: true });
-		});
-		const entries = shallowReactive([]);
-		let seq = 0;
-		const stack = computed(() => {
-			const ordered = [...entries].sort((a, b) => b.seq - a.seq);
-			const states = /* @__PURE__ */ new Map();
-			let visibleIndex = 0;
-			let offsetY = 0;
-			ordered.forEach((entry, index) => {
-				const closing = !entry.open;
-				states.set(entry, {
-					index: closing ? index : visibleIndex,
-					offsetY,
-					limited: !closing && props.limit !== void 0 && visibleIndex >= props.limit
-				});
-				if (!closing) {
-					offsetY += entry.height;
-					visibleIndex++;
-				}
-			});
-			return {
-				ordered,
-				states
-			};
-		});
-		const hovering = ref(false);
-		const focused = ref(false);
-		if (props.label && typeof props.label === "string" && !props.label.trim()) throw new Error("Invalid prop `label` supplied to `ToastProvider`. Expected non-empty `string`.");
-		provideToastProviderContext({
-			label,
-			duration,
-			disableSwipe,
-			swipeDirection,
-			swipeThreshold,
-			toastCount,
-			viewport,
-			onViewportChange(el) {
-				viewport.value = el;
-			},
-			onToastAdd() {
-				toastCount.value++;
-			},
-			onToastRemove() {
-				toastCount.value--;
-			},
-			isFocusedToastEscapeKeyDownRef,
-			isClosePausedRef,
-			toastStore,
-			hovering,
-			focused,
-			expanded: computed(() => hovering.value || focused.value),
-			frontmostHeight: computed(() => stack.value.ordered.find((entry) => entry.open)?.height || void 0),
-			closingCount: computed(() => entries.filter((entry) => !entry.open).length),
-			registerToast(entry) {
-				entry.seq = ++seq;
-				entries.push(entry);
-				return () => {
-					const index = entries.indexOf(entry);
-					if (index !== -1) entries.splice(index, 1);
-				};
-			},
-			reopenToast(entry) {
-				entry.seq = ++seq;
-			},
-			getToastStack(entry) {
-				return stack.value.states.get(entry) ?? {
-					index: 0,
-					offsetY: 0,
-					limited: false
-				};
-			}
-		});
-		return (_ctx, _cache) => {
-			return renderSlot(_ctx.$slots, "default");
-		};
-	}
-});
-// ../../../../node_modules/reka-ui/dist/Toast/utils.js
-var TOAST_SWIPE_START = "toast.swipeStart";
-var TOAST_SWIPE_MOVE = "toast.swipeMove";
-var TOAST_SWIPE_CANCEL = "toast.swipeCancel";
-var TOAST_SWIPE_END = "toast.swipeEnd";
-var VIEWPORT_PAUSE = "toast.viewportPause";
-var VIEWPORT_RESUME = "toast.viewportResume";
-function handleAndDispatchCustomEvent(name, handler, detail) {
-	const currentTarget = detail.originalEvent.currentTarget;
-	const event = new CustomEvent(name, {
-		bubbles: false,
-		cancelable: true,
-		detail
-	});
-	if (handler) currentTarget.addEventListener(name, handler, { once: true });
-	currentTarget.dispatchEvent(event);
-}
-function isDeltaInDirection(delta, direction, threshold = 0) {
-	const deltaX = Math.abs(delta.x);
-	const deltaY = Math.abs(delta.y);
-	const isDeltaX = deltaX > deltaY;
-	if (direction === "left" || direction === "right") return isDeltaX && deltaX > threshold;
-	else return !isDeltaX && deltaY > threshold;
-}
-function getAnnounceTextContent(container) {
-	const textContent = [];
-	Array.from(container.childNodes).forEach((node) => {
-		if (node.nodeType === node.TEXT_NODE && node.textContent) textContent.push(node.textContent);
-		if (isHTMLElement(node)) {
-			const isHidden = node.ariaHidden || node.hidden || node.style.display === "none";
-			const isExcluded = node.dataset.rekaToastAnnounceExclude === "";
-			if (!isHidden) if (isExcluded) {
-				const altText = node.dataset.rekaToastAnnounceAlt;
-				if (altText) textContent.push(altText);
-			} else textContent.push(...getAnnounceTextContent(node));
-		}
-	});
-	return textContent;
-}
-// ../../../../node_modules/reka-ui/dist/Toast/ToastPortal.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/Toast/ToastPortal.js
 var ToastPortal_default = /*@__PURE__*/ defineComponent({
 	__name: "ToastPortal",
 	props: {
@@ -6815,7 +6303,8 @@ var ToastPortal_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/Toast/FocusProxy.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/Toast/FocusProxy.js
 var FocusProxy_default = /*@__PURE__*/ defineComponent({
 	__name: "FocusProxy",
 	emits: ["focusFromOutsideViewport"],
@@ -6837,7 +6326,8 @@ var FocusProxy_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/Toast/ToastViewport.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/Toast/ToastViewport.js
 var ToastViewport_default = /*@__PURE__*/ defineComponent({
 	inheritAttrs: false,
 	__name: "ToastViewport",
@@ -7026,7 +6516,8 @@ var ToastViewport_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/Tooltip/TooltipArrow.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/Tooltip/TooltipArrow.js
 var TooltipArrow_default = /*@__PURE__*/ defineComponent({
 	__name: "TooltipArrow",
 	props: {
@@ -7061,7 +6552,8 @@ var TooltipArrow_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/Tooltip/TooltipProvider.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/Tooltip/TooltipProvider.js
 var [injectTooltipProviderContext, provideTooltipProviderContext] = /*@__PURE__*/ createContext("TooltipProvider");
 var TooltipProvider_default = /*@__PURE__*/ defineComponent({
 	inheritAttrs: false,
@@ -7130,9 +6622,11 @@ var TooltipProvider_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/Tooltip/utils.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/Tooltip/utils.js
 var TOOLTIP_OPEN = "tooltip.open";
-// ../../../../node_modules/reka-ui/dist/Tooltip/TooltipRoot.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/Tooltip/TooltipRoot.js
 var [injectTooltipRootContext, provideTooltipRootContext] = /*@__PURE__*/ createContext("TooltipRoot");
 var TooltipRoot_default = /*@__PURE__*/ defineComponent({
 	__name: "TooltipRoot",
@@ -7248,7 +6742,8 @@ var TooltipRoot_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/Tooltip/TooltipContentImpl.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/Tooltip/TooltipContentImpl.js
 var TooltipContentImpl_default = /*@__PURE__*/ defineComponent({
 	__name: "TooltipContentImpl",
 	props: {
@@ -7383,7 +6878,8 @@ var TooltipContentImpl_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/Tooltip/TooltipContentHoverable.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/Tooltip/TooltipContentHoverable.js
 var TooltipContentHoverable_default = /*@__PURE__*/ defineComponent({
 	__name: "TooltipContentHoverable",
 	props: {
@@ -7475,7 +6971,8 @@ var TooltipContentHoverable_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/Tooltip/TooltipContent.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/Tooltip/TooltipContent.js
 var TooltipContent_default = /*@__PURE__*/ defineComponent({
 	__name: "TooltipContent",
 	props: {
@@ -7562,7 +7059,8 @@ var TooltipContent_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/Tooltip/TooltipPortal.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/Tooltip/TooltipPortal.js
 var TooltipPortal_default = /*@__PURE__*/ defineComponent({
 	__name: "TooltipPortal",
 	props: {
@@ -7593,7 +7091,8 @@ var TooltipPortal_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/reka-ui/dist/Tooltip/TooltipTrigger.js
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/Tooltip/TooltipTrigger.js
 var TooltipTrigger_default = /*@__PURE__*/ defineComponent({
 	__name: "TooltipTrigger",
 	props: {
@@ -7691,7 +7190,8 @@ var TooltipTrigger_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
-// ../../../../node_modules/@nuxt/ui/dist/runtime/composables/useKbd.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/composables/useKbd.js
 var kbdKeysMap = {
 	meta: "",
 	ctrl: "",
@@ -7753,7 +7253,8 @@ function useKbd() {
 		getKbdKey
 	};
 }
-// ../../../../node_modules/@nuxt/ui/dist/runtime/composables/usePortal.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/composables/usePortal.js
 var portalTargetInjectionKey = /*@__PURE__*/ Symbol("nuxt-ui.portal-target");
 function usePortal(portal) {
 	const globalPortal = inject(portalTargetInjectionKey, void 0);
@@ -7765,7 +7266,8 @@ function usePortal(portal) {
 		disabled: disabled.value
 	}));
 }
-// ../../../../node_modules/@nuxt/ui/dist/runtime/composables/useToast.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/composables/useToast.js
 var toastMaxInjectionKey = /*@__PURE__*/ Symbol("nuxt-ui.toast-max");
 var ANIMATION_DURATION = 200;
 function useToast() {
@@ -7864,7 +7366,8 @@ function useToast() {
 		clear
 	};
 }
-// ../../../../node_modules/@nuxt/ui/dist/runtime/utils/prefetch.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/utils/prefetch.js
 function requestIdleCallback(callback) {
 	if (typeof window === "undefined") return;
 	if (typeof window.requestIdleCallback === "function") return window.requestIdleCallback(callback);
@@ -7878,7 +7381,8 @@ function cancelIdleCallback(handle) {
 	}
 	clearTimeout(handle);
 }
-// virtual:nuxt-ui-templates/ui/toaster.ts
+//#endregion
+//#region virtual:nuxt-ui-templates/ui/toaster.ts
 var toaster_default = {
 	"slots": {
 		"viewport": "fixed flex flex-col w-[calc(100%-2rem)] sm:w-96 z-[100] data-[expanded=true]:h-(--height) focus:outline-none",
@@ -7934,7 +7438,8 @@ var toaster_default = {
 	],
 	"defaultVariants": { "position": "bottom-right" }
 };
-// ../../../../node_modules/@nuxt/ui/dist/runtime/components/Toaster.vue
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/components/Toaster.vue
 var _sfc_main$13 = /*@__PURE__*/ Object.assign({ name: "Toaster" }, { inheritAttrs: false }, {
 	props: {
 		position: {
@@ -8205,7 +7710,8 @@ function _sfc_render$23(_ctx, _cache, $props, $setup, $data, $options) {
 	}, 16, ["swipe-direction", "label"]);
 }
 var Toaster_default = /*@__PURE__*/ _plugin_vue_export_helper_default(_sfc_main$13, [["render", _sfc_render$23], ["__file", "Toaster.vue"]]);
-// ../../../../node_modules/@nuxt/ui/dist/runtime/composables/useOverlay.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/composables/useOverlay.js
 function _useOverlay() {
 	const overlays = shallowReactive([]);
 	const create = (component, _options) => {
@@ -8288,7 +7794,8 @@ function _useOverlay() {
 	};
 }
 var useOverlay = /*@__PURE__*/ createSharedComposable(_useOverlay);
-// ../../../../node_modules/@nuxt/ui/dist/runtime/components/OverlayProvider.vue
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/components/OverlayProvider.vue
 var _sfc_main$12 = {
 	__name: "OverlayProvider",
 	setup(__props, { expose: __expose }) {
@@ -8337,7 +7844,8 @@ function _sfc_render$22(_ctx, _cache, $props, $setup, $data, $options) {
 	}), 128);
 }
 var OverlayProvider_default = /*@__PURE__*/ _plugin_vue_export_helper_default(_sfc_main$12, [["render", _sfc_render$22], ["__file", "OverlayProvider.vue"]]);
-// ../../../../node_modules/@nuxt/ui/dist/runtime/components/App.vue
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/components/App.vue
 var _sfc_main$11 = /*@__PURE__*/ Object.assign({ name: "App" }, {
 	props: {
 		tooltip: {
@@ -8441,7 +7949,7 @@ function _sfc_render$21(_ctx, _cache, $props, $setup, $data, $options) {
 			default: withCtx(() => [$props.toaster !== null ? (openBlock(), createBlock($setup["UToaster"], normalizeProps(mergeProps({ key: 0 }, $setup.toasterProps)), {
 				default: withCtx(() => [renderSlot(_ctx.$slots, "default")]),
 				_: 3
-			}, 16)) : renderSlot(_ctx.$slots, "default", {}, void 0, void 0, 1), createVNode($setup["UOverlayProvider"])]),
+			}, 16)) : renderSlot(_ctx.$slots, "default", { key: 1 }), createVNode($setup["UOverlayProvider"])]),
 			_: 3
 		}, 16)]),
 		_: 3
@@ -8452,7 +7960,8 @@ function _sfc_render$21(_ctx, _cache, $props, $setup, $data, $options) {
 	]);
 }
 var App_default = /*@__PURE__*/ _plugin_vue_export_helper_default(_sfc_main$11, [["render", _sfc_render$21], ["__file", "App.vue"]]);
-// virtual:nuxt-ui-templates/ui/editor.ts
+//#endregion
+//#region virtual:nuxt-ui-templates/ui/editor.ts
 var editor_default = {
 	"slots": {
 		"root": "",
@@ -8495,7 +8004,8 @@ var editor_default = {
 	} },
 	"defaultVariants": { "placeholderMode": "everyLine" }
 };
-// ../../../../node_modules/@nuxt/ui/dist/runtime/components/Editor.vue
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/components/Editor.vue
 var _sfc_main$10 = /*@__PURE__*/ Object.assign({ inheritAttrs: false }, {
 	__name: "Editor",
 	props: {
@@ -8689,8 +8199,7 @@ var _sfc_main$10 = /*@__PURE__*/ Object.assign({ inheritAttrs: false }, {
 		} }));
 		const contentType = computed(() => props.contentType || (typeof props.modelValue === "string" ? "html" : "json"));
 		const starterKit = computed(() => {
-			const options = typeof props.starterKit === "boolean" ? {} : props.starterKit ?? {};
-			const plainText = props.starterKit === false ? {
+			return defu(typeof props.starterKit === "boolean" ? {} : props.starterKit ?? {}, props.starterKit === false ? {
 				blockquote: false,
 				bold: false,
 				bulletList: false,
@@ -8708,8 +8217,7 @@ var _sfc_main$10 = /*@__PURE__*/ Object.assign({ inheritAttrs: false }, {
 				strike: false,
 				underline: false,
 				trailingNode: false
-			} : {};
-			return defu(options, plainText, {
+			} : {}, {
 				code: false,
 				horizontalRule: false,
 				dropcursor: {
@@ -8906,7 +8414,8 @@ function _sfc_render$20(_ctx, _cache, $props, $setup, $data, $options) {
 	]);
 }
 var Editor_default = /*@__PURE__*/ _plugin_vue_export_helper_default(_sfc_main$10, [["render", _sfc_render$20], ["__file", "Editor.vue"]]);
-// src/composable/nuxt-editor/useLinkAutoSelect.ts
+//#endregion
+//#region src/composable/nuxt-editor/useLinkAutoSelect.ts
 function useLinkAutoSelect() {
 	function bind(editor) {
 		editor.view.dom.addEventListener("mouseup", () => {
@@ -8924,7 +8433,8 @@ function useLinkAutoSelect() {
 	}
 	return { bind };
 }
-// ../../../../node_modules/@nuxt/ui/dist/runtime/composables/useFilter.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/composables/useFilter.js
 function useFilter() {
 	const { contains, startsWith } = useFilter$1({ sensitivity: "base" });
 	function score(value, searchTerm) {
@@ -8995,7 +8505,8 @@ function useFilter() {
 		filterGroups
 	};
 }
-// virtual:nuxt-ui-templates/ui/input.ts
+//#endregion
+//#region virtual:nuxt-ui-templates/ui/input.ts
 var input_default = {
 	"slots": {
 		"root": "relative inline-flex items-center",
@@ -9277,7 +8788,8 @@ var input_default = {
 		"variant": "outline"
 	}
 };
-// ../../../../node_modules/@nuxt/ui/dist/runtime/components/Input.vue
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/components/Input.vue
 var _sfc_main$9 = /*@__PURE__*/ Object.assign({ inheritAttrs: false }, {
 	__name: "Input",
 	props: {
@@ -9630,7 +9142,8 @@ function _sfc_render$19(_ctx, _cache, $props, $setup, $data, $options) {
 	]);
 }
 var Input_default = /*@__PURE__*/ _plugin_vue_export_helper_default(_sfc_main$9, [["render", _sfc_render$19], ["__file", "Input.vue"]]);
-// ../../../../node_modules/@nuxt/ui/dist/runtime/composables/usePrefix.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/composables/usePrefix.js
 function usePrefix() {
 	const prefix = useAppConfig().ui?.prefix;
 	return (classString) => {
@@ -9638,7 +9151,8 @@ function usePrefix() {
 		return classString.split(/\s+/).filter(Boolean).map((cls) => `${prefix}:${cls}`).join(" ");
 	};
 }
-// virtual:nuxt-ui-templates/ui/kbd.ts
+//#endregion
+//#region virtual:nuxt-ui-templates/ui/kbd.ts
 var kbd_default = {
 	"base": "inline-flex items-center justify-center px-1 rounded-sm font-medium font-sans uppercase",
 	"variants": {
@@ -9811,7 +9325,8 @@ var kbd_default = {
 		"size": "md"
 	}
 };
-// ../../../../node_modules/@nuxt/ui/dist/runtime/components/Kbd.vue
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/components/Kbd.vue
 var _sfc_main$8 = {
 	__name: "Kbd",
 	props: {
@@ -9913,7 +9428,8 @@ function _sfc_render$18(_ctx, _cache, $props, $setup, $data, $options) {
 	}, 8, ["as", "class"]);
 }
 var Kbd_default = /*@__PURE__*/ _plugin_vue_export_helper_default(_sfc_main$8, [["render", _sfc_render$18], ["__file", "Kbd.vue"]]);
-// ../../../../node_modules/@nuxt/ui/dist/runtime/components/DropdownMenuContent.vue
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/components/DropdownMenuContent.vue
 var _sfc_main$7 = {
 	__name: "DropdownMenuContent",
 	props: {
@@ -10570,7 +10086,8 @@ function _sfc_render$17(_ctx, _cache, $props, $setup, $data, $options) {
 	}, 16)], 64);
 }
 var DropdownMenuContent_default = /*@__PURE__*/ _plugin_vue_export_helper_default(_sfc_main$7, [["render", _sfc_render$17], ["__file", "DropdownMenuContent.vue"]]);
-// virtual:nuxt-ui-templates/ui/dropdown-menu.ts
+//#endregion
+//#region virtual:nuxt-ui-templates/ui/dropdown-menu.ts
 var dropdown_menu_default = {
 	"slots": {
 		"content": "min-w-32 max-h-(--reka-dropdown-menu-content-available-height) bg-default shadow-lg rounded-md ring ring-default overflow-hidden data-[state=open]:animate-[scale-in_100ms_var(--ease-out)] data-[state=closed]:animate-[scale-out_100ms_var(--ease-out)] origin-(--reka-dropdown-menu-content-transform-origin) flex flex-col",
@@ -10768,7 +10285,8 @@ var dropdown_menu_default = {
 	],
 	"defaultVariants": { "size": "md" }
 };
-// ../../../../node_modules/@nuxt/ui/dist/runtime/components/DropdownMenu.vue
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/components/DropdownMenu.vue
 var _sfc_main$6 = {
 	__name: "DropdownMenu",
 	props: /*@__PURE__*/ mergeModels({
@@ -11003,12 +10521,14 @@ function _sfc_render$16(_ctx, _cache, $props, $setup, $data, $options) {
 	}, 16);
 }
 var DropdownMenu_default = /*@__PURE__*/ _plugin_vue_export_helper_default(_sfc_main$6, [["render", _sfc_render$16], ["__file", "DropdownMenu.vue"]]);
-// virtual:nuxt-ui-templates/ui/editor-drag-handle.ts
+//#endregion
+//#region virtual:nuxt-ui-templates/ui/editor-drag-handle.ts
 var editor_drag_handle_default = { "slots": {
 	"root": "hidden sm:flex items-center justify-center transition-[top,left] duration-200 ease-out motion-reduce:transition-none",
 	"handle": "cursor-grab px-1"
 } };
-// ../../../../node_modules/@nuxt/ui/dist/runtime/components/EditorDragHandle.vue
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/components/EditorDragHandle.vue
 var _sfc_main$5 = /*@__PURE__*/ Object.assign({ inheritAttrs: false }, {
 	__name: "EditorDragHandle",
 	props: {
@@ -11306,7 +10826,8 @@ function _sfc_render$15(_ctx, _cache, $props, $setup, $data, $options) {
 	]);
 }
 var EditorDragHandle_default$1 = /*@__PURE__*/ _plugin_vue_export_helper_default(_sfc_main$5, [["render", _sfc_render$15], ["__file", "EditorDragHandle.vue"]]);
-// src/vue/components/NuxtEditor/EditorDragHandle.vue?vue&type=script&setup=true&lang.ts
+//#endregion
+//#region src/vue/components/NuxtEditor/EditorDragHandle.vue?vue&type=script&setup=true&lang.ts
 var EditorDragHandle_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineComponent({
 	__name: "EditorDragHandle",
 	props: {
@@ -11343,7 +10864,8 @@ var EditorDragHandle_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/
 		return __returned__;
 	}
 });
-// src/vue/components/NuxtEditor/EditorDragHandle.vue
+//#endregion
+//#region src/vue/components/NuxtEditor/EditorDragHandle.vue
 function _sfc_render$14(_ctx, _cache, $props, $setup, $data, $options) {
 	return openBlock(), createBlock($setup["UEditorDragHandle"], {
 		editor: $props.editor,
@@ -11378,7 +10900,8 @@ function _sfc_render$14(_ctx, _cache, $props, $setup, $data, $options) {
 	}, 8, ["editor"]);
 }
 var EditorDragHandle_default = /*@__PURE__*/ _plugin_vue_export_helper_default(EditorDragHandle_vue_vue_type_script_setup_true_lang_default, [["render", _sfc_render$14], ["__file", "EditorDragHandle.vue"]]);
-// virtual:nuxt-ui-templates/ui/tooltip.ts
+//#endregion
+//#region virtual:nuxt-ui-templates/ui/tooltip.ts
 var tooltip_default = { "slots": {
 	"content": "flex items-center gap-1 bg-default text-highlighted shadow-sm rounded-sm ring ring-default h-6 px-2.5 py-1 text-xs select-none data-[state=delayed-open]:animate-[scale-in_100ms_var(--ease-out)] data-[state=closed]:animate-[scale-out_100ms_var(--ease-out)] origin-(--reka-tooltip-content-transform-origin) pointer-events-auto",
 	"arrow": "fill-bg stroke-default",
@@ -11386,7 +10909,8 @@ var tooltip_default = { "slots": {
 	"kbds": "hidden lg:inline-flex items-center shrink-0 gap-0.5 not-first-of-type:before:content-['·'] not-first-of-type:before:me-0.5",
 	"kbdsSize": "sm"
 } };
-// ../../../../node_modules/@nuxt/ui/dist/runtime/components/Tooltip.vue
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/components/Tooltip.vue
 var _sfc_main$4 = {
 	__name: "Tooltip",
 	props: {
@@ -11593,7 +11117,8 @@ function _sfc_render$13(_ctx, _cache, $props, $setup, $data, $options) {
 	}, 16, ["disabled"]);
 }
 var Tooltip_default = /*@__PURE__*/ _plugin_vue_export_helper_default(_sfc_main$4, [["render", _sfc_render$13], ["__file", "Tooltip.vue"]]);
-// virtual:nuxt-ui-templates/ui/editor-toolbar.ts
+//#endregion
+//#region virtual:nuxt-ui-templates/ui/editor-toolbar.ts
 var editor_toolbar_default = {
 	"slots": {
 		"root": "focus:outline-none",
@@ -11607,7 +11132,8 @@ var editor_toolbar_default = {
 		"fixed": { "base": "" }
 	} }
 };
-// ../../../../node_modules/@nuxt/ui/dist/runtime/components/EditorToolbar.vue
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/components/EditorToolbar.vue
 var _sfc_main$3 = /*@__PURE__*/ Object.assign({ inheritAttrs: false }, {
 	__name: "EditorToolbar",
 	props: {
@@ -11785,7 +11311,7 @@ var _sfc_main$3 = /*@__PURE__*/ Object.assign({ inheritAttrs: false }, {
 			});
 		}
 		function getDropdownProps(item) {
-			const baseProps = pick(item, [
+			return defu(pick(item, [
 				"size",
 				"checkedIcon",
 				"loadingIcon",
@@ -11795,8 +11321,7 @@ var _sfc_main$3 = /*@__PURE__*/ Object.assign({ inheritAttrs: false }, {
 				"portal",
 				"modal",
 				"ui"
-			]);
-			return defu(baseProps, {
+			]), {
 				modal: false,
 				size: props.size
 			});
@@ -11918,6 +11443,7 @@ function _sfc_render$12(_ctx, _cache, $props, $setup, $data, $options) {
 					class: normalizeClass($setup.ui.group({ class: $setup.props.ui?.group }))
 				}, [(openBlock(true), createElementBlock(Fragment, null, renderList(group, (item, index) => {
 					return renderSlot(_ctx.$slots, item.slot || "item", {
+						key: `group-${groupIndex}-${index}`,
 						item,
 						index,
 						isActive: $setup.isActive,
@@ -11979,7 +11505,7 @@ function _sfc_render$12(_ctx, _cache, $props, $setup, $data, $options) {
 						"disabled",
 						"ui",
 						"onClick"
-					]))], void 0, `group-${groupIndex}-${index}`);
+					]))]);
 				}), 128))], 2), groupIndex < $setup.groups.length - 1 ? (openBlock(), createBlock($setup["Separator"], {
 					key: 0,
 					"data-slot": "separator",
@@ -11993,7 +11519,8 @@ function _sfc_render$12(_ctx, _cache, $props, $setup, $data, $options) {
 	}, 16, ["as"]);
 }
 var EditorToolbar_default = /*@__PURE__*/ _plugin_vue_export_helper_default(_sfc_main$3, [["render", _sfc_render$12], ["__file", "EditorToolbar.vue"]]);
-// ../../../../node_modules/@nuxt/ui/dist/runtime/composables/useEditorMenu.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/composables/useEditorMenu.js
 function useEditorMenu(options) {
 	const filteredItems = ref([]);
 	const selectedIndex = ref(0);
@@ -12413,7 +11940,8 @@ function useEditorMenu(options) {
 		searchTerm
 	};
 }
-// virtual:nuxt-ui-templates/ui/editor-suggestion-menu.ts
+//#endregion
+//#region virtual:nuxt-ui-templates/ui/editor-suggestion-menu.ts
 var editor_suggestion_menu_default = {
 	"slots": {
 		"content": "min-w-48 max-w-60 max-h-96 bg-default shadow-lg rounded-md ring ring-default overflow-hidden data-[state=open]:animate-[scale-in_100ms_var(--ease-out)] data-[state=closed]:animate-[scale-out_100ms_var(--ease-out)] origin-(--reka-dropdown-menu-content-transform-origin) flex flex-col",
@@ -12476,7 +12004,8 @@ var editor_suggestion_menu_default = {
 	},
 	"defaultVariants": { "size": "md" }
 };
-// ../../../../node_modules/@nuxt/ui/dist/runtime/components/EditorSuggestionMenu.vue
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/components/EditorSuggestionMenu.vue
 var _sfc_main$2 = /*@__PURE__*/ Object.assign({ inheritAttrs: false }, {
 	__name: "EditorSuggestionMenu",
 	props: {
@@ -12625,7 +12154,8 @@ function _sfc_render$11(_ctx, _cache, $props, $setup, $data, $options) {
 	return openBlock(), createElementBlock("div");
 }
 var EditorSuggestionMenu_default = /*@__PURE__*/ _plugin_vue_export_helper_default(_sfc_main$2, [["render", _sfc_render$11], ["__file", "EditorSuggestionMenu.vue"]]);
-// src/composable/nuxt-editor/useBubbleVisibility.ts
+//#endregion
+//#region src/composable/nuxt-editor/useBubbleVisibility.ts
 function useBubbleVisibility() {
 	const text = ({ editor, view, state }) => view.hasFocus() && !state.selection.empty && !editor.isActive("image") && !editor.isActive("imageUpload") && !editor.isActive("videoEmbed") && !editor.isActive("codeBlock");
 	const link = ({ editor, view, state }) => (view.hasFocus() || !!view.dom.getRootNode().activeElement?.closest("[data-link-bar]")) && state.selection.empty && editor.isActive("link") && !editor.storage.videoEmbed?.key.getState(state);
@@ -12640,7 +12170,8 @@ function useBubbleVisibility() {
 		videoPrompt
 	};
 }
-// src/vue/components/NuxtEditor/ColorsDropdown.vue?vue&type=script&setup=true&lang.ts
+//#endregion
+//#region src/vue/components/NuxtEditor/ColorsDropdown.vue?vue&type=script&setup=true&lang.ts
 var ColorsDropdown_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineComponent({
 	__name: "ColorsDropdown",
 	props: {
@@ -12664,7 +12195,8 @@ var ColorsDropdown_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ d
 		return __returned__;
 	}
 });
-// src/vue/components/NuxtEditor/ColorsDropdown.vue
+//#endregion
+//#region src/vue/components/NuxtEditor/ColorsDropdown.vue
 function _sfc_render$10(_ctx, _cache, $props, $setup, $data, $options) {
 	return openBlock(), createBlock($setup["UDropdownMenu"], {
 		modal: false,
@@ -12698,7 +12230,8 @@ function _sfc_render$10(_ctx, _cache, $props, $setup, $data, $options) {
 	}, 8, ["items"]);
 }
 var ColorsDropdown_default = /*@__PURE__*/ _plugin_vue_export_helper_default(ColorsDropdown_vue_vue_type_script_setup_true_lang_default, [["render", _sfc_render$10], ["__file", "ColorsDropdown.vue"]]);
-// virtual:nuxt-ui-templates/ui/separator.ts
+//#endregion
+//#region virtual:nuxt-ui-templates/ui/separator.ts
 var separator_default = {
 	"slots": {
 		"root": "flex items-center text-center",
@@ -12837,7 +12370,8 @@ var separator_default = {
 		"type": "solid"
 	}
 };
-// ../../../../node_modules/@nuxt/ui/dist/runtime/components/Separator.vue
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/components/Separator.vue
 var _sfc_main$1 = /*@__PURE__*/ Object.assign({ inheritAttrs: false }, {
 	__name: "Separator",
 	props: {
@@ -12996,7 +12530,8 @@ function _sfc_render$9(_ctx, _cache, $props, $setup, $data, $options) {
 	}, 16, ["class"])], 64);
 }
 var Separator_default = /*@__PURE__*/ _plugin_vue_export_helper_default(_sfc_main$1, [["render", _sfc_render$9], ["__file", "Separator.vue"]]);
-// src/vue/components/NuxtEditor/LinkBar.vue?vue&type=script&setup=true&lang.ts
+//#endregion
+//#region src/vue/components/NuxtEditor/LinkBar.vue?vue&type=script&setup=true&lang.ts
 var LinkBar_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineComponent({
 	__name: "LinkBar",
 	props: { editor: {} },
@@ -13060,7 +12595,8 @@ var LinkBar_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineCo
 		return __returned__;
 	}
 });
-// src/vue/components/NuxtEditor/LinkBar.vue
+//#endregion
+//#region src/vue/components/NuxtEditor/LinkBar.vue
 var _hoisted_1$5 = { class: "flex items-center mr-0.5" };
 function _sfc_render$8(_ctx, _cache, $props, $setup, $data, $options) {
 	return openBlock(), createBlock($setup["UInput"], {
@@ -13116,7 +12652,8 @@ function _sfc_render$8(_ctx, _cache, $props, $setup, $data, $options) {
 	}, 8, ["modelValue", "placeholder"]);
 }
 var LinkBar_default = /*@__PURE__*/ _plugin_vue_export_helper_default(LinkBar_vue_vue_type_script_setup_true_lang_default, [["render", _sfc_render$8], ["__file", "LinkBar.vue"]]);
-// ../../../../node_modules/@nuxt/ui/dist/runtime/utils/overlay.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/utils/overlay.js
 function pointerDownOutside(e, options = {}) {
 	const originalEvent = e.detail.originalEvent;
 	const target = originalEvent.target;
@@ -13128,12 +12665,14 @@ function pointerDownOutside(e, options = {}) {
 		if (originalEvent.offsetX > target.clientWidth || originalEvent.offsetY > target.clientHeight) e.preventDefault();
 	}
 }
-// virtual:nuxt-ui-templates/ui/popover.ts
+//#endregion
+//#region virtual:nuxt-ui-templates/ui/popover.ts
 var popover_default = { "slots": {
 	"content": "bg-default shadow-lg rounded-md ring ring-default data-[state=open]:animate-[scale-in_100ms_var(--ease-out)] data-[state=closed]:animate-[scale-out_100ms_var(--ease-out)] origin-(--reka-popover-content-transform-origin) focus:outline-none pointer-events-auto",
 	"arrow": "fill-bg stroke-default"
 } };
-// ../../../../node_modules/@nuxt/ui/dist/runtime/components/Popover.vue
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/components/Popover.vue
 var _sfc_main = {
 	__name: "Popover",
 	props: {
@@ -13372,7 +12911,8 @@ function _sfc_render$7(_ctx, _cache, $props, $setup, $data, $options) {
 	}, 16);
 }
 var Popover_default = /*@__PURE__*/ _plugin_vue_export_helper_default(_sfc_main, [["render", _sfc_render$7], ["__file", "Popover.vue"]]);
-// src/vue/components/NuxtEditor/LinkPopover.vue?vue&type=script&setup=true&lang.ts
+//#endregion
+//#region src/vue/components/NuxtEditor/LinkPopover.vue?vue&type=script&setup=true&lang.ts
 var LinkPopover_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineComponent({
 	__name: "LinkPopover",
 	props: { editor: {} },
@@ -13448,7 +12988,8 @@ var LinkPopover_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defi
 		return __returned__;
 	}
 });
-// src/vue/components/NuxtEditor/LinkPopover.vue
+//#endregion
+//#region src/vue/components/NuxtEditor/LinkPopover.vue
 var _hoisted_1$4 = { class: "flex items-center mr-0.5" };
 function _sfc_render$6(_ctx, _cache, $props, $setup, $data, $options) {
 	return openBlock(), createBlock($setup["UPopover"], {
@@ -13518,7 +13059,8 @@ function _sfc_render$6(_ctx, _cache, $props, $setup, $data, $options) {
 	}, 8, ["open"]);
 }
 var LinkPopover_default = /*@__PURE__*/ _plugin_vue_export_helper_default(LinkPopover_vue_vue_type_script_setup_true_lang_default, [["render", _sfc_render$6], ["__file", "LinkPopover.vue"]]);
-// src/vue/components/NuxtEditor/VideoPopover.vue?vue&type=script&setup=true&lang.ts
+//#endregion
+//#region src/vue/components/NuxtEditor/VideoPopover.vue?vue&type=script&setup=true&lang.ts
 var VideoPopover_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineComponent({
 	__name: "VideoPopover",
 	props: { editor: {} },
@@ -13566,7 +13108,8 @@ var VideoPopover_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ def
 		return __returned__;
 	}
 });
-// src/vue/components/NuxtEditor/VideoPopover.vue
+//#endregion
+//#region src/vue/components/NuxtEditor/VideoPopover.vue
 var _hoisted_1$3 = { class: "flex items-center mr-0.5" };
 function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
 	return openBlock(), createBlock($setup["UPopover"], {
@@ -13616,7 +13159,8 @@ function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
 	}, 8, ["open"]);
 }
 var VideoPopover_default = /*@__PURE__*/ _plugin_vue_export_helper_default(VideoPopover_vue_vue_type_script_setup_true_lang_default, [["render", _sfc_render$5], ["__file", "VideoPopover.vue"]]);
-// src/vue/components/NuxtEditor/VideoSourcePopover.vue?vue&type=script&setup=true&lang.ts
+//#endregion
+//#region src/vue/components/NuxtEditor/VideoSourcePopover.vue?vue&type=script&setup=true&lang.ts
 var VideoSourcePopover_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineComponent({
 	__name: "VideoSourcePopover",
 	props: { editor: {} },
@@ -13676,7 +13220,8 @@ var VideoSourcePopover_vue_vue_type_script_setup_true_lang_default = /*@__PURE__
 		return __returned__;
 	}
 });
-// src/vue/components/NuxtEditor/VideoSourcePopover.vue
+//#endregion
+//#region src/vue/components/NuxtEditor/VideoSourcePopover.vue
 var _hoisted_1$2 = { "data-video-source": "" };
 var _hoisted_2$1 = { class: "flex items-center mr-0.5" };
 function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
@@ -13727,7 +13272,8 @@ function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
 	}, 8, ["open"]);
 }
 var VideoSourcePopover_default = /*@__PURE__*/ _plugin_vue_export_helper_default(VideoSourcePopover_vue_vue_type_script_setup_true_lang_default, [["render", _sfc_render$4], ["__file", "VideoSourcePopover.vue"]]);
-// src/vue/components/NuxtEditor/VideoPastePrompt.vue?vue&type=script&setup=true&lang.ts
+//#endregion
+//#region src/vue/components/NuxtEditor/VideoPastePrompt.vue?vue&type=script&setup=true&lang.ts
 var VideoPastePrompt_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineComponent({
 	__name: "VideoPastePrompt",
 	props: { editor: {} },
@@ -13773,7 +13319,8 @@ var VideoPastePrompt_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/
 		return __returned__;
 	}
 });
-// src/vue/components/NuxtEditor/VideoPastePrompt.vue
+//#endregion
+//#region src/vue/components/NuxtEditor/VideoPastePrompt.vue
 var _hoisted_1$1 = { class: "flex flex-col min-w-40 p-1" };
 var _hoisted_2 = { class: "px-2 py-1 text-xs font-medium text-muted" };
 function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
@@ -13800,7 +13347,8 @@ function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
 	]);
 }
 var VideoPastePrompt_default = /*@__PURE__*/ _plugin_vue_export_helper_default(VideoPastePrompt_vue_vue_type_script_setup_true_lang_default, [["render", _sfc_render$3], ["__file", "VideoPastePrompt.vue"]]);
-// src/vue/components/NuxtEditor/EditorToolbars.vue?vue&type=script&setup=true&lang.ts
+//#endregion
+//#region src/vue/components/NuxtEditor/EditorToolbars.vue?vue&type=script&setup=true&lang.ts
 var EditorToolbars_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineComponent({
 	__name: "EditorToolbars",
 	props: {
@@ -13850,7 +13398,8 @@ var EditorToolbars_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ d
 		return __returned__;
 	}
 });
-// src/vue/components/NuxtEditor/EditorToolbars.vue
+//#endregion
+//#region src/vue/components/NuxtEditor/EditorToolbars.vue
 function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
 	return openBlock(), createElementBlock(Fragment, null, [
 		$props.fixedItems.length ? (openBlock(), createBlock($setup["UEditorToolbar"], {
@@ -13948,7 +13497,8 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
 	], 64);
 }
 var EditorToolbars_default = /*@__PURE__*/ _plugin_vue_export_helper_default(EditorToolbars_vue_vue_type_script_setup_true_lang_default, [["render", _sfc_render$2], ["__file", "EditorToolbars.vue"]]);
-// src/vue/components/NuxtEditor/TableHandle.vue?vue&type=script&setup=true&lang.ts
+//#endregion
+//#region src/vue/components/NuxtEditor/TableHandle.vue?vue&type=script&setup=true&lang.ts
 var TableHandle_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineComponent({
 	__name: "TableHandle",
 	props: {
@@ -13998,7 +13548,8 @@ var TableHandle_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defi
 		return __returned__;
 	}
 });
-// src/vue/components/NuxtEditor/TableHandle.vue
+//#endregion
+//#region src/vue/components/NuxtEditor/TableHandle.vue
 var _hoisted_1 = {
 	key: 0,
 	class: "nuxt-editor-table-handle",
@@ -14120,7 +13671,8 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
 	])) : createCommentVNode("", true);
 }
 var TableHandle_default = /*@__PURE__*/ _plugin_vue_export_helper_default(TableHandle_vue_vue_type_script_setup_true_lang_default, [["render", _sfc_render$1], ["__file", "TableHandle.vue"]]);
-// src/vue/components/NuxtEditor/NuxtEditorApp.vue?vue&type=script&setup=true&lang.ts
+//#endregion
+//#region src/vue/components/NuxtEditor/NuxtEditorApp.vue?vue&type=script&setup=true&lang.ts
 var NuxtEditorApp_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineComponent({
 	__name: "NuxtEditorApp",
 	props: {
@@ -14167,7 +13719,8 @@ var NuxtEditorApp_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ de
 		return __returned__;
 	}
 });
-// src/vue/components/NuxtEditor/NuxtEditorApp.vue
+//#endregion
+//#region src/vue/components/NuxtEditor/NuxtEditorApp.vue
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
 	return openBlock(), createBlock($setup["UApp"], {
 		locale: $props.locale,
@@ -14232,6 +13785,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
 	}, 8, ["locale", "portal"]);
 }
 var NuxtEditorApp_default = /*@__PURE__*/ _plugin_vue_export_helper_default(NuxtEditorApp_vue_vue_type_script_setup_true_lang_default, [["render", _sfc_render], ["__file", "NuxtEditorApp.vue"]]);
-export { VIEWPORT_PAUSE as a, handleAndDispatchCustomEvent as c, useCollection as d, NuxtEditorApp_default as default, Presence_default as f, TOAST_SWIPE_START as i, isDeltaInDirection as l, getActiveElement as m, TOAST_SWIPE_END as n, VIEWPORT_RESUME as o, useForwardExpose as p, TOAST_SWIPE_MOVE as r, getAnnounceTextContent as s, TOAST_SWIPE_CANCEL as t, injectToastProviderContext as u };
+//#endregion
+export { NuxtEditorApp_default as default };
 
 //# sourceMappingURL=NuxtEditorApp.js.map

@@ -63,6 +63,7 @@
     ]
   },
   "devDependencies": {
+    "@microsoft/api-extractor": "^7.60.1",
     "@nuxt/ui": "^4.12.0",
     "@rubenbimmel/alpine-class-component": "^0.0.4",
     "@social-embed/lib": "^0.1.0-next.11",

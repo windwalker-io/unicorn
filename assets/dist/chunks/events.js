@@ -1,4 +1,4 @@
-// ../../../../node_modules/ts-mixer/dist/esm/index.js
+//#region ../../../../node_modules/ts-mixer/dist/esm/index.js
 /**
 * Utility function that works like `Object.apply`, but copies getters and setters properly as well.  Additionally gives
 * the option to exclude properties by name.
@@ -226,7 +226,8 @@ var applyPropAndMethodDecorators = (propAndMethodDecorators, target) => {
 	if (propDecorators) for (let key in propDecorators) for (let decorator of propDecorators[key]) decorator(target, key);
 	if (methodDecorators) for (let key in methodDecorators) for (let decorator of methodDecorators[key]) decorator(target, key, Object.getOwnPropertyDescriptor(target, key));
 };
-// src/events.ts
+//#endregion
+//#region src/events.ts
 var EventMixin = class {
 	_listeners = {};
 	on(event, handler) {
@@ -239,12 +240,14 @@ var EventMixin = class {
 		return this;
 	}
 	once(event, handler) {
-		handler.once = true;
-		return this.on(event, handler);
+		const wrapper = (...args) => handler(...args);
+		wrapper.once = true;
+		wrapper.original = handler;
+		return this.on(event, wrapper);
 	}
 	off(event, handler) {
 		if (handler) {
-			this._listeners[event] = this.listeners(event).filter((listener) => listener !== handler);
+			this._listeners[event] = this.listeners(event).filter((listener) => listener !== handler && listener.original !== handler);
 			return this;
 		}
 		delete this._listeners[event];
@@ -252,17 +255,19 @@ var EventMixin = class {
 	}
 	trigger(event, ...args) {
 		if (Array.isArray(event)) {
-			for (const e of event) this.trigger(e);
+			for (const e of event) this.trigger(e, ...args);
 			return this;
 		}
-		for (const listener of this.listeners(event)) listener(...args);
-		this._listeners[event] = this.listeners(event).filter((listener) => listener?.once !== true);
+		const listeners = this.listeners(event);
+		this._listeners[event] = listeners.filter((listener) => listener?.once !== true);
+		for (const listener of listeners) listener(...args);
 		return this;
 	}
 	listeners(event) {
 		return this._listeners[event] === void 0 ? [] : this._listeners[event];
 	}
 };
+//#endregion
 export { Mixin as n, EventMixin as t };
 
 //# sourceMappingURL=events.js.map

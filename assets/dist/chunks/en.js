@@ -1,10 +1,11 @@
 import { t as defu } from "./defu.js";
-// ../../../../node_modules/@nuxt/ui/dist/runtime/composables/defineLocale.js
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/composables/defineLocale.js
 // @__NO_SIDE_EFFECTS__
 function defineLocale(options) {
 	return defu(options, { dir: "ltr" });
 }
-// ../../../../node_modules/@nuxt/ui/dist/runtime/locale/en.js
+//#endregion
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/locale/en.js
 var en_default = /*@__PURE__*/ defineLocale({
 	name: "English",
 	code: "en",
@@ -178,6 +179,7 @@ var en_default = /*@__PURE__*/ defineLocale({
 		}
 	}
 });
+//#endregion
 export { defineLocale as n, en_default as t };
 
 //# sourceMappingURL=en.js.map
