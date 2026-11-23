@@ -23,7 +23,7 @@ class SearchHelper extends AbstractFilterHelper
      */
     public function process(Query $query, array $data = []): Query
     {
-        $query->orWhere(function (Query $query) use ($data) {
+        $query->orWhereGroup(function (Query $query) use ($data) {
             foreach ($data as $field => $value) {
                 // If handler is FALSE, means skip this field.
                 if (array_key_exists($field, $this->handler) && $this->handler[$field] === false) {
