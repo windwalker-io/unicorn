@@ -87,6 +87,22 @@ final class S3MultipartUploaderTest extends TestCase
     }
 
     #[Test]
+    public function initWithFilenameKeepsExplicitContentDisposition(): void
+    {
+        [$uploader, $handler] = $this->createUploader([
+            new Result(['UploadId' => 'upload-790']),
+        ]);
+
+        $uploader->initWithFilename(
+            'reports/quarterly.pdf',
+            'quarterly report.pdf',
+            ['ContentDisposition' => 'inline']
+        );
+
+        self::assertSame('inline', $handler->getLastCommand()['ContentDisposition']);
+    }
+
+    #[Test]
     public function signReturnsPresignedUploadPartRequest(): void
     {
         [$uploader] = $this->createUploader();

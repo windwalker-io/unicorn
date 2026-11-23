@@ -41,7 +41,6 @@ $uniScript->importMainThen("u.\$ui.bootstrap.buttonRadio('#{$field->getId()}');"
             <?php
             $option = clone $option;
 $id = $field->getId('-' . FormNormalizer::clearAttribute($option['value']));
-$checked = (string) $option['value'] === (string) $field->getValue();
 ?>
             <button type="button" class="btn btn-outline-secondary" data-value="{{ $option['value'] }}" data-for="{{ $id }}">
                 {!! \Windwalker\DOM\h('span', [], $option->childNodes) !!}
@@ -53,7 +52,7 @@ $checked = (string) $option['value'] === (string) $field->getValue();
         <?php
         $option = clone $option;
 $option['id'] = $id = $field->getId('-' . FormNormalizer::clearAttribute($option['value']));
-$option['checked'] = $checked = (string) $option['value'] === (string) $field->getValue();
+$option['checked'] = (string) $option['value'] === (string) $field->getValue();
 $option['name'] = $field->getInputName();
 $option['type'] = 'radio';
 $option['disabled'] = $field->isDisabled();

@@ -72,7 +72,7 @@ class S3MultipartUploader
         array $extra = [],
         ?string $profile = null
     ): string {
-        if ($filename) {
+        if ($filename && empty($extra['ContentDisposition'])) {
             $extra['ContentDisposition'] = HeaderHelper::attachmentContentDisposition($filename);
         }
 

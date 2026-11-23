@@ -170,7 +170,7 @@ $data['tmplSelector'] ??= ('#' . $tmplId);
                                 :class="{ 'h-loading': loading }"
                                 ref="dragarea"
                                 @dragover.stop.prevent="dragover"
-                                @dradleave.stop.prevent="dragleave"
+                                @dragleave.stop.prevent="dragleave"
                                 @drop.stop.prevent="drop"
                             >
                                 <div v-if="loading"

@@ -156,7 +156,10 @@ class RepeatableField extends AbstractField implements CompositeFieldInterface
             if (is_json($value)) {
                 $prepared = json_decode($value, true);
             } else {
-                $prepared = Arr::explodeAndClear(',', $value);
+                $prepared = array_map(
+                    static fn (string $v) => ['value' => $v],
+                    Arr::explodeAndClear(',', $value)
+                );
             }
         }
 

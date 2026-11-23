@@ -24,6 +24,7 @@ var S3MultipartUploader = class extends Mixin(EventMixin) {
 		}
 		if (file instanceof File) extra["ContentType"] = options["ContentType"] || file.type;
 		if (options.ACL || this.options.ACL) extra.ACL = options.ACL || this.options.ACL;
+		if (options.ContentDisposition) extra.ContentDisposition = options.ContentDisposition;
 		path = this.replaceExt(path, file);
 		const initData = {
 			extra,

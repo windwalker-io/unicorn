@@ -306,23 +306,27 @@ var ShowOn = class {
 	}
 	init() {
 		this.initialDisplay = window.getComputedStyle(this.el).display || "block";
+		if (this.input) this.defaultReadonly = this.input.hasAttribute("readonly");
 		for (const selector in this.conditions) {
-			const value = this.conditions[selector];
 			const target = selectOne(selector);
-			if (this.input) this.defaultReadonly = this.input.hasAttribute("readonly");
 			let listenTarget;
 			if (target.nodeName === "DIV") listenTarget = Array.from(target.querySelectorAll("input, select, textarea"));
 			else listenTarget = [target];
 			selectAll(listenTarget, (ele) => {
 				ele.addEventListener("change", () => {
-					this.updateShowState(target, value);
+					this.updateShowState();
 				});
 			});
-			this.updateShowState(target, value, 1);
 		}
+		this.updateShowState(1);
 	}
-	updateShowState(target, value, duration = 300) {
-		const matched = this.isValueMatched(target, value);
+	/**
+	* Show the element only when all conditions match.
+	*/
+	updateShowState(duration = 300) {
+		const matched = Object.entries(this.conditions).every(([selector, value]) => {
+			return this.isValueMatched(selectOne(selector), value);
+		});
 		if (matched) setTimeout(() => {
 			fadeIn(this.el, duration, this.initialDisplay);
 		}, duration);

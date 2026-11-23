@@ -921,7 +921,10 @@ declare class ShowOn {
     initialDisplay: string;
     constructor(el: HTMLElement, conditions: Conditions);
     init(): void;
-    updateShowState(target: HTMLElement, value: any, duration?: number): void;
+    /**
+     * Show the element only when all conditions match.
+     */
+    updateShowState(duration?: number): void;
     isValueMatched(target: HTMLElement, value: any): boolean;
     /**
      * @see https://github.com/nickjackson/val/blob/master/index.js#L55
@@ -1675,13 +1678,6 @@ export declare function watchAttributes<T extends HTMLElement>(el: T, callback?:
 export { }
 
 
-declare global {
-    interface Node {
-        __unicorn?: any;
-    }
-}
-
-
 declare module '@windwalker-io/unicorn-next' {
     interface UnicornApp {
         /** @deprecated Only for code generator use. */
@@ -1698,6 +1694,17 @@ declare global {
 }
 
 
+declare global {
+    interface Node {
+        __unicorn?: any;
+    }
+}
+
+declare global {
+    var S: any;
+}
+
+
 declare module 'axios' {
     interface AxiosRequestConfig {
         vars?: Record<string, any>;
@@ -1708,18 +1715,14 @@ declare module 'axios' {
     }
 }
 
-declare global {
-    var S: any;
-}
-
-
-declare global {
-    var tinymce: TinyMCE;
-}
-
 
 declare global {
     export interface Window {
         bootstrap: typeof bootstrap;
     }
+}
+
+
+declare global {
+    var tinymce: TinyMCE;
 }

@@ -198,7 +198,7 @@ export class ButtonRadio {
 export const ready = useUniDirective('button-radio', {
   mounted(el, { value }) {
     const options: ButtonRadioOptions = JSON.parse(value || '{}');
-    ButtonRadio.handle(el, value || {});
+    ButtonRadio.handle(el, options);
   }
 });
 

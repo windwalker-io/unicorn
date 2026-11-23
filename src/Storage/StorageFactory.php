@@ -15,6 +15,7 @@ use League\Flysystem\Filesystem;
 use Psr\Http\Message\RequestInterface;
 use Symfony\Component\Mime\MimeTypesInterface;
 use Unicorn\Aws\S3Service;
+use Unicorn\Storage\Adapter\FlysystemStorage;
 use Unicorn\Storage\Adapter\LocalStorage;
 use Unicorn\Storage\Adapter\S3Storage;
 use Windwalker\Core\Application\AppClient;
@@ -272,6 +273,12 @@ class StorageFactory implements ServiceFactoryInterface
         $adapter = $this->container->resolve($adapterFactory);
 
         return new Filesystem($adapter);
+    }
+
+    public function flysystemStorage(
+        callable $adapterFactory,
+    ): FlysystemStorage {
+        return new FlysystemStorage($this->flysystem($adapterFactory));
     }
 
     public function getApp(): AppContext|ConsoleApplication

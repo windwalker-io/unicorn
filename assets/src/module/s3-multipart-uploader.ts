@@ -82,6 +82,10 @@ export class S3MultipartUploader extends Mixin(EventMixin) {
       extra.ACL = options.ACL || this.options.ACL;
     }
 
+    if (options.ContentDisposition) {
+      extra.ContentDisposition = options.ContentDisposition;
+    }
+
     path = this.replaceExt(path, file);
 
     const initData: Record<string, any> = { extra, path, profile: this.options.profile };

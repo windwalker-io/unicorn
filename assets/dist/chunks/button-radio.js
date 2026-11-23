@@ -120,8 +120,8 @@ var ButtonRadio = class {
 	}
 };
 var ready = /*@__PURE__*/ useUniDirective("button-radio", { mounted(el, { value }) {
-	JSON.parse(value || "{}");
-	ButtonRadio.handle(el, value || {});
+	const options = JSON.parse(value || "{}");
+	ButtonRadio.handle(el, options);
 } });
 //#endregion
 export { ButtonRadio, ready };

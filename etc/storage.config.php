@@ -68,7 +68,7 @@ static fn() => [
                     'region' => env('AWS_S3_REGION'),
                 ]
             ),
-            'flys3' => static fn(StorageFactory $factory) => $factory->flysystem(
+            'flys3' => static fn(StorageFactory $factory) => $factory->flysystemStorage(
                 fn(FlysystemFactory $factory) => $factory->s3v3Adapter(
                     [
                         'access_key' => env('AWS_ACCESS_KEY'),

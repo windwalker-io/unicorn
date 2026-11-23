@@ -124,13 +124,18 @@ export class TinymceController {
 
     defaults.plugins = defaults.plugins || [];
 
-    defaults.setup = (editor) => {
+    const userSetup = options.setup;
+
+    options = mergeDeep({}, defaults, options);
+
+    // Chain the user setup after the default change-sync handler, so mergeDeep() does not replace it.
+    options.setup = (editor: any) => {
       editor.on('change', () => {
         this.tinymce.triggerSave();
       });
-    };
 
-    options = mergeDeep({}, defaults, options);
+      userSetup?.(editor);
+    };
 
     if (options.plugins.indexOf('unicorndragdrop') === -1) {
       options.plugins.push('unicorndragdrop');

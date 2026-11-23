@@ -546,7 +546,9 @@ var UnicornFieldValidation = class {
 	}
 	checkCustomDataAttributeValidity() {
 		const error = this.$input?.dataset.validationFail;
-		return this.handleCustomResult(error);
+		const valid = this.handleCustomResult(error);
+		if (!valid) this.showInvalidResponse();
+		return valid;
 	}
 	checkInputOptionsValidity() {
 		if (!this.$input) return true;
@@ -605,7 +607,7 @@ var UnicornFieldValidation = class {
 		const params = matches.groups?.params || "";
 		const validator = this.getFormValidation(this.$form)?.validators[validatorName] || UnicornFormValidation.globalValidators[validatorName];
 		if (!validator) return null;
-		const paramMatches = params.matchAll(/(?<key>\w+)(\s?[=:]\s?(?<value>\w+))?/g);
+		const paramMatches = params.matchAll(/(?<key>\w+)(\s?[=:]\s?(?<value>[^,]+?)(?=\s*(?:,|$)))?/g);
 		const options = {};
 		for (const paramMatch of paramMatches) {
 			const match = paramMatch?.groups;
@@ -765,7 +767,7 @@ validatorHandlers.alnum = function(value, element) {
 	return /^[a-zA-Z0-9]*$/.test(value);
 };
 validatorHandlers.color = function(value, element) {
-	return /^#(?:[0-9a-f]{3}){1,2}$/.test(value);
+	return /^#(?:[0-9a-f]{3}){1,2}$/i.test(value);
 };
 /**
 * @see  http://www.virtuosimedia.com/dev/php/37-tested-php-perl-and-javascript-regular-expressions
@@ -804,7 +806,7 @@ function handleParamValue(value) {
 	if (!isNaN(Number(value))) return Number(value);
 	if (value === "null") return null;
 	if (value === "true") return true;
-	if (value === "false") return true;
+	if (value === "false") return false;
 	return value;
 }
 //#endregion

@@ -8,7 +8,6 @@ use Windwalker\Core\Http\Event\RequestGetValueEvent;
 use Windwalker\DI\Container;
 use Windwalker\Event\Attributes\EventSubscriber;
 use Windwalker\Event\Attributes\ListenTo;
-use Windwalker\Utilities\Arr;
 
 /**
  * The EmptyArrayFieldSubscriber class.
@@ -30,15 +29,40 @@ class EmptyArrayFieldSubscriber
 
         $values = &$event->values;
 
-        $values = Arr::mapRecursive(
-            $values,
-            function (mixed $value) {
-                if ($value === $this->emptyValue) {
-                    return [];
-                }
+        $values = $this->resolveMarkers($values);
+    }
 
-                return $value;
+    /**
+     * Replace marker values: a scalar marker becomes [], and a marker inside a list is dropped.
+     */
+    protected function resolveMarkers(mixed $value): mixed
+    {
+        if (!is_array($value)) {
+            return $value === $this->emptyValue ? [] : $value;
+        }
+
+        $isList = array_is_list($value);
+        $result = [];
+
+        foreach ($value as $k => $v) {
+            if (!$isList && $v === $this->emptyValue) {
+                $result[$k] = [];
+                continue;
             }
-        );
+
+            if ($isList && $v === $this->emptyValue) {
+                continue;
+            }
+
+            $resolved = $this->resolveMarkers($v);
+
+            if ($isList) {
+                $result[] = $resolved;
+            } else {
+                $result[$k] = $resolved;
+            }
+        }
+
+        return $result;
     }
 }

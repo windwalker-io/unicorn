@@ -666,8 +666,13 @@ export class UnicornFieldValidation {
 
   protected checkCustomDataAttributeValidity(): boolean {
     const error = this.$input?.dataset.validationFail;
+    const valid = this.handleCustomResult(error);
 
-    return this.handleCustomResult(error);
+    if (!valid) {
+      this.showInvalidResponse();
+    }
+
+    return valid;
   }
 
   protected checkInputOptionsValidity(): boolean {
@@ -774,7 +779,7 @@ export class UnicornFieldValidation {
       return null;
     }
 
-    const paramMatches = params.matchAll(/(?<key>\w+)(\s?[=:]\s?(?<value>\w+))?/g);
+    const paramMatches = params.matchAll(/(?<key>\w+)(\s?[=:]\s?(?<value>[^,]+?)(?=\s*(?:,|$)))?/g);
     const options: Record<string, string> = {};
 
     for (const paramMatch of paramMatches) {
@@ -1039,7 +1044,7 @@ validatorHandlers.alnum = function (value: any, element: HTMLElement) {
 };
 
 validatorHandlers.color = function (value: any, element: HTMLElement) {
-  const regex = /^#(?:[0-9a-f]{3}){1,2}$/;
+  const regex = /^#(?:[0-9a-f]{3}){1,2}$/i;
   return regex.test(value);
 };
 
@@ -1114,7 +1119,7 @@ function handleParamValue(value: any) {
   }
 
   if (value === 'false') {
-    return true;
+    return false;
   }
 
   return value;

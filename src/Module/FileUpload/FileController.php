@@ -27,7 +27,7 @@ class FileController
         $uploadService = $app->retrieve(FileUploadService::class, tag: $profile);
 
         if (!$uploadService) {
-            throw new \DomainException('Unable to find profile: ' . get_debug_type($profile), 400);
+            throw new \DomainException('Unable to find profile: ' . (string) $profile, 400);
         }
 
         if ((string) $resize === '1') {

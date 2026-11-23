@@ -74,12 +74,14 @@ var TinymceController = class {
 			}
 		}
 		defaults.plugins = defaults.plugins || [];
-		defaults.setup = (editor) => {
+		const userSetup = options.setup;
+		options = mergeDeep({}, defaults, options);
+		options.setup = (editor) => {
 			editor.on("change", () => {
 				this.tinymce.triggerSave();
 			});
+			userSetup?.(editor);
 		};
-		options = mergeDeep({}, defaults, options);
 		if (options.plugins.indexOf("unicorndragdrop") === -1) options.plugins.push("unicorndragdrop");
 		return options;
 	}

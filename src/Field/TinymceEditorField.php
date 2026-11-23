@@ -66,7 +66,7 @@ class TinymceEditorField extends AbstractEditorField
         'license_key' => 'gpl',
         'height' => 450,
         'convert_urls' => true,
-        'fontsize_formats' => '12px 13px 14px 15px 16px 18px 20px 24px 28px 32px',
+        'font_size_formats' => '12px 13px 14px 15px 16px 18px 20px 24px 28px 32px',
         'entity_encoding' => 'raw',
         'promotion' => false,
     ];
@@ -272,14 +272,15 @@ class TinymceEditorField extends AbstractEditorField
         $lang = LanguageNormalizer::shortLangCode($lang);
 
         $assetFolder = $this->assetService->getAssetFolder();
+        $langFolder = trim((string) ($this->getLangFolder() ?: 'vendor/tinymce-i18n/langs5'), '/');
 
         // Check vendor path
-        $langPath = $this->pathResolver->resolve('@public/' . $assetFolder . '/vendor/tinymce-i18n/langs5/' . $lang . '.js');
-        $langUrl = $this->assetService->root('vendor/tinymce-i18n/langs5/' . $lang . '.js');
+        $langPath = $this->pathResolver->resolve('@public/' . $assetFolder . '/' . $langFolder . '/' . $lang . '.js');
+        $langUrl = $this->assetService->root($langFolder . '/' . $lang . '.js');
 
         if (!is_file($langPath)) {
-            $langPath = $this->pathResolver->resolve('@public/' . $assetFolder . '/vendor/tinymce-i18n/langs5/' . $first . '.js');
-            $langUrl = $this->assetService->root('vendor/tinymce-i18n/langs5/' . $first . '.js');
+            $langPath = $this->pathResolver->resolve('@public/' . $assetFolder . '/' . $langFolder . '/' . $first . '.js');
+            $langUrl = $this->assetService->root($langFolder . '/' . $first . '.js');
             $lang = $first;
         }
 

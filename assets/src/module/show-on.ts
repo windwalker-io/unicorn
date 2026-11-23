@@ -27,14 +27,12 @@ export class ShowOn {
   init() {
     this.initialDisplay = window.getComputedStyle(this.el).display || 'block';
 
+    if (this.input) {
+      this.defaultReadonly = this.input.hasAttribute('readonly');
+    }
+
     for (const selector in this.conditions) {
-      const value = this.conditions[selector];
-
       const target = selectOne<HTMLElement>(selector)!;
-
-      if (this.input) {
-        this.defaultReadonly = this.input.hasAttribute('readonly');
-      }
 
       let listenTarget: HTMLInputTypes[];
 
@@ -46,16 +44,21 @@ export class ShowOn {
 
       selectAll(listenTarget, (ele) => {
         ele.addEventListener('change', () => {
-          this.updateShowState(target, value);
+          this.updateShowState();
         });
       });
-
-      this.updateShowState(target, value, 1);
     }
+
+    this.updateShowState(1);
   }
 
-  updateShowState(target: HTMLElement, value: any, duration = 300) {
-    const matched = this.isValueMatched(target, value);
+  /**
+   * Show the element only when all conditions match.
+   */
+  updateShowState(duration = 300) {
+    const matched = Object.entries(this.conditions).every(([selector, value]) => {
+      return this.isValueMatched(selectOne<HTMLElement>(selector)!, value);
+    });
 
     if (matched) {
       setTimeout(() => {

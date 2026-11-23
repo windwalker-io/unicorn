@@ -96,7 +96,7 @@ class MultiUploaderField extends AbstractField
 
         if (is_string($values)) {
             if (Str::startsWith($values, '[') || Str::startsWith($values, '{')) {
-                $values = json_decode($values);
+                $values = json_decode($values) ?? [];
             } else {
                 $values = array_filter(explode(',', $this->getValue()), 'strlen');
             }

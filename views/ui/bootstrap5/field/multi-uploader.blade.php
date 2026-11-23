@@ -68,7 +68,7 @@ $data['tmplSelector'] ??= ('#' . $tmplId);
         :disabled="disabled"
         :readonly="readonly"
         :max-concurrent="{{ (int) ($field->getMaxConcurrent() ?: 2) }}"
-        accept="{{ $field->getAccept() }}"
+        accept="{{ is_array($field->getAccept()) ? implode(',', $field->getAccept()) : $field->getAccept() }}"
         placeholder="{{ $field->getPlaceholder() ?? $lang('unicorn.field.multi.uploader.placeholder') }}"
         @update:modelValue="onChange"
         @uploading="uploading"
@@ -125,7 +125,7 @@ $data['tmplSelector'] ??= ('#' . $tmplId);
                                 :class="{ 'h-loading': loading }"
                                 ref="dragarea"
                                 @dragover.stop.prevent="dragover"
-                                @dradleave.stop.prevent="dragleave"
+                                @dragleave.stop.prevent="dragleave"
                                 @drop.stop.prevent="drop"
                             >
                                 <div v-if="loading"

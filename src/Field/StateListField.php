@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Unicorn\Field;
 
 use HTMLElement;
-use Unicorn\Workflow\AbstractWorkflow;
+use Unicorn\Workflow\WorkflowInterface;
 use Windwalker\Form\Field\ListField;
 
 /**
@@ -13,7 +13,7 @@ use Windwalker\Form\Field\ListField;
  */
 class StateListField extends ListField
 {
-    protected ?AbstractWorkflow $workflow = null;
+    protected ?WorkflowInterface $workflow = null;
 
     /**
      * prepareOptions
@@ -24,7 +24,14 @@ class StateListField extends ListField
     {
         $options = [];
         $value = $this->getValue();
-        $workflow = $this->getWorkflow()->getWorkflowController();
+
+        $workflow = $this->getWorkflow();
+
+        if ($workflow === null) {
+            throw new \LogicException('StateListField requires a workflow. Call workflow() before rendering.');
+        }
+
+        $workflow = $workflow->compile();
 
         if ((string) $value === '') {
             $states = $workflow->getInitialStates();
@@ -40,19 +47,19 @@ class StateListField extends ListField
     }
 
     /**
-     * @return  AbstractWorkflow|null
+     * @return  WorkflowInterface|null
      */
-    public function getWorkflow(): ?AbstractWorkflow
+    public function getWorkflow(): ?WorkflowInterface
     {
         return $this->workflow;
     }
 
     /**
-     * @param  AbstractWorkflow|null  $workflow
+     * @param  WorkflowInterface|null  $workflow
      *
      * @return  static  Return self to support chaining.
      */
-    public function workflow(?AbstractWorkflow $workflow): static
+    public function workflow(?WorkflowInterface $workflow): static
     {
         $this->workflow = $workflow;
 
