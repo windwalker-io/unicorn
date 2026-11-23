@@ -191,8 +191,12 @@ export class SingleImageDragElement extends HTMLElement {
     return accept;
   }
 
-  handleFileSelect(file: File) {
+  async handleFileSelect(file: File) {
     if (!this.checkFile(file)) {
+      return;
+    }
+
+    if (!(await this.checkImageSize(file))) {
       return;
     }
 
@@ -324,6 +328,34 @@ export class SingleImageDragElement extends HTMLElement {
     }
 
     return accept === mime;
+  }
+
+  /**
+   * Load the image to read its dimensions and run checkSize().
+   * Files that cannot be decoded as an image skip the size check.
+   */
+  async checkImageSize(file: File): Promise<boolean> {
+    if (!file.type.startsWith('image/')) {
+      return true;
+    }
+
+    const url = URL.createObjectURL(file);
+
+    try {
+      const image = new Image();
+
+      await new Promise<void>((resolve, reject) => {
+        image.onload = () => resolve();
+        image.onerror = () => reject(new Error('Unable to load image'));
+        image.src = url;
+      });
+
+      return this.checkSize(image);
+    } catch {
+      return true;
+    } finally {
+      URL.revokeObjectURL(url);
+    }
   }
 
   checkSize(image: HTMLImageElement): boolean {

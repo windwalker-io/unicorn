@@ -382,7 +382,7 @@ export async function useColorPicker(
 ): Promise<any> {
   if (options?.theme === 'dark') {
     useCssImport('@spectrum/spectrum-dark.min.css');
-  } else if (!options?.theme) {
+  } else {
     useCssImport('@spectrum/spectrum.min.css');
   }
 

@@ -5,6 +5,13 @@ import { fileNameFromUrl } from './upload';
 // Build the default toolbar / menu items (same layout as the Nuxt UI editor example).
 export function createToolbars(opts: NuxtEditorOptions, uploadImage: UploadImage) {
   const headingLevels = [1, 2, 3, 4];
+  // Literal icon names (not built from the level) so the icon scanner can find them.
+  const headingIcons: Record<number, string> = {
+    1: 'i-lucide-heading-1',
+    2: 'i-lucide-heading-2',
+    3: 'i-lucide-heading-3',
+    4: 'i-lucide-heading-4',
+  };
   const headingLabel = (level: number) => trans('unicorn.nuxt.editor.action.heading', level);
   const marksGroup = [
     { kind: 'mark', mark: 'bold', icon: 'i-lucide-bold', tooltip: { text: trans('unicorn.nuxt.editor.action.bold') } },
@@ -42,7 +49,7 @@ export function createToolbars(opts: NuxtEditorOptions, uploadImage: UploadImage
           tooltip: { text: trans('unicorn.nuxt.editor.action.headings') },
           content: { align: 'start' },
           items: headingLevels.map((level) => ({
-            kind: 'heading', level, icon: `i-lucide-heading-${level}`, label: headingLabel(level),
+            kind: 'heading', level, icon: headingIcons[level], label: headingLabel(level),
           })),
         },
         {
@@ -79,7 +86,7 @@ export function createToolbars(opts: NuxtEditorOptions, uploadImage: UploadImage
           { type: 'label', label: trans('unicorn.nuxt.editor.action.turn.into') },
           { kind: 'paragraph', label: trans('unicorn.nuxt.editor.action.paragraph'), icon: 'i-lucide-type' },
           ...headingLevels.map((level) => ({
-            kind: 'heading', level, icon: `i-lucide-heading-${level}`, label: headingLabel(level),
+            kind: 'heading', level, icon: headingIcons[level], label: headingLabel(level),
           })),
           { kind: 'bulletList', icon: 'i-lucide-list', label: trans('unicorn.nuxt.editor.action.bullet.list') },
           { kind: 'orderedList', icon: 'i-lucide-list-ordered', label: trans('unicorn.nuxt.editor.action.ordered.list') },
@@ -156,7 +163,7 @@ export function createToolbars(opts: NuxtEditorOptions, uploadImage: UploadImage
     { type: 'label', label: trans('unicorn.nuxt.editor.text.style') },
     { kind: 'paragraph', label: trans('unicorn.nuxt.editor.action.paragraph'), icon: 'i-lucide-type' },
     ...[1, 2, 3].map((level) => ({
-      kind: 'heading', level, label: headingLabel(level), icon: `i-lucide-heading-${level}`,
+      kind: 'heading', level, label: headingLabel(level), icon: headingIcons[level],
     })),
     { kind: 'bulletList', label: trans('unicorn.nuxt.editor.action.bullet.list'), icon: 'i-lucide-list' },
     { kind: 'orderedList', label: trans('unicorn.nuxt.editor.action.numbered.list'), icon: 'i-lucide-list-ordered' },
@@ -194,7 +201,7 @@ export function createToolbars(opts: NuxtEditorOptions, uploadImage: UploadImage
         children: [
           { kind: 'paragraph', label: trans('unicorn.nuxt.editor.action.paragraph'), icon: 'i-lucide-type' },
           ...[1, 2, 3, 4].map((level) => ({
-            kind: 'heading', level, label: headingLabel(level), icon: `i-lucide-heading-${level}`,
+            kind: 'heading', level, label: headingLabel(level), icon: headingIcons[level],
           })),
           { kind: 'bulletList', label: trans('unicorn.nuxt.editor.action.bullet.list'), icon: 'i-lucide-list' },
           { kind: 'orderedList', label: trans('unicorn.nuxt.editor.action.ordered.list'), icon: 'i-lucide-list-ordered' },

@@ -188,9 +188,9 @@ $data['tmplSelector'] ??= ('#' . $tmplId);
                                     <?php
                                     $field->addClass(
                                         match (true) {
-                                            $field instanceof \Windwalker\Form\Field\CheckboxesField === 'checkbox' => 'form-input-check',
-                                            $field instanceof \Windwalker\Form\Field\CheckboxField === 'checkbox' => 'form-input-check',
-                                            $field instanceof \Windwalker\Form\Field\ListField === 'select' => 'form-select',
+                                            $field instanceof \Windwalker\Form\Field\CheckboxesField => 'form-input-check',
+                                            $field instanceof \Windwalker\Form\Field\CheckboxField => 'form-input-check',
+                                            $field instanceof \Windwalker\Form\Field\ListField => 'form-select',
                                             default => 'form-control'
                                         }
                                     );

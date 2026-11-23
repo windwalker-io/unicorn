@@ -29,48 +29,74 @@ use Windwalker\Core\Router\SystemUri;
  * @var  \Unicorn\Image\ImagePlaceholder      $imageHelper
  */
 
-$inputElement = $field->getPreparedInput();
-$inputElement->addClass('c-sid');
 $imageHelper = $app->service(\Unicorn\Image\ImagePlaceholder::class);
 
 $image = $field->getValue() ?: $imageHelper->placeholder();
 $previewHandler = $field->getPreviewHandler() ?? fn() => $asset->appendVersion($image, \Windwalker\uid());
+$image = $previewHandler($image);
+
+$options ??= [];
+$options['modalTarget'] = '#' . $field->getId('__modal');
+
+$minHeight = $field->getMinHeight() ?? 200;
 
 ?>
 
-<div {!! $inputElement::buildAttributes($inputElement) !!}>
-    <div class="card">
-        <div class="card-body c-sid__preview"
-            style="min-height: {{ $field->getMinHeight() ?? 200 }}px">
-            <img src="{{ $image }}" alt="sid-preview" class="c-sid__image"
-                style="max-height: {{ $field->getMinHeight() ?? 200 }}px; max-width: 100%;">
+<uni-sid style="visibility: hidden" options="{{ json_encode($options) }}">
+    <div id="{{ $field->getId('-container') }}">
+        <div class="card">
+            <div class="card-body c-sid__preview" data-sid="dragarea"
+                style="min-height: {{ $minHeight }}px">
+                <img src="{{ $image }}" alt="sid-preview" class="c-sid__image" data-sid="preview"
+                    style="max-height: {{ $minHeight }}px; max-width: 100%;">
+                <div class="c-sid-default__img-loader"
+                    data-sid="file-uploading"
+                    style="display: none;">
+                    <span class="spinner-border spinner-border-sm"></span>
+                </div>
+            </div>
+
+            @if (!$field->isReadonly() && !$field->isDisabled())
+                <div class="card-footer d-flex p-0">
+                    <button type="button"
+                        class="c-sid__button c-sid__button--select px-3 py-2 border-end text-nowrap btn btn-link"
+                        data-sid="select">
+                        <span class="fas fa-image"></span>
+                        @lang('unicorn.field.sid.button.select')
+                    </button>
+
+                    <span class="me-auto text-muted px-3 py-2"
+                        data-bs-toggle="tooltip"
+                        title="
+                    @if ($field->getMaxWidth() !== null && $field->getMaxHeight() !== null)
+                    @lang('unicorn.field.sid.max.width.height', $field->getMaxWidth(), $field->getMaxHeight())
+                    @elseif ($field->getMaxWidth() !== null)
+                    @lang('unicorn.field.sid.max.width', $field->getMaxWidth())
+                    @elseif ($field->getMaxHeight() !== null)
+                    @lang('unicorn.field.sid.max.height', $field->getMaxHeight())
+                    @endif
+                        ">
+                        or drag image here
+                        <small class="fa fa-question-circle"></small>
+                    </span>
+
+                    @if (!$field->isRequired())
+                        <label class="c-sid__button c-sid__button--delete px-3 py-2 border-start text-nowrap mb-0">
+                            <input type="checkbox" data-sid="remove" class="d-none" />
+                            <span class="fas fa-trash"></span>
+                            @lang('unicorn.field.sid.delete')
+                        </label>
+                    @endif
+                </div>
+            @endif
         </div>
 
-        <div class="card-footer d-flex p-0">
-            <a class="c-sid__button c-sid__button--select px-3 py-2 border-end text-nowrap" href="javascript://">
-                <span class="fas fa-image"></span>
-                Select
-            </a>
+        <div class="d-none">
+            {!! $input !!}
 
-            <span class="me-auto text-muted px-3 py-2"
-                data-bs-toggle="tooltip"
-                title="
-            @if ($field->getMaxWidth() !== null && $field->getMaxHeight() !== null)
-            @lang('unicorn.field.sid.max.width.height', $field->getMaxWidth(), $field->getMaxHeight())
-            @elseif ($field->getMaxWidth() !== null)
-            @lang('unicorn.field.sid.max.width', $field->getMaxWidth())
-            @elseif ($field->getMaxHeight() !== null)
-            @lang('unicorn.field.sid.max.height', $field->getMaxHeight())
-            @endif
-                ">
-                or drag image here
-                <small class="fa fa-question-circle"></small>
-            </span>
-
-            <a class="c-sid__button c-sid__button--delete px-3 py-2 border-start text-nowrap" href="javascript://">
-                <span class="fas fa-trash"></span>
-                Remove
-            </a>
+            <input type="file" name="{{ $input->getAttribute('name') }}" data-sid="file" />
         </div>
     </div>
-</div>
+</uni-sid>
+
+@include('@theme::field.single-image-drag.sid-modal')

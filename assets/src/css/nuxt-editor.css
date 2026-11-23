@@ -10,6 +10,8 @@
 @source "../module/nuxt-editor.ts";
 @source "../module/nuxt-editor-lib";
 @source "../vue/components/NuxtEditor";
+/* Exclude build output: dist/ is rewritten on every build, and Tailwind watches scanned files, which would cause an endless rebuild loop in `yarn dev`. */
+@source not "../../dist";
 
 /* Map Nuxt UI tokens to Bootstrap's CSS variables (they inherit through the shadow boundary). Fallbacks keep it working without Bootstrap. */
 :host {

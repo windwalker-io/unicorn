@@ -67,6 +67,10 @@ class NuxtEditorField extends AbstractEditorField
         }
 
         // Priority: field state < static defaults < editorOptions.
+        if ($this->getToolbar() !== null) {
+            $options->toolbars = $this->getToolbar();
+        }
+
         $options->merge(static::$defaultOptions, true)->merge($this->getEditorOptions() ?? [], true);
         $options->unicorn = [...($options->unicorn ?? []), 'stack_name' => $this->getStackName() ?: 'uploading'];
 

@@ -90,7 +90,17 @@ export default defineConfig(({ mode }) => {
     },
     plugins: [
       treeShakeable(),
-      ui({ dts: false }),
+      ui({
+        dts: false,
+        // The editor runs without vue-router; use the router-less Link so Buttons do not inject a missing route.
+        router: false,
+        // Scan Vue and TS sources for `i-lucide-*` names (TS toolbar definitions are not scanned by default).
+        icon: {
+          clientBundle: {
+            scan: { globInclude: ['**/*.{vue,ts}'] },
+          },
+        },
+      }),
       vuePlugin({
         features: {
           prodDevtools: true,

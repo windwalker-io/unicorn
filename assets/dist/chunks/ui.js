@@ -210,7 +210,7 @@ async function highlight(selector, color = "#ffff99", duration = 600) {
 */
 async function useColorPicker(selector, options = {}) {
 	if (options?.theme === "dark") useCssImport("@spectrum/spectrum-dark.min.css");
-	else if (!options?.theme) useCssImport("@spectrum/spectrum.min.css");
+	else useCssImport("@spectrum/spectrum.min.css");
 	const m = await useImport("@spectrum");
 	if (typeof options.locale === "string") {
 		let ls = options.locale.split("-").map((l) => l.toLowerCase());

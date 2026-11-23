@@ -136,8 +136,9 @@ var SingleImageDragElement = class extends HTMLElement {
 		if (Array.isArray(accept)) accept = accept.join(",");
 		return accept;
 	}
-	handleFileSelect(file) {
+	async handleFileSelect(file) {
 		if (!this.checkFile(file)) return;
+		if (!await this.checkImageSize(file)) return;
 		if (this.options.crop) {
 			const reader = new FileReader();
 			reader.addEventListener("load", (event) => {
@@ -214,6 +215,27 @@ var SingleImageDragElement = class extends HTMLElement {
 		const mime2 = mime.split("/");
 		if (accept2[1] === "*") return accept2[0] === mime2[0];
 		return accept === mime;
+	}
+	/**
+	* Load the image to read its dimensions and run checkSize().
+	* Files that cannot be decoded as an image skip the size check.
+	*/
+	async checkImageSize(file) {
+		if (!file.type.startsWith("image/")) return true;
+		const url = URL.createObjectURL(file);
+		try {
+			const image = new Image();
+			await new Promise((resolve, reject) => {
+				image.onload = () => resolve();
+				image.onerror = () => reject(/* @__PURE__ */ new Error("Unable to load image"));
+				image.src = url;
+			});
+			return this.checkSize(image);
+		} catch {
+			return true;
+		} finally {
+			URL.revokeObjectURL(url);
+		}
 	}
 	checkSize(image) {
 		try {

@@ -29,11 +29,13 @@ use Windwalker\Core\Router\SystemUri;
 ?>
 
 <div id="{{ $field->getId('__inner') }}" class="c-flat-list" data-role="list-wrapper">
-    <div class="mb-3">
-        @include('@theme::field.flat-list.toggle-all')
-    </div>
+    @if ($field->isMultiple())
+        <div class="mb-3">
+            @include('@theme::field.flat-list.toggle-all')
+        </div>
+    @endif
 
-    <input name="{{ $field->getInputName() }}" type="hidden" value="__EMPTY_ARRAY__" />
+    <input name="{{ $field->getInputName() }}" type="hidden" value="{{ $field->isMultiple() ? '__EMPTY_ARRAY__' : '' }}" />
 
     <ul class="nav flex-column">
         @foreach ($tree->getChildren() as $node)

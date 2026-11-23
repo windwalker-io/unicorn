@@ -969,12 +969,17 @@ declare class SingleImageDragElement extends HTMLElement {
     connectedCallback(): void;
     bindEvents(): void;
     getInputAccept(): string;
-    handleFileSelect(file: File): void;
+    handleFileSelect(file: File): Promise<void>;
     saveCropped(): Promise<void>;
     getCropper(): Promise<default_2>;
     toolbarClicked(button: HTMLButtonElement, event: MouseEvent): Promise<void>;
     checkFile(file: File): boolean;
     compareMimeType(accept: string, mime: string): boolean;
+    /**
+     * Load the image to read its dimensions and run checkSize().
+     * Files that cannot be decoded as an image skip the size check.
+     */
+    checkImageSize(file: File): Promise<boolean>;
     checkSize(image: HTMLImageElement): boolean;
     alert(title: string, text?: string, type?: string): Promise<void>;
     saveImage(file: File): Promise<void>;
@@ -1687,21 +1692,33 @@ declare module '@windwalker-io/unicorn-next' {
 
 
 declare global {
+    interface Node {
+        __unicorn?: any;
+    }
+}
+
+
+declare global {
     var Alpine: AlpineGlobal;
     var TomSelect: typeof TomSelectGlobal;
     var Spectrum: typeof SpectrumGlobal;
     var Mark: any;
 }
 
-
-declare global {
-    interface Node {
-        __unicorn?: any;
-    }
-}
-
 declare global {
     var S: any;
+}
+
+
+declare global {
+    var tinymce: TinyMCE;
+}
+
+
+declare global {
+    export interface Window {
+        bootstrap: typeof bootstrap;
+    }
 }
 
 
@@ -1713,16 +1730,4 @@ declare module 'axios' {
     }
     interface CreateAxiosDefaults {
     }
-}
-
-
-declare global {
-    export interface Window {
-        bootstrap: typeof bootstrap;
-    }
-}
-
-
-declare global {
-    var tinymce: TinyMCE;
 }

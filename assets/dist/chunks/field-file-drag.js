@@ -105,6 +105,7 @@ var FileDragElement = class extends HTMLElement {
 		else placeholder = __("unicorn.field.file.drag.placeholder.single");
 		if (limit && files.length > limit) {
 			this.alert(__("unicorn.field.file.drag.message.max.files", limit), "", "warning");
+			this.element.value = "";
 			evt?.preventDefault();
 			return;
 		}
@@ -115,6 +116,7 @@ var FileDragElement = class extends HTMLElement {
 		});
 		if (maxSize && fileSize / 1024 / 1024 > maxSize) {
 			this.alert(__("unicorn.field.file.drag.message.max.size", maxSize < 1 ? maxSize * 1024 + "KB" : maxSize + "MB"), "", "warning");
+			this.element.value = "";
 			evt?.preventDefault();
 			return;
 		}

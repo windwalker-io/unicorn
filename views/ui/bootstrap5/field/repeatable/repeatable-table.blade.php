@@ -61,11 +61,10 @@ $colWidth = function (AbstractField $subField, $i) use ($field) {
     $width = null;
 
     if (array_key_exists($i, $field->colWidths)) {
-        if (!is_numeric($field->colWidths[$i])) {
-            $width = $field->colWidths[$i];
-        } else {
-            return '';
-        }
+        $w = $field->colWidths[$i];
+
+        // Numeric values are 12-grid columns; convert to a percentage for table cells.
+        $width = is_numeric($w) ? round((float) $w / 12 * 100, 4) . '%' : $w;
     }
 
     $width ??= $subField->get('subfield_width') ?: 'auto';

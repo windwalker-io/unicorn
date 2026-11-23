@@ -159,6 +159,7 @@ export class FileDragElement extends HTMLElement {
     // Files limit
     if (limit && files.length > limit) {
       this.alert(__('unicorn.field.file.drag.message.max.files', limit), '', 'warning');
+      this.element.value = '';
       evt?.preventDefault();
       return;
     }
@@ -180,6 +181,7 @@ export class FileDragElement extends HTMLElement {
         '',
         'warning'
       );
+      this.element.value = '';
       evt?.preventDefault();
       return;
     }

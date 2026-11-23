@@ -18,7 +18,8 @@ defineProps<{
   format: 'html' | 'markdown' | 'json';
   editable: boolean;
   locale: Locale;
-  portal: boolean | string | HTMLElement;
+  // Typed as `object` so the runtime prop accepts the shadow-root element (Vue compiles HTMLElement to no check).
+  portal: boolean | string | object;
   extensions: AnyExtension[];
   handlers: EditorCustomHandlers;
   editorProps?: Record<string, any>;

@@ -16,10 +16,10 @@ use Windwalker\Utilities\Arr;
  *
  * @method  $this  calendarOptions(array $value = [])
  * @method  mixed  getCalendarOptions()
- * @method  $this  from(string $value = [])
- * @method  mixed  getFrom()
- * @method  $this  to(string $value = [])
- * @method  mixed  getTo()
+ * @method  $this  minDate(string $value = [])
+ * @method  mixed  getMinDate()
+ * @method  $this  maxDate(string $value = [])
+ * @method  mixed  getMaxDate()
  * @method  $this  format(string $value = [])
  * @method  mixed  getFormat()
  * @method  $this  enableTime(bool $value = [])
@@ -51,16 +51,49 @@ class CalendarField extends TextField
 
     public function getDefaultOptions(): array
     {
-        return [
-            'dateFormat' => $this->getFormat() ?? self::FORMAT_DATETIME_FULL,
-            'enableTime' => $this->getEnableTime() ?? true,
-            'enableSeconds' => $this->getEnableTime() ?? true,
+        $enableTime = (bool) ($this->getEnableTime() ?? true);
+
+        $options = [
+            'dateFormat' => $this->resolveDateFormat(),
+            'enableTime' => $enableTime,
+            'enableSeconds' => $enableTime,
             'allowInput' => true,
             'time_24hr' => true,
             'wrap' => true,
             'monthSelect' => $this->getMonthSelect(),
             'noCalendar' => $this->getNoCalendar(),
         ];
+
+        if ($this->getMinDate() !== null) {
+            $options['minDate'] = $this->getMinDate();
+        }
+
+        if ($this->getMaxDate() !== null) {
+            $options['maxDate'] = $this->getMaxDate();
+        }
+
+        return $options;
+    }
+
+    protected function resolveDateFormat(): string
+    {
+        if ($this->getFormat() !== null) {
+            return $this->getFormat();
+        }
+
+        return $this->getEnableTime() === false ? self::FORMAT_DATE : self::FORMAT_DATETIME_FULL;
+    }
+
+    /**
+     * Date-only, month, and time-only values are not a full point in time, so timezone conversion would shift them.
+     */
+    protected function isPartialValue(): bool
+    {
+        if ($this->getNoCalendar() || $this->getMonthSelect()) {
+            return true;
+        }
+
+        return !preg_match('/[HhGgisu]/', $this->resolveDateFormat());
     }
 
     /**
@@ -105,7 +138,7 @@ class CalendarField extends TextField
 
         $value = parent::prepareStore($value);
 
-        if ($this->getConvertTimezone() === false) {
+        if ($this->getConvertTimezone() === false || $this->isPartialValue()) {
             return $value;
         }
 
@@ -119,7 +152,7 @@ class CalendarField extends TextField
      */
     public function handleTimezone(HTMLElement $input): HTMLElement
     {
-        if ($this->getConvertTimezone() === false) {
+        if ($this->getConvertTimezone() === false || $this->isPartialValue()) {
             return $input;
         }
 
@@ -154,8 +187,8 @@ class CalendarField extends TextField
             parent::getAccessors(),
             [
                 'calendarOptions',
-                'from',
-                'to',
+                'minDate',
+                'maxDate',
                 'enableTime',
                 'format',
                 'monthSelect',

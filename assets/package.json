@@ -63,6 +63,7 @@
     ]
   },
   "devDependencies": {
+    "@iconify-json/lucide": "^1.2.158",
     "@microsoft/api-extractor": "^7.60.1",
     "@nuxt/ui": "^4.12.0",
     "@rubenbimmel/alpine-class-component": "^0.0.4",
