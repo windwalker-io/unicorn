@@ -1,11 +1,164 @@
 import { a as useComponentProps, i as tv, o as Primitive, r as Icon_default, s as Slot, t as Avatar_default } from "./Avatar.js";
-import { h as createSharedComposable, w as useDebounceFn } from "./dist.js";
+import { h as createSharedComposable, v as reactiveOmit, w as useDebounceFn } from "./dist.js";
 import { t as defu } from "./defu.js";
 import { i as useAppConfig } from "./iconify.js";
 import { t as en_default } from "./en.js";
 import { a as mergeClasses, o as omit, t as get } from "./utils2.js";
 import { t as _plugin_vue_export_helper_default } from "./_plugin-vue_export-helper.js";
-import { camelize, computed, createBlock, createCommentVNode, createElementBlock, createVNode, defineComponent, getCurrentInstance, getCurrentScope, guardReactiveProps, inject, isRef, mergeProps, normalizeClass, normalizeProps, onScopeDispose, openBlock, provide, ref, renderSlot, toDisplayString, toHandlerKey, toRef, toValue, unref, useSlots, withCtx } from "vue";
+import { camelize, computed, createBlock, createCommentVNode, createElementBlock, createVNode, defineComponent, getCurrentInstance, getCurrentScope, guardReactiveProps, h, inject, isRef, mergeProps, normalizeClass, normalizeProps, onScopeDispose, openBlock, provide, reactive, ref, renderSlot, toDisplayString, toHandlerKey, toRef, toValue, unref, useSlots, watchEffect, withCtx } from "vue";
+//#region ../../../../node_modules/ohash/dist/_chunks/is-equal.mjs
+function serialize(input) {
+	if (typeof input === "string") return `'${input}'`;
+	return new Serializer().serialize(input);
+}
+var asciiOrder = " _-,;:!?.'\"()[]{}@*/\\&#%`^+<=>|~$0123456789abcdefghijklmnopqrstuvwxyz";
+var asciiWeights = /*@__PURE__*/ (function() {
+	const weights = /* @__PURE__ */ new Uint8Array(128);
+	for (let i = 0; i < 69; i++) weights[asciiOrder.charCodeAt(i)] = i + 1;
+	for (let code = 65; code <= 90; code++) weights[code] = weights[code + 32];
+	return weights;
+})();
+function compareStrings(a, b) {
+	if (a === b) return 0;
+	const length = Math.min(a.length, b.length);
+	let tieBreaker = 0;
+	for (let i = 0; i < length; i++) {
+		const codeA = a.charCodeAt(i);
+		const codeB = b.charCodeAt(i);
+		if (codeA === codeB) continue;
+		const weightA = codeA < 128 && asciiWeights[codeA] ? asciiWeights[codeA] : codeA + 128;
+		const weightB = codeB < 128 && asciiWeights[codeB] ? asciiWeights[codeB] : codeB + 128;
+		if (weightA !== weightB) return weightA < weightB ? -1 : 1;
+		if (tieBreaker === 0) tieBreaker = codeA > codeB ? -1 : 1;
+	}
+	if (a.length !== b.length) return a.length < b.length ? -1 : 1;
+	return tieBreaker;
+}
+var Serializer = /*@__PURE__*/ (function() {
+	class Serializer {
+		#context = /* @__PURE__ */ new Map();
+		compare(a, b) {
+			const typeA = typeof a;
+			const typeB = typeof b;
+			if (typeA === "string" && typeB === "string") return compareStrings(a, b);
+			if (typeA === "number" && typeB === "number") return a - b;
+			return compareStrings(this.serialize(a, true), this.serialize(b, true));
+		}
+		serialize(value, noQuotes) {
+			if (value === null) return "null";
+			switch (typeof value) {
+				case "string": return noQuotes ? value : `'${value}'`;
+				case "bigint": return `${value}n`;
+				case "object": return this.$object(value);
+				case "function": return this.$function(value);
+			}
+			return String(value);
+		}
+		serializeObject(object) {
+			const objString = Object.prototype.toString.call(object);
+			if (objString !== "[object Object]") return this.serializeBuiltInType(objString.length < 10 ? `unknown:${objString}` : objString.slice(8, -1), object);
+			const constructor = object.constructor;
+			const objName = constructor === Object || constructor === void 0 ? "" : constructor.name;
+			if (objName !== "" && globalThis[objName] === constructor) return this.serializeBuiltInType(objName, object);
+			if ("toJSON" in object && typeof object.toJSON === "function") {
+				const json = object.toJSON();
+				return objName + (json !== null && typeof json === "object" ? this.$object(json) : `(${this.serialize(json)})`);
+			}
+			const keys = Object.keys(object).sort(compareStrings);
+			let content = `${objName}{`;
+			for (let i = 0; i < keys.length; i++) {
+				const key = keys[i];
+				content += `${key}:${this.serialize(object[key])}`;
+				if (i < keys.length - 1) content += ",";
+			}
+			return content + "}";
+		}
+		serializeBuiltInType(type, object) {
+			const handler = this["$" + type];
+			if (handler) return handler.call(this, object);
+			if (typeof object.entries === "function") return this.serializeObjectEntries(type, object.entries());
+			throw new Error(`Cannot serialize ${type}`);
+		}
+		serializeObjectEntries(type, entries) {
+			const sortedEntries = Array.from(entries).sort((a, b) => this.compare(a[0], b[0]));
+			let content = `${type}{`;
+			for (let i = 0; i < sortedEntries.length; i++) {
+				const [key, value] = sortedEntries[i];
+				content += `${this.serialize(key, true)}:${this.serialize(value)}`;
+				if (i < sortedEntries.length - 1) content += ",";
+			}
+			return content + "}";
+		}
+		$object(object) {
+			let content = this.#context.get(object);
+			if (content === void 0) {
+				this.#context.set(object, `#${this.#context.size}`);
+				content = this.serializeObject(object);
+				this.#context.set(object, content);
+			}
+			return content;
+		}
+		$function(fn) {
+			const fnStr = Function.prototype.toString.call(fn);
+			if (fnStr.slice(-15) === "[native code] }") return `${fn.name || ""}()[native]`;
+			return `${fn.name}(${fn.length})${fnStr.replace(/\s*\n\s*/g, "")}`;
+		}
+		$Array(arr) {
+			let content = "[";
+			for (let i = 0; i < arr.length; i++) {
+				content += this.serialize(arr[i]);
+				if (i < arr.length - 1) content += ",";
+			}
+			return content + "]";
+		}
+		$Date(date) {
+			try {
+				return `Date(${date.toISOString()})`;
+			} catch {
+				return `Date(null)`;
+			}
+		}
+		$ArrayBuffer(arr) {
+			return `ArrayBuffer[${new Uint8Array(arr).join(",")}]`;
+		}
+		$Set(set) {
+			return `Set${this.$Array(Array.from(set).sort((a, b) => this.compare(a, b)))}`;
+		}
+		$Map(map) {
+			return this.serializeObjectEntries("Map", map.entries());
+		}
+	}
+	for (const type of [
+		"Error",
+		"RegExp",
+		"URL"
+	]) Serializer.prototype["$" + type] = function(val) {
+		return `${type}(${val})`;
+	};
+	for (const type of [
+		"Int8Array",
+		"Uint8Array",
+		"Uint8ClampedArray",
+		"Int16Array",
+		"Uint16Array",
+		"Int32Array",
+		"Uint32Array",
+		"Float32Array",
+		"Float64Array"
+	]) Serializer.prototype["$" + type] = function(arr) {
+		return `${type}[${arr.join(",")}]`;
+	};
+	for (const type of ["BigInt64Array", "BigUint64Array"]) Serializer.prototype["$" + type] = function(arr) {
+		return `${type}[${arr.join("n,")}${arr.length > 0 ? "n" : ""}]`;
+	};
+	return Serializer;
+})();
+function isEqual(object1, object2) {
+	if (object1 === object2) return true;
+	if (serialize(object1) === serialize(object2)) return true;
+	return false;
+}
+//#endregion
 //#region ../../../../node_modules/reka-ui/dist/shared/useEmitAsProps.js
 /**
 * The `useEmitAsProps` function is a TypeScript utility that converts emitted events into props for a
@@ -30,6 +183,38 @@ function useEmitAsProps(emit) {
 		result[toHandlerKey(camelize(ev))] = (...arg) => emit(ev, ...arg);
 	});
 	return result;
+}
+//#endregion
+//#region ../../../../node_modules/reka-ui/dist/shared/useForwardProps.js
+/**
+* The `useForwardProps` function in TypeScript takes in a set of props and returns a computed value
+* that combines default props with assigned props from the current instance.
+* @param {T} props - The `props` parameter is an object that represents the props passed to a
+* component.
+* @returns computed value that combines the default props, preserved props, and assigned props.
+*/
+function useForwardProps$1(props) {
+	const vm = getCurrentInstance();
+	const defaultProps = Object.keys(vm?.type.props ?? {}).reduce((prev, curr) => {
+		const defaultValue = (vm?.type.props[curr]).default;
+		if (defaultValue !== void 0) prev[curr] = defaultValue;
+		return prev;
+	}, {});
+	const refProps = toRef(props);
+	return computed(() => {
+		const preservedProps = {};
+		const assignedProps = vm?.vnode.props ?? {};
+		Object.keys(assignedProps).forEach((key) => {
+			preservedProps[camelize(key)] = assignedProps[key];
+		});
+		return Object.keys({
+			...defaultProps,
+			...preservedProps
+		}).reduce((prev, curr) => {
+			if (refProps.value[curr] !== void 0) prev[curr] = refProps.value[curr];
+			return prev;
+		}, {});
+	});
 }
 //#endregion
 //#region ../../../../node_modules/reka-ui/dist/VisuallyHidden/VisuallyHidden.js
@@ -87,6 +272,115 @@ var VisuallyHidden_default = /*@__PURE__*/ defineComponent({
 		};
 	}
 });
+//#endregion
+//#region ../../../../node_modules/ohash/dist/utils/index.mjs
+var PROTO_KEY = "__proto__";
+function diff(obj1, obj2) {
+	const diffs = [];
+	_diff(obj1, obj2, "", diffs);
+	return diffs;
+}
+function _diff(v1, v2, key, out) {
+	if (v1 === v2) return;
+	const leaf1 = v1 === null || typeof v1 !== "object";
+	const leaf2 = v2 === null || typeof v2 !== "object";
+	if (!leaf1 && !leaf2) {
+		const entries1 = _entries(v1);
+		const entries2 = _entries(v2);
+		for (const [k, child1] of entries1) {
+			const childKey = key ? `${key}.${k}` : k;
+			if (entries2.has(k)) _diff(child1, entries2.get(k), childKey, out);
+			else out.push(new DiffEntry(childKey, "removed", void 0, _toHashedObject(child1, childKey)));
+		}
+		for (const [k, child2] of entries2) {
+			if (entries1.has(k)) continue;
+			const childKey = key ? `${key}.${k}` : k;
+			out.push(new DiffEntry(childKey, "added", _toHashedObject(child2, childKey)));
+		}
+		return;
+	}
+	if (_hasKeys(v1, leaf1) || _hasKeys(v2, leaf2)) return;
+	const node1 = _emptyOrLeafNode(v1, key, leaf1);
+	const node2 = _emptyOrLeafNode(v2, key, leaf2);
+	if (node1.hash !== node2.hash) out.push(new DiffEntry(key, "changed", node2, node1));
+}
+function _entries(value) {
+	const entries = /* @__PURE__ */ new Map();
+	for (const key in value) if (key !== PROTO_KEY) entries.set(key, value[key]);
+	return entries;
+}
+function _hasKeys(value, isLeaf) {
+	if (isLeaf) return false;
+	for (const key in value) if (key !== PROTO_KEY) return true;
+	return false;
+}
+function _emptyOrLeafNode(value, key, isLeaf) {
+	return isLeaf ? new DiffHashedObject(key, value, _leafHash(value)) : new DiffHashedObject(key, value, "{}", Object.create(null));
+}
+function _toHashedObject(obj, key = "") {
+	if (obj === null || typeof obj !== "object") return new DiffHashedObject(key, obj, _leafHash(obj));
+	const props = Object.create(null);
+	const hashes = [];
+	for (const _key in obj) {
+		if (_key === PROTO_KEY) continue;
+		const child = _toHashedObject(obj[_key], key ? `${key}.${_key}` : _key);
+		props[_key] = child;
+		hashes.push(child.hash);
+	}
+	return new DiffHashedObject(key, obj, `{${hashes.join(":")}}`, props);
+}
+function _leafHash(value) {
+	switch (typeof value) {
+		case "string": return `'${value}'`;
+		case "number":
+		case "boolean": return "" + value;
+		case "bigint": return `${value}n`;
+		default: return serialize(value);
+	}
+}
+var DiffEntry = class {
+	key;
+	type;
+	newValue;
+	oldValue;
+	constructor(key, type, newValue, oldValue) {
+		this.key = key;
+		this.type = type;
+		this.newValue = newValue;
+		this.oldValue = oldValue;
+	}
+	toString() {
+		return this.toJSON();
+	}
+	toJSON() {
+		switch (this.type) {
+			case "added": return `Added   \`${this.key}\``;
+			case "removed": return `Removed \`${this.key}\``;
+			case "changed": return `Changed \`${this.key}\` from \`${this.oldValue?.toString() || "-"}\` to \`${this.newValue?.toString()}\``;
+		}
+	}
+};
+var DiffHashedObject = class {
+	key;
+	value;
+	hash;
+	props;
+	constructor(key, value, hash, props) {
+		this.key = key;
+		this.value = value;
+		this.hash = hash;
+		this.props = props;
+	}
+	toString() {
+		if (this.props) return `{${Object.keys(this.props).join(",")}}`;
+		else return JSON.stringify(this.value);
+	}
+	toJSON() {
+		const k = this.key || ".";
+		if (this.props) return `${k}({${Object.keys(this.props).join(",")}})`;
+		return `${k}(${this.value})`;
+	}
+};
 var PROTOCOL_STRICT_REGEX = /^[\s\w\0+.-]{2,}:([/\\]{1,2})/;
 var PROTOCOL_REGEX = /^[\s\w\0+.-]{2,}:([/\\]{2})?/;
 var PROTOCOL_RELATIVE_REGEX = /^([/\\]\s*){2,}[^/\\]/;
@@ -120,6 +414,236 @@ var _useLocale = (localeOverrides) => {
 	return buildLocaleContext(computed(() => locale.value || en_default));
 };
 var useLocale = /*@__PURE__*/ createSharedComposable(_useLocale);
+//#endregion
+//#region ../../../../node_modules/vue-router/dist/devtools-EWN81iOl.mjs
+/*!
+* vue-router v4.6.4
+* (c) 2025 Eduardo San Martin Morote
+* @license MIT
+*/
+var isBrowser = typeof document !== "undefined";
+var noop = () => {};
+/**
+* Typesafe alternative to Array.isArray
+* https://github.com/microsoft/TypeScript/pull/48228
+*
+* @internal
+*/
+var isArray = /*@__PURE__*/ (() => Array.isArray)();
+function warn$1(msg) {
+	const args = Array.from(arguments).slice(1);
+	console.warn.apply(console, ["[Vue Router warn]: " + msg].concat(args));
+}
+/**
+* Check if two `RouteRecords` are equal. Takes into account aliases: they are
+* considered equal to the `RouteRecord` they are aliasing.
+*
+* @param a - first {@link RouteRecord}
+* @param b - second {@link RouteRecord}
+*/
+function isSameRouteRecord(a, b) {
+	return (a.aliasOf || a) === (b.aliasOf || b);
+}
+function isSameRouteLocationParams(a, b) {
+	if (Object.keys(a).length !== Object.keys(b).length) return false;
+	for (var key in a) if (!isSameRouteLocationParamsValue(a[key], b[key])) return false;
+	return true;
+}
+function isSameRouteLocationParamsValue(a, b) {
+	return isArray(a) ? isEquivalentArray(a, b) : isArray(b) ? isEquivalentArray(b, a) : a?.valueOf() === b?.valueOf();
+}
+/**
+* Check if two arrays are the same or if an array with one single entry is the
+* same as another primitive value. Used to check query and parameters
+*
+* @param a - array of values
+* @param b - array of values or a single value
+*/
+function isEquivalentArray(a, b) {
+	return isArray(b) ? a.length === b.length && a.every((value, i) => value === b[i]) : a.length === 1 && a[0] === b;
+}
+/**
+* ScrollBehavior instance used by the router to compute and restore the scroll
+* position when navigating.
+*/
+function isRouteLocation(route) {
+	return typeof route === "string" || route && typeof route === "object";
+}
+/**
+* Allows overriding the router instance returned by `useRouter` in tests. r
+* stands for router
+*
+* @internal
+*/
+var routerKey = /*@__PURE__*/ Symbol(/*@__PURE__*/ (() => process.env.NODE_ENV)() !== "production" ? "router" : "");
+/**
+* Allows overriding the current route returned by `useRoute` in tests. rl
+* stands for route location
+*
+* @internal
+*/
+var routeLocationKey = /*@__PURE__*/ Symbol(/*@__PURE__*/ (() => process.env.NODE_ENV)() !== "production" ? "route location" : "");
+/*!
+* vue-router v4.6.4
+* (c) 2025 Eduardo San Martin Morote
+* @license MIT
+*/
+/**
+* Returns the internal behavior of a {@link RouterLink} without the rendering part.
+*
+* @param props - a `to` location and an optional `replace` flag
+*/
+function useLink(props) {
+	const router = inject(routerKey);
+	const currentRoute = inject(routeLocationKey);
+	let hasPrevious = false;
+	let previousTo = null;
+	const route = computed(() => {
+		const to = unref(props.to);
+		if (process.env.NODE_ENV !== "production" && (!hasPrevious || to !== previousTo)) {
+			if (!isRouteLocation(to)) if (hasPrevious) warn$1(`Invalid value for prop "to" in useLink()\n- to:`, to, `\n- previous to:`, previousTo, `\n- props:`, props);
+			else warn$1(`Invalid value for prop "to" in useLink()\n- to:`, to, `\n- props:`, props);
+			previousTo = to;
+			hasPrevious = true;
+		}
+		return router.resolve(to);
+	});
+	const activeRecordIndex = computed(() => {
+		const { matched } = route.value;
+		const { length } = matched;
+		const routeMatched = matched[length - 1];
+		const currentMatched = currentRoute.matched;
+		if (!routeMatched || !currentMatched.length) return -1;
+		const index = currentMatched.findIndex(isSameRouteRecord.bind(null, routeMatched));
+		if (index > -1) return index;
+		const parentRecordPath = getOriginalPath(matched[length - 2]);
+		return length > 1 && getOriginalPath(routeMatched) === parentRecordPath && currentMatched[currentMatched.length - 1].path !== parentRecordPath ? currentMatched.findIndex(isSameRouteRecord.bind(null, matched[length - 2])) : index;
+	});
+	const isActive = computed(() => activeRecordIndex.value > -1 && includesParams(currentRoute.params, route.value.params));
+	const isExactActive = computed(() => activeRecordIndex.value > -1 && activeRecordIndex.value === currentRoute.matched.length - 1 && isSameRouteLocationParams(currentRoute.params, route.value.params));
+	function navigate(e = {}) {
+		if (guardEvent(e)) {
+			const p = router[unref(props.replace) ? "replace" : "push"](unref(props.to)).catch(noop);
+			if (props.viewTransition && typeof document !== "undefined" && "startViewTransition" in document) document.startViewTransition(() => p);
+			return p;
+		}
+		return Promise.resolve();
+	}
+	if (process.env.NODE_ENV, isBrowser) {
+		const instance = getCurrentInstance();
+		if (instance) {
+			const linkContextDevtools = {
+				route: route.value,
+				isActive: isActive.value,
+				isExactActive: isExactActive.value,
+				error: null
+			};
+			instance.__vrl_devtools = instance.__vrl_devtools || [];
+			instance.__vrl_devtools.push(linkContextDevtools);
+			watchEffect(() => {
+				linkContextDevtools.route = route.value;
+				linkContextDevtools.isActive = isActive.value;
+				linkContextDevtools.isExactActive = isExactActive.value;
+				linkContextDevtools.error = isRouteLocation(unref(props.to)) ? null : "Invalid \"to\" value";
+			}, { flush: "post" });
+		}
+	}
+	/**
+	* NOTE: update {@link _RouterLinkI}'s `$slots` type when updating this
+	*/
+	return {
+		route,
+		href: computed(() => route.value.href),
+		isActive,
+		isExactActive,
+		navigate
+	};
+}
+function preferSingleVNode(vnodes) {
+	return vnodes.length === 1 ? vnodes[0] : vnodes;
+}
+/**
+* Component to render a link that triggers a navigation on click.
+*/
+var RouterLink = /*@__PURE__*/ defineComponent({
+	name: "RouterLink",
+	compatConfig: { MODE: 3 },
+	props: {
+		to: {
+			type: [String, Object],
+			required: true
+		},
+		replace: Boolean,
+		activeClass: String,
+		exactActiveClass: String,
+		custom: Boolean,
+		ariaCurrentValue: {
+			type: String,
+			default: "page"
+		},
+		viewTransition: Boolean
+	},
+	useLink,
+	setup(props, { slots }) {
+		const link = reactive(useLink(props));
+		const { options } = inject(routerKey);
+		const elClass = computed(() => ({
+			[getLinkClass(props.activeClass, options.linkActiveClass, "router-link-active")]: link.isActive,
+			[getLinkClass(props.exactActiveClass, options.linkExactActiveClass, "router-link-exact-active")]: link.isExactActive
+		}));
+		return () => {
+			const children = slots.default && preferSingleVNode(slots.default(link));
+			return props.custom ? children : h("a", {
+				"aria-current": link.isExactActive ? props.ariaCurrentValue : null,
+				href: link.href,
+				onClick: link.navigate,
+				class: elClass.value
+			}, children);
+		};
+	}
+});
+function guardEvent(e) {
+	if (e.metaKey || e.altKey || e.ctrlKey || e.shiftKey) return;
+	if (e.defaultPrevented) return;
+	if (e.button !== void 0 && e.button !== 0) return;
+	if (e.currentTarget && e.currentTarget.getAttribute) {
+		const target = e.currentTarget.getAttribute("target");
+		if (/\b_blank\b/i.test(target)) return;
+	}
+	if (e.preventDefault) e.preventDefault();
+	return true;
+}
+function includesParams(outer, inner) {
+	for (const key in inner) {
+		const innerValue = inner[key];
+		const outerValue = outer[key];
+		if (typeof innerValue === "string") {
+			if (innerValue !== outerValue) return false;
+		} else if (!isArray(outerValue) || outerValue.length !== innerValue.length || innerValue.some((value, i) => value.valueOf() !== outerValue[i].valueOf())) return false;
+	}
+	return true;
+}
+/**
+* Get the original path value of a record by following its aliasOf
+* @param record
+*/
+function getOriginalPath(record) {
+	return record ? record.aliasOf ? record.aliasOf.path : record.path : "";
+}
+/**
+* Utility class to get the active class based on defaults.
+* @param propClass
+* @param globalClass
+* @param defaultClass
+*/
+var getLinkClass = (propClass, globalClass, defaultClass) => propClass != null ? propClass : globalClass != null ? globalClass : defaultClass;
+/**
+* Returns the current route location. Equivalent to using `$route` inside
+* templates.
+*/
+function useRoute(_name) {
+	return inject(routeLocationKey);
+}
 //#endregion
 //#region ../../../../node_modules/@nuxt/ui/dist/runtime/composables/useFormField.js
 var formOptionsInjectionKey = /*@__PURE__*/ Symbol("nuxt-ui.form-options");
@@ -294,6 +818,13 @@ function pickLinkProps(link) {
 	for (const key of Object.keys(link)) if (linkKeySet.has(key) || key.startsWith("aria-") || key.startsWith("data-")) picked[key] = link[key];
 	return picked;
 }
+function isPartiallyEqual(item1, item2) {
+	const diffedKeys = diff(item1, item2).reduce((filtered, q) => {
+		if (q.type === "added") filtered.add(q.key);
+		return filtered;
+	}, /* @__PURE__ */ new Set());
+	return isEqual(Object.fromEntries(Object.entries(item1).filter(([key]) => !diffedKeys.has(key))), Object.fromEntries(Object.entries(item2).filter(([key]) => !diffedKeys.has(key))));
+}
 //#endregion
 //#region ../../../../node_modules/@nuxt/ui/dist/runtime/components/LinkBase.vue
 var _sfc_main$2 = {
@@ -417,7 +948,7 @@ var link_default = {
 	}]
 };
 //#endregion
-//#region ../../../../node_modules/@nuxt/ui/dist/runtime/vue/overrides/none/Link.vue
+//#region ../../../../node_modules/@nuxt/ui/dist/runtime/vue/overrides/vue-router/Link.vue
 var _sfc_main$1 = /*@__PURE__*/ Object.assign({ inheritAttrs: false }, {
 	__name: "Link",
 	props: {
@@ -425,6 +956,34 @@ var _sfc_main$1 = /*@__PURE__*/ Object.assign({ inheritAttrs: false }, {
 			type: null,
 			required: false,
 			default: "button"
+		},
+		href: {
+			type: null,
+			required: false
+		},
+		external: {
+			type: Boolean,
+			required: false
+		},
+		target: {
+			type: [
+				String,
+				Object,
+				null
+			],
+			required: false
+		},
+		rel: {
+			type: [
+				String,
+				Object,
+				null
+			],
+			required: false
+		},
+		noRel: {
+			type: Boolean,
+			required: false
 		},
 		type: {
 			type: null,
@@ -456,15 +1015,6 @@ var _sfc_main$1 = /*@__PURE__*/ Object.assign({ inheritAttrs: false }, {
 			type: String,
 			required: false
 		},
-		activeClass: {
-			type: String,
-			required: false
-		},
-		ariaCurrentValue: {
-			type: String,
-			required: false,
-			default: "page"
-		},
 		custom: {
 			type: Boolean,
 			required: false
@@ -477,35 +1027,28 @@ var _sfc_main$1 = /*@__PURE__*/ Object.assign({ inheritAttrs: false }, {
 			type: null,
 			required: false
 		},
-		to: {
+		activeClass: {
 			type: String,
 			required: false
 		},
-		href: {
+		exactActiveClass: {
 			type: String,
 			required: false
 		},
-		external: {
+		ariaCurrentValue: {
+			type: String,
+			required: false,
+			default: "page"
+		},
+		viewTransition: {
 			type: Boolean,
 			required: false
 		},
-		target: {
-			type: [
-				String,
-				Object,
-				null
-			],
+		to: {
+			type: null,
 			required: false
 		},
-		rel: {
-			type: [
-				String,
-				Object,
-				null
-			],
-			required: false
-		},
-		noRel: {
+		replace: {
 			type: Boolean,
 			required: false
 		}
@@ -513,7 +1056,9 @@ var _sfc_main$1 = /*@__PURE__*/ Object.assign({ inheritAttrs: false }, {
 	setup(__props, { expose: __expose }) {
 		__expose();
 		const props = __props;
+		const route = useRoute();
 		const appConfig = useAppConfig();
+		const routerLinkProps = useForwardProps$1(reactiveOmit(props, "as", "type", "disabled", "active", "exact", "exactQuery", "exactHash", "activeClass", "inactiveClass", "to", "href", "raw", "custom", "class", "target", "rel", "noRel"));
 		const ui = computed(() => tv({
 			extend: link_default,
 			...defu({ variants: { active: {
@@ -521,74 +1066,96 @@ var _sfc_main$1 = /*@__PURE__*/ Object.assign({ inheritAttrs: false }, {
 				false: mergeClasses(appConfig.ui?.link?.variants?.active?.false, props.inactiveClass)
 			} } }, appConfig.ui?.link || {})
 		}));
-		const href = computed(() => props.to ?? props.href);
+		const to = computed(() => props.to ?? props.href);
 		const isExternal = computed(() => {
-			if (props.target === "_blank") return true;
 			if (props.external) return true;
-			if (!href.value) return false;
-			return hasProtocol(href.value, { acceptRelative: true });
+			if (!to.value) return false;
+			return typeof to.value === "string" && hasProtocol(to.value, { acceptRelative: true });
 		});
 		const hasTarget = computed(() => !!props.target && props.target !== "_self");
-		const isLinkActive = computed(() => {
-			if (props.active !== void 0) return props.active;
-			return false;
-		});
-		const linkClass = computed(() => {
-			const active = isLinkActive.value;
-			if (props.raw) return [props.class, active ? props.activeClass : props.inactiveClass];
-			return ui.value({
-				class: props.class,
-				active,
-				disabled: props.disabled
-			});
-		});
 		const rel = computed(() => {
 			if (props.noRel) return null;
 			if (props.rel !== void 0) return props.rel || null;
 			if (isExternal.value || hasTarget.value) return "noopener noreferrer";
 			return null;
 		});
-		const handleNavigation = inject("nuxtui:router", void 0);
+		function isLinkActive({ route: linkRoute, isActive, isExactActive }) {
+			if (props.active !== void 0) return props.active;
+			if (!to.value) return false;
+			if (props.exactQuery === "partial") {
+				if (!isPartiallyEqual(linkRoute.query, route.query)) return false;
+			} else if (props.exactQuery === true) {
+				if (!isEqual(linkRoute.query, route.query)) return false;
+			}
+			if (props.exactHash && linkRoute.hash !== route.hash) return false;
+			if (props.exact && isExactActive) return true;
+			if (!props.exact && isActive) return true;
+			return false;
+		}
+		function resolveLinkClass({ route: route2, isActive, isExactActive } = {}) {
+			const active = isLinkActive({
+				route: route2,
+				isActive,
+				isExactActive
+			});
+			if (props.raw) return [props.class, active ? props.activeClass : props.inactiveClass];
+			return ui.value({
+				class: props.class,
+				active,
+				disabled: props.disabled
+			});
+		}
 		const __returned__ = {
 			props,
+			route,
 			appConfig,
+			routerLinkProps,
 			ui,
-			href,
+			to,
 			isExternal,
 			hasTarget,
-			isLinkActive,
-			linkClass,
 			rel,
-			handleNavigation,
-			navigate: handleNavigation ? (e) => {
-				handleNavigation(e, {
-					href: href.value || "",
-					external: isExternal.value,
-					target: props.target || (isExternal.value ? "_blank" : void 0)
-				});
-			} : void 0,
+			isLinkActive,
+			resolveLinkClass,
 			get theme() {
 				return link_default;
 			},
 			computed,
-			inject,
 			get defu() {
 				return defu;
+			},
+			get isEqual() {
+				return isEqual;
+			},
+			get useForwardProps() {
+				return useForwardProps$1;
 			},
 			get Slot() {
 				return Slot;
 			},
+			get reactiveOmit() {
+				return reactiveOmit;
+			},
 			get hasProtocol() {
 				return hasProtocol;
+			},
+			get useRoute() {
+				return useRoute;
+			},
+			get RouterLink() {
+				return RouterLink;
 			},
 			get useAppConfig() {
 				return useAppConfig;
 			},
+			get tv() {
+				return tv;
+			},
 			get mergeClasses() {
 				return mergeClasses;
 			},
-			get tv() {
-				return tv;
+			get isPartiallyEqual() {
+				return isPartiallyEqual;
 			},
 			ULinkBase: LinkBase_default
 		};
@@ -600,32 +1167,77 @@ var _sfc_main$1 = /*@__PURE__*/ Object.assign({ inheritAttrs: false }, {
 	}
 });
 function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
-	return $props.custom ? (openBlock(), createBlock($setup["Slot"], { key: 0 }, {
+	return !$setup.isExternal && !!$setup.to ? (openBlock(), createBlock($setup["RouterLink"], mergeProps({ key: 0 }, $setup.routerLinkProps, {
+		to: $setup.to,
+		custom: ""
+	}), {
+		default: withCtx(({ href, navigate, route: linkRoute, isActive, isExactActive }) => [$props.custom ? (openBlock(), createBlock($setup["Slot"], { key: 0 }, {
+			default: withCtx(() => [renderSlot(_ctx.$slots, "default", normalizeProps(guardReactiveProps({
+				..._ctx.$attrs,
+				...$props.exact && isExactActive ? { "aria-current": $setup.props.ariaCurrentValue } : {},
+				as: $props.as,
+				type: $props.type,
+				disabled: $props.disabled,
+				href,
+				navigate,
+				rel: $setup.rel,
+				target: $props.target,
+				isExternal: $setup.isExternal,
+				active: $setup.isLinkActive({
+					route: linkRoute,
+					isActive,
+					isExactActive
+				})
+			})))]),
+			_: 2
+		}, 1024)) : (openBlock(), createBlock($setup["ULinkBase"], mergeProps({ key: 1 }, {
+			..._ctx.$attrs,
+			...$props.exact && isExactActive ? { "aria-current": $setup.props.ariaCurrentValue } : {},
+			as: $props.as,
+			type: $props.type,
+			disabled: $props.disabled,
+			href,
+			navigate,
+			rel: $setup.rel,
+			target: $props.target,
+			isExternal: $setup.isExternal
+		}, { class: $setup.resolveLinkClass({
+			route: linkRoute,
+			isActive,
+			isExactActive
+		}) }), {
+			default: withCtx(() => [renderSlot(_ctx.$slots, "default", { active: $setup.isLinkActive({
+				route: linkRoute,
+				isActive,
+				isExactActive
+			}) })]),
+			_: 2
+		}, 1040, ["class"]))]),
+		_: 3
+	}, 16, ["to"])) : $props.custom ? (openBlock(), createBlock($setup["Slot"], { key: 1 }, {
 		default: withCtx(() => [renderSlot(_ctx.$slots, "default", normalizeProps(guardReactiveProps({
 			..._ctx.$attrs,
 			as: $props.as,
 			type: $props.type,
 			disabled: $props.disabled,
-			href: $setup.href,
-			navigate: $setup.navigate,
+			href: $setup.to,
 			rel: $setup.rel,
-			target: $props.target || ($setup.isExternal ? "_blank" : void 0),
-			isExternal: $setup.isExternal,
-			active: $setup.isLinkActive
+			target: $props.target,
+			active: $props.active ?? false,
+			isExternal: $setup.isExternal
 		})))]),
 		_: 3
-	})) : (openBlock(), createBlock($setup["ULinkBase"], mergeProps({ key: 1 }, {
+	})) : (openBlock(), createBlock($setup["ULinkBase"], mergeProps({ key: 2 }, {
 		..._ctx.$attrs,
 		as: $props.as,
 		type: $props.type,
 		disabled: $props.disabled,
-		href: $setup.href,
-		navigate: $setup.navigate,
+		href: $setup.to,
 		rel: $setup.rel,
-		target: $props.target || ($setup.isExternal ? "_blank" : void 0),
+		target: $props.target,
 		isExternal: $setup.isExternal
-	}, { class: $setup.linkClass }), {
-		default: withCtx(() => [renderSlot(_ctx.$slots, "default", { active: $setup.isLinkActive })]),
+	}, { class: $setup.resolveLinkClass() }), {
+		default: withCtx(() => [renderSlot(_ctx.$slots, "default", { active: $props.active ?? false })]),
 		_: 3
 	}, 16, ["class"]));
 }
@@ -1335,6 +1947,6 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
 }
 var Button_default = /*@__PURE__*/ _plugin_vue_export_helper_default(_sfc_main, [["render", _sfc_render], ["__file", "Button.vue"]]);
 //#endregion
-export { FieldGroupReset as a, useForwardProps as c, useLocale as d, VisuallyHidden_default as f, pickLinkProps as i, useFormField as l, Link_default as n, useFieldGroup as o, useEmitAsProps as p, LinkBase_default as r, useComponentIcons as s, Button_default as t, localeContextInjectionKey as u };
+export { FieldGroupReset as a, useForwardProps as c, useLocale as d, VisuallyHidden_default as f, pickLinkProps as i, useFormField as l, useEmitAsProps as m, Link_default as n, useFieldGroup as o, useForwardProps$1 as p, LinkBase_default as r, useComponentIcons as s, Button_default as t, localeContextInjectionKey as u };
 
 //# sourceMappingURL=Button.js.map

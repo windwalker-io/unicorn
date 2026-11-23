@@ -1,9 +1,9 @@
 import { n as trans } from "./lang.js";
+import { a as FieldGroupReset, c as useForwardProps$1, d as useLocale, f as VisuallyHidden_default, i as pickLinkProps, l as useFormField, m as useEmitAsProps, n as Link_default, o as useFieldGroup, p as useForwardProps, r as LinkBase_default, s as useComponentIcons, t as Button_default, u as localeContextInjectionKey } from "./Button.js";
 import { a as useComponentProps, i as tv, l as createContext, o as Primitive, r as Icon_default, t as Avatar_default } from "./Avatar.js";
 import { a as VIEWPORT_PAUSE, d as injectToastProviderContext, f as useCollection, g as getActiveElement, h as useForwardExpose, m as Presence_default, o as VIEWPORT_RESUME, p as usePrimitiveElement, u as ToastProvider_default } from "./utils.js";
 import { C as tryOnScopeDispose, E as useTimeoutFn, S as tryOnBeforeUnmount, _ as isIOS, b as refAutoReset, f as useVModel, g as isClient, h as createSharedComposable, i as unrefElement, l as useMounted, m as createGlobalState, p as createEventHook, r as onKeyStroke, s as useEventListener, t as createReusableTemplate, v as reactiveOmit, x as syncRef, y as reactivePick } from "./dist.js";
 import { t as defu } from "./defu.js";
-import { a as FieldGroupReset, c as useForwardProps$1, d as useLocale, f as VisuallyHidden_default, i as pickLinkProps, l as useFormField, n as Link_default, o as useFieldGroup, p as useEmitAsProps, r as LinkBase_default, s as useComponentIcons, t as Button_default, u as localeContextInjectionKey } from "./Button.js";
 import { a as autoUpdate, c as hide, d as shift, f as size, i as arrow$1, l as limitShift, m as isNode, n as createHandlers, o as computePosition, p as getNodeName, s as flip, t as buildFloatingUIMiddleware, u as offset } from "./editor.js";
 import { i as useHead, r as useState } from "./base.js";
 import { i as useAppConfig } from "./iconify.js";
@@ -12,7 +12,7 @@ import { i as looseToNumber, l as transformUI, n as isArrayOfArray, o as omit, r
 import { t as _plugin_vue_export_helper_default } from "./_plugin-vue_export-helper.js";
 import { a as resolveColors, i as createColorMenu, o as toBackground, r as parseEmbedInput, t as attrsOf } from "./video-embed.js";
 import * as vue from "vue";
-import { Fragment, Teleport, camelize, computed, createBlock, createCommentVNode, createElementBlock, createElementVNode, createSlots, createTextVNode, createVNode, defineAsyncComponent, defineComponent, getCurrentInstance, getCurrentScope, guardReactiveProps, h, inject, isRef, markRaw, mergeDefaults, mergeModels, mergeProps, nextTick, normalizeClass, normalizeProps, normalizeStyle, onBeforeMount, onBeforeUnmount, onMounted, onScopeDispose, onUnmounted, openBlock, provide, reactive, ref, renderList, renderSlot, resolveDynamicComponent, shallowReactive, shallowReadonly, shallowRef, toDisplayString, toHandlers, toRef, toRefs, toValue, unref, useAttrs, useId, useModel, useSlots, useTemplateRef, watch, watchEffect, watchPostEffect, watchSyncEffect, withCtx, withKeys, withMemo, withModifiers } from "vue";
+import { Fragment, Teleport, computed, createBlock, createCommentVNode, createElementBlock, createElementVNode, createSlots, createTextVNode, createVNode, defineAsyncComponent, defineComponent, getCurrentInstance, getCurrentScope, guardReactiveProps, h, inject, isRef, markRaw, mergeDefaults, mergeModels, mergeProps, nextTick, normalizeClass, normalizeProps, normalizeStyle, onBeforeMount, onBeforeUnmount, onMounted, onScopeDispose, onUnmounted, openBlock, provide, reactive, ref, renderList, renderSlot, resolveDynamicComponent, shallowReactive, shallowReadonly, shallowRef, toDisplayString, toHandlers, toRef, toRefs, toValue, unref, useAttrs, useId, useModel, useSlots, useTemplateRef, watch, watchEffect, watchPostEffect, watchSyncEffect, withCtx, withKeys, withMemo, withModifiers } from "vue";
 import { mergeAttributes } from "@tiptap/core";
 import Code from "@tiptap/extension-code";
 import HorizontalRule from "@tiptap/extension-horizontal-rule";
@@ -400,38 +400,6 @@ function createFocusGuard() {
 	element.style.position = "fixed";
 	element.style.pointerEvents = "none";
 	return element;
-}
-//#endregion
-//#region ../../../../node_modules/reka-ui/dist/shared/useForwardProps.js
-/**
-* The `useForwardProps` function in TypeScript takes in a set of props and returns a computed value
-* that combines default props with assigned props from the current instance.
-* @param {T} props - The `props` parameter is an object that represents the props passed to a
-* component.
-* @returns computed value that combines the default props, preserved props, and assigned props.
-*/
-function useForwardProps(props) {
-	const vm = getCurrentInstance();
-	const defaultProps = Object.keys(vm?.type.props ?? {}).reduce((prev, curr) => {
-		const defaultValue = (vm?.type.props[curr]).default;
-		if (defaultValue !== void 0) prev[curr] = defaultValue;
-		return prev;
-	}, {});
-	const refProps = toRef(props);
-	return computed(() => {
-		const preservedProps = {};
-		const assignedProps = vm?.vnode.props ?? {};
-		Object.keys(assignedProps).forEach((key) => {
-			preservedProps[camelize(key)] = assignedProps[key];
-		});
-		return Object.keys({
-			...defaultProps,
-			...preservedProps
-		}).reduce((prev, curr) => {
-			if (refProps.value[curr] !== void 0) prev[curr] = refProps.value[curr];
-			return prev;
-		}, {});
-	});
 }
 //#endregion
 //#region ../../../../node_modules/reka-ui/dist/shared/useForwardPropsEmits.js
