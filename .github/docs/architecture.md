@@ -93,7 +93,8 @@ what generators produce.
 `tests/bootstrap.app.php` accepts `WINDWALKER_TEST_APP_ROOT` to identify a host
 app. A host app may provide its own PHPUnit configuration. Use the explicit
 configuration that matches the test's bootstrap requirements rather than
-assuming a fixed host path.
+assuming a fixed host path. The bootstrap registers its `TestApp` with Core's
+`TestAppRegistry::use()`, which Core's database and service test helpers rely on.
 
 Keep ordinary tests independent of a full application where possible. Tests
 that require a database, host configuration, or external service must declare

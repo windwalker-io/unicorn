@@ -7,7 +7,7 @@
 >
 	<php>
 		<ini name="error_reporting" value="-1" />
-		<ini name="WINDWALKER_TEST_APP_ROOT" value="../../.." />
+		<env name="WINDWALKER_TEST_APP_ROOT" value="../../.." />
 
         <!--
             Default database DSN, used by general tests. The prefix before ':' selects the
