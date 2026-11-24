@@ -11,7 +11,6 @@ use Windwalker\Utilities\Accessible\AccessorBCTrait;
 /**
  * The Result class.
  */
-// phpcs:disable
 class Result
 {
     use AccessorBCTrait;

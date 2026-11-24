@@ -9,7 +9,6 @@ use Psr\Http\Message\UriInterface;
 /**
  * The GetResult class.
  */
-// phpcs:disable
 class GetResult extends Result
 {
     public ?\DateTimeInterface $lastModified = null {
