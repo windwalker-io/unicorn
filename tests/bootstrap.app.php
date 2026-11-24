@@ -18,6 +18,7 @@ use Composer\Autoload\ClassLoader;
 use Unicorn\Tests\TestApp;
 use Unicorn\UnicornPackage;
 use Windwalker\Core\Edge\Component\XComponent;
+use Windwalker\Core\Testing\TestAppRegistry;
 use Windwalker\Core\Theme\BootstrapTheme;
 use Windwalker\Core\Theme\ThemeInterface;
 use Windwalker\DI\Container;
@@ -104,6 +105,8 @@ TestApp::createInstance(
         '@seeders' => $root . '/tests/resources/seeders',
     ],
 );
+
+TestAppRegistry::use(TestApp::$instance);
 
 // Providers need the app services registered while booting, so they go on the app container.
 TestApp::$instance->getContainer()->registerByConfig(
