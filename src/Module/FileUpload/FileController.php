@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace Unicorn\Module\FileUpload;
 
+use Lyrasoft\Luna\User\UserService;
 use Unicorn\Flysystem\Base64DataUri;
 use Unicorn\Upload\FileUploadService;
 use Unicorn\Upload\ResizeConfig;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Attributes\Controller;
 use Windwalker\Core\Http\AppRequest;
+use Windwalker\Core\Router\Exception\RouteNotFoundException;
 use Windwalker\Http\Helper\UploadedFileHelper;
 
 /**
@@ -18,8 +20,16 @@ use Windwalker\Http\Helper\UploadedFileHelper;
 #[Controller]
 class FileController
 {
-    public function upload(AppRequest $request, AppContext $app): array
+    public function upload(AppRequest $request, AppContext $app, UserService $userService): array
     {
+        if (!$userService->isLogin()) {
+            $route = $app->getMatchedRoute();
+
+            if (!$route || $route->getExtraValue('allow_guest') !== true) {
+                throw new RouteNotFoundException();
+            }
+        }
+
         [$dir, $path, $resize, $profile] = $request->input('dir', 'path', 'resize', 'profile')
             ->values()
             ->dump();
