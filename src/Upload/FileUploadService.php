@@ -43,23 +43,13 @@ class FileUploadService implements EventAwareInterface
      */
     public const string DRIVER_IMAGICK = FileUploadOptions::DRIVER_IMAGICK;
 
-    /**
-     * Executable / active content extensions that are always rejected, regardless of `accept`.
-     * PHP variants (php, php3, php5, php7, php8, ...) are also matched by pattern in assertNotDangerousExtension().
-     */
     protected const array DANGEROUS_EXTENSIONS = [
-        // PHP and other server-side scripts
-        'phtml', 'phar', 'pht', 'phps', 'phtm', 'inc',
-        'asp', 'aspx', 'ashx', 'asmx', 'asa', 'cer', 'jsp', 'jspx', 'jspf',
-        'cfm', 'cfc', 'cgi', 'fcgi', 'pl', 'py', 'pyc', 'pyo', 'rb', 'lua', 'erb',
-        // Web pages and active content
-        'html', 'htm', 'xhtml', 'shtml', 'shtm', 'xht', 'mhtml', 'mht',
-        'css', 'js', 'mjs', 'jse', 'wsh', 'hta', 'xsl', 'xslt',
-        // Shell / script / executables
-        'sh', 'bash', 'zsh', 'ksh', 'csh', 'bat', 'cmd', 'ps1', 'psm1', 'vbs', 'vbe', 'wsf', 'scr',
-        'exe', 'dll', 'com', 'msi', 'msp', 'jar', 'war', 'ear', 'class', 'reg', 'lnk', 'inf', 'pif', 'app',
-        // Server config files (.user.ini is matched by its `ini` segment)
-        'htaccess', 'htpasswd', 'ini',
+        'php', 'phtml', 'phar', 'pht', 'phps',
+        'html', 'htm', 'xhtml', 'shtml', 'xht',
+        'css', 'js', 'mjs',
+        'asp', 'aspx', 'ashx', 'asmx', 'jsp', 'jspx', 'cfm', 'cgi', 'pl', 'py', 'rb',
+        'sh', 'bash', 'zsh', 'bat', 'cmd', 'ps1', 'vbs', 'wsf',
+        'exe', 'dll', 'com', 'msi', 'jar', 'war', 'htaccess', 'htpasswd',
     ];
 
     protected array $pathVars = [];
@@ -624,7 +614,7 @@ class FileUploadService implements EventAwareInterface
     }
 
     /**
-     * Executable / active content extensions that are always blocked.
+     * Executable / active content extensions blocked when `accept` has no extension entries.
      * Every dot-separated segment of the file name is checked to catch names like `shell.php.jpg`.
      */
     protected function assertNotDangerousExtension(string $dest): void
@@ -632,7 +622,7 @@ class FileUploadService implements EventAwareInterface
         $segments = array_slice(explode('.', strtolower(Path::basename($dest))), 1);
 
         foreach ($segments as $segment) {
-            if (in_array($segment, static::DANGEROUS_EXTENSIONS, true) || preg_match('/^(php|phtml|phar|pht)\d*$/', $segment)) {
+            if (in_array($segment, static::DANGEROUS_EXTENSIONS, true) || preg_match('/^php\d*$/', $segment)) {
                 throw new \DomainException('File extension is not allowed.', 400);
             }
         }
