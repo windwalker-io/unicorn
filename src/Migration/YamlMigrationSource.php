@@ -23,8 +23,10 @@ use Symfony\Component\Yaml\Yaml;
  *
  * Column attribute keys are case-insensitive and accept "Key" / "key"; unknown ones are rejected.
  * "enum" (class name) is the same as writing "enum:Foo" in the Excel Note column.
+ *
+ * The result is the source-independent TableDefinition / ColumnDefinition, same as other sources.
  * "type" may carry a length, e.g. varchar(255) or decimal(20,4); it conflicts with "length".
- * Column "nullable" (bool) allows NULL; "primary" (bool) marks a primary key; "serial" (bool, int/bigint only) makes it auto-increment.
+ * Column "nullable" (bool) allows NULL; "signed" (bool, default true) makes it unsigned when false; "primary" (bool) marks a primary key; "serial" (bool, int/bigint only) makes it auto-increment.
  *
  * This is not a full schema AST, keep it a thin description for generating migrations.
  */
@@ -65,22 +67,16 @@ class YamlMigrationSource extends AbstractMigrationSource
             );
         }
 
-        $tableKeys = [];
-        $tables = $this->parseTables($data, $tableKeys);
-
-        return $this->buildAnalysis($tables, $tableKeys);
+        return $this->buildAnalysis($this->parseTables($data));
     }
 
     /**
      * @param  array<string, mixed>  $data
-     * @param  array<string, mixed>  $tableKeys  Filled with table-level keys by table name.
      *
-     * @return  array<string, array<int, array<string, string>>>
+     * @return  \Generator<int, TableDefinition>
      */
-    protected function parseTables(array $data, array &$tableKeys): array
+    protected function parseTables(array $data): \Generator
     {
-        $tables = [];
-
         foreach ($data as $tableName => $table) {
             if (!$this->isTableName($tableName)) {
                 continue;
@@ -113,7 +109,7 @@ class YamlMigrationSource extends AbstractMigrationSource
                 );
             }
 
-            $rows = [];
+            $defs = [];
 
             foreach ($columns as $name => $attrs) {
                 if (!is_string($name)) {
@@ -122,23 +118,24 @@ class YamlMigrationSource extends AbstractMigrationSource
                     );
                 }
 
-                $rows[$name] = $this->buildRow($name, $attrs, $tableName);
+                $defs[$name] = $this->buildColumn($name, $attrs, $tableName);
             }
 
-            $keys = $this->parseKeys($table['keys'] ?? [], $rows, $tableName);
+            $keys = $this->parseKeys($table['keys'] ?? [], $defs, $tableName);
 
-            if ($keys !== []) {
-                $tableKeys[$tableName] = $keys;
-            }
-
-            $tables[$tableName] = array_values($rows);
+            yield new TableDefinition(
+                name: $tableName,
+                columns: array_values($defs),
+                description: (string) ($table['description'] ?? ''),
+                primary: $keys['primary'] ?? [],
+                indexes: $keys['index'] ?? [],
+                uniques: $keys['unique'] ?? [],
+            );
         }
-
-        return $tables;
     }
 
     /**
-     * @param  array<string, array<string, string>>  $rows
+     * @param  array<string, ColumnDefinition>  $rows
      *
      * @return  array{primary?: list<string>, index?: list<list<string>>, unique?: list<list<string>>}
      */
@@ -203,7 +200,7 @@ class YamlMigrationSource extends AbstractMigrationSource
 
     /**
      * @param  list<string>                          $cols
-     * @param  array<string, array<string, string>>  $rows
+     * @param  array<string, ColumnDefinition>  $rows
      *
      * @return  list<string>
      */
@@ -219,7 +216,7 @@ class YamlMigrationSource extends AbstractMigrationSource
                 );
             }
 
-            if ($type === 'primary' && (($rows[$pure]['Key'] ?? '') !== '')) {
+            if ($type === 'primary' && $rows[$pure]->primary) {
                 throw new \UnexpectedValueException(
                     sprintf('Column "%s.%s" is already marked as primary.', $tableName, $col)
                 );
@@ -229,10 +226,7 @@ class YamlMigrationSource extends AbstractMigrationSource
         return $cols;
     }
 
-    /**
-     * @return  array<string, string>
-     */
-    protected function buildRow(string $name, mixed $attrs, string $tableName): array
+    protected function buildColumn(string $name, mixed $attrs, string $tableName): ColumnDefinition
     {
         if (is_scalar($attrs)) {
             $attrs = ['Type' => $attrs];
@@ -246,26 +240,11 @@ class YamlMigrationSource extends AbstractMigrationSource
             );
         }
 
-        $row = ['Name' => $name];
-
-        $flags = ['Nullable' => false, 'Primary' => false, 'Serial' => false];
-
-        $enum = '';
+        $text = ['Type' => '', 'Length' => '', 'Default' => '', 'Description' => '', 'Note' => '', 'Enum' => ''];
+        $flags = ['Nullable' => false, 'Signed' => true, 'Primary' => false, 'Serial' => false];
 
         foreach ($attrs as $key => $value) {
             $header = $this->normalizeKey((string) $key);
-
-            if ($header === 'Enum') {
-                if (!is_string($value) || trim($value) === '') {
-                    throw new \UnexpectedValueException(
-                        sprintf('Column "%s.%s": "enum" must be a non-empty class name.', $tableName, $name)
-                    );
-                }
-
-                $enum = trim($value);
-
-                continue;
-            }
 
             if (isset($flags[$header])) {
                 if (!is_bool($value)) {
@@ -279,49 +258,49 @@ class YamlMigrationSource extends AbstractMigrationSource
                 continue;
             }
 
-            $row[$header] = $this->normalizeValue($value);
+            if ($header === 'Enum' && (!is_string($value) || trim($value) === '')) {
+                throw new \UnexpectedValueException(
+                    sprintf('Column "%s.%s": "enum" must be a non-empty class name.', $tableName, $name)
+                );
+            }
+
+            $text[$header] = trim($this->normalizeValue($value));
         }
 
-        if (preg_match('/^(\w+)\s*\(\s*(\d+(?:\s*,\s*\d+)?)\s*\)$/', $row['Type'] ?? '', $m)) {
-            if (($row['Length'] ?? '') !== '') {
+        if (preg_match('/^(\w+)\s*\(\s*(\d+(?:\s*,\s*\d+)?)\s*\)$/', $text['Type'], $m)) {
+            if ($text['Length'] !== '') {
                 throw new \UnexpectedValueException(
                     sprintf('Column "%s.%s": "type" already has a length, remove "length".', $tableName, $name)
                 );
             }
 
-            $row['Type'] = $m[1];
-            $row['Length'] = str_replace(' ', '', $m[2]);
+            $text['Type'] = $m[1];
+            $text['Length'] = str_replace(' ', '', $m[2]);
         }
 
-        if ($flags['Serial'] && !in_array($row['Type'] ?? '', ['int', 'integer', 'bigint'], true)) {
+        if ($flags['Serial'] && !in_array($text['Type'], ['int', 'integer', 'bigint'], true)) {
             throw new \UnexpectedValueException(
                 sprintf('Column "%s.%s": "serial" requires type int or bigint.', $tableName, $name)
             );
         }
 
-        // Same as writing "enum:Foo" in the Excel Note column.
-        if ($enum !== '') {
-            $row['Note'] = trim(($row['Note'] ?? '') . ' enum:' . $enum);
-        }
-
-        if ($flags['Nullable']) {
-            $row['NULL'] = 'allow';
-        }
-
-        // "Primary (AI)" and "Primary" are the keywords the command understands.
-        if ($flags['Primary'] && $flags['Serial']) {
-            $row['Key'] = 'Primary (AI)';
-        } elseif ($flags['Primary']) {
-            $row['Key'] = 'Primary';
-        } elseif ($flags['Serial']) {
-            $row['Serial'] = 'true';
-        }
-
-        return $row;
+        return new ColumnDefinition(
+            name: $name,
+            type: $text['Type'],
+            length: $text['Length'] !== '' ? $text['Length'] : null,
+            nullable: $flags['Nullable'],
+            unsigned: !$flags['Signed'],
+            default: $text['Default'] !== '' ? $text['Default'] : null,
+            primary: $flags['Primary'],
+            serial: $flags['Serial'],
+            enum: $text['Enum'] !== '' ? $text['Enum'] : null,
+            description: $text['Description'],
+            note: $text['Note'],
+        );
     }
 
     /**
-     * Accepts "type", "key_name", "Key Name", "keyName" etc. and maps them to the Excel header.
+     * Accepts "type", "key_name", "Key Name", "keyName" etc. and maps them to a column attribute name.
      */
     protected function normalizeKey(string $key): string
     {
@@ -339,7 +318,7 @@ class YamlMigrationSource extends AbstractMigrationSource
     }
 
     /**
-     * The command handles cells as strings, same as Excel formatted values.
+     * Attribute values are handled as strings, same as Excel formatted values.
      */
     protected function normalizeValue(mixed $value): string
     {

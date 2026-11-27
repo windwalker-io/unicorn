@@ -21,7 +21,7 @@
 #                A length may be included: varchar(255), decimal(20,4). Do not combine with `length`.
 #   length       Length or precision, e.g. 255 or '10,2'
 #   nullable     bool. Allow NULL.
-#   signed       `unsigned` to make a number column unsigned
+#   signed       bool, default true. `false` makes a number column unsigned.
 #   default      Default value
 #   primary      bool. Primary key. Use table `keys` for index / unique.
 #   serial       bool. Auto-increment (int / bigint only). Use with `primary: true` for a serial primary key.
@@ -39,12 +39,12 @@ article:
   columns:
     id:
       type: int
-      signed: unsigned
+      signed: false
       primary: true
       serial: true
     category_id:
       type: int
-      signed: unsigned
+      signed: false
       description: Category ID
     title:
       type: varchar(255)
@@ -72,7 +72,7 @@ article:
       nullable: true
     created_by:
       type: int
-      signed: unsigned
+      signed: false
       default: 0
   keys:
     index:
@@ -85,15 +85,15 @@ article_tag_map:
   columns:
     id:
       type: int
-      signed: unsigned
+      signed: false
       primary: true
       serial: true
     article_id:
       type: int
-      signed: unsigned
+      signed: false
     tag_id:
       type: int
-      signed: unsigned
+      signed: false
   keys:
     unique:
       - [article_id, tag_id]

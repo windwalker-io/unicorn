@@ -35,7 +35,7 @@
     },
     "type": {
       "type": "string",
-      "description": "Column type, optionally with a length, e.g. varchar(255) or decimal(20,4).",
+      "description": "Column type, optionally with a length, e.g. varchar(255) or decimal(20,4). The list is for completion only; other values are allowed.",
       "anyOf": [
         {
           "enum": [
@@ -63,7 +63,8 @@
           "vector"
         ]
         },
-        { "pattern": "^\\w+\\s*\\(\\s*\\d+(\\s*,\\s*\\d+)?\\s*\\)$" }
+        { "pattern": "^\\w+\\s*\\(\\s*\\d+(\\s*,\\s*\\d+)?\\s*\\)$" },
+        { "description": "Any other type is accepted here; the command rejects unknown types.", "minLength": 1 }
       ]
     },
     "column": {
@@ -81,9 +82,9 @@
           "description": "Allow NULL."
         },
         "signed": {
-          "type": "string",
-          "enum": ["unsigned"],
-          "description": "`unsigned` to make a number column unsigned."
+          "type": "boolean",
+          "default": true,
+          "description": "Signed number. `false` makes the column unsigned."
         },
         "default": {
           "type": ["string", "number", "boolean"],

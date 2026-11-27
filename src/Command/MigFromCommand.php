@@ -11,8 +11,10 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
+use Unicorn\Migration\ColumnDefinition;
 use Unicorn\Migration\ExcelMigrationSource;
 use Unicorn\Migration\MigrationSourceInterface;
+use Unicorn\Migration\TableDefinition;
 use Unicorn\Migration\YamlMigrationSource;
 use Windwalker\Console\CommandInterface;
 use Windwalker\Console\CommandWrapper;
@@ -26,8 +28,6 @@ use Windwalker\Data\Collection;
 use Windwalker\Utilities\StrInflector;
 use Windwalker\Utilities\StrNormalize;
 
-use function Windwalker\collect;
-use function Windwalker\uid;
 
 /**
  * The MigFromCommand class.
@@ -167,7 +167,7 @@ class MigFromCommand implements CommandInterface
                         }
                     }
 
-                    foreach ($tables as $tableName => $rows) {
+                    foreach ($tables as $tableName => $table) {
                         $className = StrNormalize::toPascalCase(StrInflector::toSingular($tableName));
                         $entities[] = $entityClass = 'App\Entity\\' . $className;
 
@@ -208,7 +208,7 @@ class MigFromCommand implements CommandInterface
 
                 if ($node instanceof Node\Stmt\ClassMethod) {
                     if ($this->hasAttribute($node, 'MigrateUp')) {
-                        foreach ($tables as $tableName => $rows) {
+                        foreach ($tables as $tableName => $table) {
                             if (!in_array($tableName, $existsTables, true)) {
                                 $node->stmts[] = new Node\Stmt\Expression(
                                     new Node\Scalar\String_('@create-' . $tableName)
@@ -218,7 +218,7 @@ class MigFromCommand implements CommandInterface
                     }
 
                     if ($this->hasAttribute($node, 'MigrateDown')) {
-                        foreach ($tables as $tableName => $rows) {
+                        foreach ($tables as $tableName => $table) {
                             if (!in_array($tableName, $existsTables, true)) {
                                 $node->stmts[] = new Node\Stmt\Expression(
                                     new Node\Scalar\String_('@drop-' . $tableName)
@@ -233,7 +233,7 @@ class MigFromCommand implements CommandInterface
                         $func = $node->args[0]->value;
 
                         if ($func instanceof Node\Expr\Closure) {
-                            foreach ($tables as $tableName => $rows) {
+                            foreach ($tables as $tableName => $table) {
                                 if (!in_array($tableName, $existsTables, true)) {
                                     $func->stmts[] = new Node\Stmt\Expression(
                                         new Node\Scalar\String_('@create-' . $tableName)
@@ -247,7 +247,7 @@ class MigFromCommand implements CommandInterface
                         $func = $node->args[0]->value;
 
                         if ($func instanceof Node\Expr\Closure) {
-                            foreach ($tables as $tableName => $rows) {
+                            foreach ($tables as $tableName => $table) {
                                 if (!in_array($tableName, $existsTables, true)) {
                                     $func->stmts[] = new Node\Stmt\Expression(
                                         new Node\Scalar\String_('@drop-' . $tableName)
@@ -268,7 +268,7 @@ class MigFromCommand implements CommandInterface
             );
             $newCode = $builder->process();
 
-            foreach ($tables as $tableName => $rows) {
+            foreach ($tables as $tableName => $table) {
                 $className = StrNormalize::toPascalCase(StrInflector::toSingular($tableName));
 
                 $io->writeln('$ php windwalker g entity ' . $className);
@@ -279,28 +279,10 @@ class MigFromCommand implements CommandInterface
                     $io->getOutput()
                 );
 
-                $keys = [];
-                $cols = [];
-
-                foreach ($rows as $row) {
-                    if (empty($row['Name'])) {
-                        continue;
-                    }
-
-                    $cols[] = $this->buildColumn($row, $keys, $tableName);
-                }
-
-                foreach ($analysis->tableKeys[$tableName] ?? [] as $type => $defs) {
-                    if ($type === 'primary') {
-                        $keys['primary'] = $defs;
-
-                        continue;
-                    }
-
-                    foreach ($defs as $cols) {
-                        $keys[$type][] = $cols;
-                    }
-                }
+                $cols = array_map(
+                    fn(ColumnDefinition $column) => $this->buildColumn($column, $tableName),
+                    $table->columns
+                );
 
                 $newCode = str_replace(
                     [
@@ -308,7 +290,7 @@ class MigFromCommand implements CommandInterface
                         "'@drop-{$tableName}';",
                     ],
                     [
-                        $this->buildCreateTable($className, $cols, $keys),
+                        $this->buildCreateTable($className, $cols, $table),
                         $this->buildDropTable($className),
                     ],
                     $newCode
@@ -376,43 +358,33 @@ class MigFromCommand implements CommandInterface
         return 0;
     }
 
-    protected function buildCreateTable(string $className, array $cols, array $keys): string
+    /**
+     * @param  list<string>  $cols
+     */
+    protected function buildCreateTable(string $className, array $cols, TableDefinition $table): string
     {
         $declare = implode("\n" . str_repeat(' ', 16), $cols);
 
-        if ($keys['index'] ?? null) {
+        $groups = [
+            'addIndex' => $table->indexes,
+            'addUniqueKey' => $table->uniques,
+        ];
+
+        foreach ($groups as $method => $keyList) {
+            if ($keyList === []) {
+                continue;
+            }
+
             $declare .= "\n";
 
-            foreach ($keys['index'] as $idxName => $idxCols) {
-                $idxCols = collect($idxCols)
-                    ->map(fn($v) => "'$v'");
-
-                $idxCols = \Windwalker\count($idxCols) === 1 ? $idxCols[0] : '[' . $idxCols->implode(', ') . ']';
-
-                $declare .= "\n" . str_repeat(' ', 16) . "\$schema->addIndex($idxCols);";
+            foreach ($keyList as $keyCols) {
+                $declare .= "\n" . str_repeat(' ', 16) . "\$schema->$method(" . $this->exportColumns($keyCols) . ');';
             }
         }
 
-        if ($keys['unique'] ?? null) {
-            $declare .= "\n";
-
-            foreach ($keys['unique'] as $idxName => $idxCols) {
-                $idxCols = collect($idxCols)
-                    ->map(fn($v) => "'$v'");
-
-                $idxCols = \Windwalker\count($idxCols) === 1 ? $idxCols[0] : '[' . $idxCols->implode(', ') . ']';
-
-                $declare .= "\n" . str_repeat(' ', 16) . "\$schema->addUniqueKey($idxCols);";
-            }
-        }
-
-        if ($keys['primary'] ?? null) {
-            $primaryCols = collect($keys['primary'])
-                ->map(fn($v) => "'$v'");
-
-            $primaryCols = \Windwalker\count($primaryCols) === 1 ? $primaryCols[0] : '[' . $primaryCols->implode(', ') . ']';
-
-            $declare .= "\n\n" . str_repeat(' ', 16) . "\$schema->addPrimaryKey($primaryCols);";
+        if ($table->primary !== []) {
+            $declare .= "\n\n" . str_repeat(' ', 16)
+                . "\$schema->addPrimaryKey(" . $this->exportColumns($table->primary) . ');';
         }
 
         $code = <<<PHP
@@ -425,6 +397,16 @@ class MigFromCommand implements CommandInterface
 PHP;
 
         return $code;
+    }
+
+    /**
+     * @param  list<string>  $cols
+     */
+    protected function exportColumns(array $cols): string
+    {
+        $cols = array_map(fn(string $col) => "'$col'", $cols);
+
+        return count($cols) === 1 ? $cols[0] : '[' . implode(', ', $cols) . ']';
     }
 
     protected function buildDropTable(string $className): string
@@ -440,80 +422,53 @@ PHP;
         };
     }
 
-    protected function buildColumn(array $row, ?array &$keys = null, ?string $tableName = null): string
+    protected function buildColumn(ColumnDefinition $column, ?string $tableName = null): string
     {
-        $keys ??= [];
-
-        $name = trim($row['Name'] ?? '');
-        $type = trim($row['Type'] ?? 'varchar');
-        $length = trim($row['Length'] ?? '');
-        $null = trim($row['NULL'] ?? '');
-        $signed = trim($row['Signed'] ?? '');
-        $default = trim($row['Default'] ?? '');
-        $key = trim($row['Key'] ?? '');
-        $keyName = trim($row['Key Name'] ?? '');
-        $serial = trim($row['Serial'] ?? '') !== '';
-        $description = trim($row['Description'] ?? '');
-        $note = trim($row['Note'] ?? '');
-
-        $method = $this->getTypeMethod($key, $type);
+        $name = $column->name;
+        $method = $this->getTypeMethod($column);
 
         if (!$method) {
             if ($tableName) {
                 $tableName .= '.';
             }
 
-            throw new \RuntimeException("Unknown type '$type' for column {$tableName}{$name}.");
+            throw new \RuntimeException("Unknown type '{$column->type}' for column {$tableName}{$name}.");
         }
 
         $col = "\$schema->$method('$name')";
 
-        if ($length) {
-            if (!is_numeric($length)) {
-                $length = "'$length'";
-            }
+        if ($column->length !== null) {
+            $length = is_numeric($column->length) ? $column->length : "'{$column->length}'";
 
             $col .= "->length($length)";
         }
 
-        if ($method === 'json' || strtolower(trim($null)) === 'allow') {
+        if ($method === 'json' || $column->nullable) {
             $col .= '->nullable(true)';
         }
 
-        if (strtolower($key) === 'primary') {
+        // Serial primary keys are already created by the primary*() methods.
+        if ($column->primary && !$column->serial) {
             $col .= '->primary(true)';
         }
 
-        if ($serial) {
+        if ($column->serial && !$column->primary) {
             $col .= '->autoIncrement(true)';
         }
 
-        if (strtolower(trim($signed)) === 'unsigned') {
+        if ($column->unsigned) {
             $col .= '->unsigned(true)';
         }
 
-        if ((string) $default !== '') {
-            if (!is_numeric($default)) {
-                $default = "'$default'";
-            }
+        if ($column->default !== null) {
+            $default = is_numeric($column->default) ? $column->default : "'{$column->default}'";
 
             $col .= "->defaultValue($default)";
         }
 
-        if (!$keyName) {
-            $keyName = uid();
-        }
+        $comment = $column->getComment();
 
-        if (strtolower($key) === 'index') {
-            $keys['index'][$keyName][] = $name;
-        } elseif (strtolower($key) === 'unique') {
-            $keys['unique'][$keyName][] = $name;
-        }
-
-        if ($description || $note) {
-            $comment = array_filter([$description, $note]);
-            $comment = implode(' - ', $comment);
-
+        if ($comment !== '') {
             $col .= "->comment('$comment')";
         }
 
@@ -530,19 +485,13 @@ PHP;
         };
     }
 
-    /**
-     * @param  string  $key
-     * @param  string  $type
-     *
-     * @return  string
-     */
-    public function getTypeMethod(string $key, string $type): string
+    public function getTypeMethod(ColumnDefinition $column): string
     {
-        $type = $this->typeMap($type);
+        $type = $this->typeMap($column->type);
 
         $method = $type;
 
-        if (strtolower($key) === 'primary (ai)') {
+        if ($column->primary && $column->serial) {
             if ($type === 'integer') {
                 $method = 'primary';
             } elseif ($type === 'bigint') {

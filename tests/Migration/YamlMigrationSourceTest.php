@@ -63,11 +63,13 @@ class YamlMigrationSourceTest extends TestCase
         self::assertSame(['article'], array_keys($analysis->migrationGroups));
         self::assertSame(['articles', 'article_tags'], array_keys($analysis->migrationGroups['article']));
 
-        $title = $analysis->migrationGroups['article']['articles'][1];
+        $table = $analysis->migrationGroups['article']['articles'];
+        $title = $table->columns[1];
 
-        self::assertSame('title', $title['Name']);
-        self::assertSame('255', $title['Length']);
-        self::assertSame([['title']], $analysis->tableKeys['articles']['index']);
+        self::assertSame('Articles', $table->description);
+        self::assertSame('title', $title->name);
+        self::assertSame('255', $title->length);
+        self::assertSame([['title']], $table->indexes);
         self::assertSame(['articles' => ['state']], $analysis->emptyTypes);
     }
 
@@ -85,12 +87,11 @@ class YamlMigrationSourceTest extends TestCase
             YAML
         );
 
-        $rows = new YamlMigrationSource()->analyze($this->file)->migrationGroups['t']['t'];
+        $cols = new YamlMigrationSource()->analyze($this->file)->migrationGroups['t']['t']->columns;
 
-        self::assertSame('Primary (AI)', $rows[0]['Key']);
-        self::assertSame('Primary', $rows[1]['Key']);
-        self::assertArrayNotHasKey('Key', $rows[2]);
-        self::assertSame('true', $rows[2]['Serial']);
+        self::assertSame([true, true], [$cols[0]->primary, $cols[0]->serial]);
+        self::assertSame([true, false], [$cols[1]->primary, $cols[1]->serial]);
+        self::assertSame([false, true], [$cols[2]->primary, $cols[2]->serial]);
     }
 
     #[Test]
@@ -113,25 +114,40 @@ class YamlMigrationSourceTest extends TestCase
 
         $analysis = new YamlMigrationSource()->analyze($this->file);
 
-        $keys = $analysis->tableKeys['maps'];
+        $table = $analysis->migrationGroups['map']['maps'];
 
-        self::assertSame(['a'], $keys['primary']);
-        self::assertSame([['a', 'b']], $keys['unique']);
-        self::assertSame([['b(10)']], $keys['index']);
+        self::assertSame(['a'], $table->primary);
+        self::assertSame([['a', 'b']], $table->uniques);
+        self::assertSame([['b(10)']], $table->indexes);
     }
 
     #[Test]
-    public function enumIsAppendedToNote(): void
+    public function enumIsPartOfComment(): void
     {
         file_put_contents(
             $this->file,
             "t:\n  columns:\n    a:\n      type: int\n      enum: Foo\n    b:\n      type: int\n      note: hi\n      enum: Bar\n"
         );
 
-        $rows = new YamlMigrationSource()->analyze($this->file)->migrationGroups['t']['t'];
+        $cols = new YamlMigrationSource()->analyze($this->file)->migrationGroups['t']['t']->columns;
 
-        self::assertSame('enum:Foo', $rows[0]['Note']);
-        self::assertSame('hi enum:Bar', $rows[1]['Note']);
+        self::assertSame('Foo', $cols[0]->enum);
+        self::assertSame('enum:Foo', $cols[0]->getComment());
+        self::assertSame('hi - enum:Bar', $cols[1]->getComment());
+    }
+
+    #[Test]
+    public function signedFalseMeansUnsigned(): void
+    {
+        file_put_contents(
+            $this->file,
+            "t:\n  columns:\n    a:\n      type: int\n      signed: false\n    b:\n      type: int\n      signed: true\n"
+        );
+
+        $cols = new YamlMigrationSource()->analyze($this->file)->migrationGroups['t']['t']->columns;
+
+        self::assertTrue($cols[0]->unsigned);
+        self::assertFalse($cols[1]->unsigned);
     }
 
     #[Test]
@@ -139,10 +155,10 @@ class YamlMigrationSourceTest extends TestCase
     {
         file_put_contents($this->file, "t:\n  columns:\n    a: varchar(255)\n    b: decimal(20, 4)\n");
 
-        $rows = new YamlMigrationSource()->analyze($this->file)->migrationGroups['t']['t'];
+        $cols = new YamlMigrationSource()->analyze($this->file)->migrationGroups['t']['t']->columns;
 
-        self::assertSame(['varchar', '255'], [$rows[0]['Type'], $rows[0]['Length']]);
-        self::assertSame(['decimal', '20,4'], [$rows[1]['Type'], $rows[1]['Length']]);
+        self::assertSame(['varchar', '255'], [$cols[0]->type, $cols[0]->length]);
+        self::assertSame(['decimal', '20,4'], [$cols[1]->type, $cols[1]->length]);
     }
 
     #[Test]
@@ -196,6 +212,7 @@ class YamlMigrationSourceTest extends TestCase
             'nullable not bool' => ["articles:\n  columns:\n    id:\n      type: int\n      nullable: allow\n"],
             'type and length' => ["articles:\n  columns:\n    t:\n      type: varchar(255)\n      length: 100\n"],
             'enum not string' => ["articles:\n  columns:\n    s:\n      type: int\n      enum: [a]\n"],
+            'signed not bool' => ["articles:\n  columns:\n    id:\n      type: int\n      signed: unsigned\n"],
             'primary not bool' => ["articles:\n  columns:\n    id:\n      primary: yes please\n"],
             'serial on varchar' => ["articles:\n  columns:\n    id:\n      type: varchar\n      serial: true\n"],
             'unknown key column' => ["articles:\n  columns:\n    id: int\n  keys:\n    index: x\n"],

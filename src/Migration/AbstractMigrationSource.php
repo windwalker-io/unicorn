@@ -10,33 +10,24 @@ use Windwalker\Utilities\Utf8String;
 abstract class AbstractMigrationSource implements MigrationSourceInterface
 {
     /**
-     * @param  iterable<string, array<int, array<string, mixed>>>  $tables  Table name => column rows.
-     * @param  array<string, array<string, mixed>>  $tableKeys
+     * @param  iterable<TableDefinition>  $tables
      */
-    protected function buildAnalysis(iterable $tables, array $tableKeys = []): MigrationSourceAnalysis
+    protected function buildAnalysis(iterable $tables): MigrationSourceAnalysis
     {
         $migrationGroups = [];
         $emptyTypes = [];
 
-        foreach ($tables as $tableName => $rows) {
-            if (!$this->isTableName($tableName)) {
-                continue;
-            }
-
-            foreach ($rows as $row) {
-                if (empty($row['Name'])) {
-                    continue;
-                }
-
-                if (trim((string) ($row['Type'] ?? '')) === '') {
-                    $emptyTypes[$tableName][] = trim((string) $row['Name']);
+        foreach ($tables as $table) {
+            foreach ($table->columns as $column) {
+                if (trim($column->type) === '') {
+                    $emptyTypes[$table->name][] = $column->name;
                 }
             }
 
-            $migrationGroups[$this->getGroupName($tableName)][$tableName] = $rows;
+            $migrationGroups[$this->getGroupName($table->name)][$table->name] = $table;
         }
 
-        return new MigrationSourceAnalysis($migrationGroups, $emptyTypes, $tableKeys);
+        return new MigrationSourceAnalysis($migrationGroups, $emptyTypes);
     }
 
     protected function isTableName(mixed $name): bool
