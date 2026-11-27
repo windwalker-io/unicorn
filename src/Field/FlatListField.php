@@ -73,7 +73,7 @@ class FlatListField extends SqlListField
 
         $attrs['type'] = $inputType;
         $attrs['id'] = $id;
-        $attrs['name'] = $this->isMultiple() ? $this->getInputName('[]') : $this->getInputName();
+        $attrs['name'] = ($this->isMultiple() || $inputType === 'checkbox') ? $this->getInputName('[]') : $this->getInputName();
         $attrs['value'] = $value;
         $attrs['data-label'] = $text;
 

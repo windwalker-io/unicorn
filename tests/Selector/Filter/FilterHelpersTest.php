@@ -90,7 +90,7 @@ class FilterHelpersTest extends TestCase
 
         $query = $this->createMock(Query::class);
         $query->expects($this->once())
-            ->method('orWhere')
+            ->method('orWhereGroup')
             ->willReturnCallback(function (callable $cb) use ($inner, $query) {
                 $cb($inner);
 
@@ -154,7 +154,7 @@ class FilterHelpersTest extends TestCase
             ->willReturnSelf();
 
         $query = $this->createStub(Query::class);
-        $query->method('orWhere')->willReturnCallback(function (callable $cb) use ($inner, $query) {
+        $query->method('orWhereGroup')->willReturnCallback(function (callable $cb) use ($inner, $query) {
             $cb($inner);
 
             return $query;

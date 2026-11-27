@@ -104,20 +104,14 @@ TestApp::createInstance(
         '@migrations' => $root . '/tests/resources/migrations',
         '@seeders' => $root . '/tests/resources/seeders',
     ],
+    providers: [
+        RendererProvider::class,
+        EdgeProvider::class,
+        UnicornPackage::class,
+    ],
+    bindings: [
+        ThemeInterface::class => BootstrapTheme::class,
+    ]
 );
 
 TestAppRegistry::use(TestApp::$instance);
-
-// Providers need the app services registered while booting, so they go on the app container.
-TestApp::$instance->getContainer()->registerByConfig(
-    [
-        'providers' => [
-            RendererProvider::class,
-            EdgeProvider::class,
-            UnicornPackage::class,
-        ],
-        'bindings' => [
-            ThemeInterface::class => BootstrapTheme::class,
-        ],
-    ],
-);

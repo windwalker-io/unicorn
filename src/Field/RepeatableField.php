@@ -167,7 +167,8 @@ class RepeatableField extends AbstractField implements CompositeFieldInterface
             $hasKey = $subForm->hasField('key');
 
             foreach ($prepared as $k => $v) {
-                $item = ['value' => $v];
+                // Comma-string values are already wrapped as ['value' => ...]
+                $item = is_array($v) ? $v : ['value' => $v];
 
                 if ($hasKey) {
                     $item['key'] = $k;

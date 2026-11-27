@@ -110,7 +110,7 @@ class FileControllerTest extends TestCase
         $app = $this->createContext(null);
 
         $this->expectException(\DomainException::class);
-        $this->expectExceptionMessage('Unable to find profile: string');
+        $this->expectExceptionMessage('Unable to find profile: unknown');
         $this->expectExceptionCode(400);
 
         $this->controller->upload($request, $app);
