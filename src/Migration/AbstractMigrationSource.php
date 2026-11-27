@@ -11,8 +11,9 @@ abstract class AbstractMigrationSource implements MigrationSourceInterface
 {
     /**
      * @param  iterable<string, array<int, array<string, mixed>>>  $tables  Table name => column rows.
+     * @param  array<string, array<string, mixed>>  $tableKeys
      */
-    protected function buildAnalysis(iterable $tables): MigrationSourceAnalysis
+    protected function buildAnalysis(iterable $tables, array $tableKeys = []): MigrationSourceAnalysis
     {
         $migrationGroups = [];
         $emptyTypes = [];
@@ -35,7 +36,7 @@ abstract class AbstractMigrationSource implements MigrationSourceInterface
             $migrationGroups[$this->getGroupName($tableName)][$tableName] = $rows;
         }
 
-        return new MigrationSourceAnalysis($migrationGroups, $emptyTypes);
+        return new MigrationSourceAnalysis($migrationGroups, $emptyTypes, $tableKeys);
     }
 
     protected function isTableName(mixed $name): bool

@@ -1,0 +1,141 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lyrasoft.net/unicorn/mig-schema.json",
+  "title": "Unicorn mig:from YAML schema",
+  "description": "Table definitions for `mig:from`. Keep in sync with Unicorn\\Migration\\YamlMigrationSource.",
+  "type": "object",
+  "additionalProperties": {
+    "$ref": "#/definitions/table"
+  },
+  "definitions": {
+    "table": {
+      "type": "object",
+      "required": ["columns"],
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "type": "string",
+          "description": "Table description (informational only, no function yet)."
+        },
+        "columns": {
+          "type": "object",
+          "minProperties": 1,
+          "description": "Map of column name => attributes. A string is a shorthand for `type`.",
+          "additionalProperties": {
+            "oneOf": [
+              { "$ref": "#/definitions/type" },
+              { "$ref": "#/definitions/column" }
+            ]
+          }
+        },
+        "keys": {
+          "$ref": "#/definitions/keys"
+        }
+      }
+    },
+    "type": {
+      "type": "string",
+      "description": "Column type, optionally with a length, e.g. varchar(255) or decimal(20,4).",
+      "anyOf": [
+        {
+          "enum": [
+          "int",
+          "integer",
+          "bigint",
+          "tinyint",
+          "bool",
+          "bit",
+          "float",
+          "double",
+          "decimal",
+          "char",
+          "varchar",
+          "text",
+          "longtext",
+          "json",
+          "binary",
+          "blob",
+          "date",
+          "datetime",
+          "timestamp",
+          "uuid",
+          "uuidbin",
+          "vector"
+        ]
+        },
+        { "pattern": "^\\w+\\s*\\(\\s*\\d+(\\s*,\\s*\\d+)?\\s*\\)$" }
+      ]
+    },
+    "column": {
+      "type": "object",
+      "required": ["type"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "$ref": "#/definitions/type" },
+        "length": {
+          "type": ["integer", "string"],
+          "description": "Length or precision, e.g. 255 or '10,2'. Cannot be used with a type that has a length, e.g. varchar(255)."
+        },
+        "nullable": {
+          "type": "boolean",
+          "description": "Allow NULL."
+        },
+        "signed": {
+          "type": "string",
+          "enum": ["unsigned"],
+          "description": "`unsigned` to make a number column unsigned."
+        },
+        "default": {
+          "type": ["string", "number", "boolean"],
+          "description": "Default value."
+        },
+        "primary": {
+          "type": "boolean",
+          "description": "Primary key. Use table `keys` for index / unique."
+        },
+        "serial": {
+          "type": "boolean",
+          "description": "Auto-increment (int / bigint only). Use with `primary: true` for a serial primary key."
+        },
+        "enum": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Enum class name. Same as writing `enum:Foo` in the Note column of the Excel format."
+        },
+        "description": {
+          "type": "string",
+          "description": "Column comment."
+        },
+        "note": {
+          "type": "string",
+          "description": "Extra comment, appended to description."
+        }
+      }
+    },
+    "columnList": {
+      "oneOf": [
+        { "type": "string" },
+        { "type": "array", "minItems": 1, "items": { "type": "string" } }
+      ]
+    },
+    "keyList": {
+      "oneOf": [
+        { "type": "string" },
+        { "type": "array", "minItems": 1, "items": { "$ref": "#/definitions/columnList" } }
+      ],
+      "description": "A column name, or a list. Each item is one key: a column name or a list of names (composite). `name(150)` sets a prefix length."
+    },
+    "keys": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "primary": {
+          "$ref": "#/definitions/columnList",
+          "description": "Primary key: a column name or a list of names (composite)."
+        },
+        "index": { "$ref": "#/definitions/keyList" },
+        "unique": { "$ref": "#/definitions/keyList" }
+      }
+    }
+  }
+}

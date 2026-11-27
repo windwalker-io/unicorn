@@ -290,6 +290,18 @@ class MigFromCommand implements CommandInterface
                     $cols[] = $this->buildColumn($row, $keys, $tableName);
                 }
 
+                foreach ($analysis->tableKeys[$tableName] ?? [] as $type => $defs) {
+                    if ($type === 'primary') {
+                        $keys['primary'] = $defs;
+
+                        continue;
+                    }
+
+                    foreach ($defs as $cols) {
+                        $keys[$type][] = $cols;
+                    }
+                }
+
                 $newCode = str_replace(
                     [
                         "'@create-{$tableName}';",
@@ -394,6 +406,15 @@ class MigFromCommand implements CommandInterface
             }
         }
 
+        if ($keys['primary'] ?? null) {
+            $primaryCols = collect($keys['primary'])
+                ->map(fn($v) => "'$v'");
+
+            $primaryCols = \Windwalker\count($primaryCols) === 1 ? $primaryCols[0] : '[' . $primaryCols->implode(', ') . ']';
+
+            $declare .= "\n\n" . str_repeat(' ', 16) . "\$schema->addPrimaryKey($primaryCols);";
+        }
+
         $code = <<<PHP
 \$this->createTable(
             {$className}::class,
@@ -431,6 +452,7 @@ PHP;
         $default = trim($row['Default'] ?? '');
         $key = trim($row['Key'] ?? '');
         $keyName = trim($row['Key Name'] ?? '');
+        $serial = trim($row['Serial'] ?? '') !== '';
         $description = trim($row['Description'] ?? '');
         $note = trim($row['Note'] ?? '');
 
@@ -456,6 +478,14 @@ PHP;
 
         if ($method === 'json' || strtolower(trim($null)) === 'allow') {
             $col .= '->nullable(true)';
+        }
+
+        if (strtolower($key) === 'primary') {
+            $col .= '->primary(true)';
+        }
+
+        if ($serial) {
+            $col .= '->autoIncrement(true)';
         }
 
         if (strtolower(trim($signed)) === 'unsigned') {

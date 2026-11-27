@@ -1,79 +1,99 @@
+# yaml-language-server: $schema=./schema.json
 # Schema template for `mig:from`
 #
 #   php windwalker mig:from path/to/schema.yml
 #
+# This format is YAML-specific. Keep this template and schema.json in sync with
+# Unicorn\Migration\YamlMigrationSource.
+#
 # Top-level key  = table name (ASCII only). The first `_` segment is the migration group,
 #                  e.g. `article` and `article_tag_map` both go to the `Article` group.
 #                  Names starting with `_` or named `Sample` are ignored.
-# Second level   = column name.
-# Column value   = a map of attributes, or a string as a shorthand for `type`.
 #
-# Attribute keys are case-insensitive and accept `key_name` / `Key Name` / `keyName`.
+# Table options (unknown options are rejected):
+#   description  Table description (informational only, no function yet)
+#   columns      Map of column name => attributes (required). A string value is a shorthand for `type`.
+#   keys         Map of `primary`, `index` and `unique` keys (optional).
 #
+# Column attributes (case-insensitive, unknown ones are rejected):
 #   type         int, bigint, tinyint, varchar, char, text, decimal, datetime, json, uuid, uuidbin, ...
 #                A column without a type is reported as an error.
+#                A length may be included: varchar(255), decimal(20,4). Do not combine with `length`.
 #   length       Length or precision, e.g. 255 or '10,2'
-#   nullable     `allow` to make the column nullable. (`null` also works, but must be quoted: "null")
+#   nullable     bool. Allow NULL.
 #   signed       `unsigned` to make a number column unsigned
 #   default      Default value
-#   key          `Primary (AI)`, `Index` or `Unique`
-#   key_name     Columns sharing the same name form one composite index/unique key
+#   primary      bool. Primary key. Use table `keys` for index / unique.
+#   serial       bool. Auto-increment (int / bigint only). Use with `primary: true` for a serial primary key.
+#   enum         Enum class name. Same as writing `enum:Foo` in the Excel Note column.
 #   description  Column comment
 #   note         Extra comment, appended to description
+#
+# Keys (names are generated automatically):
+#   primary      A column name, or a list of names for a composite primary key.
+#   index        A column name, or a list. Each list item is one key: a column name, or a list of
+#   unique       names for a composite key. `name(150)` sets a prefix length (index / unique only).
 
 article:
-  id:
-    type: int
-    signed: unsigned
-    key: Primary (AI)
-  category_id:
-    type: int
-    signed: unsigned
-    key: Index
-    description: Category ID
-  title:
-    type: varchar
-    length: 255
-    description: Article title
-  alias:
-    type: varchar
-    length: 255
-    key: Unique
-  content: text
-  price:
-    type: decimal
-    length: '10,2'
-    default: 0
-    note: Tax included
-  image:
-    type: varchar
-    length: 1024
-    nullable: allow
-  params: json
-  state:
-    type: tinyint
-    length: 1
-    default: 1
-  created:
-    type: datetime
-    nullable: allow
-  created_by:
-    type: int
-    signed: unsigned
-    default: 0
+  description: Articles
+  columns:
+    id:
+      type: int
+      signed: unsigned
+      primary: true
+      serial: true
+    category_id:
+      type: int
+      signed: unsigned
+      description: Category ID
+    title:
+      type: varchar(255)
+      description: Article title
+    alias:
+      type: varchar
+      length: 255
+    content: text
+    price:
+      type: decimal(10,2)
+      default: 0
+      note: Tax included
+    image:
+      type: varchar
+      length: 1024
+      nullable: true
+    params: json
+    state:
+      type: tinyint
+      length: 1
+      default: 1
+      enum: BasicState
+    created:
+      type: datetime
+      nullable: true
+    created_by:
+      type: int
+      signed: unsigned
+      default: 0
+  keys:
+    index:
+      - category_id
+      - [created_by, created]
+    unique:
+      - alias(150)
 
 article_tag_map:
-  id:
-    type: int
-    signed: unsigned
-    key: Primary (AI)
-  article_id:
-    type: int
-    signed: unsigned
-    key: Unique
-    key_name: article_tag
-  tag_id:
-    type: int
-    signed: unsigned
-    key: Unique
-    key_name: article_tag
+  columns:
+    id:
+      type: int
+      signed: unsigned
+      primary: true
+      serial: true
+    article_id:
+      type: int
+      signed: unsigned
+    tag_id:
+      type: int
+      signed: unsigned
+  keys:
+    unique:
+      - [article_id, tag_id]
