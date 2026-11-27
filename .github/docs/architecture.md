@@ -23,6 +23,8 @@ Composer maps `Unicorn\` to [`src/`](../../src/) and loads
   form fields/rendering, Edge components, HTML helpers, and view-model traits.
 - `src/Storage/`, `src/Upload/`, `src/Aws/`, and `src/Flysystem/`: storage
   adapters and factories, file-upload services, and optional integrations.
+- `src/Migration/`: migration source contracts, analysis results, and source
+  adapters such as Excel.
 - `src/Generator/`, `src/Command/`, and `src/Script/`: code generators,
   console commands, and frontend asset registration helpers.
 - `src/Image/`, `src/Excel/`, `src/Listener/`, `src/Middleware/`, and

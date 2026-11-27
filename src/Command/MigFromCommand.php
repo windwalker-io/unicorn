@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Unicorn\Command;
 
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpParser\BuilderFactory;
 use PhpParser\Node;
 use PhpParser\NodeTraverser;
@@ -12,7 +11,8 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
-use Unicorn\Excel\ExcelImporter;
+use Unicorn\Migration\ExcelMigrationSource;
+use Unicorn\Migration\MigrationSourceInterface;
 use Windwalker\Console\CommandInterface;
 use Windwalker\Console\CommandWrapper;
 use Windwalker\Console\IOInterface;
@@ -24,7 +24,6 @@ use Windwalker\Core\Migration\MigrationService;
 use Windwalker\Data\Collection;
 use Windwalker\Utilities\StrInflector;
 use Windwalker\Utilities\StrNormalize;
-use Windwalker\Utilities\Utf8String;
 
 use function Windwalker\collect;
 use function Windwalker\uid;
@@ -91,41 +90,9 @@ class MigFromCommand implements CommandInterface
 
         $io->writeln('Extracting file....');
 
-        if (!class_exists(Spreadsheet::class)) {
-            throw new \DomainException('Please install phpoffice/phpspreadsheet first.');
-        }
-
-        $excel = new ExcelImporter($file);
-        $migGroups = [];
-        $emptyTypes = [];
-
-        foreach ($excel->getSheetsIterator(true) as $sheet => $rows) {
-            if ($sheet[0] === '_' || $sheet === 'Sample' || !Utf8String::isAscii($sheet)) {
-                continue;
-            }
-
-            $tableName = $sheet;
-
-            $rows = iterator_to_array($rows);
-
-            $firstKey = array_key_first($rows[array_key_first($rows)]);
-
-            if ($firstKey !== 'Name') {
-                continue;
-            }
-
-            foreach ($rows as $row) {
-                if (empty($row['Name'])) {
-                    continue;
-                }
-
-                if (trim((string) ($row['Type'] ?? '')) === '') {
-                    $emptyTypes[$tableName][] = trim((string) $row['Name']);
-                }
-            }
-
-            $migGroups[$this->getGroupName($tableName)][$tableName] = $rows;
-        }
+        $analysis = $this->createMigrationSource()->analyze($file);
+        $migGroups = $analysis->migrationGroups;
+        $emptyTypes = $analysis->emptyTypes;
 
         if ($emptyTypes) {
             $io->style()->error('Found columns with empty Type. Please fix the Excel file and run again.');
@@ -443,6 +410,11 @@ PHP;
         return "\$this->dropTables({$className}::class);";
     }
 
+    protected function createMigrationSource(): MigrationSourceInterface
+    {
+        return new ExcelMigrationSource();
+    }
+
     protected function buildColumn(array $row, ?array &$keys = null, ?string $tableName = null): string
     {
         $keys ??= [];
@@ -522,13 +494,6 @@ PHP;
             'int' => 'integer',
             default => $type,
         };
-    }
-
-    protected function getGroupName(string $tableName): string
-    {
-        [$name] = explode('_', $tableName, 2);
-
-        return StrInflector::toSingular(strtolower($name));
     }
 
     /**
