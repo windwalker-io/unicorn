@@ -21,8 +21,7 @@ final readonly class ColumnDefinition
         public ?string $enum = null,
         public string $description = '',
         public string $note = '',
-    ) {
-    }
+    ) {}
 
     public function getComment(): string
     {

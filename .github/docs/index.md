@@ -8,6 +8,10 @@ Load only the topic needed for the current task.
 - [Package architecture](architecture.md): package layout, host-app integration,
   feature flows, and testing context.
 
+## Development tooling
+
+- [PHP-CS-Fixer and Git hooks](../../docs/php-cs-fixer-workflow.instructions.md): current shared setup and notes for agents formalizing it as a skill.
+
 ## Localization
 
 - [Locale key naming](locale-key-naming.md): **mandatory** key naming strategy
@@ -25,4 +29,3 @@ to the package while describing consuming applications generically.
 ## Testing
 
 - [Database testing](database-testing.md): choosing in-memory SQLite vs. a real DBMS for Repository and ORM tests.
-

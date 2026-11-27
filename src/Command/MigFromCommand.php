@@ -28,7 +28,6 @@ use Windwalker\Data\Collection;
 use Windwalker\Utilities\StrInflector;
 use Windwalker\Utilities\StrNormalize;
 
-
 /**
  * The MigFromCommand class.
  */
@@ -384,7 +383,7 @@ class MigFromCommand implements CommandInterface
 
         if ($table->primary !== []) {
             $declare .= "\n\n" . str_repeat(' ', 16)
-                . "\$schema->addPrimaryKey(" . $this->exportColumns($table->primary) . ');';
+                . '$schema->addPrimaryKey(' . $this->exportColumns($table->primary) . ');';
         }
 
         $code = <<<PHP

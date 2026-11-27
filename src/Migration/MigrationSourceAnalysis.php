@@ -13,6 +13,5 @@ final readonly class MigrationSourceAnalysis
     public function __construct(
         public array $migrationGroups,
         public array $emptyTypes,
-    ) {
-    }
+    ) {}
 }

@@ -199,7 +199,7 @@ class YamlMigrationSource extends AbstractMigrationSource
     }
 
     /**
-     * @param  list<string>                          $cols
+     * @param  list<string>                     $cols
      * @param  array<string, ColumnDefinition>  $rows
      *
      * @return  list<string>

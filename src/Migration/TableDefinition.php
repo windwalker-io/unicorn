@@ -24,6 +24,5 @@ final readonly class TableDefinition
         public array $primary = [],
         public array $indexes = [],
         public array $uniques = [],
-    ) {
-    }
+    ) {}
 }
