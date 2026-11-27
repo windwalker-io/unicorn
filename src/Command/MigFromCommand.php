@@ -13,6 +13,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Unicorn\Migration\ExcelMigrationSource;
 use Unicorn\Migration\MigrationSourceInterface;
+use Unicorn\Migration\YamlMigrationSource;
 use Windwalker\Console\CommandInterface;
 use Windwalker\Console\CommandWrapper;
 use Windwalker\Console\IOInterface;
@@ -31,7 +32,7 @@ use function Windwalker\uid;
 /**
  * The MigFromCommand class.
  */
-#[CommandWrapper(description: 'Migrations from excel files')]
+#[CommandWrapper(description: 'Migrations from excel or yaml files')]
 class MigFromCommand implements CommandInterface
 {
     /**
@@ -54,7 +55,7 @@ class MigFromCommand implements CommandInterface
         $command->addArgument(
             'file',
             InputArgument::REQUIRED,
-            'Excel file to import.'
+            'Excel (xls, xlsx, csv) or YAML (yml, yaml) file to import.'
         );
         $command->addOption(
             'mig',
@@ -90,15 +91,15 @@ class MigFromCommand implements CommandInterface
 
         $io->writeln('Extracting file....');
 
-        $analysis = $this->createMigrationSource()->analyze($file);
+        $analysis = $this->createMigrationSource($file)->analyze($file);
         $migGroups = $analysis->migrationGroups;
         $emptyTypes = $analysis->emptyTypes;
 
         if ($emptyTypes) {
-            $io->style()->error('Found columns with empty Type. Please fix the Excel file and run again.');
+            $io->style()->error('Found columns with empty Type. Please fix the source file and run again.');
 
             foreach ($emptyTypes as $tableName => $columns) {
-                $io->writeln("Sheet <comment>$tableName</comment>:");
+                $io->writeln("Table <comment>$tableName</comment>:");
 
                 foreach ($columns as $column) {
                     $io->writeln("  - Column <info>$column</info>");
@@ -410,9 +411,12 @@ PHP;
         return "\$this->dropTables({$className}::class);";
     }
 
-    protected function createMigrationSource(): MigrationSourceInterface
+    protected function createMigrationSource(string $file): MigrationSourceInterface
     {
-        return new ExcelMigrationSource();
+        return match (strtolower(pathinfo($file, PATHINFO_EXTENSION))) {
+            'yml', 'yaml' => new YamlMigrationSource(),
+            default => new ExcelMigrationSource(),
+        };
     }
 
     protected function buildColumn(array $row, ?array &$keys = null, ?string $tableName = null): string

@@ -6,10 +6,8 @@ namespace Unicorn\Migration;
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use Unicorn\Excel\ExcelImporter;
-use Windwalker\Utilities\StrInflector;
-use Windwalker\Utilities\Utf8String;
 
-class ExcelMigrationSource implements MigrationSourceInterface
+class ExcelMigrationSource extends AbstractMigrationSource
 {
     public function analyze(string $source): MigrationSourceAnalysis
     {
@@ -18,21 +16,20 @@ class ExcelMigrationSource implements MigrationSourceInterface
         }
 
         $excel = new ExcelImporter($source);
-        $migrationGroups = [];
-        $emptyTypes = [];
 
+        return $this->buildAnalysis($this->iterateTables($excel));
+    }
+
+    /**
+     * @return  \Generator<string, array<int, array<string, mixed>>>
+     */
+    protected function iterateTables(ExcelImporter $excel): \Generator
+    {
         foreach ($excel->getSheetsIterator(true) as $sheet => $rows) {
-            if (
-                !is_string($sheet)
-                || $sheet === ''
-                || $sheet[0] === '_'
-                || $sheet === 'Sample'
-                || !Utf8String::isAscii($sheet)
-            ) {
+            if (!$this->isTableName($sheet)) {
                 continue;
             }
 
-            $tableName = $sheet;
             $rows = iterator_to_array($rows);
             $firstRow = $rows[array_key_first($rows)] ?? [];
 
@@ -40,26 +37,7 @@ class ExcelMigrationSource implements MigrationSourceInterface
                 continue;
             }
 
-            foreach ($rows as $row) {
-                if (empty($row['Name'])) {
-                    continue;
-                }
-
-                if (trim((string) ($row['Type'] ?? '')) === '') {
-                    $emptyTypes[$tableName][] = trim((string) $row['Name']);
-                }
-            }
-
-            $migrationGroups[$this->getGroupName($tableName)][$tableName] = $rows;
+            yield $sheet => $rows;
         }
-
-        return new MigrationSourceAnalysis($migrationGroups, $emptyTypes);
-    }
-
-    protected function getGroupName(string $tableName): string
-    {
-        [$name] = explode('_', $tableName, 2);
-
-        return StrInflector::toSingular(strtolower($name));
     }
 }
